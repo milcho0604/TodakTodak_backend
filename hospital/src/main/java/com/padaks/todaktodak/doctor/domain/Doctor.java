@@ -32,8 +32,10 @@ public class Doctor extends BaseTimeEntity {
 
     private int currentWaitingCount;
 
+    // 근무 시간
     @OneToOne(mappedBy = "Did", cascade = CascadeType.ALL)
     private DoctorOperatingHours DoctorOperatingHours;
+
 
     @ManyToOne
     @JoinColumn(name = "hospital_id")
