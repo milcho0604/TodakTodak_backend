@@ -24,7 +24,7 @@ public class DoctorOperatingHours extends BaseTimeEntity {
     private Long id;
     @OneToOne
     @JoinColumn(name = "doctor_id")
-    private Doctor Did;
+    private Doctor doctor;
     private DayOfHoliday dayOfHoliday;
     private LocalTime openTime;
     private LocalTime closeTime;

@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -25,7 +26,7 @@ public class Member extends BaseTimeEntity {
     @Column
     private Long familyId;
     @Column(nullable = false, unique = true)
-    private String email;
+    private String memberEmail;
     @Column
     private String profileImgUrl;
     @Column(nullable = false, unique = true)
@@ -44,6 +45,6 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToMany(mappedBy = "Mid", cascade = CascadeType.ALL)
-    private List<Child> childList;
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<Child> childList = new ArrayList<>();
 }

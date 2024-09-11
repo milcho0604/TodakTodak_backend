@@ -3,7 +3,6 @@ package com.padaks.todaktodak.hospital.domain;
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
 import com.padaks.todaktodak.doctor.domain.Doctor;
 import com.padaks.todaktodak.hospitaloperatinghours.domain.HospitalOperatingHours;
-import com.padaks.todaktodak.hospitalreview.domain.HospitalReview;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -52,13 +51,9 @@ public class Hospital extends BaseTimeEntity {
 //    대표자 핸드폰 번호
     private String representativePhoneNumber;
 
-    @OneToMany(mappedBy = "Hid")
+    @OneToMany(mappedBy = "hospital", cascade = CascadeType.ALL)
     private List<Doctor> doctor;
 
-    @OneToOne(mappedBy = "Hid", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "hospital", cascade = CascadeType.ALL)
     private HospitalOperatingHours hospitalOperatingHours;
-
-    @OneToOne(mappedBy = "Hid", cascade = CascadeType.ALL)
-    private HospitalReview hospitalReview;
-
 }

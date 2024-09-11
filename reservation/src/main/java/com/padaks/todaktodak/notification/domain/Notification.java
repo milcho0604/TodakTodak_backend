@@ -1,12 +1,13 @@
-package com.padaks.todaktodak.report.domain;
+package com.padaks.todaktodak.notification.domain;
 
 import com.padaks.todaktodak.comment.domain.Comment;
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
-import com.padaks.todaktodak.post.domain.Post;
+import com.padaks.todaktodak.reservation.domain.Reservation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
@@ -15,26 +16,25 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 @Getter
-public class Report extends BaseTimeEntity {
+public class Notification extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "report_id")
+    @Column(name = "notification_id")
     private Long id;
-//    신고자 이메일
-    @Column(nullable = false)
-    private String reporterEmail;
-//    피신고자 이메일
-    @Column(nullable = false)
-    private String reportedEmail;
-//    이유
-    @Column(nullable = false)
-    private String reason;
 
-    @ManyToOne
-    @JoinColumn(name = "post_id")
-    private Post post;
+    @Column(nullable = false)
+    private String memberEmail;
+    @Column(nullable = false)
+    private String category;
+    private String content;
+    @ColumnDefault("false")
+    private Boolean isRead;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "comment_id")
     private Comment comment;
+
+    @ManyToOne
+    @JoinColumn(name = "reservation_id")
+    private Reservation reservation;
 }

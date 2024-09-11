@@ -24,7 +24,7 @@ public class Doctor extends BaseTimeEntity {
     private String name;
 
     @Column(nullable = false, unique = true)
-    private String email;
+    private String doctorEmail;
 
     private String profileImgUrl;
 
@@ -32,10 +32,10 @@ public class Doctor extends BaseTimeEntity {
 
     private int currentWaitingCount;
 
-    @OneToOne(mappedBy = "Did", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "doctor", cascade = CascadeType.ALL)
     private DoctorOperatingHours DoctorOperatingHours;
 
     @ManyToOne
     @JoinColumn(name = "hospital_id")
-    private Hospital Hid;
+    private Hospital hospital;
 }

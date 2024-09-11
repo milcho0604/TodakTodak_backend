@@ -32,5 +32,5 @@ public class HospitalOperatingHours extends BaseTimeEntity {
 
     @OneToOne
     @JoinColumn(name = "hospital_id")
-    private Hospital Hid;
+    private Hospital hospital;
 }

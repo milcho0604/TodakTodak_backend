@@ -1,4 +1,4 @@
-package com.padaks.todaktodak.notice.service;
+package com.padaks.todaktodak.reservation.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -7,5 +7,5 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Slf4j
 @Transactional
-public class NoticeService {
+public class ReservationService {
 }

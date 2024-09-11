@@ -27,5 +27,5 @@ public class Child extends BaseTimeEntity {
 
     @ManyToOne
     @JoinColumn(name = "member_id")
-    private Member Mid;
+    private Member member;
 }
