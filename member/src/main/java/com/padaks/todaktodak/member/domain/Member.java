@@ -25,17 +25,17 @@ public class Member extends BaseTimeEntity {
     private Long id;
     @Column
     private Long familyId;
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String memberEmail;
     @Column
     private String profileImgUrl;
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String phoneNumber;
-    @Column(nullable = false)
+    @Column()
     private String password;
-    @Column(nullable = false)
+    @Column()
     private String ssn;
-    @Column(nullable = false)
+    @Column()
     private String address;
     @ColumnDefault("0")
     private int noShowCount;
@@ -47,4 +47,5 @@ public class Member extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Child> childList = new ArrayList<>();
+
 }
