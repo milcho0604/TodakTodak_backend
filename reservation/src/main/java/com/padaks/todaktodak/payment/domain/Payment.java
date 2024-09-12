@@ -49,6 +49,10 @@ public class Payment extends BaseTimeEntity {
     private LocalDateTime approvalTimeStamp;
     @Column
     private String responseDetails;
+
+    @Column
+    private int price;
+
     @OneToOne
     @JoinColumn(name = "reservation_id")
     private Reservation reservation;
