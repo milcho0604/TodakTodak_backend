@@ -1,7 +1,7 @@
 package com.padaks.todaktodak.member.domain;
 
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
-import com.padaks.todaktodak.relationship.domain.ChildParentsRelationship;
+import com.padaks.todaktodak.childparentsrelationship.domain.ChildParentsRelationship;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,6 +25,8 @@ public class Member extends BaseTimeEntity {
     @Column(unique = true)
     private String memberEmail;
     @Column
+    private String name;
+    @Column
     private String profileImgUrl;
     @Column(unique = true)
     private String phoneNumber;
@@ -36,8 +38,6 @@ public class Member extends BaseTimeEntity {
     private String address;
     @ColumnDefault("0")
     private int noShowCount;
-    @ColumnDefault("0")
-    private int reportCount;
     @Column
     @Enumerated(EnumType.STRING)
     private Role role;

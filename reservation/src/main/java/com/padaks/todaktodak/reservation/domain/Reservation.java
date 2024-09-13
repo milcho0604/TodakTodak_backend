@@ -1,8 +1,11 @@
 package com.padaks.todaktodak.reservation.domain;
 
+import com.padaks.todaktodak.charroom.domain.ChatRoom;
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
+import com.padaks.todaktodak.medicalchart.domain.MedicalChart;
 import com.padaks.todaktodak.notification.domain.Notification;
 import com.padaks.todaktodak.payment.domain.Payment;
+import com.padaks.todaktodak.review.domain.Review;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -47,13 +50,27 @@ public class Reservation extends BaseTimeEntity {
     private LocalDate reservationDate;
     @Column(nullable = false)
     private LocalTime reservationTime;
+    private boolean isUntact;
     private Status status;
+
+    public enum MedicalItem{
+        일반진료,
+        예방접종
+    }
+    private MedicalItem medicalItem;
+//    증상
+    private String field;
     private String message;
 
     @OneToMany(mappedBy = "reservation")
     private List<Notification> notificationList = new ArrayList<>();
 
     @OneToOne(mappedBy = "reservation")
-    private Payment payment;
+    private Review review;
 
+    @OneToOne(mappedBy = "reservation")
+    private ChatRoom chatRoom;
+
+    @OneToOne(mappedBy = "reservation")
+    private MedicalChart medicalChart;
 }

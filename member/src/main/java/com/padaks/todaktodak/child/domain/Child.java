@@ -1,7 +1,7 @@
 package com.padaks.todaktodak.child.domain;
 
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
-import com.padaks.todaktodak.relationship.domain.ChildParentsRelationship;
+import com.padaks.todaktodak.childparentsrelationship.domain.ChildParentsRelationship;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

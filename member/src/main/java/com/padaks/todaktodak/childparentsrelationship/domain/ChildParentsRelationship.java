@@ -1,4 +1,4 @@
-package com.padaks.todaktodak.relationship.domain;
+package com.padaks.todaktodak.childparentsrelationship.domain;
 
 import com.padaks.todaktodak.child.domain.Child;
 import com.padaks.todaktodak.member.domain.Member;

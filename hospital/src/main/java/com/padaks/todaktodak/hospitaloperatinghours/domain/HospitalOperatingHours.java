@@ -21,15 +21,11 @@ public class HospitalOperatingHours extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private DayOfHoliday dayOfHoliday;
-
+    private DayOfHoliday dayOfWeek;
     private LocalTime openTime;
     private LocalTime closeTime;
-
     private LocalTime breakStart;
     private LocalTime breakEnd;
-
     @OneToOne
     @JoinColumn(name = "hospital_id")
     private Hospital hospital;
