@@ -23,8 +23,6 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_id")
     private Long id;
     @Column(unique = true)
-    private Long familyId;
-    @Column(unique = true)
     private String memberEmail;
     @Column
     private String profileImgUrl;

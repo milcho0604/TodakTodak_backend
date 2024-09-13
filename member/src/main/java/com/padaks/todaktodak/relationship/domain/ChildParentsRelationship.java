@@ -20,12 +20,14 @@ public class ChildParentsRelationship {
     @Column(name = "relationship_id")
     private Long id;
 
+//    foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
+//    위 명령어는 외래키를 테이블 생성 한 후에 주입을 하겠다.
     @ManyToOne
-    @JoinColumn(name = "child_id")
+    @JoinColumn(name = "child_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Child child;
 
     @ManyToOne
-    @JoinColumn(name = "parents_id")
+    @JoinColumn(name = "parents_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Member member;
 
 }
