@@ -30,8 +30,6 @@ public class Doctor extends BaseTimeEntity {
 
     private String bio;
 
-    private int currentWaitingCount;
-
     @OneToOne(mappedBy = "doctor", cascade = CascadeType.ALL)
     private DoctorOperatingHours DoctorOperatingHours;
 

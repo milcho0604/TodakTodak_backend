@@ -24,16 +24,13 @@ public class Comment extends BaseTimeEntity{
     @Column(name = "comment_id")
     private Long id;
     @Column(nullable = false)
-    private String memberEmail;
+    private String doctorEmail;
     @Column(nullable = false)
     private String content;
 
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
-
-    @OneToMany(mappedBy = "comment")
-    private List<Report> commentList = new ArrayList<>();
 
     @OneToOne(mappedBy = "comment")
     private Notification notification;

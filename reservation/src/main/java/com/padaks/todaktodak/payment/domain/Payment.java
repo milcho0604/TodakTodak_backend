@@ -1,6 +1,7 @@
 package com.padaks.todaktodak.payment.domain;
 
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
+import com.padaks.todaktodak.medicalchart.domain.MedicalChart;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -50,10 +51,8 @@ public class Payment extends BaseTimeEntity {
     @Column
     private String responseDetails;
 
-    @Column
-    private int price;
-
     @OneToOne
-    @JoinColumn(name = "reservation_id")
-    private Reservation reservation;
+    @JoinColumn(name = "medical_record_id")
+    private MedicalChart medicalChart;
+
 }

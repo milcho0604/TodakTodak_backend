@@ -17,19 +17,18 @@ import javax.persistence.*;
 @Getter
 public class Review extends BaseTimeEntity {
 
-    @EmbeddedId
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "review_id")
-    private ReviewId id;
-
-    @MapsId("reservationId")
-    @ManyToOne
-    @JoinColumn(name = "reservation_id")
-    private Reservation reservation;
-
+    private Long id;
     @Column(nullable = false)
     @Check(constraints = "value BETWEEN 1 AND 5")
     private int rating;
     @Column
     private String contents;
+
+    @OneToOne
+    @JoinColumn(name = "reservation_id")
+    private Reservation reservation;
 
 }
