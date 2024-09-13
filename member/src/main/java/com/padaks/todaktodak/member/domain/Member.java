@@ -1,7 +1,7 @@
 package com.padaks.todaktodak.member.domain;
 
-import com.padaks.todaktodak.child.domain.Child;
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
+import com.padaks.todaktodak.relationship.domain.ChildParentsRelationship;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -23,8 +22,6 @@ public class Member extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
-    @Column(unique = true)
-    private Long familyId;
     @Column(unique = true)
     private String memberEmail;
     @Column
@@ -46,6 +43,6 @@ public class Member extends BaseTimeEntity {
     private Role role;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<Child> childList = new ArrayList<>();
+    private List<ChildParentsRelationship> childParentsRelationshipList;
 
 }

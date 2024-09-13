@@ -19,6 +19,14 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Getter
+@Table(
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "constraintName",
+                        columnNames={"doctorEmail", "reservationDate", "reservationTime"}
+                )
+        }
+)
 public class Reservation extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
