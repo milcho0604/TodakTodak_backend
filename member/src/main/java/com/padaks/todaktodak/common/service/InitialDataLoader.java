@@ -23,9 +23,9 @@ public class InitialDataLoader implements CommandLineRunner {
     public void run(String... args) throws Exception{
         if(memberRepository.findByMemberEmail("admin@test.com").isEmpty()){
             memberService.adminCreate(AdminSaveDto.builder()
-                            .memberEmail(passwordEncoder.encode("todak@test.com"))
+                            .memberEmail("todak@test.com")
                             .name("Admin")
-                            .password("12341234")
+                            .password(passwordEncoder.encode("12341234"))
                             .phoneNumber("010-1111-2222")
                             .role(Role.TodakAdmin)
                     .build());
