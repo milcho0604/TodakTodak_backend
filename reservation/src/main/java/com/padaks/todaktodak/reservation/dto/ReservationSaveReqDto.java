@@ -1,5 +1,6 @@
 package com.padaks.todaktodak.reservation.dto;
 
+import com.padaks.todaktodak.reservation.domain.MedicalItem;
 import com.padaks.todaktodak.reservation.domain.ReserveType;
 import com.padaks.todaktodak.reservation.domain.Status;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,8 @@ public class ReservationSaveReqDto {
     private LocalDate reservationDate;
     private LocalTime reservationTime;
     private boolean isUntact;
+    private MedicalItem medicalItem;
     private Status status;
+    private String field;
     private String message;
 }

@@ -46,17 +46,10 @@ public class Reservation extends BaseTimeEntity {
     private String doctorEmail;
 
     private ReserveType reservationType;
-    @Column(nullable = false)
     private LocalDate reservationDate;
-    @Column(nullable = false)
     private LocalTime reservationTime;
     private boolean isUntact;
     private Status status;
-
-    public enum MedicalItem{
-        일반진료,
-        예방접종
-    }
     private MedicalItem medicalItem;
 //    증상
     private String field;

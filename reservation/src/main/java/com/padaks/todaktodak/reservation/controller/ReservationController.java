@@ -22,4 +22,18 @@ public class ReservationController {
         Reservation reservation = reservationService.scheduleReservation(dto);
         return new ResponseEntity<>(reservation, HttpStatus.OK);
     }
+
+    @GetMapping("/immediate")
+    public ResponseEntity<?> treatImmediateReservation(@RequestBody ReservationSaveReqDto dto){
+        Reservation reservation = reservationService.immediateReservation(dto);
+        return new ResponseEntity<>(reservation, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/cancel/{id}")
+    public ResponseEntity<?> cancelledReservation(@PathVariable Long id){
+        reservationService.cancelledReservation(id);
+
+        return new ResponseEntity<>(null, HttpStatus.OK);
+    }
+
 }
