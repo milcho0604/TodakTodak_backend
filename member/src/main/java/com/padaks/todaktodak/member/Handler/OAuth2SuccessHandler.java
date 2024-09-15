@@ -30,24 +30,24 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             , Authentication authentication) throws IOException {
 
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-        String email = oAuth2User.getAttribute("email");
-        if (email == null) {
+        String memberEmail = oAuth2User.getAttribute("memberEmail");
+        if (memberEmail == null) {
             Map<String, Object> kakaoAccount = oAuth2User.getAttribute("kakao_account");
             if (kakaoAccount != null && kakaoAccount.containsKey("email")) {
-                email = (String) kakaoAccount.get("email");
+                memberEmail = (String) kakaoAccount.get("email");
             }
-            if (email == null) {
+            if (memberEmail == null) {
                 Object naverObject = oAuth2User.getAttributes().get("response");
                 Map<String, Object> naverAccount = (Map<String, Object>) naverObject;
                 if (naverAccount != null && naverAccount.containsKey("email")) {
-                    email = (String) naverAccount.get("email");
+                    memberEmail = (String) naverAccount.get("email");
                 }
             }
         }
 
         System.out.println("핸들러입니다!!! 넘오올까요?");
-        System.out.println(email);
-        Member member = memberRepository.findByMemberEmail(email)
+        System.out.println(memberEmail);
+        Member member = memberRepository.findByMemberEmail(memberEmail)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 카카오 회원입니다."));
 
         if (member.getDeletedTimeAt() != null){
@@ -67,7 +67,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         Long getMemberId = member.getId();
 
-        String token = jwtTokenprovider.kakaoToken(email, getMemberId,"MEMBER");
+        String token = jwtTokenprovider.kakaoToken(memberEmail, getMemberId,"MEMBER");
         System.out.println("토큰은!!!!" + token);
 
         // 리다이렉트 URL 설정 (아래 먼저는 로컬호스트 환경에서, 두번째는 프론트 환경에서)
