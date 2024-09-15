@@ -29,6 +29,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JavaEmailService emailService;
     private final RedisService redisService;
+    private final DtoMapper dtoMapper;
 
     // 간편하게 멤버 객체를 찾기 위한 findByMemberEmail
     public Member findByMemberEmail(String email) {
@@ -56,7 +57,7 @@ public class MemberService {
             throw new IllegalStateException("탈퇴한 회원입니다.");
         }
 
-        return jwtTokenprovider.createToken(member.getEmail(), member.getRole().name(), member.getId());
+        return jwtTokenprovider.createToken(member.getMemberEmail(), member.getRole().name(), member.getId());
     }
 
     // 회원가입 검증 로직

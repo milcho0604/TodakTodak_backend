@@ -45,7 +45,7 @@ public class MemberAuthService {
     }
 
     private void checkDuplicateEmail(String email) {
-        if (memberRepository.findByEmail(email).isPresent()) {
+        if (memberRepository.findByMemberEmail(email).isPresent()) {
             throw new IllegalArgumentException("이미 등록된 이메일입니다.");
         }
     }

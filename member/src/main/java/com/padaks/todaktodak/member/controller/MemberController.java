@@ -6,6 +6,8 @@ import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.dto.*;
 import com.padaks.todaktodak.member.service.MemberAuthService;
 import com.padaks.todaktodak.member.service.MemberService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,19 +22,14 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/member")
 @RequiredArgsConstructor
+@RequestMapping("/member")
 @Slf4j
 public class MemberController {
 
     private final MemberService memberService;
     private final MemberAuthService memberAuthService;
 
-    @Autowired
-    public MemberController(MemberService memberService, MemberAuthService memberAuthService) {
-        this.memberService = memberService;
-        this.memberAuthService = memberAuthService;
-    }
 
     // 회원가입
     @PostMapping("/create")
@@ -109,7 +106,7 @@ public class MemberController {
     public ResponseEntity<?> editMemberInfo(@RequestBody MemberUpdateReqDto updateReqDto) {
         try {
             String email = SecurityContextHolder.getContext().getAuthentication().getName();
-            Member member = memberService.findByEmail(email);
+            Member member = memberService.findByMemberEmail(email);
             memberService.updateMember(member, updateReqDto);
             return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "회원 정보를 수정하였습니다.", null));
         } catch (Exception e) {

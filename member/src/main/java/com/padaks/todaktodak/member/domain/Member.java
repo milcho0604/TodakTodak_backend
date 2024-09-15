@@ -7,6 +7,7 @@ import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -44,7 +45,7 @@ public class Member extends BaseTimeEntity {
     @Builder
     public Member(String name, String email, Role role) {
         this.name = name;
-        this.email = email;
+        this.memberEmail = email;
         this.role = role;
     }
 
