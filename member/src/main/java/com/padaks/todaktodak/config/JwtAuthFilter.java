@@ -1,6 +1,5 @@
 package com.padaks.todaktodak.config;
 
-import com.padaks.todaktodak.common.domain.DelYN;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.repository.MemberRepository;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -51,7 +50,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 Member member = memberRepository.findByEmail(email)
                         .orElse(null);
 
-                if (member == null || member.getEmail() == null || member.getDelYN().equals(DelYN.Y)) {
+                if (member == null || member.getEmail() == null || member.getDeletedTimeAt() != null) {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); 
                     response.getWriter().write("해당 계정은 영구 정지 당했습니다.");
                     return;

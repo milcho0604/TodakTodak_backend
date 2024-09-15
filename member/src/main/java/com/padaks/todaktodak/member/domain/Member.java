@@ -1,15 +1,11 @@
 package com.padaks.todaktodak.member.domain;
 
-import com.padaks.todaktodak.child.domain.Child;
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
-import com.padaks.todaktodak.common.domain.DelYN;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
 
 @Entity
 @NoArgsConstructor
@@ -45,7 +41,6 @@ public class Member extends BaseTimeEntity {
     @Column
     @Enumerated(EnumType.STRING)
     private Role role;
-    private DelYN delYN;
 
 //    @OneToMany(mappedBy = "Mid", cascade = CascadeType.ALL)
 //    private List<Child> childList;

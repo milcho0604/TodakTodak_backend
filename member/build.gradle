@@ -62,6 +62,10 @@ dependencies {
 	implementation 'org.springframework.security:spring-security-oauth2-client'
 	// 타임리프
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+	// java 이메일 라이브러리
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
 }
 
 ext {

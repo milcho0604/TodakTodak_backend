@@ -6,7 +6,6 @@ import com.padaks.todaktodak.member.dto.MemberUpdateReqDto;
 import com.padaks.todaktodak.member.dto.MemberLoginDto;
 import com.padaks.todaktodak.member.dto.MemberSaveReqDto;
 import com.padaks.todaktodak.member.repository.MemberRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,21 +14,25 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Random;
 
 @Service
 @Slf4j
 @Transactional
-@RequiredArgsConstructor
 public class MemberService {
     private MemberRepository memberRepository;
     private JwtTokenprovider jwtTokenprovider;
     private PasswordEncoder passwordEncoder;
+    private JavaEmailService emailService;
+    private RedisService redisService;
 
     @Autowired
-    public MemberService(MemberRepository memberRepository, JwtTokenprovider jwtTokenprovider, PasswordEncoder passwordEncoder) {
+    public MemberService(MemberRepository memberRepository, JwtTokenprovider jwtTokenprovider, PasswordEncoder passwordEncoder, JavaEmailService emailService, RedisService redisService) {
         this.memberRepository = memberRepository;
         this.jwtTokenprovider = jwtTokenprovider;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
+        this.redisService = redisService;
     }
 
     // 간편하게 멤버 객체를 찾기 위한 findByEmail
@@ -109,6 +112,28 @@ public class MemberService {
         member.deleteAccount();
         memberRepository.save(member);
     }
+
+    // java 라이브러리 메일 서비스
+    private String generateVerificationCode() {
+        Random random = new Random();
+        int code = random.nextInt(9999 - 1000 + 1) + 1000;
+        return String.valueOf(code);
+    }
+    // java 라이브러리 메일 서비스
+    public void sendVerificationEmail(String email) {
+        String code = generateVerificationCode();
+        redisService.saveVerificationCode(email, code);
+        emailService.sendSimpleMessage(email, "이메일 인증 코드", "인증 코드: " + code);
+    }
+    // java 라이브러리 메일 서비스
+    public boolean verifyEmail(String email, String code) {
+        if (redisService.verifyCode(email, code)) {
+            return true;
+        } else {
+            throw new RuntimeException("인증 코드가 유효하지 않습니다.");
+        }
+    }
+
 
 
 }

@@ -1,6 +1,5 @@
 package com.padaks.todaktodak.member.dto;
 
-import com.padaks.todaktodak.common.domain.DelYN;
 import com.padaks.todaktodak.member.domain.Address;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.domain.Role;
@@ -25,7 +24,6 @@ public class MemberSaveReqDto {
 
     @Builder.Default
     private Role role = Role.Member;
-    private DelYN delYN = DelYN.N;
 
     public Member toEntity(String password) {
         return Member.builder()
@@ -37,7 +35,6 @@ public class MemberSaveReqDto {
                 .ssn(this.ssn)
                 .address(this.address)
                 .role(this.role)
-                .delYN(this.delYN)
                 .build();
 
     }
