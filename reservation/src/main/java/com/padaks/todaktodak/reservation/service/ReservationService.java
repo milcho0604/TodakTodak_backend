@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
+
 @Service
 @Slf4j
 @Transactional
@@ -24,5 +26,20 @@ public class ReservationService {
         Reservation reservation = dtoMapper.toReservation(dto);
 
         return reservationRepository.save(reservation);
+    }
+
+//    당일 진료 예약 기능 구현.
+    public Reservation immediateReservation(ReservationSaveReqDto dto){
+        log.info("ReservationSErvice[immediateReservation] : 시작");
+        Reservation reservation = dtoMapper.toReservation(dto);
+        return reservationRepository.save(reservation);
+    }
+
+//    예약 취소 기능
+    public void cancelledReservation(Long id){
+        log.info("ReservationSErvice[cancelledRservation] : 시작");
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("해당 예약 내역 X "));
+        reservationRepository.delete(reservation);
     }
 }
