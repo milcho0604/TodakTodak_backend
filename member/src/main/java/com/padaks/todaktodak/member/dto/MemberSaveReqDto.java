@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MemberSaveReqDto {
     private String name;
-    private String email;
+    private String memberEmail;
     private String password;
     private String profileImgUrl;
     private String phoneNumber;
@@ -29,7 +29,7 @@ public class MemberSaveReqDto {
         return Member.builder()
                 .password(password)
                 .name(this.name)
-                .email(this.email)
+                .memberEmail(this.memberEmail)
                 .profileImgUrl(this.profileImgUrl)
                 .phoneNumber(this.phoneNumber)
                 .ssn(this.ssn)

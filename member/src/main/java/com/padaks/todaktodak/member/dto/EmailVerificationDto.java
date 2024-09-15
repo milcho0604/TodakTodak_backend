@@ -10,14 +10,14 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EmailVerificationDto implements Serializable {
-    private String email = "";
+    private String memberEmail = "";
     private String verificationToken = "";
     private String verificationNumber = "";
     private int attemptCount = 0;
     private boolean isDone = false;
 
-    public EmailVerificationDto(String email, String verificationToken, String verificationNumber) {
-        this.email = email;
+    public EmailVerificationDto(String memberEmail, String verificationToken, String verificationNumber) {
+        this.memberEmail = memberEmail;
         this.verificationToken = verificationToken;
         this.verificationNumber = verificationNumber;
     }
