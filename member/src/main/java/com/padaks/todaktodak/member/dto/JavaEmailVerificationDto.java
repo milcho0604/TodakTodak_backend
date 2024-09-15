@@ -6,6 +6,6 @@ import lombok.Getter;
 @Getter
 @Builder
 public class JavaEmailVerificationDto {
-    private String email;
+    private String memberEmail;
     private String code;
 }

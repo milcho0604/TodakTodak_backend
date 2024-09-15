@@ -23,20 +23,20 @@ public class MemberAuthService {
      * 이메일 인증번호 발송
      */
     public EmailVerificationDtoResponse sendSignUpVerificationEmail(SignUpVerificationSendEmailDtoRequest request) {
-        checkDuplicateEmail(request.getEmail()); // 이메일 중복 검사
+        checkDuplicateEmail(request.getMemberEmail()); // 이메일 중복 검사
 
         String verificationToken = generateVerificationToken();
         String verificationNumber = generateVerificationNumber();
 
         EmailVerificationDto emailVerificationDto = new EmailVerificationDto(
-                request.getEmail(),
+                request.getMemberEmail(),
                 verificationToken,
                 verificationNumber
         );
         emailVerificationRepositoryRedis.save("SignUp", emailVerificationDto, 30); // 30분 타임아웃
 
         mailUtil.send(new SenderDto(
-                Collections.singletonList(request.getEmail()), // 수정된 SenderDto에 맞춰 변경
+                Collections.singletonList(request.getMemberEmail()), // 수정된 SenderDto에 맞춰 변경
                 "회원가입 인증번호 안내",
                 String.format("회원가입을 위해서 아래 인증코드를 입력해주세요.<br>인증번호는 <b>%s</b> 입니다.", verificationNumber)
         ));
@@ -44,8 +44,8 @@ public class MemberAuthService {
         return emailVerificationDto.toResponse();
     }
 
-    private void checkDuplicateEmail(String email) {
-        if (memberRepository.findByMemberEmail(email).isPresent()) {
+    private void checkDuplicateEmail(String memberEmail) {
+        if (memberRepository.findByMemberEmail(memberEmail).isPresent()) {
             throw new IllegalArgumentException("이미 등록된 이메일입니다.");
         }
     }

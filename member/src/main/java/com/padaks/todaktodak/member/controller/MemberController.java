@@ -138,14 +138,14 @@ public class MemberController {
     // java 라이브러리 메일 서비스 : 인증 코드 전송
     @PostMapping("/send-verification-code")
     public ResponseEntity<?> sendVerificationCode(@RequestBody EmailVerificationDto verificationDto) {
-        memberService.sendVerificationEmail(verificationDto.getEmail());
+        memberService.sendVerificationEmail(verificationDto.getMemberEmail());
         return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "인증 코드 전송에 성공하였습니다.", null));
     }
     // java 라이브러리 메일 서비스 : 인증 코드 확인
     @PostMapping("/verify-email")
     public ResponseEntity<?> verifyEmail(@RequestBody JavaEmailVerificationDto verificationDto) {
         try {
-            boolean isVerified = memberService.verifyEmail(verificationDto.getEmail(), verificationDto.getCode());
+            boolean isVerified = memberService.verifyEmail(verificationDto.getMemberEmail(), verificationDto.getCode());
             if (isVerified) {
                 return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "이메일 인증에 성공하였습니다.", isVerified));
             } else {

@@ -46,7 +46,7 @@ public class MemberService {
 
     // 로그인
     public String login(MemberLoginDto loginDto) {
-        Member member = memberRepository.findByMemberEmail(loginDto.getEmail())
+        Member member = memberRepository.findByMemberEmail(loginDto.getMemberEmail())
                 .orElseThrow(() -> new RuntimeException("잘못된 이메일/비밀번호 입니다."));
 
         if (!passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {
@@ -66,7 +66,7 @@ public class MemberService {
             throw new RuntimeException("비밀번호는 8자 이상이어야 합니다.");
         }
 
-        if (memberRepository.existsByEmail(saveReqDto.getEmail())) {
+        if (memberRepository.existsByMemberEmail(saveReqDto.getMemberEmail())) {
             throw new RuntimeException("이미 사용중인 이메일 입니다.");
         }
     }
