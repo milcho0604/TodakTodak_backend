@@ -56,4 +56,10 @@ public class ChildService {
         }
         return childList;
     }
+
+    public void deleteChild(Long id) {
+        Child child = childRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 자녀입니다"));
+        child.delete();
+
+    }
 }

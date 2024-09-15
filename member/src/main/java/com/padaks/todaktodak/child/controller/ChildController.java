@@ -37,4 +37,10 @@ public class ChildController {
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK,"자녀 수정 성공",null),HttpStatus.OK);
     }
 
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<CommonResDto> updateChild(@PathVariable Long id){
+        childService.deleteChild(id);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK,"자녀 삭제 성공",null),HttpStatus.OK);
+    }
+
 }
