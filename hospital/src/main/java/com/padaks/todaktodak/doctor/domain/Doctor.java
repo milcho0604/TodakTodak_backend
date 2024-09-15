@@ -24,20 +24,18 @@ public class Doctor extends BaseTimeEntity {
     private String name;
 
     @Column(nullable = false, unique = true)
-    private String email;
+    private String doctorEmail;
 
     private String profileImgUrl;
 
     private String bio;
 
-    private int currentWaitingCount;
-
     // 근무 시간
-    @OneToOne(mappedBy = "Did", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "doctor", cascade = CascadeType.ALL)
     private DoctorOperatingHours DoctorOperatingHours;
 
 
     @ManyToOne
     @JoinColumn(name = "hospital_id")
-    private Hospital Hid;
+    private Hospital hospital;
 }

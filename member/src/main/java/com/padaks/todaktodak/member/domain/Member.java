@@ -2,6 +2,7 @@ package com.padaks.todaktodak.member.domain;
 
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
 import lombok.*;
+import com.padaks.todaktodak.childparentsrelationship.domain.ChildParentsRelationship;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
@@ -22,7 +23,7 @@ public class Member extends BaseTimeEntity {
 //    private Long familyId;
     private String name;
     @Column(nullable = false, unique = true)
-    private String email;
+    private String memberEmail;
     //    @Column(nullable = false)
     private String password;
     @Column
@@ -36,17 +37,9 @@ public class Member extends BaseTimeEntity {
     private Address address;
     @ColumnDefault("0")
     private int noShowCount;
-    @ColumnDefault("0")
-    private int reportCount;
     @Column
     @Enumerated(EnumType.STRING)
     private Role role;
-
-//    @OneToMany(mappedBy = "Mid", cascade = CascadeType.ALL)
-//    private List<Child> childList;
-
-
-
 
     @Builder
     public Member(String name, String email, Role role) {
@@ -82,5 +75,7 @@ public class Member extends BaseTimeEntity {
     public void deleteAccount() {
         this.setDeletedTimeAt(LocalDateTime.now());  // 현재 시간을 삭제 시간으로 설정
     }
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<ChildParentsRelationship> childParentsRelationshipList;
 
 }

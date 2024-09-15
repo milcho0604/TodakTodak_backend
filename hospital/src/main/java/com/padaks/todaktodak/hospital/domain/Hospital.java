@@ -1,9 +1,9 @@
 package com.padaks.todaktodak.hospital.domain;
 
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
+import com.padaks.todaktodak.common.enumdir.Option;
 import com.padaks.todaktodak.doctor.domain.Doctor;
 import com.padaks.todaktodak.hospitaloperatinghours.domain.HospitalOperatingHours;
-import com.padaks.todaktodak.hospitalreview.domain.HospitalReview;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,6 +34,8 @@ public class Hospital extends BaseTimeEntity {
     @Column()
     @ColumnDefault("0")
     private int doctorCount;
+    @Column
+    private Option isOperating;
 //    병원 소개
     private String description;
 //    병원 공지
@@ -42,9 +44,6 @@ public class Hospital extends BaseTimeEntity {
     private BigDecimal latitude;
     @Column(precision = 9, scale = 6)
     private BigDecimal longitude;
-//    실시간 병원 총 대기열 수
-    @ColumnDefault("0")
-    private int currentWaitingCount;
 //    사업자 정보
     private String businessRegistrationInfo;
 //    대표자 이름
@@ -52,13 +51,9 @@ public class Hospital extends BaseTimeEntity {
 //    대표자 핸드폰 번호
     private String representativePhoneNumber;
 
-    @OneToMany(mappedBy = "Hid")
+    @OneToMany(mappedBy = "hospital", cascade = CascadeType.ALL)
     private List<Doctor> doctor;
 
-    @OneToOne(mappedBy = "Hid", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "hospital", cascade = CascadeType.ALL)
     private HospitalOperatingHours hospitalOperatingHours;
-
-    @OneToOne(mappedBy = "Hid", cascade = CascadeType.ALL)
-    private HospitalReview hospitalReview;
-
 }

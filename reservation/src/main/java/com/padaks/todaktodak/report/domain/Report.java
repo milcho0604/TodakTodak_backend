@@ -32,9 +32,5 @@ public class Report extends BaseTimeEntity {
 
     @ManyToOne
     @JoinColumn(name = "post_id")
-    private Post Pid;
-
-    @ManyToOne
-    @JoinColumn(name = "comment_id")
-    private Comment Cid;
+    private Post post;
 }

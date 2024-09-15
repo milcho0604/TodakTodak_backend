@@ -1,13 +1,14 @@
 package com.padaks.todaktodak.child.domain;
 
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
-import com.padaks.todaktodak.member.domain.Member;
+import com.padaks.todaktodak.childparentsrelationship.domain.ChildParentsRelationship;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -25,7 +26,7 @@ public class Child extends BaseTimeEntity {
     @Column(nullable = false, unique = true)
     private String ssn;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member Mid;
+    @OneToMany(mappedBy = "child", cascade = CascadeType.ALL)
+    private List<ChildParentsRelationship> childParentsRelationshipList;
+
 }

@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -32,10 +33,10 @@ public class Post extends BaseTimeEntity {
     @ColumnDefault("0")
     private int likeCount;
 
-    @OneToMany(mappedBy = "Pid", cascade = CascadeType.ALL)
-    private List<Comment> commentList;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<Comment> commentList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "Pid", cascade = CascadeType.ALL)
-    private List<Report> reportList;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<Report> reportList = new ArrayList<>();
 
 }

@@ -5,8 +5,11 @@ import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.dto.MemberUpdateReqDto;
 import com.padaks.todaktodak.member.dto.MemberLoginDto;
 import com.padaks.todaktodak.member.dto.MemberSaveReqDto;
+import com.padaks.todaktodak.member.dto.AdminSaveDto;
+import com.padaks.todaktodak.member.dto.DtoMapper;
 import com.padaks.todaktodak.member.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,25 +22,17 @@ import java.util.Random;
 @Service
 @Slf4j
 @Transactional
+@RequiredArgsConstructor
 public class MemberService {
-    private MemberRepository memberRepository;
-    private JwtTokenprovider jwtTokenprovider;
-    private PasswordEncoder passwordEncoder;
-    private JavaEmailService emailService;
-    private RedisService redisService;
+    private final MemberRepository memberRepository;
+    private final JwtTokenprovider jwtTokenprovider;
+    private final PasswordEncoder passwordEncoder;
+    private final JavaEmailService emailService;
+    private final RedisService redisService;
 
-    @Autowired
-    public MemberService(MemberRepository memberRepository, JwtTokenprovider jwtTokenprovider, PasswordEncoder passwordEncoder, JavaEmailService emailService, RedisService redisService) {
-        this.memberRepository = memberRepository;
-        this.jwtTokenprovider = jwtTokenprovider;
-        this.passwordEncoder = passwordEncoder;
-        this.emailService = emailService;
-        this.redisService = redisService;
-    }
-
-    // 간편하게 멤버 객체를 찾기 위한 findByEmail
-    public Member findByEmail(String email) {
-        return memberRepository.findByEmail(email)
+    // 간편하게 멤버 객체를 찾기 위한 findByMemberEmail
+    public Member findByMemberEmail(String email) {
+        return memberRepository.findByMemberEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다.11"));
     }
 
@@ -50,7 +45,7 @@ public class MemberService {
 
     // 로그인
     public String login(MemberLoginDto loginDto) {
-        Member member = memberRepository.findByEmail(loginDto.getEmail())
+        Member member = memberRepository.findByMemberEmail(loginDto.getEmail())
                 .orElseThrow(() -> new RuntimeException("잘못된 이메일/비밀번호 입니다."));
 
         if (!passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {
@@ -92,7 +87,7 @@ public class MemberService {
     // 회원 정보 수정
     public void updateMember(Member member, MemberUpdateReqDto editReqDto){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        Member savedMember = memberRepository.findByEmail(email)
+        Member savedMember = memberRepository.findByMemberEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다"));
         if (editReqDto.getPassword() != null && !editReqDto.getPassword().isEmpty()) {
             validatePassword(editReqDto.getPassword(), editReqDto.getConfirmPassword(), member.getPassword());
@@ -107,7 +102,7 @@ public class MemberService {
 
     // 회원 탈퇴
     public void deleteAccount(String email) {
-        Member member = memberRepository.findByEmail(email)
+        Member member = memberRepository.findByMemberEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 사용자 정보입니다."+ email));
         member.deleteAccount();
         memberRepository.save(member);
@@ -134,6 +129,11 @@ public class MemberService {
         }
     }
 
-
-
+//    유저 회원가입은 소셜만 되어있기 때문에 TodakAdmin만 따로 initialDataLoader로 선언해 주었음.
+    public void adminCreate(AdminSaveDto dto){
+        log.info("MemberService[adminCreate] 실행 ");
+//        DtoMapper의 toMember 를 사용하여 member에 자동으로 mapping 해준다.
+        Member member = dtoMapper.toMember(dto);
+        memberRepository.save(member);
+    }
 }
