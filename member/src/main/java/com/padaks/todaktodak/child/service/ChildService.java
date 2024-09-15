@@ -5,7 +5,6 @@ import com.padaks.todaktodak.child.dto.ChildResDto;
 import com.padaks.todaktodak.child.dto.ChildUpdateReqDto;
 import com.padaks.todaktodak.child.repository.ChildRepository;
 import com.padaks.todaktodak.childparentsrelationship.domain.ChildParentsRelationship;
-import com.padaks.todaktodak.childparentsrelationship.repository.ChildParentsRelationshipRepository;
 import com.padaks.todaktodak.childparentsrelationship.service.ChildParentsRelationshipService;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.repository.MemberRepository;
@@ -27,7 +26,6 @@ public class ChildService {
     private final ChildRepository childRepository;
     private final MemberRepository memberRepository;
     private final ChildParentsRelationshipService childParentsRelationshipService;
-    private final ChildParentsRelationshipRepository childParentsRelationshipRepository;
 
     public void createChild(String name, String ssn) {
         Child child = Child.builder()
@@ -50,7 +48,7 @@ public class ChildService {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Member member = memberRepository.findByMemberEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다"));
-        List<ChildParentsRelationship> childParentsRelationships = childParentsRelationshipRepository.findByMember(member);
+        List<ChildParentsRelationship> childParentsRelationships = member.getChildParentsRelationshipList();
         List<ChildResDto> childList = new ArrayList<>();
         for (ChildParentsRelationship childParentsRelationship : childParentsRelationships) {
             Child child = childParentsRelationship.getChild();
