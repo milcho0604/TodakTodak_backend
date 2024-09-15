@@ -57,10 +57,10 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             String uuidPass = String.valueOf(UUID.randomUUID());
             member.updatePass(uuidPass);
         }
-//        if (member.getAddress() == null){
-//            String address = "임시주소입니다. 변경해주세요";
-//            member.updateAddress(address);
-//        }
+        if (member.getAddress() == null){
+            String address = "임시주소입니다. 변경해주세요";
+            member.updateAddress(address);
+        }
         memberRepository.save(member);
 
         return new DefaultOAuth2User(
@@ -75,18 +75,4 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 .orElse(attributes.toEntity());
         return memberRepository.save(member);
     }
-//
-//    private User kakaoSaveOrUpdate(OAuthAttributes attributes) {
-//        User user = userRepository.findByEmail(attributes.getEmail())
-//                .map(entity -> entity.update(attributes.getName()))
-//                .orElse(attributes.toEntity());
-//
-//        return userRepository.save(user);
-//    }
-//    private User naverSaveOrUpdate(OAuthAttributes attributes){
-//        User user = userRepository.findByEmail(attributes.getEmail())
-//                .map(entity -> entity.update(attributes.getName()))
-//                .orElse(attributes.toEntity());
-//        return  userRepository.save(user);
-//    }
 }

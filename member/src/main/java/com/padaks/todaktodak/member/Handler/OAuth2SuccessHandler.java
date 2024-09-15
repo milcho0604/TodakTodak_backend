@@ -1,4 +1,4 @@
-package com.padaks.todaktodak.Handler;
+package com.padaks.todaktodak.member.Handler;
 
 import com.padaks.todaktodak.config.JwtTokenprovider;
 import com.padaks.todaktodak.member.domain.Member;
@@ -48,11 +48,11 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         System.out.println("핸들러입니다!!! 넘오올까요?");
         System.out.println(email);
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 소셜 회원입니다."));
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 카카오 회원입니다."));
 
-//        if (delUserRepository.existsByEmail(user.getEmail())) {
-//            throw new RuntimeException("영구 정지된 계정입니다.");
-//        }
+        if (member.getDeletedTimeAt() != null){
+            throw new IllegalStateException("탈퇴한 회원입니다.");
+        }
 
 //        if (member.getReportCount() >= 5) {
 //            member = member.deleteEmail(); // 이메일 삭제
@@ -66,11 +66,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 //        }
 
         Long getMemberId = member.getId();
-//        Long userId = getUserId;
-
-//        String userIdString = oAuth2User.getAttribute("sub");
-//        Long userId = userIdString != null ? Long.valueOf(userIdString) : null;
-
 
         String token = jwtTokenprovider.kakaoToken(email, getMemberId,"MEMBER");
         System.out.println("토큰은!!!!" + token);

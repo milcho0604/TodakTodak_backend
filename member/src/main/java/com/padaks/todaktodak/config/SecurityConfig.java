@@ -1,9 +1,9 @@
 package com.padaks.todaktodak.config;
 
-import com.padaks.todaktodak.Handler.OAuth2SuccessHandler;
+import com.padaks.todaktodak.member.Handler.OAuth2SuccessHandler;
 import com.padaks.todaktodak.member.repository.MemberRepository;
 import com.padaks.todaktodak.member.service.CustomOAuth2UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,6 +16,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
+
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtTokenprovider jwtTokenProvider;
@@ -23,19 +25,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final MemberRepository memberRepository;
-
-    @Autowired
-    public SecurityConfig(JwtTokenprovider jwtTokenProvider,
-                          UserDetailsService userDetailsService,
-                          CustomOAuth2UserService customOAuth2UserService,
-                          OAuth2SuccessHandler oAuth2SuccessHandler,
-                          MemberRepository memberRepository) {
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.userDetailsService = userDetailsService;
-        this.customOAuth2UserService = customOAuth2UserService;
-        this.oAuth2SuccessHandler = oAuth2SuccessHandler;
-        this.memberRepository = memberRepository;
-    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
