@@ -1,38 +1,27 @@
 package com.padaks.todaktodak.reservation.domain;
 
 import com.padaks.todaktodak.charroom.domain.ChatRoom;
-import com.padaks.todaktodak.common.domain.BaseTimeEntity;
 import com.padaks.todaktodak.medicalchart.domain.MedicalChart;
 import com.padaks.todaktodak.notification.domain.Notification;
 import com.padaks.todaktodak.review.domain.Review;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-@Getter
-@Table(
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        name = "constraintName",
-                        columnNames={"doctorEmail", "reservationDate", "reservationTime"}
-                )
-        }
-)
-public class Reservation extends BaseTimeEntity {
+@Data
+public class ReservationHistory {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "reservation_id")
+    @Column(name = "reservation_history_id")
     private Long id;
 
     @Column(nullable = false)
@@ -43,7 +32,6 @@ public class Reservation extends BaseTimeEntity {
     private Long hospitalId;
     @Column(nullable = false)
     private String doctorEmail;
-
     @Enumerated(EnumType.STRING)
     private ReserveType reservationType;
     private LocalDate reservationDate;
@@ -53,19 +41,10 @@ public class Reservation extends BaseTimeEntity {
     private Status status;
     @Enumerated(EnumType.STRING)
     private MedicalItem medicalItem;
-//    증상
+    //    증상
     private String field;
     private String message;
 
-    @OneToMany(mappedBy = "reservation")
-    private List<Notification> notificationList = new ArrayList<>();
-
-    @OneToOne(mappedBy = "reservation")
-    private Review review;
-
-    @OneToOne(mappedBy = "reservation")
-    private ChatRoom chatRoom;
-
-    @OneToOne(mappedBy = "reservation")
-    private MedicalChart medicalChart;
+    @CreationTimestamp
+    private LocalDateTime reservationDeletedTime;
 }

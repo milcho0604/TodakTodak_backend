@@ -35,6 +35,7 @@ public class Hospital extends BaseTimeEntity {
     @ColumnDefault("0")
     private int doctorCount;
     @Column
+    @Enumerated(EnumType.STRING)
     private Option isOperating;
 //    병원 소개
     private String description;

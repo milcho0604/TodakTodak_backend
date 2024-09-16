@@ -21,7 +21,7 @@ public class InitialDataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception{
-        if(memberRepository.findByMemberEmail("admin@test.com").isEmpty()){
+        if(memberRepository.findByMemberEmail("todak@test.com").isEmpty()){
             memberService.adminCreate(AdminSaveDto.builder()
                             .memberEmail("todak@test.com")
                             .name("Admin")
