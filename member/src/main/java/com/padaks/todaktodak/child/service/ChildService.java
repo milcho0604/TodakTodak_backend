@@ -2,6 +2,7 @@ package com.padaks.todaktodak.child.service;
 
 import com.padaks.todaktodak.child.domain.Child;
 import com.padaks.todaktodak.child.dto.ChildResDto;
+import com.padaks.todaktodak.child.dto.ChildShareReqDto;
 import com.padaks.todaktodak.child.dto.ChildUpdateReqDto;
 import com.padaks.todaktodak.child.repository.ChildRepository;
 import com.padaks.todaktodak.childparentsrelationship.domain.ChildParentsRelationship;
@@ -61,5 +62,12 @@ public class ChildService {
         Child child = childRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 자녀입니다"));
         child.delete();
 
+    }
+    // 자녀 공유 기능
+    public void shareChild(ChildShareReqDto dto) {
+        Child child = childRepository.findById(dto.getChildId()).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 자녀입니다"));
+        Member shared = memberRepository.findById(dto.getSharedId())
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다"));
+        childParentsRelationshipService.createRelationship(child, shared);
     }
 }

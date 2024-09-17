@@ -2,6 +2,7 @@ package com.padaks.todaktodak.child.controller;
 
 import com.padaks.todaktodak.child.dto.ChildRegisterReqDto;
 import com.padaks.todaktodak.child.dto.ChildResDto;
+import com.padaks.todaktodak.child.dto.ChildShareReqDto;
 import com.padaks.todaktodak.child.dto.ChildUpdateReqDto;
 import com.padaks.todaktodak.child.service.ChildService;
 import com.padaks.todaktodak.common.dto.CommonResDto;
@@ -43,4 +44,9 @@ public class ChildController {
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK,"자녀 삭제 성공",null),HttpStatus.OK);
     }
 
+    @PostMapping("/share")
+    public ResponseEntity<CommonResDto> shareChild(@RequestBody ChildShareReqDto dto){
+        childService.shareChild(dto);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK,"자녀 공유 성공",null),HttpStatus.OK);
+    }
 }
