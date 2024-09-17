@@ -3,6 +3,7 @@ package com.padaks.todaktodak.hospital.domain;
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
 import com.padaks.todaktodak.common.enumdir.Option;
 import com.padaks.todaktodak.doctor.domain.Doctor;
+import com.padaks.todaktodak.hospital.dto.HospitalDTO.HospitalUpdateReqDto;
 import com.padaks.todaktodak.hospitaloperatinghours.domain.HospitalOperatingHours;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -60,8 +61,22 @@ public class Hospital extends BaseTimeEntity {
     private List<HospitalOperatingHours> hospitalOperatingHours;
 
 
+    //== Custom methods ==//
     // 병원 이미지 URL 업데이트
     public void updateHospitalImageUrl(String hospitalImageUrl) {
         this.hospitalImageUrl = hospitalImageUrl;
+    }
+
+    public void updateHospitalInfo(HospitalUpdateReqDto dto){
+        this.name = dto.getName();
+        this.address = dto.getAddress();
+        this.phoneNumber = dto.getPhoneNumber();
+        this.description = dto.getDescription();
+        this.notice = dto.getNotice();
+        this.latitude = dto.getLatitude();
+        this.longitude = dto.getLongitude();
+        this.businessRegistrationInfo = dto.getBusinessRegistrationInfo();
+        this.representativeName = dto.getRepresentativeName();
+        this.representativePhoneNumber = dto.getRepresentativePhoneNumber();
     }
 }
