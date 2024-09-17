@@ -28,6 +28,7 @@ public class DoctorOperatingHours extends BaseTimeEntity {
     private DayOfHoliday dayOfWeek;
     private LocalTime openTime;
     private LocalTime closeTime;
+    @Enumerated(EnumType.STRING)
     private DayOfHoliday untack;
 
 }

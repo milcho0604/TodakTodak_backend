@@ -4,29 +4,25 @@ import com.padaks.todaktodak.reservation.domain.MedicalItem;
 import com.padaks.todaktodak.reservation.domain.ReserveType;
 import com.padaks.todaktodak.reservation.domain.Status;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.swing.plaf.nimbus.State;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class ReservationSaveReqDto {
+@Data
+public class CheckListReservationReqDto {
+
+//    해당 member의 예약 no
+//    private Long no;
     private String memberEmail;
     private Long childId;
     private Long hospitalId;
-    private String doctorEmail;
-    private ReserveType reservationType;
+    private ReserveType reserveType;
+    private Status status;
+    private MedicalItem medicalItem;
     private LocalDate reservationDate;
     private LocalTime reservationTime;
-    private boolean isUntact;
-    private MedicalItem medicalItem;
-    private Status status;
-    private String field;
-    private String message;
 }
