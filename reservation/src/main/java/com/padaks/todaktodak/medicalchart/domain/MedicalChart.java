@@ -26,6 +26,7 @@ public class MedicalChart extends BaseTimeEntity {
         결제요청,
         결제완료
     }
+    @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
     @OneToOne
     @JoinColumn(name = "reservation_id")

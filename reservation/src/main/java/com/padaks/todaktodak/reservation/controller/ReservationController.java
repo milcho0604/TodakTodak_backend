@@ -37,7 +37,7 @@ public class ReservationController {
     public ResponseEntity<?> cancelledReservation(@PathVariable Long id){
         reservationService.cancelledReservation(id);
 
-        return new ResponseEntity<>(null, HttpStatus.OK);
+        return new ResponseEntity<>("취소 완료", HttpStatus.OK);
     }
 
 //    rest 에서 조회할 때는 @PathVariable 로 email 로 조회하겠음

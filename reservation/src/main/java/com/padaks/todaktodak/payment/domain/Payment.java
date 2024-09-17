@@ -36,6 +36,7 @@ public class Payment extends BaseTimeEntity {
     @Column
     private String merchantMemberId;
     @Column
+    @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
     @Column
     private String productName;
