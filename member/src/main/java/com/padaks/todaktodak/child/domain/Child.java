@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -29,4 +30,11 @@ public class Child extends BaseTimeEntity {
     @OneToMany(mappedBy = "child", cascade = CascadeType.ALL)
     private List<ChildParentsRelationship> childParentsRelationshipList;
 
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void delete() {
+        this.setDeletedTimeAt(LocalDateTime.now());
+    }
 }
