@@ -18,7 +18,7 @@ public class HospitalDetailResDto {
 
     private Long standby; // 병원 실시간 대기자 수
 
-    private String distance; // 내위치 ~ 병원 직선거리 
+    private String distance; // 내위치 ~ 병원 직선거리
 
     private String name; // 병원이름
 

@@ -37,4 +37,8 @@ public class HospitalController {
         return ResponseEntity.ok(hospitalDetail);
     }
 
+    // TODO : 병원-의사, 병원-운영시간 조회api
+
+
+
 }
