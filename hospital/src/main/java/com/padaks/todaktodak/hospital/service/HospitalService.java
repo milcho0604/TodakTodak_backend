@@ -1,7 +1,7 @@
 package com.padaks.todaktodak.hospital.service;
 
-import com.padaks.todaktodak.common.util.DistanceCalculator;
-import com.padaks.todaktodak.common.util.S3ClientFileUpload;
+import com.padaks.todaktodak.util.DistanceCalculator;
+import com.padaks.todaktodak.util.S3ClientFileUpload;
 import com.padaks.todaktodak.hospital.domain.Hospital;
 import com.padaks.todaktodak.common.dto.DtoMapper;
 import com.padaks.todaktodak.hospital.dto.HospitalDTO.HospitalDetailResDto;

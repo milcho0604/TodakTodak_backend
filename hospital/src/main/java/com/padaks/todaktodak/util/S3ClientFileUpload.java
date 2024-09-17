@@ -1,4 +1,4 @@
-package com.padaks.todaktodak.common.util;
+package com.padaks.todaktodak.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
