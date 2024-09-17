@@ -21,6 +21,7 @@ public class HospitalOperatingHours extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Enumerated(EnumType.STRING)
     private DayOfHoliday dayOfWeek;
     private LocalTime openTime;
     private LocalTime closeTime;
