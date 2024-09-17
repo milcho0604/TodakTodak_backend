@@ -5,9 +5,12 @@ import com.padaks.todaktodak.reservation.dto.ReservationSaveReqDto;
 import com.padaks.todaktodak.reservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/reservation")
@@ -36,4 +39,12 @@ public class ReservationController {
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
+//    rest 에서 조회할 때는 @PathVariable 로 email 로 조회하겠음
+//    추후에 email 로 해도 되고 id 로 해도 될 듯?
+    @GetMapping("/list/{email}")
+    public ResponseEntity<?> listReservation(@PathVariable String email, Pageable pageable){
+        List<?> dto = reservationService.checkListReservation(email, pageable);
+
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
 }

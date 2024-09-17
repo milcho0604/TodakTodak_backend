@@ -1,6 +1,7 @@
 package com.padaks.todaktodak.common.dto;
 
 import com.padaks.todaktodak.reservation.domain.Reservation;
+import com.padaks.todaktodak.reservation.dto.CheckListReservationReqDto;
 import com.padaks.todaktodak.reservation.dto.ReservationSaveReqDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -13,4 +14,6 @@ public interface DtoMapper {
     DtoMapper INSTANCE = Mappers.getMapper(DtoMapper.class);
 
     Reservation toReservation(ReservationSaveReqDto reservationSaveReqDto);
+
+    CheckListReservationReqDto toListReservation(Reservation reservation);
 }
