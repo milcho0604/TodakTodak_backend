@@ -1,6 +1,7 @@
 package com.padaks.todaktodak.reservation.controller;
 
 import com.padaks.todaktodak.reservation.domain.Reservation;
+import com.padaks.todaktodak.reservation.dto.CheckListReservationResDto;
 import com.padaks.todaktodak.reservation.dto.ReservationSaveReqDto;
 import com.padaks.todaktodak.reservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
@@ -41,9 +42,9 @@ public class ReservationController {
 
 //    rest 에서 조회할 때는 @PathVariable 로 email 로 조회하겠음
 //    추후에 email 로 해도 되고 id 로 해도 될 듯?
-    @GetMapping("/list/{email}")
-    public ResponseEntity<?> listReservation(@PathVariable String email, Pageable pageable){
-        List<?> dto = reservationService.checkListReservation(email, pageable);
+    @GetMapping("/list")
+    public ResponseEntity<?> listReservation(@RequestBody CheckListReservationResDto resDto, Pageable pageable){
+        List<?> dto = reservationService.checkListReservation(resDto, pageable);
 
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }

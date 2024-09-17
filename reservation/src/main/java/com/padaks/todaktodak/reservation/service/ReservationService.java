@@ -2,7 +2,9 @@ package com.padaks.todaktodak.reservation.service;
 
 import com.padaks.todaktodak.common.dto.DtoMapper;
 import com.padaks.todaktodak.reservation.domain.Reservation;
+import com.padaks.todaktodak.reservation.domain.ReserveType;
 import com.padaks.todaktodak.reservation.dto.CheckListReservationReqDto;
+import com.padaks.todaktodak.reservation.dto.CheckListReservationResDto;
 import com.padaks.todaktodak.reservation.dto.ReservationSaveReqDto;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
@@ -49,12 +51,23 @@ public class ReservationService {
     }
     
 //    예약 조회 기능
-    public List<?> checkListReservation(String email, Pageable pageable){
+    public List<?> checkListReservation(CheckListReservationResDto resDto, Pageable pageable){
 //        feign 으로 연결 되면 여기에 email 로 해당 user 찾는 로직이 들어갈 예정
         
 //        여기서 페이징 처리할 예정 -> 페이징 처리하면서 예약
 //        여기서 미리 예약 , 당일 예약 분기처리도 해줄 예정
-        Page<Reservation> reservationPage = reservationRepository.findByMemberEmail(pageable, email);
+        Page<Reservation> reservationPage;
+        if(resDto.getType().toString().equals("All")){
+            reservationPage = reservationRepository.findByMemberEmail(pageable, resDto.getEmail());
+        }
+        else{
+            reservationPage = reservationRepository
+                    .findByMemberEmailAndReservationType(
+                            pageable,
+                            resDto.getEmail(),
+                            dtoMapper.resTypeToReserveType(resDto.getType()));
+        }
+
 
         List<CheckListReservationReqDto> dto = reservationPage.stream()
                 .map(dtoMapper::toListReservation)
