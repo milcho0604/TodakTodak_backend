@@ -1,6 +1,7 @@
-package com.padaks.todaktodak.hospital.dto;
+package com.padaks.todaktodak.common.dto;
 
 import com.padaks.todaktodak.hospital.domain.Hospital;
+import com.padaks.todaktodak.hospital.dto.HospitalDTO.HospitalRegisterReqDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -13,5 +14,5 @@ public interface DtoMapper {
 //    AdminSaveDto 를 Member 로 매핑해주는 코드
 
 //    Member toMember(AdminSaveDto adminSaveDto);
-    Hospital toHospital(HospitalRegisterReqDto hospitalRegisterReqDto);
+//    Hospital toHospital(HospitalRegisterReqDto hospitalRegisterReqDto);
 }

@@ -1,6 +1,9 @@
-package com.padaks.todaktodak.hospital.dto;
+package com.padaks.todaktodak.hospital.dto.HospitalDTO;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
@@ -9,7 +12,13 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class HospitalRegisterReqDto {
+public class HospitalDetailResDto {
+
+    private Long id; // 병원 id
+
+    private Long standby; // 병원 실시간 대기자 수
+
+    private String distance; // 내위치 ~ 병원 직선거리 
 
     private String name; // 병원이름
 
@@ -23,7 +32,7 @@ public class HospitalRegisterReqDto {
 
     private String notice; // 병원공지
 
-    private BigDecimal latitude; // 위도
+    private BigDecimal latitude; // 위도 (나중에 프론트에서 지도 마커로 표시)
 
     private BigDecimal longitude; //경도
 
