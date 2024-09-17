@@ -13,13 +13,8 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class HospitalDetailResDto {
-
+public class HospitalUpdateResDto {
     private Long id; // 병원 id
-
-    private Long standby; // 병원 실시간 대기자 수
-
-    private String distance; // 내위치 ~ 병원 직선거리
 
     private String name; // 병원이름
 
@@ -33,7 +28,7 @@ public class HospitalDetailResDto {
 
     private String notice; // 병원공지
 
-    private BigDecimal latitude; // 위도 (나중에 프론트에서 지도 마커로 표시)
+    private BigDecimal latitude; // 위도
 
     private BigDecimal longitude; //경도
 
@@ -43,14 +38,9 @@ public class HospitalDetailResDto {
 
     private String representativePhoneNumber; // 대표자 핸드폰 번호
 
-    public static HospitalDetailResDto fromEntity(Hospital hospital,
-                                                  Long standby,
-                                                  String distance
-                                                  ){
-        return HospitalDetailResDto.builder()
+    public static HospitalUpdateResDto fromEntity(Hospital hospital){
+        return HospitalUpdateResDto.builder()
                 .id(hospital.getId())
-                .standby(standby) // 실시간 대기자 수
-                .distance(distance)
                 .name(hospital.getName())
                 .address(hospital.getAddress())
                 .phoneNumber(hospital.getPhoneNumber())
@@ -64,5 +54,4 @@ public class HospitalDetailResDto {
                 .representativePhoneNumber(hospital.getRepresentativePhoneNumber())
                 .build();
     }
-
 }

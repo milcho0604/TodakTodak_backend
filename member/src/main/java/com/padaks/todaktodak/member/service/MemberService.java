@@ -53,7 +53,7 @@ public class MemberService {
             throw new RuntimeException("잘못된 이메일/비밀번호 입니다.");
         }
 
-        if (member.getDeletedTimeAt() != null){
+        if (member.getDeletedAt() != null){
             throw new IllegalStateException("탈퇴한 회원입니다.");
         }
 

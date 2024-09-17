@@ -1,5 +1,6 @@
 package com.padaks.todaktodak.hospital.dto.HospitalDTO;
 
+import com.padaks.todaktodak.hospital.domain.Hospital;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,5 +33,23 @@ public class HospitalRegisterReqDto {
     private String representativeName; // 대표자 이름
 
     private String representativePhoneNumber; // 대표자 핸드폰 번호
+
+    public static Hospital toEntity(HospitalRegisterReqDto dto,
+                               String hospitalImageUrl
+                                ){
+        return Hospital.builder()
+                .name(dto.getName())
+                .address(dto.getAddress())
+                .phoneNumber(dto.getPhoneNumber())
+                .description(dto.getDescription())
+                .notice(dto.getNotice())
+                .latitude(dto.getLatitude())
+                .longitude(dto.getLongitude())
+                .businessRegistrationInfo(dto.getBusinessRegistrationInfo())
+                .representativeName(dto.getRepresentativeName())
+                .representativePhoneNumber(dto.getRepresentativePhoneNumber())
+                .hospitalImageUrl(hospitalImageUrl) // 업로드한 이미지의 URL을 저장
+                .build();
+    }
 
 }
