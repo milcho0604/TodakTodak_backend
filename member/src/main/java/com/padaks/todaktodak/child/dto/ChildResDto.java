@@ -15,11 +15,11 @@ public class ChildResDto {
     private String name;
     private String ssn;
 
-    public ChildResDto fromEntity(Child child) {
+    public ChildResDto fromEntity(Child child, String ssn) {
         return ChildResDto.builder()
                 .id(child.getId())
                 .name(child.getName())
-                .ssn(child.getSsn())
+                .ssn(ssn)
                 .build();
     }
 }
