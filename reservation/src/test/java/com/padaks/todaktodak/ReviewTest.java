@@ -48,15 +48,11 @@ public class ReviewTest {
                 .rating(5)
                 .contents("Great service!")
                 .build();
-
-        System.out.println(createReviewReqDto.toString());
         reservation = Reservation.builder()
                 .id(1L)
                 .memberEmail("test@example.com")
                 .doctorEmail("doctor@example.com")
                 .build();
-
-        System.out.println(reservation);
 
         review = Review.builder()
                 .id(1L)
@@ -65,11 +61,11 @@ public class ReviewTest {
                 .reservation(reservation)
                 .build();
 
-        System.out.println(review);
     }
 
     @Test
     void testReviewCreateSuccess() {
+        System.out.println("testReviewCreateSuccess: 시작");
         // Reservation이 존재하는 경우
 //        동일 한 메서드에 대해 두 개의 when 이 있을 경우, 나중에 쓴 when이 이전 상황을 덮어 쓰기함
 //        그래서 when 메서드는 두번 실행 되었지만 findById 는 한번만 실행된 것으로 판단됨.
@@ -96,7 +92,10 @@ public class ReviewTest {
 
     @Test
     void testReviewCreateReservationNotFound() {
+        System.out.println("testReviewCreateReservationNotFound: 시작");
         // Reservation이 존재하지 않는 경우
+//        위에서 createREviewReqDto를 넣었지만 when 메서드의 Optional.empty를 통해
+//        reservationRepository.findById 가 호출된 다면 아무 값도 반환하지 않겠다는 소리.
         when(reservationRepository.findById(createReviewReqDto.getId()))
                 .thenReturn(Optional.empty());
 
