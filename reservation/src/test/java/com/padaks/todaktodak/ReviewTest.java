@@ -71,19 +71,24 @@ public class ReviewTest {
     @Test
     void testReviewCreateSuccess() {
         // Reservation이 존재하는 경우
+//        동일 한 메서드에 대해 두 개의 when 이 있을 경우, 나중에 쓴 when이 이전 상황을 덮어 쓰기함
+//        그래서 when 메서드는 두번 실행 되었지만 findById 는 한번만 실행된 것으로 판단됨.
+        when(reservationRepository.findById(createReviewReqDto.getId()))
+                .thenReturn(Optional.of(reservation));
         when(reservationRepository.findById(createReviewReqDto.getId()))
                 .thenReturn(Optional.of(reservation));
 
-        // DtoMapper가 Review 객체로 변환
+        // DtoMapper를 통해 Review 객체로 변환 -> 이 코드 해결 하려고 작성했음..... 으아악 
         when(dtoMapper.toReview(createReviewReqDto, reservation)).thenReturn(review);
 
-        // ReviewRepository에 저장
+        // ReviewRepository를 통해 DB에 저장함.
         when(reviewRepository.save(any(Review.class))).thenReturn(review);
 
-        // 서비스 메서드 실행
+        // 서비스 메서드를 통해 reviewCreate 로직 수행
         assertDoesNotThrow(() -> reviewService.reviewCreate(createReviewReqDto));
 
-        // 검증
+        // Mockito를 사용해 작성한 테스트에서 특정 메서드가 예상되로 호출되었는지 테스트 하는 코드
+//        reservationRepository 가 1번 실행되었는지 확인하는 메서드
         verify(reservationRepository, times(1)).findById(createReviewReqDto.getId());
         verify(dtoMapper, times(1)).toReview(createReviewReqDto, reservation);
         verify(reviewRepository, times(1)).save(review);
