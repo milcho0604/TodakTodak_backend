@@ -6,12 +6,15 @@ import com.padaks.todaktodak.reservation.dto.CheckListReservationReqDto;
 import com.padaks.todaktodak.reservation.dto.ResType;
 import com.padaks.todaktodak.reservation.domain.ReservationHistory;
 import com.padaks.todaktodak.reservation.dto.ReservationSaveReqDto;
+import com.padaks.todaktodak.review.domain.Review;
+import com.padaks.todaktodak.review.dto.CreateReviewReqDto;
+import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 // Mapper 어노테이션을 붙이면 MapStruct 가 자동으로 DtoMapper 구현체를 생성해준다.
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", builder = @Builder(disableBuilder = false))
 public interface DtoMapper {
     //    매퍼 클래스에서 DtoMapper 를 찾을수 있도록 하는 코드.
 //    instance를 생성해 주어야 매퍼에 대한 접근이 가능.
@@ -37,4 +40,10 @@ public interface DtoMapper {
         }
     }
     ReservationHistory toReservationHistory(Reservation reservation);
+
+//    Review 의 reservation 을 파라미터로 받음 reservation으로 매핑.
+    @Mapping(source = "reservation", target = "reservation")
+//    CreateREviewReqDto 에서 id 는 매핑 타겟에서 제외하겠다.
+    @Mapping(target = "id", ignore = true)
+    Review toReview(CreateReviewReqDto createReviewReqDto, Reservation reservation);
 }
