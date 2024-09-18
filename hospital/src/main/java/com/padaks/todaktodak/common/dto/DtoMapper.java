@@ -1,7 +1,5 @@
 package com.padaks.todaktodak.common.dto;
 
-import com.padaks.todaktodak.hospital.domain.Hospital;
-import com.padaks.todaktodak.hospital.dto.HospitalDTO.HospitalRegisterReqDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -15,4 +13,5 @@ public interface DtoMapper {
 
 //    Member toMember(AdminSaveDto adminSaveDto);
 //    Hospital toHospital(HospitalRegisterReqDto hospitalRegisterReqDto);
+
 }

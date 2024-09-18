@@ -24,7 +24,7 @@ public class HospitalController {
 //    @PreAuthorize("hasRole('ROLE_HOSPTIALADMIN')")
     @PostMapping("/register")
     public ResponseEntity<Object> registerHospital(@ModelAttribute HospitalRegisterReqDto hospitalRegisterReqDto){
-        Hospital hospital = hospitalService.hospitalRegister(hospitalRegisterReqDto);
+        Hospital hospital = hospitalService.registerHospital(hospitalRegisterReqDto);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.CREATED, "병원등록성공", hospital.getId()), HttpStatus.CREATED);
     }
 

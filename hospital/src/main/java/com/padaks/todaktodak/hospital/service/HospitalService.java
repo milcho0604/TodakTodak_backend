@@ -35,7 +35,7 @@ public class HospitalService {
     private String bucket;
 
     // 병원등록
-    public Hospital hospitalRegister(HospitalRegisterReqDto dto){
+    public Hospital registerHospital(HospitalRegisterReqDto dto){
 
         MultipartFile hospitalImage = dto.getHospitalImage();
 
@@ -87,5 +87,6 @@ public class HospitalService {
         // deleteAt에 현재 시각으로 update 해줌 (삭제)
         hospital.updateDeleteAt();
     }
+
 
 }
