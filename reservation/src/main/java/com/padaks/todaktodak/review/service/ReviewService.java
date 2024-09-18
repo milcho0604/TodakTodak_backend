@@ -24,6 +24,7 @@ public class ReviewService {
     private final ReservationRepository reservationRepository;
     private final DtoMapper dtoMapper;
 
+//    리뷰 작성하는 기능 구현
     public void reviewCreate(CreateReviewReqDto dto){
         Reservation reservation = reservationRepository.findById(dto.getId())
                 .orElseThrow(() -> new BaseException(RESERVATION_NOT_FOUND));
