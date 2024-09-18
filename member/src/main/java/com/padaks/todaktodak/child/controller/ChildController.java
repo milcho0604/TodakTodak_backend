@@ -1,9 +1,6 @@
 package com.padaks.todaktodak.child.controller;
 
-import com.padaks.todaktodak.child.dto.ChildRegisterReqDto;
-import com.padaks.todaktodak.child.dto.ChildResDto;
-import com.padaks.todaktodak.child.dto.ChildShareReqDto;
-import com.padaks.todaktodak.child.dto.ChildUpdateReqDto;
+import com.padaks.todaktodak.child.dto.*;
 import com.padaks.todaktodak.child.service.ChildService;
 import com.padaks.todaktodak.common.dto.CommonResDto;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +19,10 @@ public class ChildController {
     private final ChildService childService;
     @PostMapping("/create")
     public ResponseEntity<CommonResDto> registerChild(@RequestBody ChildRegisterReqDto dto){
-        childService.createChild(dto.getName(), dto.getSsn());
+        ChildRegisterResDto childRegisterResDto = childService.createChild(dto.getName(), dto.getSsn());
+        if (childRegisterResDto.getParents() != null) {
+            return new ResponseEntity<>(new CommonResDto(HttpStatus.BAD_REQUEST,"이미 등록된 자녀입니다.",childRegisterResDto),HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(new CommonResDto(HttpStatus.CREATED,"자녀 등록 성공",null),HttpStatus.CREATED);
     }
 
