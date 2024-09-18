@@ -17,6 +17,7 @@ import java.util.List;
 public class HospitalOperatingHoursController {
     private final HospitalOperatingHoursService hospitalOperatingHoursService;
 
+    // 병원admin, 개발자admin만 가능
     // 병원 영업시간 등록
     @PostMapping("/register/{hospitalId}")
     public ResponseEntity<Object> addOperatingHours(@PathVariable Long hospitalId,
