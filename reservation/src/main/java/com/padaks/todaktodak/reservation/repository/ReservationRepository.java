@@ -17,4 +17,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     Page<Reservation> findByMemberEmailAndReservationType(Pageable pageable, String email, ReserveType reserveType);
     Optional<Reservation> findByDoctorEmailAndReservationDateAndReservationTime
             (String doctorEmail, LocalDate reservationDate, LocalTime reservationTime);
+
+    Optional<Reservation> findById(Long id);
 }

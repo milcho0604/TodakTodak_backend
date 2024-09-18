@@ -2,10 +2,7 @@ package com.padaks.todaktodak.review.domain;
 
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
 import com.padaks.todaktodak.reservation.domain.Reservation;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.Check;
 
 import javax.persistence.*;
