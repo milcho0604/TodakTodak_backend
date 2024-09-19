@@ -1,6 +1,7 @@
 package com.padaks.todaktodak.doctor.service;
 
 import com.padaks.todaktodak.configs.JwtTokenProvider;
+import com.padaks.todaktodak.configs.SecurityConfig;
 import com.padaks.todaktodak.doctor.domain.Doctor;
 import com.padaks.todaktodak.doctor.dto.DoctorListDto;
 import com.padaks.todaktodak.doctor.dto.DoctorLoginDto;
@@ -11,12 +12,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Random;
 
 @Service
 @Slf4j
@@ -26,6 +29,9 @@ public class DoctorService {
     private final DoctorRepository doctorRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenprovider;
+    private final JavaEmailService emailService;
+    private final RedisService redisService;
+
 
     public Doctor doctorCreate(DoctorSaveDto dto){
         if (doctorRepository.findByDoctorEmail(dto.getDoctorEmail()).isPresent()){
@@ -47,12 +53,12 @@ public class DoctorService {
     public Page<DoctorListDto> doctorList(Pageable pageable){
         Page<Doctor> doctors = doctorRepository.findAll(pageable);
         return doctors.map(a->a.listFromEntity());
-
     }
 
     @Transactional
     public void updateDoctor(DoctorUpdateDto dto, MultipartFile imageSsr){
-        Doctor doctor = doctorRepository.findById(dto.getId()).orElseThrow(()-> new IllegalArgumentException("존재하지 않는 의사입니다."));
+        String doctorEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Doctor doctor = doctorRepository.findByDoctorEmail(doctorEmail).orElseThrow(()-> new IllegalArgumentException("존재하지 않는 의사입니다."));
 
         MultipartFile image = (imageSsr != null) ? imageSsr : dto.getProfileImgUrl();
         try{
@@ -74,10 +80,31 @@ public class DoctorService {
         doctorRepository.save(doctor);
     }
 
-    public void deleteAccount(String email){
-        Doctor doctor = doctorRepository.findByDoctorEmail(email)
-                .orElseThrow(()->new RuntimeException("사용자 정보를 확인할 수 없습니다. "+ email));
+    public void deleteAccount(String doctorEmail){
+        Doctor doctor = doctorRepository.findByDoctorEmail(doctorEmail)
+                .orElseThrow(()->new RuntimeException("사용자 정보를 확인할 수 없습니다. "+ doctorEmail));
         doctor.updateDeleteAt();
         doctorRepository.save(doctor);
+    }
+
+    // java 라이브러리 메일 서비스
+    private String generateVerificationCode() {
+        Random random = new Random();
+        int code = random.nextInt(9999 - 1000 + 1) + 1000;
+        return String.valueOf(code);
+    }
+    // java 라이브러리 메일 서비스
+    public void sendVerificationEmail(String doctorEmail) {
+        String code = generateVerificationCode();
+        redisService.saveVerificationCode(doctorEmail, code);
+        emailService.sendSimpleMessage(doctorEmail, "이메일 인증 코드", "인증 코드: " + code);
+    }
+    // java 라이브러리 메일 서비스
+    public boolean verifyEmail(String doctorEmail, String code) {
+        if (redisService.verifyCode(doctorEmail, code)) {
+            return true;
+        } else {
+            throw new RuntimeException("인증 코드가 유효하지 않습니다.");
+        }
     }
 }

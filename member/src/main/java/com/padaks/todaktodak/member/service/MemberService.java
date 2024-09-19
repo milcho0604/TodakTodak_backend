@@ -1,6 +1,6 @@
 package com.padaks.todaktodak.member.service;
 
-import com.padaks.todaktodak.config.JwtTokenprovider;
+import com.padaks.todaktodak.config.JwtTokenProvider;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.dto.*;
 import com.padaks.todaktodak.member.repository.MemberRepository;
@@ -25,7 +25,7 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
-    private final JwtTokenprovider jwtTokenprovider;
+    private final JwtTokenProvider jwtTokenprovider;
     private final PasswordEncoder passwordEncoder;
     private final JavaEmailService emailService;
     private final RedisService redisService;

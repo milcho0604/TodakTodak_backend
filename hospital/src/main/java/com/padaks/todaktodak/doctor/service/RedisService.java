@@ -1,4 +1,4 @@
-package com.padaks.todaktodak.member.service;
+package com.padaks.todaktodak.doctor.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;

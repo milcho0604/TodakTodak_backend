@@ -51,7 +51,12 @@ dependencies {
 
 	implementation 'org.hibernate.validator:hibernate-validator:6.2.0.Final'
 	implementation 'javax.validation:validation-api:2.0.1.Final'
-	runtimeOnly 'org.glassfish:javax.el:3.0.0'
+//	runtimeOnly 'org.glassfish:javax.el:3.0.0'
+	// 레디스 의존성
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	// 이메일 인증 의존성
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
 
 }
 
