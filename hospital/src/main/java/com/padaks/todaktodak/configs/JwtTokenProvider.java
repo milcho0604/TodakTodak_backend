@@ -1,4 +1,4 @@
-package com.padaks.todaktodak.config;
+package com.padaks.todaktodak.configs;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 
 @Component
-public class JwtTokenprovider {
+public class JwtTokenProvider {
 
     @Value("${jwt.secret}")
     private String secretKey;
@@ -17,27 +17,11 @@ public class JwtTokenprovider {
     @Value("${jwt.expiration}")
     private long tokenValidityInMilliseconds;
 
-    // userId를 포함한 createToken 메서드
-    public String createToken(String email, String role, Long memberId) {
+    // doctorId를 포함한 createToken 메서드
+    public String createToken(String email, String role, Long doctorId) {
         Claims claims = Jwts.claims().setSubject(email);
         claims.put("role", role);
-        claims.put("memberId", memberId);  // userId를 클레임에 추가
-
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + tokenValidityInMilliseconds);
-
-        return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(validity)
-                .signWith(SignatureAlgorithm.HS512, secretKey)
-                .compact();
-    }
-
-    public String kakaoToken(String email, Long memberId, String role) {
-        Claims claims = Jwts.claims().setSubject(email);
-        claims.put("role", role);
-        claims.put("memberId", memberId);  // userId를 클레임에 추가
+        claims.put("doctorId", doctorId);  // doctorId를 클레임에 추가
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + tokenValidityInMilliseconds);
@@ -59,13 +43,13 @@ public class JwtTokenprovider {
                 .getSubject();
     }
 
-    // 토큰에서 userId 추출
-    public Long getMemberIdFromToken(String token) {
+    // 토큰에서 doctorId 추출
+    public Long getDoctorIdFromToken(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
                 .getBody();
-        return claims.get("memberId", Long.class);
+        return claims.get("doctorId", Long.class);
     }
 
     public boolean validateToken(String token) {

@@ -1,8 +1,6 @@
-package com.padaks.todaktodak.config;
+package com.padaks.todaktodak.configs;
 
-import com.padaks.todaktodak.member.Handler.OAuth2SuccessHandler;
-import com.padaks.todaktodak.member.repository.MemberRepository;
-import com.padaks.todaktodak.member.service.CustomOAuth2UserService;
+import com.padaks.todaktodak.doctor.repository.DoctorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,9 +20,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailsService userDetailsService;
-    private final CustomOAuth2UserService customOAuth2UserService;
-    private final OAuth2SuccessHandler oAuth2SuccessHandler;
-    private final MemberRepository memberRepository;
+    private final DoctorRepository doctorRepository;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -40,14 +36,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("**").permitAll() // 모든 요청을 허용
                 .anyRequest().authenticated() // 나머지 요청은 인증된 사용자만 허용
                 .and()
-                .oauth2Login()
-                .userInfoEndpoint()
-                .userService(customOAuth2UserService) // OAuth2 사용자 서비스 설정
-                .and()
-                .successHandler(oAuth2SuccessHandler) // OAuth2 로그인 성공 핸들러 설정
-                .failureUrl("/login?error=true") // 로그인 실패 시 리다이렉션할 URL
-                .and()
-                .addFilterBefore(new JwtAuthFilter(jwtTokenProvider, userDetailsService, memberRepository),
+                .addFilterBefore(new JwtAuthFilter(jwtTokenProvider, userDetailsService, doctorRepository),
                         UsernamePasswordAuthenticationFilter.class); // JWT 필터 추가
     }
 }
