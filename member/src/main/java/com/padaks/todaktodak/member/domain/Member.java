@@ -1,6 +1,7 @@
 package com.padaks.todaktodak.member.domain;
 
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
+import com.padaks.todaktodak.member.dto.MemberListResDto;
 import lombok.*;
 import com.padaks.todaktodak.childparentsrelationship.domain.ChildParentsRelationship;
 import org.hibernate.annotations.ColumnDefault;
@@ -42,6 +43,9 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<ChildParentsRelationship> childParentsRelationshipList;
+
     @Builder
     public Member(String name, String email, Role role) {
         this.name = name;
@@ -76,7 +80,16 @@ public class Member extends BaseTimeEntity {
     public void deleteAccount() {
         this.setDeletedTimeAt(LocalDateTime.now());  // 현재 시간을 삭제 시간으로 설정
     }
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<ChildParentsRelationship> childParentsRelationshipList;
 
+    // 유저 목록 조히
+    public MemberListResDto listFromEntity(){
+        return MemberListResDto.builder()
+                .id(this.id)
+                .name(this.name)
+                .phone(this.phoneNumber)
+                .address(this.address)
+                .memberEmail(this.memberEmail)
+                .role(this.role)
+                .build();
+    }
 }

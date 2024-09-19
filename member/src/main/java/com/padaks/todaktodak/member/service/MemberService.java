@@ -2,16 +2,14 @@ package com.padaks.todaktodak.member.service;
 
 import com.padaks.todaktodak.config.JwtTokenprovider;
 import com.padaks.todaktodak.member.domain.Member;
-import com.padaks.todaktodak.member.dto.MemberUpdateReqDto;
-import com.padaks.todaktodak.member.dto.MemberLoginDto;
-import com.padaks.todaktodak.member.dto.MemberSaveReqDto;
-import com.padaks.todaktodak.member.dto.AdminSaveDto;
-import com.padaks.todaktodak.member.dto.DtoMapper;
+import com.padaks.todaktodak.member.dto.*;
 import com.padaks.todaktodak.member.repository.MemberRepository;
 import com.padaks.todaktodak.util.S3ClientFileUpload;
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -153,6 +151,22 @@ public class MemberService {
             throw new RuntimeException("인증 코드가 유효하지 않습니다.");
         }
     }
+
+    // member list 조회
+    public Page<MemberListResDto> memberList(Pageable pageable){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        System.out.println(email);
+        Member member = memberRepository.findByMemberEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
+        if (!member.getRole().toString().equals("TodakAdmin")){
+            throw new SecurityException("관리자만 접근이 가능합니다.");
+        }
+        Page<Member> members = memberRepository.findAll(pageable);
+        return members.map(a -> a.listFromEntity());
+    }
+
+
 
 //    유저 회원가입은 소셜만 되어있기 때문에 TodakAdmin만 따로 initialDataLoader로 선언해 주었음.
     public void adminCreate(AdminSaveDto dto){
