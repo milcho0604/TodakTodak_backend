@@ -9,6 +9,7 @@ import com.padaks.todaktodak.review.dto.CreateReviewReqDto;
 import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
 // Mapper 어노테이션을 붙이면 MapStruct 가 자동으로 DtoMapper 구현체를 생성해준다.
@@ -50,5 +51,5 @@ public interface DtoMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(source = "status", target = "status")
-    Reservation toUpdateStatus(UpdateStatusReservation updateStatusReservation);
+    Reservation toUpdateStatus(UpdateStatusReservation updateStatusReservation, @MappingTarget Reservation reservation);
 }

@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +20,7 @@ import static com.padaks.todaktodak.common.exception.exceptionType.ReservationEx
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ReservationAdminService {
 
     private final ReservationRepository reservationRepository;
@@ -50,8 +52,8 @@ public class ReservationAdminService {
     public void statusReservation(UpdateStatusReservation updateStatusReservation){
         Reservation reservation = reservationRepository.findById(updateStatusReservation.getId())
                 .orElseThrow(() -> new BaseException(RESERVATION_NOT_FOUND));
-
-        reservation = dtoMapper.toUpdateStatus(updateStatusReservation);
-
+        reservation = dtoMapper.toUpdateStatus(updateStatusReservation, reservation);
+        System.out.println(reservation.toString());
+        reservationRepository.save(reservation);
     }
 }
