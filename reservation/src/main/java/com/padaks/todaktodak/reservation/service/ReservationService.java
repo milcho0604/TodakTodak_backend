@@ -93,4 +93,13 @@ public class ReservationService {
 
         return dto;
     }
+
+//    예약 접수 기능 (병원 admin의 예약 상태 변경)
+    public Reservation receipt(Long reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new BaseException(RESERVATION_NOT_FOUND));
+//       예약의 상태를 completed로 변경한다
+        reservation.receipt();
+        return reservation;
+    }
 }
