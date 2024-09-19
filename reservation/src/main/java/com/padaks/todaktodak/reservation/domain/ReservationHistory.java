@@ -1,9 +1,5 @@
 package com.padaks.todaktodak.reservation.domain;
 
-import com.padaks.todaktodak.charroom.domain.ChatRoom;
-import com.padaks.todaktodak.medicalchart.domain.MedicalChart;
-import com.padaks.todaktodak.notification.domain.Notification;
-import com.padaks.todaktodak.review.domain.Review;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -11,8 +7,6 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @AllArgsConstructor
