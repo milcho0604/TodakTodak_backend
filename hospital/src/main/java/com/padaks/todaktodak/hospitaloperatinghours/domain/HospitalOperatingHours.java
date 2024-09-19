@@ -34,7 +34,7 @@ public class HospitalOperatingHours extends BaseTimeEntity {
 
     private LocalTime breakEnd; // 휴게시간 끝
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "hospital_id")
     private Hospital hospital; // 병원id
 
