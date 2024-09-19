@@ -16,6 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,9 +34,10 @@ public class MemberController {
 
     // 회원가입
     @PostMapping("/create")
-    public ResponseEntity<?> register(@RequestBody MemberSaveReqDto saveReqDto) {
+    public ResponseEntity<?> register(MemberSaveReqDto saveReqDto,
+            @RequestPart(value = "image", required = false) MultipartFile imageSsr) {
         try {
-            memberService.create(saveReqDto);
+            memberService.create(saveReqDto, imageSsr);
             return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "회원가입 성공", null));
         } catch (Exception e) {
             e.printStackTrace();
@@ -103,11 +105,11 @@ public class MemberController {
 
     // 회원 정보 수정
     @PostMapping("edit-info")
-    public ResponseEntity<?> editMemberInfo(@RequestBody MemberUpdateReqDto updateReqDto) {
+    public ResponseEntity<?> editMemberInfo(@ModelAttribute MemberUpdateReqDto updateReqDto) {
         try {
             String email = SecurityContextHolder.getContext().getAuthentication().getName();
             Member member = memberService.findByMemberEmail(email);
-            memberService.updateMember(member, updateReqDto);
+            memberService.updateMember(updateReqDto); // imageSsr 제거
             return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "회원 정보를 수정하였습니다.", null));
         } catch (Exception e) {
             e.printStackTrace();
@@ -115,6 +117,7 @@ public class MemberController {
                     .body(new CommonResDto(HttpStatus.BAD_REQUEST, "회원 정보 수정에 실패했습니다. -> " + e.getMessage(), null));
         }
     }
+
 
     // 회원 탈퇴
     @PostMapping("/delete-account")

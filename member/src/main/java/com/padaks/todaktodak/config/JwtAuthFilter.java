@@ -50,9 +50,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 Member member = memberRepository.findByMemberEmail(email)
                         .orElse(null);
 
-                if (member == null || member.getMemberEmail() == null || member.getDeletedTimeAt() != null) {
+                if (member == null || member.getMemberEmail() == null || member.getDeletedAt() != null) {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); 
-                    response.getWriter().write("해당 계정은 영구 정지 당했습니다.");
+                    response.getWriter().write("해당 계정은 영구 정지 되었습니ㄴ.");
                     return;
                 }
 
