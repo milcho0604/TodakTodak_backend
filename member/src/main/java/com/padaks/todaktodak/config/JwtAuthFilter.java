@@ -52,7 +52,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
                 if (member == null || member.getMemberEmail() == null || member.getDeletedAt() != null) {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); 
-                    response.getWriter().write("해당 계정은 영구 정지 되었습니ㄴ.");
+                    response.getWriter().write("해당 계정은 영구 정지 되었습니다.");
                     return;
                 }
 
@@ -63,7 +63,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
-
 
 
     private String resolveToken(HttpServletRequest request) {
