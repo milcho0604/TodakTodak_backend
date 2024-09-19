@@ -24,7 +24,7 @@ public class HospitalController {
 //    @PreAuthorize("hasRole('ROLE_HOSPTIALADMIN')")
     @PostMapping("/register")
     public ResponseEntity<Object> registerHospital(@ModelAttribute HospitalRegisterReqDto hospitalRegisterReqDto){
-        Hospital hospital = hospitalService.hospitalRegister(hospitalRegisterReqDto);
+        Hospital hospital = hospitalService.registerHospital(hospitalRegisterReqDto);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.CREATED, "병원등록성공", hospital.getId()), HttpStatus.CREATED);
     }
 
@@ -38,15 +38,16 @@ public class HospitalController {
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원정보 조회성공", hospitalDetail), HttpStatus.OK);
     }
 
-    // TODO : 병원-의사, 병원-운영시간 조회api
+    // TODO : 병원리스트 조회api
 
-    // 병원정보 수정
+    // 병원정보 수정 (병원 admin, 개발자admin)
     @PostMapping("/update")
     public ResponseEntity<Object> updateHospital(@ModelAttribute HospitalUpdateReqDto hospitalUpdateReqDto){
         HospitalUpdateResDto hospitalUpdateResDto = hospitalService.updateHospital(hospitalUpdateReqDto);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원정보 수정성공", hospitalUpdateResDto), HttpStatus.OK);
     }
 
+    // 병원정보 수정 (병원 admin, 개발자admin)
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object> deleteHospital(@PathVariable Long id){
         hospitalService.deleteHospital(id);
