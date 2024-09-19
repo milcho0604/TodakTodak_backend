@@ -25,12 +25,13 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+//	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
 	// 파일처리를 위한 aws 의존성 추가
 	implementation 'software.amazon.awssdk:s3:2.17.58'
@@ -43,6 +44,15 @@ dependencies {
 //	이를 하지 않으면 Lombok과 호출 순서에서 충돌이 있을 수 있다.
 //  -> Mapstruct 가 Lombok의 getter, setter ,builder 를 사용하기 때문
 	annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.2.0"
+
+	// jwt 의존성
+	implementation 'io.jsonwebtoken:jjwt:0.9.1'
+
+
+	implementation 'org.hibernate.validator:hibernate-validator:6.2.0.Final'
+	implementation 'javax.validation:validation-api:2.0.1.Final'
+	runtimeOnly 'org.glassfish:javax.el:3.0.0'
+
 }
 
 ext{
