@@ -1,6 +1,6 @@
 package com.padaks.todaktodak.communitynotification.repository;
 
-import com.padaks.todaktodak.reservationnotification.domain.Notification;
+import com.padaks.todaktodak.communitynotification.domain.Notification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

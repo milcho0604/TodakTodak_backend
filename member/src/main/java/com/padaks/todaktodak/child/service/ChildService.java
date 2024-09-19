@@ -48,7 +48,7 @@ public class ChildService {
         }
         Optional<Child> optionalChild = childRepository.findBySsn(encryptedSsn);
         // 이미 등록된 자녀의 경우, 부모의 이름을 반환한다
-        if (optionalChild.isPresent() && optionalChild.get().getDeletedTimeAt() == null) {
+        if (optionalChild.isPresent() && optionalChild.get().getDeletedAt() == null) {
             List<String> parentName = new ArrayList<>();
             List<Member> parents = childParentsRelationshipService.findParents(optionalChild.get());
             for (Member parent : parents) {
