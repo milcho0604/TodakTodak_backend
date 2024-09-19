@@ -34,6 +34,6 @@ public class ReservationAdminController {
             @RequestBody UpdateStatusReservation updateStatusReservation){
         reservationAdminService.statusReservation(updateStatusReservation);
 
-        return new ResponseEntity<>(null, HttpStatus.OK);
+        return new ResponseEntity<>("수정 완료", HttpStatus.OK);
     }
 }

@@ -17,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Data
+@Getter
 @Table(
         uniqueConstraints = {
                 @UniqueConstraint(
