@@ -2,6 +2,7 @@ package com.padaks.todaktodak.common.dto;
 
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.domain.ReserveType;
+import com.padaks.todaktodak.reservation.dto.CheckHospitalListReservationResDto;
 import com.padaks.todaktodak.reservation.dto.CheckListReservationReqDto;
 import com.padaks.todaktodak.reservation.dto.ResType;
 import com.padaks.todaktodak.reservation.domain.ReservationHistory;
@@ -40,6 +41,8 @@ public interface DtoMapper {
         }
     }
     ReservationHistory toReservationHistory(Reservation reservation);
+
+    CheckHospitalListReservationResDto toHospitalListReservation(Reservation reservation);
 
 //    Review 의 reservation 을 파라미터로 받음 reservation으로 매핑.
     @Mapping(source = "reservation", target = "reservation")
