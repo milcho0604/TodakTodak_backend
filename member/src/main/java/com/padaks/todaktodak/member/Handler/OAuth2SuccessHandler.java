@@ -50,7 +50,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         Member member = memberRepository.findByMemberEmail(memberEmail)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 카카오 회원입니다."));
 
-        if (member.getDeletedTimeAt() != null){
+        if (member.getDeletedAt() != null){
             throw new IllegalStateException("탈퇴한 회원입니다.");
         }
 

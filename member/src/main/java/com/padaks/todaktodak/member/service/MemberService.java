@@ -8,13 +8,15 @@ import com.padaks.todaktodak.member.dto.MemberSaveReqDto;
 import com.padaks.todaktodak.member.dto.AdminSaveDto;
 import com.padaks.todaktodak.member.dto.DtoMapper;
 import com.padaks.todaktodak.member.repository.MemberRepository;
+import com.padaks.todaktodak.util.S3ClientFileUpload;
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.Random;
@@ -30,6 +32,10 @@ public class MemberService {
     private final JavaEmailService emailService;
     private final RedisService redisService;
     private final DtoMapper dtoMapper;
+    private final S3ClientFileUpload s3ClientFileUpload;
+
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucketName; // S3 버킷 이름 가져오기
 
     // 간편하게 멤버 객체를 찾기 위한 findByMemberEmail
     public Member findByMemberEmail(String email) {
@@ -38,9 +44,18 @@ public class MemberService {
     }
 
     // 회원가입 및 검증
-    public void create(MemberSaveReqDto saveReqDto) {
+    public void create(MemberSaveReqDto saveReqDto, MultipartFile imageSsr) {
         validateRegistration(saveReqDto);
+
+        // 프로필 이미지 업로드 및 url로 저장 -> aws에서 이미지를 가져오는 방식
+        String imageUrl = null;
+        if (saveReqDto.getProfileImage() != null && !saveReqDto.getProfileImage().isEmpty()) {
+            imageUrl = s3ClientFileUpload.upload(saveReqDto.getProfileImage(), bucketName);
+            saveReqDto.setProfileImgUrl(imageUrl);
+        }
+
         Member member = saveReqDto.toEntity(passwordEncoder.encode(saveReqDto.getPassword()));
+//        member.setProfileImgUrl(imageUrl); ------- 지우면 울어요.
         memberRepository.save(member);
     }
 
@@ -85,20 +100,29 @@ public class MemberService {
         }
     }
 
-    // 회원 정보 수정
-    public void updateMember(Member member, MemberUpdateReqDto editReqDto){
+    public void updateMember(MemberUpdateReqDto editReqDto) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Member savedMember = memberRepository.findByMemberEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다"));
+
+        // 비밀번호 수정
         if (editReqDto.getPassword() != null && !editReqDto.getPassword().isEmpty()) {
-            validatePassword(editReqDto.getPassword(), editReqDto.getConfirmPassword(), member.getPassword());
+            validatePassword(editReqDto.getPassword(), editReqDto.getConfirmPassword(), savedMember.getPassword());
             savedMember.setPassword(passwordEncoder.encode(editReqDto.getPassword()));
         }
-        if (editReqDto.getAddress() != null) {
-            savedMember.setAddress(editReqDto.getAddress());
+
+        // 프로필 이미지 수정
+        if (editReqDto.getProfileImage() != null && !editReqDto.getProfileImage().isEmpty()) {
+            String imageUrl = s3ClientFileUpload.upload(editReqDto.getProfileImage(), bucketName);
+            savedMember.setProfileImgUrl(imageUrl); // 새로운 URL로 업데이트
         }
+
+        // 이름, 전화번호, 주소 업데이트
         savedMember.setName(editReqDto.getName());
-        memberRepository.save(savedMember);
+        savedMember.setPhoneNumber(editReqDto.getPhone());
+        savedMember.setAddress(editReqDto.getAddress());
+
+        memberRepository.save(savedMember); // 수정된 회원 정보 저장
     }
 
     // 회원 탈퇴

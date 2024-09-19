@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
+import org.springframework.web.multipart.MultipartFile;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -21,6 +23,7 @@ public class MemberSaveReqDto {
     private String phoneNumber;
     private String ssn;
     private Address address;
+    private MultipartFile profileImage;
 
     @Builder.Default
     private Role role = Role.Member;
@@ -36,6 +39,6 @@ public class MemberSaveReqDto {
                 .address(this.address)
                 .role(this.role)
                 .build();
-
     }
 }
+
