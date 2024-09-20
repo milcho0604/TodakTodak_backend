@@ -7,9 +7,9 @@ WORKDIR /app
 # member 디렉토리의 gradlew 파일 복사
 COPY member/gradlew ./member/
 # member 디렉토리의 gradle 폴더 복사
-COPY member/gradle ./member/
+COPY member/gradle ./member/gradle
 # member 디렉토리의 src 복사
-COPY member/src ./member/
+COPY member/src ./member/src
 # member 디렉토리의 build.gradle 및 settings.gradle 복사
 COPY member/build.gradle ./member/
 COPY member/settings.gradle ./member/
