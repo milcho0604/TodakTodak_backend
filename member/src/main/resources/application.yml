@@ -1,6 +1,6 @@
 # s3 슬꺼로 바꿈
 server:
-  port: 0
+  port: 8080
 spring:
   security:
     oauth2:
