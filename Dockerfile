@@ -19,7 +19,12 @@ RUN ls ./member
 RUN chmod +x ./member/gradlew
 
 # BootJar 실행
-RUN ./member/gradlew bootJar
+#RUN ./member/gradlew bootJar
+# 작업 디렉토리 변경
+WORKDIR /app/member
+
+# BootJar 실행
+RUN ./gradlew bootJar
 
 # 두번째 스테이지
 FROM openjdk:11
