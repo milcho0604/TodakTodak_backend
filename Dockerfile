@@ -8,8 +8,12 @@ COPY gradlew .
 # /app/gradle 폴더로 생성
 COPY gradle gradle
 COPY src src
-COPY build.gradle .
-COPY settings.gradle .
+#COPY build.gradle ./member
+#COPY settings.gradle ./member/
+
+COPY member/build.gradle ./member/
+COPY member/settings.gradle ./member/
+
 
 #RUN chmod 777 gradlew
 RUN ./gradlew bootJar
