@@ -70,5 +70,18 @@ public class PostController {
         }
     }
 
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<?> deletePost(@PathVariable Long id){
+        try {
+            postService.deletePost(id);
+            CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "post가 삭제되었습니다.",id);
+            return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+        }catch (EntityNotFoundException e){
+            CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.NOT_FOUND, e.getMessage());
+            return new ResponseEntity<>(commonErrorDto, HttpStatus.NOT_FOUND);
+        }
+
+    }
+
 
 }

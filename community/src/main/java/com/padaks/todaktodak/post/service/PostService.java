@@ -2,6 +2,7 @@ package com.padaks.todaktodak.post.service;
 
 import com.padaks.todaktodak.comment.dto.CommentDetailDto;
 import com.padaks.todaktodak.comment.service.CommentService;
+import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.post.domain.Post;
 import com.padaks.todaktodak.post.dto.PostDetailDto;
 import com.padaks.todaktodak.post.dto.PostListDto;
@@ -68,6 +69,11 @@ public class PostService {
         }
         post.update(dto);
         postRepository.save(post);
+    }
+
+    public void deletePost(Long id){
+        Post post = postRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 post입니다."));
+        post.updateDeleteAt();
     }
 }
 
