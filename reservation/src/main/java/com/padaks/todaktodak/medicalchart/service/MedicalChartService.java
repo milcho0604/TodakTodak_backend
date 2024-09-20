@@ -41,4 +41,18 @@ public class MedicalChartService {
                 .orElseThrow(() -> new BaseException(MEDICALCHART_NOT_FOUND));
         return new MedicalChartResDto().fromEntity(medicalChart);
     }
+
+    public MedicalChartResDto completeMedicalChart(Long medicalChartId) {
+        MedicalChart medicalChart = medicalChartRepository.findById(medicalChartId)
+                .orElseThrow(() -> new BaseException(MEDICALCHART_NOT_FOUND));
+        medicalChart.complete();
+        return new MedicalChartResDto().fromEntity(medicalChart);
+    }
+
+    public MedicalChartResDto payMedicalChart(Long medicalChartId) {
+        MedicalChart medicalChart = medicalChartRepository.findById(medicalChartId)
+                .orElseThrow(() -> new BaseException(MEDICALCHART_NOT_FOUND));
+        medicalChart.pay();
+        return new MedicalChartResDto().fromEntity(medicalChart);
+    }
 }

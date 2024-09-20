@@ -11,13 +11,13 @@ import lombok.NoArgsConstructor;
 public class MedicalChartResDto {
     private Long id;
     private int fee;
-    private String paymentStatus;
+    private String medicalStatus;
     private Long reservationId;
 
     public MedicalChartResDto fromEntity(MedicalChart medicalChart) {
         this.id = medicalChart.getId();
         this.fee = medicalChart.getFee();
-        this.paymentStatus = String.valueOf(medicalChart.getPaymentStatus());
+        this.medicalStatus = String.valueOf(medicalChart.getMedicalStatus());
         this.reservationId = medicalChart.getReservation().getId();
         return this;
     }
