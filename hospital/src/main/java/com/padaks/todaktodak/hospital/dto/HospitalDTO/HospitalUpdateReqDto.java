@@ -29,6 +29,8 @@ public class HospitalUpdateReqDto {
 
     private String notice; // 병원공지
 
+    private String keywords; // 병원 keywords
+
     private BigDecimal latitude; // 위도
 
     private BigDecimal longitude; //경도
@@ -38,5 +40,7 @@ public class HospitalUpdateReqDto {
     private String representativeName; // 대표자 이름
 
     private String representativePhoneNumber; // 대표자 핸드폰 번호
+
+    private Long untactFee; // 비대면진료비
 
 }

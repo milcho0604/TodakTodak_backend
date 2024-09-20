@@ -33,6 +33,8 @@ public class HospitalDetailResDto {
 
     private String notice; // 병원공지
 
+    private String keywords; // 병원 keywords
+
     private BigDecimal latitude; // 위도 (나중에 프론트에서 지도 마커로 표시)
 
     private BigDecimal longitude; //경도
@@ -42,6 +44,8 @@ public class HospitalDetailResDto {
     private String representativeName; // 대표자 이름
 
     private String representativePhoneNumber; // 대표자 핸드폰 번호
+
+    private Long untactFee; // 비대면진료비
 
     public static HospitalDetailResDto fromEntity(Hospital hospital,
                                                   Long standby,
@@ -57,11 +61,13 @@ public class HospitalDetailResDto {
                 .hospitalImageUrl(hospital.getHospitalImageUrl())
                 .description(hospital.getDescription())
                 .notice(hospital.getNotice())
+                .keywords(hospital.getKeywords())
                 .latitude(hospital.getLatitude())
                 .longitude(hospital.getLongitude())
                 .businessRegistrationInfo(hospital.getBusinessRegistrationInfo())
                 .representativeName(hospital.getRepresentativeName())
                 .representativePhoneNumber(hospital.getRepresentativePhoneNumber())
+                .untactFee(hospital.getUntactFee())
                 .build();
     }
 
