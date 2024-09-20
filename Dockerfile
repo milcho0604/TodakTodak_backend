@@ -1,52 +1,31 @@
 # 멀티 스테이지 빌드 방법 사용
+
 # 첫번째 스테이지
 FROM openjdk:11 as stage1
 WORKDIR /app
 
-# /app/gradelw 파일로 생성
-#COPY gradlew .
+# member 디렉토리의 gradlew 파일 복사
 COPY member/gradlew ./member/
-
-# /app/gradle 폴더로 생성
-#COPY gradle gradle
+# member 디렉토리의 gradle 폴더 복사
 COPY member/gradle ./member/
-
-#COPY src src
+# member 디렉토리의 src 복사
 COPY member/src ./member/
-
-#COPY build.gradle ./member
-#COPY settings.gradle ./member/
-
+# member 디렉토리의 build.gradle 및 settings.gradle 복사
 COPY member/build.gradle ./member/
 COPY member/settings.gradle ./member/
 
-
-RUN #chmod 777 gradlew
+# gradlew에 실행 권한 부여
 RUN chmod +x ./member/gradlew
 
-RUN #./gradlew bootJar
+# BootJar 실행
 RUN ./member/gradlew bootJar
 
 # 두번째 스테이지
 FROM openjdk:11
 WORKDIR /app
-# stage1에 있는 jar를 stage2의 app.jar라는 이름으로 copy
-#COPY --from=stage1 /app/build/libs/*.jar app.jar
+
+# 첫번째 스테이지에서 생성된 JAR 파일을 복사
 COPY --from=stage1 /app/member/build/libs/*.jar app.jar
 
-# CMD 또는 ENTRYPOINT를 통해 컨테이너를 실행
+# 컨테이너 실행 시 JAR 파일 실행
 ENTRYPOINT ["java", "-jar", "app.jar"]
-
-
-# docker build -t ordersystem:latest .
-
-# docker 컨테이너 내에서 밖의 전체 host를 지칭하는 도메인: host.docker.internal
-# docker run -d -p 8080:8080 -e SPRING_DATASOURCE_URL=jdbc:mariadb://host.docker.internal:3307/ordersystem ordersystem:latest
-
-# docker run -d -p 8080:8080 -e SPRING_DATASOURCE_URL=jdbc:mariadb://host.docker.internal:3307/order_system milcho0604/ordersystem:latest
-
-# docker컨테이너 실행시에 볼륨을 설정할 때에는 -v 옵션 사용
-# docker run -d -p 8081:8080 -e SPRING_DATASOURCE_URL=jdbc:mariadb://host.docker.internal:3307/board -v aaaa:bbbb spring_test:latest
-# docker run -d -p 8081:8080 -e SPRING_DATASOURCE_URL=jdbc:mariadb://host.docker.internal:3307/board -v /Users/milcho/etc:/tmp/logs spring_test:latest
-
-
