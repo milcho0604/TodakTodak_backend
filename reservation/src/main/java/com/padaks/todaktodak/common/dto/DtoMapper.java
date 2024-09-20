@@ -48,8 +48,4 @@ public interface DtoMapper {
 //    제외 하지 않으면 CreateReviewReqDto 에서 id 도 매핑하려고 했어 오류가 나거나 잘못된 값 매핑 가능성이 있음.
     @Mapping(target = "id", ignore = true)
     Review toReview(CreateReviewReqDto createReviewReqDto, Reservation reservation);
-
-    @Mapping(target = "id", ignore = true)
-    @Mapping(source = "status", target = "status")
-    Reservation toUpdateStatus(UpdateStatusReservation updateStatusReservation, @MappingTarget Reservation reservation);
 }
