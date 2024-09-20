@@ -22,13 +22,17 @@ COPY member/settings.gradle ./member/
 
 
 RUN #chmod 777 gradlew
-RUN ./gradlew bootJar
+RUN #chmod +x ./member/gradlew
+
+RUN #./gradlew bootJar
+RUN ./member/gradlew bootJar
 
 # 두번째 스테이지
 FROM openjdk:11
 WORKDIR /app
 # stage1에 있는 jar를 stage2의 app.jar라는 이름으로 copy
-COPY --from=stage1 /app/build/libs/*.jar app.jar
+#COPY --from=stage1 /app/build/libs/*.jar app.jar
+COPY --from=stage1 /app/member/build/libs/*.jar app.jar
 
 # CMD 또는 ENTRYPOINT를 통해 컨테이너를 실행
 ENTRYPOINT ["java", "-jar", "app.jar"]
