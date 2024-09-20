@@ -155,13 +155,13 @@ public class MemberService {
     // member list 조회
     public Page<MemberListResDto> memberList(Pageable pageable){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        System.out.println(email);
-        Member member = memberRepository.findByMemberEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
-        if (!member.getRole().toString().equals("TodakAdmin")){
-            throw new SecurityException("관리자만 접근이 가능합니다.");
-        }
+//
+//        System.out.println(email);
+//        Member member = memberRepository.findByMemberEmail(email)
+//                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
+//        if (!member.getRole().toString().equals("TodakAdmin")){
+//            throw new SecurityException("관리자만 접근이 가능합니다.");
+//        }
         Page<Member> members = memberRepository.findAll(pageable);
         return members.map(a -> a.listFromEntity());
     }
