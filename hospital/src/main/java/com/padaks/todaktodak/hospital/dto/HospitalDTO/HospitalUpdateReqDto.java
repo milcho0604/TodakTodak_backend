@@ -21,6 +21,8 @@ public class HospitalUpdateReqDto {
 
     private String address; // 병원주소
 
+    private String dong; // 병원주소(동)
+
     private String phoneNumber; // 병원번호
 
     private MultipartFile hospitalImage; // 병원사진
@@ -28,6 +30,8 @@ public class HospitalUpdateReqDto {
     private String description; // 병원소개
 
     private String notice; // 병원공지
+
+    private String keywords; // 병원 keywords
 
     private BigDecimal latitude; // 위도
 
@@ -38,5 +42,7 @@ public class HospitalUpdateReqDto {
     private String representativeName; // 대표자 이름
 
     private String representativePhoneNumber; // 대표자 핸드폰 번호
+
+    private Long untactFee; // 비대면진료비
 
 }
