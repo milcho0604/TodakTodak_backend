@@ -15,6 +15,7 @@ COPY member/build.gradle ./member/
 COPY member/settings.gradle ./member/
 
 # gradlew에 실행 권한 부여
+RUN ls ./member
 RUN chmod +x ./member/gradlew
 
 # BootJar 실행
