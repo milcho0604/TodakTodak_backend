@@ -52,7 +52,6 @@ public class ReservationAdminService {
     public void statusReservation(UpdateStatusReservation updateStatusReservation){
         Reservation reservation = reservationRepository.findById(updateStatusReservation.getId())
                 .orElseThrow(() -> new BaseException(RESERVATION_NOT_FOUND));
-        reservation = dtoMapper.toUpdateStatus(updateStatusReservation, reservation);
-        reservationRepository.save(reservation);
+        reservation.updateStatus(updateStatusReservation.getStatus());
     }
 }

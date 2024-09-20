@@ -65,4 +65,9 @@ public class Reservation extends BaseTimeEntity {
 
     @OneToOne(mappedBy = "reservation")
     private MedicalChart medicalChart;
+
+
+    public void updateStatus(Status status){
+        this.status = status;
+    }
 }
