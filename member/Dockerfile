@@ -5,23 +5,19 @@ FROM openjdk:11 as stage1
 WORKDIR /app
 
 # member 디렉토리의 gradlew 파일 복사
-COPY member/gradlew ./member/
+COPY gradlew ./member/
 # member 디렉토리의 gradle 폴더 복사
-COPY member/gradle ./member/gradle
+COPY gradle ./member/gradle
 # member 디렉토리의 src 복사
-COPY member/src ./member/src
+COPY src ./member/src
 # member 디렉토리의 build.gradle 및 settings.gradle 복사
-COPY member/build.gradle ./member/
-COPY member/settings.gradle ./member/
+COPY build.gradle ./member/
+COPY settings.gradle ./member/
 
 # gradlew에 실행 권한 부여
-RUN ls ./member
 RUN chmod +x ./member/gradlew
 
 # BootJar 실행
-#RUN ./member/gradlew bootJar
-
-# 작업 디렉토리 변경
 WORKDIR /app/member
 
 # BootJar 실행
