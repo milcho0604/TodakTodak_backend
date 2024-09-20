@@ -22,7 +22,7 @@ COPY member/settings.gradle ./member/
 
 
 RUN #chmod 777 gradlew
-RUN #chmod +x ./member/gradlew
+RUN chmod +x ./member/gradlew
 
 RUN #./gradlew bootJar
 RUN ./member/gradlew bootJar
