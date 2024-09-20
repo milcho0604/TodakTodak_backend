@@ -4,10 +4,16 @@ FROM openjdk:11 as stage1
 WORKDIR /app
 
 # /app/gradelw 파일로 생성
-COPY gradlew .
+#COPY gradlew .
+COPY member/gradlew ./member/
+
 # /app/gradle 폴더로 생성
-COPY gradle gradle
-COPY src src
+#COPY gradle gradle
+COPY member/gradle ./member/
+
+#COPY src src
+COPY member/src ./member/
+
 #COPY build.gradle ./member
 #COPY settings.gradle ./member/
 
@@ -15,7 +21,7 @@ COPY member/build.gradle ./member/
 COPY member/settings.gradle ./member/
 
 
-#RUN chmod 777 gradlew
+RUN #chmod 777 gradlew
 RUN ./gradlew bootJar
 
 # 두번째 스테이지
