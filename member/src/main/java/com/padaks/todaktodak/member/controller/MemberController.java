@@ -166,7 +166,7 @@ public class MemberController {
     }
 
     // member list
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/list")
     public ResponseEntity<Object> userList(Pageable pageable){
         Page<MemberListResDto> memberListResDtos = memberService.memberList(pageable);
