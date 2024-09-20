@@ -20,6 +20,7 @@ RUN chmod +x ./member/gradlew
 
 # BootJar 실행
 #RUN ./member/gradlew bootJar
+
 # 작업 디렉토리 변경
 WORKDIR /app/member
 
