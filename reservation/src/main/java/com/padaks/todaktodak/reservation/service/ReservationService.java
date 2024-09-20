@@ -9,6 +9,7 @@ import com.padaks.todaktodak.reservation.dto.CheckListReservationResDto;
 import com.padaks.todaktodak.reservation.domain.ReservationHistory;
 import com.padaks.todaktodak.reservation.domain.Status;
 import com.padaks.todaktodak.reservation.dto.ReservationSaveReqDto;
+import com.padaks.todaktodak.reservation.dto.UpdateStatusReservation;
 import com.padaks.todaktodak.reservation.repository.ReservationHistoryRepository;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
@@ -95,11 +96,11 @@ public class ReservationService {
     }
 
 //    예약 접수 기능 (병원 admin의 예약 상태 변경)
-    public Reservation receipt(Long reservationId) {
-        Reservation reservation = reservationRepository.findById(reservationId)
+    public Reservation receipt(UpdateStatusReservation updateStatusReservation) {
+        Reservation reservation = reservationRepository.findById(updateStatusReservation.getId())
                 .orElseThrow(() -> new BaseException(RESERVATION_NOT_FOUND));
 //       예약의 상태를 completed로 변경한다
-        reservation.receipt();
+        reservation.updateStatus(updateStatusReservation.getStatus());
         return reservation;
     }
 }
