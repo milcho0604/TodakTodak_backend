@@ -39,3 +39,5 @@ jobs:
 
 
 # scp -i "my-keypair.pem" /Users/milcho/code/spring/orderSystem/docker-compose.yml ubuntu@ec2-3-39-223-238.ap-northeast-2.compute.amazonaws.com:/home/ubuntu
+# scp -i "todak-keypair.pem" /Users/milcho/Project/TodakTodak_backend/docker-compose.yml ubuntu@ec2-3-39-0-201.ap-northeast-2.compute.amazonaws.com:/home/ubuntu
+# scp -i "todak-keypair.pem" /Users/milcho/Project/TodakTodak_backend/docker-compose.yml ubuntu@ec2-3-39-0-201.ap-northeast-2.compute.amazonaws.com:/home/ubuntu
