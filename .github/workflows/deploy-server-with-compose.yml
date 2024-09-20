@@ -13,7 +13,7 @@ jobs:
 
       - name: build image
         working-directory: .
-        run: docker build -t todak-member/todak-member:latest .
+        run: docker build -t milcho0604/todak-member:latest .
 
       - name: dockerhub login
         uses: docker/login-action@v1
@@ -21,7 +21,7 @@ jobs:
           username: ${{secrets.DOCKER_EMAIL}}
           password: ${{secrets.DOCKER_PASSWORD}}
       - name: push to dockerhub
-        run: docker push todak-member/todak-member:latest
+        run: docker push milcho0604/todak-member:latest
 
       - name: ec2 ssh login and docker compose update
         uses: appleboy/ssh-action@master
