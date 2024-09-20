@@ -32,6 +32,7 @@ public class AwsS3Configs {
                 .build();
     }
 
+
     @Configuration
     public static class WebConfig {
 
