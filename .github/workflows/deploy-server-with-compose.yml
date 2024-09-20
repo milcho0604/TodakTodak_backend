@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: build image
-        working-directory: .
+        working-directory: ./member
         run: docker build -t milcho0604/todak-member:latest .
 
       - name: dockerhub login
