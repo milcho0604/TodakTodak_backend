@@ -18,7 +18,7 @@ public class MedicalChartSaveReqDto {
         return MedicalChart.builder()
                 .reservation(reservation)
                 .fee(fee)
-                .paymentStatus(MedicalChart.PaymentStatus.결제요청)
+                .medicalStatus(MedicalChart.MedicalStatus.진료중)
                 .build();
     }
 }
