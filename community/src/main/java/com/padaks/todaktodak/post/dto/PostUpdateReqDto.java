@@ -12,10 +12,10 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PostUpdateDto {
+public class PostUpdateReqDto {
     private String memberEmail;
     private String title;
     private String content;
-    private MultipartFile postImgUrl;
+    private MultipartFile postImg;
     private LocalDateTime updateTime;
 }

@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class PostListDto {
     private Long id;
-    private String title;
     private String memberEmail;
+    private String title;
     private String content;
     private int likeCount;
     private int viewCount;
