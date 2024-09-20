@@ -16,6 +16,8 @@ public class HospitalRegisterReqDto {
 
     private String address; // 병원주소
 
+    private String dong; // 병원주소(동)
+
     private String phoneNumber; // 병원번호
 
     private MultipartFile hospitalImage; // 병원사진
@@ -44,6 +46,7 @@ public class HospitalRegisterReqDto {
         return Hospital.builder()
                 .name(dto.getName())
                 .address(dto.getAddress())
+                .dong(dto.getDong())
                 .phoneNumber(dto.getPhoneNumber())
                 .description(dto.getDescription())
                 .keywords(dto.getKeywords())

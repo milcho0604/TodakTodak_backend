@@ -33,6 +33,8 @@ public class Hospital extends BaseTimeEntity {
     @Column(nullable = false, unique = true)
     private String address; // 병원주소
 
+    private String dong; // 병원주소(동)
+
     @Column(nullable = false, unique = true)
     private String phoneNumber; // 병원번호
 
@@ -74,6 +76,7 @@ public class Hospital extends BaseTimeEntity {
     public void updateHospitalInfo(HospitalUpdateReqDto dto){
         this.name = dto.getName();
         this.address = dto.getAddress();
+        this.dong = dto.getDong();
         this.phoneNumber = dto.getPhoneNumber();
         this.description = dto.getDescription();
         this.notice = dto.getNotice();

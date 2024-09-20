@@ -38,8 +38,6 @@ public class HospitalController {
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원정보 조회성공", hospitalDetail), HttpStatus.OK);
     }
 
-    // TODO : 병원리스트 조회api
-
     // 병원정보 수정 (병원 admin, 개발자admin)
     @PostMapping("/update")
     public ResponseEntity<Object> updateHospital(@ModelAttribute HospitalUpdateReqDto hospitalUpdateReqDto){
@@ -53,4 +51,6 @@ public class HospitalController {
         hospitalService.deleteHospital(id);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원 삭제성공", null), HttpStatus.OK);
     }
+
+    // 병원리스트 조회
 }
