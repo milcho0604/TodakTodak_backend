@@ -2,12 +2,14 @@ package com.padaks.todaktodak.post.domain;
 
 import com.padaks.todaktodak.comment.domain.Comment;
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
+import com.padaks.todaktodak.post.dto.PostListDto;
 import com.padaks.todaktodak.report.domain.Report;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -32,11 +34,25 @@ public class Post extends BaseTimeEntity {
     private String postImgUrl;
     @ColumnDefault("0")
     private int likeCount;
+    @ColumnDefault("0")
+    private int viewCount;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Comment> commentList = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Report> reportList = new ArrayList<>();
+
+    public PostListDto listFromEntity(){
+        return PostListDto.builder()
+                .id(this.id)
+                .title(this.title)
+                .memberEmail(this.memberEmail)
+                .content(this.content)
+                .likeCount(this.likeCount)
+                .viewCount(this.viewCount)
+                .createdTimeAt(this.getCreatedTimeAt())
+                .build();
+    }
 
 }
