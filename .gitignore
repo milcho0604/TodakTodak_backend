@@ -1,4 +1,2 @@
-application.yml
 docker-compose.yml
-src/main/resources/**.yml
 ./docker-compose.yml
