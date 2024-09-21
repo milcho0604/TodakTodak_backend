@@ -1,14 +1,11 @@
 package com.padaks.todaktodak.reservation.domain;
 
-import com.padaks.todaktodak.charroom.domain.ChatRoom;
+import com.padaks.todaktodak.chatroom.domain.ChatRoom;
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
 import com.padaks.todaktodak.medicalchart.domain.MedicalChart;
-import com.padaks.todaktodak.notification.domain.Notification;
+import com.padaks.todaktodak.reservationnotification.domain.Notification;
 import com.padaks.todaktodak.review.domain.Review;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -68,4 +65,9 @@ public class Reservation extends BaseTimeEntity {
 
     @OneToOne(mappedBy = "reservation")
     private MedicalChart medicalChart;
+
+
+    public void updateStatus(Status status){
+        this.status = status;
+    }
 }

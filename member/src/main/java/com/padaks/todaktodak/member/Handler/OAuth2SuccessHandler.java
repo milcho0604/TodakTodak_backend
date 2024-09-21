@@ -1,6 +1,6 @@
 package com.padaks.todaktodak.member.Handler;
 
-import com.padaks.todaktodak.config.JwtTokenprovider;
+import com.padaks.todaktodak.config.JwtTokenProvider;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ import java.util.Map;
 @Component
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private final JwtTokenprovider jwtTokenprovider;
+    private final JwtTokenProvider jwtTokenprovider;
     private final MemberRepository memberRepository;
 
     @Override

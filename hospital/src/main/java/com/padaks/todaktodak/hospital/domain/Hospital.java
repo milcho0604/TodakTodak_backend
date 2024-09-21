@@ -33,6 +33,8 @@ public class Hospital extends BaseTimeEntity {
     @Column(nullable = false, unique = true)
     private String address; // 병원주소
 
+    private String dong; // 병원주소(동)
+
     @Column(nullable = false, unique = true)
     private String phoneNumber; // 병원번호
 
@@ -41,6 +43,8 @@ public class Hospital extends BaseTimeEntity {
     private String description; // 병원소개
 
     private String notice; // 병원공지
+
+    private String keywords; // 병원 keywords
 
     @Column(precision = 9, scale = 6) // 최대 9자리, 소수점 이하 6자리
     private BigDecimal latitude; // 위도
@@ -53,6 +57,8 @@ public class Hospital extends BaseTimeEntity {
     private String representativeName; // 대표자 이름
 
     private String representativePhoneNumber; // 대표자 핸드폰 번호
+
+    private Long untactFee; // 비대면진료비
 
     @OneToMany(mappedBy = "hospital", cascade = CascadeType.ALL)
     private List<Doctor> doctor;
@@ -70,13 +76,16 @@ public class Hospital extends BaseTimeEntity {
     public void updateHospitalInfo(HospitalUpdateReqDto dto){
         this.name = dto.getName();
         this.address = dto.getAddress();
+        this.dong = dto.getDong();
         this.phoneNumber = dto.getPhoneNumber();
         this.description = dto.getDescription();
         this.notice = dto.getNotice();
+        this.keywords = dto.getKeywords();
         this.latitude = dto.getLatitude();
         this.longitude = dto.getLongitude();
         this.businessRegistrationInfo = dto.getBusinessRegistrationInfo();
         this.representativeName = dto.getRepresentativeName();
         this.representativePhoneNumber = dto.getRepresentativePhoneNumber();
+        this.untactFee = dto.getUntactFee();
     }
 }

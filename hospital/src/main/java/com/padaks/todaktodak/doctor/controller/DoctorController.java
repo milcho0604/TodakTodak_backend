@@ -89,5 +89,29 @@ public class DoctorController {
                     .body(new CommonResDto(HttpStatus.BAD_REQUEST, "회원 탈퇴에 실패하였습니다", null));
         }
     }
+
+    // java 라이브러리 메일 서비스 : 인증 코드 전송
+    @PostMapping("/send-verification-code")
+    public ResponseEntity<?> sendVerificationCode(@RequestBody EmailVerificationDto verificationDto) {
+        doctorService.sendVerificationEmail(verificationDto.getMemberEmail());
+        return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "인증 코드 전송에 성공하였습니다.", null));
+    }
+    // java 라이브러리 메일 서비스 : 인증 코드 확인
+    @PostMapping("/verify-email")
+    public ResponseEntity<?> verifyEmail(@RequestBody EmailVerificationDto verificationDto) {
+        try {
+            boolean isVerified = doctorService.verifyEmail(verificationDto.getMemberEmail(), verificationDto.getCode());
+            if (isVerified) {
+                return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "이메일 인증에 성공하였습니다.", isVerified));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new CommonResDto(HttpStatus.BAD_REQUEST, "이메일 인증에 실패했습니다.", null));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new CommonResDto(HttpStatus.BAD_REQUEST, "이메일 인증에 실패했습니다: " + e.getMessage(), null));
+        }
+    }
 }
 

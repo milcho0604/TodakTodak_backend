@@ -2,15 +2,14 @@ package com.padaks.todaktodak.common.dto;
 
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.domain.ReserveType;
-import com.padaks.todaktodak.reservation.dto.CheckListReservationReqDto;
-import com.padaks.todaktodak.reservation.dto.ResType;
+import com.padaks.todaktodak.reservation.dto.*;
 import com.padaks.todaktodak.reservation.domain.ReservationHistory;
-import com.padaks.todaktodak.reservation.dto.ReservationSaveReqDto;
 import com.padaks.todaktodak.review.domain.Review;
 import com.padaks.todaktodak.review.dto.CreateReviewReqDto;
 import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
 // Mapper 어노테이션을 붙이면 MapStruct 가 자동으로 DtoMapper 구현체를 생성해준다.
@@ -40,6 +39,8 @@ public interface DtoMapper {
         }
     }
     ReservationHistory toReservationHistory(Reservation reservation);
+
+    CheckHospitalListReservationResDto toHospitalListReservation(Reservation reservation);
 
 //    Review 의 reservation 을 파라미터로 받음 reservation으로 매핑.
     @Mapping(source = "reservation", target = "reservation")

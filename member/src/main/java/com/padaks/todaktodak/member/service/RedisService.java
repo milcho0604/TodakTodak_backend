@@ -17,7 +17,7 @@ public class RedisService {
             throw new IllegalArgumentException("Email and code must not be null");
         }
         redisTemplate.opsForValue().set(memberEmail, code, 10, TimeUnit.MINUTES);
-        System.out.println("Redis에 저장된 코드: " + code);  // 인증 코드 디버깅 출력
+        System.out.println("Redis에 저장된 코드: " + code);  // 인증 코드 디버깅 출력, 시간 제한
     }
 
     public boolean verifyCode(String memberEmail, String code) {

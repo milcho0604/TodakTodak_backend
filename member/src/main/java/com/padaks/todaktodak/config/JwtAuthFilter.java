@@ -16,11 +16,11 @@ import java.io.IOException;
 
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private final JwtTokenprovider jwtTokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailsService userDetailsService;
     private final MemberRepository memberRepository;
 
-    public JwtAuthFilter(JwtTokenprovider jwtTokenProvider, UserDetailsService userDetailsService, MemberRepository memberRepository) {
+    public JwtAuthFilter(JwtTokenProvider jwtTokenProvider, UserDetailsService userDetailsService, MemberRepository memberRepository) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.userDetailsService = userDetailsService;
         this.memberRepository = memberRepository;

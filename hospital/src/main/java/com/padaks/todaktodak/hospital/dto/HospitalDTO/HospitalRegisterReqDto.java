@@ -16,6 +16,8 @@ public class HospitalRegisterReqDto {
 
     private String address; // 병원주소
 
+    private String dong; // 병원주소(동)
+
     private String phoneNumber; // 병원번호
 
     private MultipartFile hospitalImage; // 병원사진
@@ -23,6 +25,8 @@ public class HospitalRegisterReqDto {
     private String description; // 병원소개
 
     private String notice; // 병원공지
+
+    private String keywords; // 병원 keywords
 
     private BigDecimal latitude; // 위도
 
@@ -34,20 +38,25 @@ public class HospitalRegisterReqDto {
 
     private String representativePhoneNumber; // 대표자 핸드폰 번호
 
+    private Long untactFee; // 비대면진료비
+
     public static Hospital toEntity(HospitalRegisterReqDto dto,
                                String hospitalImageUrl
                                 ){
         return Hospital.builder()
                 .name(dto.getName())
                 .address(dto.getAddress())
+                .dong(dto.getDong())
                 .phoneNumber(dto.getPhoneNumber())
                 .description(dto.getDescription())
+                .keywords(dto.getKeywords())
                 .notice(dto.getNotice())
                 .latitude(dto.getLatitude())
                 .longitude(dto.getLongitude())
                 .businessRegistrationInfo(dto.getBusinessRegistrationInfo())
                 .representativeName(dto.getRepresentativeName())
                 .representativePhoneNumber(dto.getRepresentativePhoneNumber())
+                .untactFee(dto.getUntactFee())
                 .hospitalImageUrl(hospitalImageUrl) // 업로드한 이미지의 URL을 저장
                 .build();
     }
