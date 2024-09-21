@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
@@ -107,13 +108,20 @@ public class MemberController {
     }
 
     // 회원 정보 수정
-    @PostMapping("edit-info")
-    public ResponseEntity<?> editMemberInfo(@ModelAttribute MemberUpdateReqDto updateReqDto) {
+    @PostMapping("/edit-info")
+    public ResponseEntity<?> editMemberInfo(
+            @ModelAttribute MemberUpdateReqDto updateReqDto) {
         try {
             String email = SecurityContextHolder.getContext().getAuthentication().getName();
             Member member = memberService.findByMemberEmail(email);
-            memberService.updateMember(updateReqDto); // imageSsr 제거
-            return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "회원 정보를 수정하였습니다.", null));
+
+            // 회원 정보 업데이트
+            memberService.updateMember(member, updateReqDto); // profileImage 추가
+
+            return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "회원 정보를 수정하였습니다.", member));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new CommonResDto(HttpStatus.NOT_FOUND, "회원 정보가 존재하지 않습니다. -> " + e.getMessage(), null));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)

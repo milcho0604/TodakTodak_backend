@@ -2,6 +2,7 @@ package com.padaks.todaktodak.member.domain;
 
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
 import com.padaks.todaktodak.member.dto.MemberListResDto;
+import com.padaks.todaktodak.member.dto.MemberUpdateReqDto;
 import lombok.*;
 import com.padaks.todaktodak.childparentsrelationship.domain.ChildParentsRelationship;
 import org.hibernate.annotations.ColumnDefault;
@@ -14,14 +15,14 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Data
+@Getter
 public class Member extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
-//    @Column
+    //    @Column
 //    private Long familyId;
     private String name;
     @Column(nullable = false, unique = true)
@@ -70,6 +71,40 @@ public class Member extends BaseTimeEntity {
     public Member updateName(String name) {
         this.name = name;
         return this;
+    }
+
+    // member update 사용
+//    public Member updateToEntity(Address address, String name, String phone) {
+//        return Member.builder()
+//                .address(address != null ? address : this.address) // null 체크
+//                .name(name != null ? name : this.name) // null 체크
+//                .phoneNumber(phone != null ? phone : this.phoneNumber) // null 체크
+//                .build();
+//    }
+
+    // 프로필 이미지 URL 변경
+    public void changeProfileImgUrl(String newUrl) {
+        this.profileImgUrl = newUrl;
+    }
+
+    // 이름 변경
+    public void changeName(String newName) {
+        this.name = newName;
+    }
+
+    // 전화번호 변경
+    public void changePhoneNumber(String newPhoneNumber) {
+        this.phoneNumber = newPhoneNumber;
+    }
+
+    // 주소 변경
+    public void changeAddress(Address newAddress) {
+        this.address = newAddress;
+    }
+
+    // 비밀번호 변경
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
     }
 
     public String getRoleKey() {

@@ -98,29 +98,53 @@ public class MemberService {
         }
     }
 
-    public void updateMember(MemberUpdateReqDto editReqDto) {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        Member savedMember = memberRepository.findByMemberEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다"));
+    public void updateMember(Member member, MemberUpdateReqDto editReqDto) {
+        boolean isUpdated = false; // 업데이트 여부를 체크할 변수
 
+        System.out.println("editReq는?");
+        System.out.println(editReqDto);
         // 비밀번호 수정
         if (editReqDto.getPassword() != null && !editReqDto.getPassword().isEmpty()) {
-            validatePassword(editReqDto.getPassword(), editReqDto.getConfirmPassword(), savedMember.getPassword());
-            savedMember.setPassword(passwordEncoder.encode(editReqDto.getPassword()));
+            validatePassword(editReqDto.getPassword(), editReqDto.getConfirmPassword(), member.getPassword());
+            member.changePassword(passwordEncoder.encode(editReqDto.getPassword()));
+            System.out.println("비밀번호가 변경되었습니다.");
+            isUpdated = true; // 업데이트 표시
         }
 
         // 프로필 이미지 수정
         if (editReqDto.getProfileImage() != null && !editReqDto.getProfileImage().isEmpty()) {
             String imageUrl = s3ClientFileUpload.upload(editReqDto.getProfileImage(), bucketName);
-            savedMember.setProfileImgUrl(imageUrl); // 새로운 URL로 업데이트
+            member.changeProfileImgUrl(imageUrl);
         }
 
         // 이름, 전화번호, 주소 업데이트
-        savedMember.setName(editReqDto.getName());
-        savedMember.setPhoneNumber(editReqDto.getPhone());
-        savedMember.setAddress(editReqDto.getAddress());
+        if (editReqDto.getName() != null) {
+            member.changeName(editReqDto.getName());
+            System.out.println("이름이 변경되었습니다: " + member.getName());
+            isUpdated = true;
+        }
+        if (editReqDto.getPhoneNumber() != null) {
+            System.out.println("real");
+            System.out.println(editReqDto.getPhoneNumber());
+            member.changePhoneNumber(editReqDto.getPhoneNumber());
+            System.out.println("change");
+            System.out.println(member.getPhoneNumber());
+            System.out.println("전화번호가 변경되었습니다: " + member.getPhoneNumber());
+            isUpdated = true;
+        }
+        if (editReqDto.getAddress() != null) {
+            member.changeAddress(editReqDto.getAddress());
+            System.out.println("주소가 변경되었습니다: " + member.getAddress());
+            isUpdated = true;
+        }
 
-        memberRepository.save(savedMember); // 수정된 회원 정보 저장
+        // 수정된 회원 정보 저장
+        if (isUpdated) {
+            memberRepository.save(member);
+            System.out.println("회원 정보가 저장되었습니다.");
+        } else {
+            System.out.println("변경된 정보가 없습니다.");
+        }
     }
 
     // 회원 탈퇴
