@@ -1,6 +1,7 @@
 package com.padaks.todaktodak.untact.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.web.socket.WebSocketSession;
 
 //import javax.validation.constraints.NotNull;
@@ -12,6 +13,7 @@ public class Room {
 //    @NotNull
     private final Long id;
     // sockets by user names
+    @JsonIgnore
     private final Map<String, WebSocketSession> clients = new HashMap<>();
 
     public Room(Long id) {
