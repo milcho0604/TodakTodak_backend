@@ -3,6 +3,7 @@ package com.padaks.todaktodak.comment.service;
 import com.padaks.todaktodak.comment.domain.Comment;
 import com.padaks.todaktodak.comment.dto.CommentDetailDto;
 import com.padaks.todaktodak.comment.dto.CommentSaveDto;
+import com.padaks.todaktodak.comment.dto.CommentUpdateReqDto;
 import com.padaks.todaktodak.comment.repository.CommentRepository;
 import com.padaks.todaktodak.communitynotification.controller.SseController;
 import com.padaks.todaktodak.communitynotification.domain.Notification;
@@ -64,6 +65,13 @@ public class CommentService {
     public Page<CommentDetailDto> CommentListByDoctorId(String doctorEmail, Pageable pageable){
         Page<Comment> comments = commentRepository.findByDoctorEmail(doctorEmail, pageable);
         return comments.map(a->a.listFromEntity());
+    }
+
+    public void updateComment(Long id, CommentUpdateReqDto dto){
+        Comment comment = commentRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("존재하지 않는 comment입니다."));
+        comment.update(dto);
+        commentRepository.save(comment);
+
     }
 
     public void deleteComment(Long id){

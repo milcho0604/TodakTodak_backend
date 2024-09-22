@@ -1,6 +1,7 @@
 package com.padaks.todaktodak.comment.domain;
 
 import com.padaks.todaktodak.comment.dto.CommentDetailDto;
+import com.padaks.todaktodak.comment.dto.CommentUpdateReqDto;
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
 
 import com.padaks.todaktodak.communitynotification.domain.Notification;
@@ -47,6 +48,11 @@ public class Comment extends BaseTimeEntity{
                 .createdTimeAt(this.getCreatedTimeAt())
                 .updatedTimeAt(this.getUpdatedTimeAt())
                 .build();
+    }
+
+    public Comment update(CommentUpdateReqDto dto){
+        this.content = dto.getContent();
+        return this;
     }
 
 }

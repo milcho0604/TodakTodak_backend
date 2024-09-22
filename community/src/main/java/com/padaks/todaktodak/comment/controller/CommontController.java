@@ -2,6 +2,7 @@ package com.padaks.todaktodak.comment.controller;
 
 import com.padaks.todaktodak.comment.dto.CommentDetailDto;
 import com.padaks.todaktodak.comment.dto.CommentSaveDto;
+import com.padaks.todaktodak.comment.dto.CommentUpdateReqDto;
 import com.padaks.todaktodak.comment.service.CommentService;
 import com.padaks.todaktodak.common.dto.CommonErrorDto;
 import com.padaks.todaktodak.common.dto.CommonResDto;
@@ -51,6 +52,18 @@ public class CommontController {
             CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.NOT_FOUND, e.getMessage());
             return new ResponseEntity<>(commonErrorDto, HttpStatus.NOT_FOUND);
         }
+    }
 
+    @PostMapping("/update/{id}")
+    public ResponseEntity<?> updateComment(@PathVariable Long id, @RequestBody CommentUpdateReqDto dto){
+        try {
+            commentService.updateComment(id, dto);
+            CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "comment가 성공적으로 수정되었습니다.", id);
+            return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+        }catch (EntityNotFoundException e){
+            e.printStackTrace();
+            CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.NOT_FOUND, e.getMessage());
+            return new ResponseEntity<>(commonErrorDto, HttpStatus.NOT_FOUND);
+        }
     }
 }
