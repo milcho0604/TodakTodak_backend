@@ -60,7 +60,7 @@ public class PostService {
     }
 
     @Transactional
-    public void postUpdate(Long id, PostUpdateReqDto dto){
+    public void updatePost(Long id, PostUpdateReqDto dto){
         Post post = postRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("존재하지 않는 Post입니다."));
         MultipartFile image = dto.getPostImg();
         if (image != null && !image.isEmpty()){
