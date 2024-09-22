@@ -38,13 +38,13 @@ dependencies {
 	annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.2.0"
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
 //	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-
 	// 파일처리를 위한 aws 의존성 추가
 	implementation 'software.amazon.awssdk:s3:2.17.58'
 	//	feignclient 의존성
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+	// websocket 의존성
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 }
 
 ext{
