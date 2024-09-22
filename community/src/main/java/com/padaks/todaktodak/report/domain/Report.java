@@ -3,6 +3,7 @@ package com.padaks.todaktodak.report.domain;
 import com.padaks.todaktodak.comment.domain.Comment;
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
 import com.padaks.todaktodak.post.domain.Post;
+import com.padaks.todaktodak.report.dto.ReportListResDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,4 +38,16 @@ public class Report extends BaseTimeEntity {
     @ManyToOne
     @JoinColumn(name = "comment_id")
     private Comment comment;
+
+    public ReportListResDto listFromEntity(){
+        return ReportListResDto.builder()
+                .id(this.id)
+                .reporterEmail(this.reporterEmail)
+                .reportedEmail(this.reportedEmail)
+                .reason(this.reason)
+                .postId(this.post != null ? this.post.getId() : null)
+                .commentId(this.comment != null ? this.comment.getId() : null)
+                .createdTimeAt(this.getCreatedTimeAt())
+                .build();
+    }
 }

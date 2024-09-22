@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ReportRepository extends JpaRepository<Report, Long> {
     Page<Report> findByPostIsNotNull(Pageable pageable);
+    Page<Report> findByCommentIsNotNull(Pageable pageable);
 }
