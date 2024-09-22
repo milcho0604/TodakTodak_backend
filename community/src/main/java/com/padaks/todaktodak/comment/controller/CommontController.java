@@ -66,4 +66,17 @@ public class CommontController {
             return new ResponseEntity<>(commonErrorDto, HttpStatus.NOT_FOUND);
         }
     }
+
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<?> deleteComment(@PathVariable Long id){
+        try {
+            commentService.deleteComment(id);
+            CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "comment가 성공적으로 삭제되었습니다.", id);
+            return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+        }catch (EntityNotFoundException e){
+            e.printStackTrace();
+            CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.BAD_REQUEST, e.getMessage());
+            return new ResponseEntity(commonErrorDto, HttpStatus.BAD_REQUEST);
+        }
+    }
 }
