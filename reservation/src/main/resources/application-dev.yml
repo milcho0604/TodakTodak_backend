@@ -46,7 +46,9 @@ spring:
     multipart:
       maxFileSize: 5120MB # 최대 5GB
       maxRequestSize: 5120MB # 최대 5GB
-
+  # websocket을 위한 settings
+  main:
+    allow-bean-definition-overriding: true
   # Email settings
   mail:
     host: smtp.gmail.com
