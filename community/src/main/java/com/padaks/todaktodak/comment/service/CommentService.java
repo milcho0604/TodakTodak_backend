@@ -36,7 +36,15 @@ public class CommentService {
         Comment savedComment;
         if (dto.getPostId() != null){
             Post post = postRepository.findById(dto.getPostId()).orElseThrow(()-> new EntityNotFoundException("존재하지 않는 post입니다."));
-            savedComment = commentRepository.save(dto.toEntity(post));
+
+            //부모 댓글이 있는 경우
+            if (dto.getParentId() != null){
+                Comment parentComment = commentRepository.findById(dto.getParentId()).orElseThrow(()->new EntityNotFoundException("존재하지 않는 부모 댓글입니다."));
+                savedComment = commentRepository.save(dto.toEntity(post, parentComment));
+            }else {
+                //부모댓글 없는 경우 새로운 댓글 생성
+                savedComment = commentRepository.save(dto.toEntity(post, null));
+            }
 
             //post 작성자에게 알림 전송
 //            Notification notification = new Notification();
