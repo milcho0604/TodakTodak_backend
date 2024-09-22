@@ -36,6 +36,11 @@ public class Comment extends BaseTimeEntity{
     @JoinColumn(name = "post_id")
     private Post post;
 
+    //댓글 대댓글, 대대댓글... 관계
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Comment parent;
+
     @OneToMany(mappedBy = "comment")
     @Builder.Default
     private List<Notification> communityNotificationList = new ArrayList<>();

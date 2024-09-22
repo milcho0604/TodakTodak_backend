@@ -16,18 +16,21 @@ import java.time.LocalDateTime;
 @Builder
 public class CommentSaveDto {
     private Long id;
+    @NotEmpty(message = "postId is essential")
     private Long postId;
+    private Long parentId; //대댓글 기능을 위해 추가 : 부모 댓글 ID
     @NotEmpty(message = "doctor Email is essential")
     private String doctorEmail;
     @NotEmpty(message = "content is essential")
     private String content;
 
-    public Comment toEntity(Post post){
+    public Comment toEntity(Post post, Comment parent){
         return Comment.builder()
                 .post(post)
                 .id(this.id)
                 .doctorEmail(this.doctorEmail)
                 .content(this.content)
+                .parent(parent)
                 .build();
     }
 }
