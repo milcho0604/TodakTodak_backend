@@ -43,7 +43,7 @@ public class PaymentController {
 
     // 결제 취소 처리
     @PostMapping("/cancel")
-    public ResponseEntity<String> cancelPayment(@RequestParam String impUid) {
+    public ResponseEntity<String> cancelPayment(@RequestBody String impUid) {
         try {
             IamportResponse<Payment> cancelResponse = paymentService.cancelPayment(impUid);
             return ResponseEntity.ok("결제 취소 성공: " + cancelResponse.getResponse().getImpUid());

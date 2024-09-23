@@ -39,12 +39,24 @@ public class PaymentService {
         return member;
     }
 
+    // impUid를 파싱하는 메서드
+    private String extractImpUid(String impUidJson) {
+        try {
+            // JSON 파싱을 통해 impUid 값 추출 (예: Jackson 사용)
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, String> map = objectMapper.readValue(impUidJson, Map.class);
+            return map.get("impUid");
+        } catch (Exception e) {
+            throw new RuntimeException("impUid 값을 추출하는 중 오류 발생", e);
+        }
+    }
+
     // 결제 로직 구현
     public PaymentReqDto processPayment(String impUid) {
         MemberDto member = getMemberInfo();  // 현재 로그인한 사용자 정보
-        System.out.println(impUid);
+//        System.out.println(impUid);
         String actualImpUid = extractImpUid(impUid);  // impUid 값 추출 함수 사용
-        System.out.println("Extracted impUid: " + actualImpUid);
+//        System.out.println("Extracted impUid: " + actualImpUid);
 
         try {
             // impUid를 통해 결제 정보 확인
@@ -101,7 +113,10 @@ public class PaymentService {
 
     // 결제 취소 메소드
     public IamportResponse<Payment> cancelPayment(String impUid) throws Exception {
-        CancelData cancelData = new CancelData(impUid, true);  // impUid와 함께 결제 취소를 요청
+        String actualImpUid = extractImpUid(impUid);  // impUid 값 추출 함수 사용
+        System.out.println(impUid);
+        System.out.println(actualImpUid);
+        CancelData cancelData = new CancelData(actualImpUid, true);  // impUid와 함께 결제 취소를 요청
 
         IamportResponse<Payment> cancelResponse = iamportClient.cancelPaymentByImpUid(cancelData);
 
@@ -113,14 +128,5 @@ public class PaymentService {
         }
         return cancelResponse;
     }
-    private String extractImpUid(String impUidJson) {
-        try {
-            // JSON 파싱을 통해 impUid 값 추출 (예: Jackson 사용)
-            ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, String> map = objectMapper.readValue(impUidJson, Map.class);
-            return map.get("impUid");
-        } catch (Exception e) {
-            throw new RuntimeException("impUid 값을 추출하는 중 오류 발생", e);
-        }
-    }
+
 }
