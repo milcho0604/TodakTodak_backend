@@ -1,5 +1,6 @@
 package com.padaks.todaktodak.payment.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.padaks.todaktodak.payment.domain.Pay;
 import com.padaks.todaktodak.payment.domain.PaymentMethod;
 import com.padaks.todaktodak.payment.dto.MemberDto;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -33,17 +35,21 @@ public class PaymentService {
     // member 객체 리턴, 토큰 포함
     public MemberDto getMemberInfo() {
         MemberDto member = memberFeignClient.getMemberEmail();  // Feign Client에 토큰 추가
-        System.out.println("멤버 디버깅을 위한: " + member);
+//        System.out.println("멤버 디버깅을 위한: " + member);
         return member;
     }
 
     // 결제 로직 구현
     public PaymentReqDto processPayment(String impUid) {
         MemberDto member = getMemberInfo();  // 현재 로그인한 사용자 정보
+        System.out.println(impUid);
+        String actualImpUid = extractImpUid(impUid);  // impUid 값 추출 함수 사용
+        System.out.println("Extracted impUid: " + actualImpUid);
 
         try {
             // impUid를 통해 결제 정보 확인
-            IamportResponse<Payment> paymentResponse = iamportClient.paymentByImpUid(impUid);
+            System.out.println(actualImpUid);
+            IamportResponse<Payment> paymentResponse = iamportClient.paymentByImpUid(actualImpUid);
 
             // 결제 정보가 존재하는지 확인
             if (paymentResponse.getResponse() == null) {
@@ -58,7 +64,7 @@ public class PaymentService {
             // Pay 엔티티 생성 후 저장
             Pay pay = Pay.builder()
                     .memberEmail(member.getMemberEmail())
-                    .impUid(impUid)
+                    .impUid(actualImpUid)
                     .amount(100)
                     .buyerName(member.getName())
                     .buyerTel(member.getPhoneNumber())
@@ -106,5 +112,15 @@ public class PaymentService {
             throw new Exception("결제 취소 실패: " + cancelResponse.getMessage());
         }
         return cancelResponse;
+    }
+    private String extractImpUid(String impUidJson) {
+        try {
+            // JSON 파싱을 통해 impUid 값 추출 (예: Jackson 사용)
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, String> map = objectMapper.readValue(impUidJson, Map.class);
+            return map.get("impUid");
+        } catch (Exception e) {
+            throw new RuntimeException("impUid 값을 추출하는 중 오류 발생", e);
+        }
     }
 }

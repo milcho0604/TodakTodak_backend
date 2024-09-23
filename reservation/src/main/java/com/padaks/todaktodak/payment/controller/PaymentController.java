@@ -31,8 +31,9 @@ public class PaymentController {
 
     // 결제 요청 처리
     @PostMapping("/process")
-    public ResponseEntity<PaymentReqDto> processPayment(@RequestParam String impUid) {
+    public ResponseEntity<PaymentReqDto> processPayment(@RequestBody String impUid) {
         try {
+            System.out.println("Received impUid: " + impUid);
             PaymentReqDto paymentDto = paymentService.processPayment(impUid);
             return ResponseEntity.ok(paymentDto);
         } catch (Exception e) {
