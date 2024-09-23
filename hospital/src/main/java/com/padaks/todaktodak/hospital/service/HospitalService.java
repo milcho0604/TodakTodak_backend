@@ -94,11 +94,16 @@ public class HospitalService {
 
         List<Hospital> hospitalList = hospitalRepository.findByDongAndDeletedAtIsNull(dong);
         List<HospitalListResDto> dtoList = new ArrayList<>();
+        String distance = null;
+        Long standby = null; // 실시간 대기자 수 : 이후 redis 붙일예정
 
         for(Hospital hospital : hospitalList){
-
+            // 병원과 사용자 간의 직선 거리 계산
+            distance = distanceCalculator.calculateDistance(hospital.getLatitude(), hospital.getLongitude(), latitude, longitude);
+            HospitalListResDto dto = HospitalListResDto.fromEntity(hospital, standby, distance);
+            dtoList.add(dto);
         }
-        return null;
+        return dtoList;
     }
 
 }
