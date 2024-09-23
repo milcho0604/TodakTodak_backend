@@ -2,14 +2,11 @@ package com.padaks.todaktodak.hospital.service;
 
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.common.exception.exceptionType.HospitalExceptionType;
-import com.padaks.todaktodak.hospital.dto.HospitalDTO.HospitalUpdateReqDto;
-import com.padaks.todaktodak.hospital.dto.HospitalDTO.HospitalUpdateResDto;
+import com.padaks.todaktodak.hospital.dto.HospitalDTO.*;
 import com.padaks.todaktodak.util.DistanceCalculator;
 import com.padaks.todaktodak.util.S3ClientFileUpload;
 import com.padaks.todaktodak.hospital.domain.Hospital;
 import com.padaks.todaktodak.common.dto.DtoMapper;
-import com.padaks.todaktodak.hospital.dto.HospitalDTO.HospitalDetailResDto;
-import com.padaks.todaktodak.hospital.dto.HospitalDTO.HospitalRegisterReqDto;
 import com.padaks.todaktodak.hospital.repository.HospitalRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Service
@@ -28,7 +27,6 @@ import java.math.BigDecimal;
 public class HospitalService {
     private final HospitalRepository hospitalRepository;
     private final S3ClientFileUpload s3ClientFileUpload;
-    private final DtoMapper dtoMapper;
     private final DistanceCalculator distanceCalculator;
 
     @Value("${cloud.aws.s3.bucket}")
@@ -53,7 +51,7 @@ public class HospitalService {
         Hospital hospital = hospitalRepository.findByIdOrThrow(id);
 
         // 병원과 사용자 간의 직선 거리 계산
-        String distance = DistanceCalculator.calculateDistance(
+        String distance = distanceCalculator.calculateDistance(
                 hospital.getLatitude(), hospital.getLongitude(), latitude, longitude);
 
         // TODO : 이후 레디스에서 실시간 대기자수 값 가져오기
@@ -88,5 +86,19 @@ public class HospitalService {
         hospital.updateDeleteAt();
     }
 
+    // 병원 리스트 조회 ('~~동' 주소기준)
+    // TODO - 정렬조건 : 거리가까운 순, 대기자 적은 순
+    public List<HospitalListResDto> getHospitalList(String dong,
+                                                    BigDecimal latitude,
+                                                    BigDecimal longitude){
+
+        List<Hospital> hospitalList = hospitalRepository.findByDongAndDeletedAtIsNull(dong);
+        List<HospitalListResDto> dtoList = new ArrayList<>();
+
+        for(Hospital hospital : hospitalList){
+
+        }
+        return null;
+    }
 
 }
