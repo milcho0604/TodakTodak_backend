@@ -40,14 +40,14 @@ public class HospitalOperatingHoursController {
                                                        @RequestBody HospitalOperatingHoursReqDto dto) {
 
         hospitalOperatingHoursService.updateOperatingHours(hospitalId, operatingHoursId, dto);
-        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원영업시간 수정 성공", null), HttpStatus.OK);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원영업시간 수정 성공", hospitalId), HttpStatus.OK);
     }
 
     // 병원 특정 영업시간 삭제
     @DeleteMapping("/delete/{operatingHoursId}")
     public ResponseEntity<Object> deleteOperatingHours(@PathVariable Long operatingHoursId){
         hospitalOperatingHoursService.deleteOperatingHours(operatingHoursId);
-        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원영업시간 삭제 성공", null), HttpStatus.OK);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원영업시간 삭제 성공", operatingHoursId), HttpStatus.OK);
     }
 
 }

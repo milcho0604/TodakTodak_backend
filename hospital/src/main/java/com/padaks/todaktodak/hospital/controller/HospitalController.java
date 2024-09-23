@@ -2,10 +2,7 @@ package com.padaks.todaktodak.hospital.controller;
 
 import com.padaks.todaktodak.common.dto.CommonResDto;
 import com.padaks.todaktodak.hospital.domain.Hospital;
-import com.padaks.todaktodak.hospital.dto.HospitalDTO.HospitalDetailResDto;
-import com.padaks.todaktodak.hospital.dto.HospitalDTO.HospitalRegisterReqDto;
-import com.padaks.todaktodak.hospital.dto.HospitalDTO.HospitalUpdateReqDto;
-import com.padaks.todaktodak.hospital.dto.HospitalDTO.HospitalUpdateResDto;
+import com.padaks.todaktodak.hospital.dto.HospitalDTO.*;
 import com.padaks.todaktodak.hospital.service.HospitalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,7 +31,6 @@ public class HospitalController {
     public ResponseEntity<Object> getHospitalDetail(@PathVariable Long id,
                                                     @RequestParam BigDecimal latitude,
                                                     @RequestParam BigDecimal longitude) {
-
         HospitalDetailResDto hospitalDetail = hospitalService.getHospitalDetail(id, latitude, longitude);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원정보 조회성공", hospitalDetail), HttpStatus.OK);
     }
@@ -49,8 +46,15 @@ public class HospitalController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object> deleteHospital(@PathVariable Long id){
         hospitalService.deleteHospital(id);
-        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원 삭제성공", null), HttpStatus.OK);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원 삭제성공", id), HttpStatus.OK);
     }
 
     // 병원리스트 조회
+    @GetMapping("/list")
+    public ResponseEntity<Object> getList(@RequestParam String dong,
+                                          @RequestParam BigDecimal latitude,
+                                          @RequestParam BigDecimal longitude){
+        List<HospitalListResDto> hospitalList = hospitalService.getHospitalList(dong, latitude, longitude);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원 리스트 조회성공", hospitalList), HttpStatus.OK);
+    }
 }
