@@ -1,7 +1,7 @@
 package com.padaks.todaktodak.medicalchart.domain;
 
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
-import com.padaks.todaktodak.payment.domain.Payment;
+import com.padaks.todaktodak.payment.domain.Pay;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,7 +37,7 @@ public class MedicalChart extends BaseTimeEntity {
     private Reservation reservation;
 
     @OneToOne(mappedBy = "medicalChart")
-    private Payment payment;
+    private Pay payment;
 
     public void complete() {
         this.medicalStatus = MedicalStatus.진료완료;

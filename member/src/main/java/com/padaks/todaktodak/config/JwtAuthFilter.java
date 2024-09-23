@@ -26,17 +26,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         this.memberRepository = memberRepository;
     }
 
-//    @Override
-//    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-//        String token = resolveToken(request);
-//        if (token != null && jwtTokenProvider.validateToken(token)) {
-//            String email = jwtTokenProvider.getEmailFromToken(token);
-//            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-//            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-//            SecurityContextHolder.getContext().setAuthentication(authentication);
-//        }
-//        filterChain.doFilter(request, response);
-//    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -51,7 +40,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                         .orElse(null);
 
                 if (member == null || member.getMemberEmail() == null || member.getDeletedAt() != null) {
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); 
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     response.getWriter().write("해당 계정은 영구 정지 되었습니다.");
                     return;
                 }
