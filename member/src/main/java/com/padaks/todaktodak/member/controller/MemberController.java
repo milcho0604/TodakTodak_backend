@@ -2,8 +2,10 @@ package com.padaks.todaktodak.member.controller;
 
 import com.padaks.todaktodak.common.dto.CommonErrorDto;
 import com.padaks.todaktodak.common.dto.CommonResDto;
+import com.padaks.todaktodak.config.JwtAuthFilter;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.dto.*;
+import com.padaks.todaktodak.member.service.CustomMemberDetailsService;
 import com.padaks.todaktodak.member.service.MemberAuthService;
 import com.padaks.todaktodak.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.persistence.EntityNotFoundException;
@@ -35,6 +38,26 @@ public class MemberController {
     private final MemberService memberService;
     private final MemberAuthService memberAuthService;
 
+
+    @GetMapping("/get/member")
+    public MemberDto getMember() {
+        // 현재 인증된 사용자 정보 가져오기
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        if (authentication != null && authentication.isAuthenticated()) {
+//            String memberEmail = authentication.getName(); // 인증된 사용자의 이메일 가져오기
+//            System.out.println("여기는 이메일을 찾는: " + memberEmail);
+//            Member member = memberService.findByMemberEmail(memberEmail);
+//            // 이메일로 MemberDto 생성 후 반환
+//            return new MemberDto(memberEmail, member.getName(), member.getPhoneNumber()); // 예시 데이터
+//        }
+//        String memberEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+//        if (memberEmail.equals("anonymousUser")){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            Member member = memberService.findByMemberEmail(email);
+            return new MemberDto(member.getMemberEmail(), member.getName(), member.getPhoneNumber());
+//        }
+//        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "잘못된 요청입니다.");
+    }
 
     // 회원가입
     @PostMapping("/create")
