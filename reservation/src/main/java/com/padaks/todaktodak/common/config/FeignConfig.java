@@ -14,7 +14,7 @@ public class FeignConfig {
         return request -> {
             //모든 feign 요청에 전역적으로 token을 세팅할 수 있음
             String token = (String) SecurityContextHolder.getContext().getAuthentication().getCredentials();
-            request.header(HttpHeaders.AUTHORIZATION, token);
+            request.header(HttpHeaders.AUTHORIZATION, "Bearer "+token);
         };
     }
 }

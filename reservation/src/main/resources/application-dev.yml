@@ -2,9 +2,6 @@
 server:
   port: 8080
 spring:
-  config:
-    activate:
-      on-profile: dev
   security:
     oauth2:
       client:
@@ -13,7 +10,7 @@ spring:
             client-id: todak
             client-secret: todak
             scope: account_email, profile_nickname
-            redirect-uri: "http://localhost:8080/login/oauth2/code/kakao"
+            redirect-uri: "http://localhost:8080/member-service/login/oauth2/code/kakao"
             client-name: Kakao
             client-authentication-method: client_secret_post
             authorization-grant-type: authorization_code
@@ -46,9 +43,10 @@ spring:
     multipart:
       maxFileSize: 5120MB # 최대 5GB
       maxRequestSize: 5120MB # 최대 5GB
-  # websocket을 위한 settings
+    # websocket을 위한 settings
   main:
     allow-bean-definition-overriding: true
+
   # Email settings
   mail:
     host: smtp.gmail.com
@@ -93,8 +91,6 @@ cloud:
 #    serviceUrl:
 #      #      eureka의 member-service(서비스)로서 등록됨을 지정하겠다.
 #      defaultZone: http://localhost:8761/eureka/
-aws:
-  ses:
-    access-key: todak # 액세스 키 ID
-    secret-key: todak # 보안 액세스 키
-    region: ap-northeast-2
+iamport:
+  api_key: todak
+  api_secret: todak

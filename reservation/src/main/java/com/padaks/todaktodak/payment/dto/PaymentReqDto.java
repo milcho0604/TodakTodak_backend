@@ -8,10 +8,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PaymentDto {
+public class PaymentReqDto {
 
     private Long id;
-    private String memberEmail;
+    private String memberEmail;   // 구매자 이메일
+    private String buyerName;     // 구매자 이름
+    private String buyerTel;      // 구매자 전화번호
+    private String merchantUid;
     private String impUid;
     private int amount;
     private String paymentStatus;  // 문자열로 상태 전달 해야함
