@@ -26,6 +26,10 @@ public class Pay extends BaseTimeEntity {
     @Column(nullable = false)
     private String memberEmail;  // 결제하는 사용자의 이메일
 
+    private String buyerName;
+    private String buyerTel;
+    private String merchantUid;
+
     @Column(nullable = false)
     private String impUid;  // 아임포트 고유 번호
 
