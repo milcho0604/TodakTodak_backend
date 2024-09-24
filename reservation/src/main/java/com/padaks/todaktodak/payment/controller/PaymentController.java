@@ -92,4 +92,14 @@ public class PaymentController {
         return ResponseEntity.ok("정기 결제 테스트 완료");
     }
 
+    @GetMapping("/subCancle")
+    public ResponseEntity<?> cancleSub(@RequestBody String impUid){
+        try {
+            IamportResponse<Payment> cancleResponse = paymentService.cancelSubscription(impUid);
+            return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "구독 취소 성공", cancleResponse.getResponse().getImpUid()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CommonResDto(HttpStatus.BAD_REQUEST,"구독 취소 실패: " + e.getMessage(), null));
+        }
+    }
 }

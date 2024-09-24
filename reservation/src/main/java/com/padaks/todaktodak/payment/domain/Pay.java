@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import net.bytebuddy.implementation.bytecode.constant.IntegerConstant;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -52,7 +53,7 @@ public class Pay extends BaseTimeEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private PaymentMethod paymentMethod;  // 결제 방법 (CARD, BANK 등)
+    private PaymentMethod paymentMethod;  // 결제 방법 (단독, 정기)
 
     @CreationTimestamp
     private LocalDateTime requestTimeStamp;  // 결제 요청 시간
@@ -63,27 +64,27 @@ public class Pay extends BaseTimeEntity {
     @JoinColumn(name = "medical_chart_id")
     private MedicalChart medicalChart;  // 연관된 의료 기록 (MedicalChart)
 
-    @Column(length = 1000)
-    private String responseDetails;  // 결제 처리에 대한 응답 세부 정보
-    // 정기결제와 관련된 필드
-    private LocalDateTime subscriptionEndDate;  // 정기결제 종료 일자
+    // 정기결제일
+    private LocalDateTime subscriptionEndDate;
+
+    private Integer count;
 
     // 정기 결제 종료일 체크 및 결제 상태 업데이트 메소드
     public boolean isSubscriptionActive() {
-        return LocalDateTime.now().isBefore(subscriptionEndDate);
+        return LocalDateTime.now().isAfter(subscriptionEndDate) && this.getDeletedAt() == null;
     }
 
-    //    public void updateNextPaymentDate() {
-//        // 결제 주기 로직에 따라 다음 결제일 갱신
-//        this.requestTimeStamp = this.requestTimeStamp.plusMonths(1); // 예: 월별 결제
-//    }
-    public void updateNextPaymentDate() {
-        // 결제 주기 로직에 따라 다음 결제일 갱신
-        this.subscriptionEndDate = this.subscriptionEndDate.plusMonths(1); // 예: 월별 결제
+    public void updateNextPaymentDate(String impUid, Integer count) {
+        // 결제 주기 로직에 따라 다음 결제일 갱신과 impUid 업데이트
+        this.subscriptionEndDate = this.subscriptionEndDate.plusMonths(1);
+        this.impUid = impUid;
+        this.count = count;
     }
 
-    public void changeSubscriptionEndDate(LocalDateTime subscriptionEndDate){
+    // 최초 결제시 구독이라면 !
+    public void changeSubscriptionEndDate(LocalDateTime subscriptionEndDate, PaymentStatus paymentStatus){
         this.subscriptionEndDate = subscriptionEndDate;
+        this.paymentStatus = paymentStatus;
     }
 
 
@@ -104,9 +105,17 @@ public class Pay extends BaseTimeEntity {
                 .build();
     }
 
-    public void canclePaymentStatus(PaymentStatus paymentStatus) {
+    public void cancelPaymentStatus(PaymentStatus paymentStatus) {
         this.paymentStatus = paymentStatus;
     }
+
+    // 구독 취소
+    public void cancelSubscription() {
+        updateDeleteAt();
+        this.paymentStatus = PaymentStatus.UNSUBSCRIBE;
+
+    }
+
 
 
 }

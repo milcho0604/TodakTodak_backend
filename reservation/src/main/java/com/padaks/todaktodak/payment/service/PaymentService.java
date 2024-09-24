@@ -121,10 +121,11 @@ public class PaymentService {
                     .requestTimeStamp(LocalDateTime.now())
                     .approvalTimeStamp(LocalDateTime.now())  // 결제 승인 시간
                     .subscriptionEndDate(null)  // 정기결제의 경우 다음 결제일을 1개월 후로 설정
+                    .count(0)
                     .build();
 
             if (paymentMethod.equals(PaymentMethod.SUBSCRIPTION)){
-                pay.changeSubscriptionEndDate(LocalDateTime.now().plusMonths(1));
+                pay.changeSubscriptionEndDate(LocalDateTime.now().plusMonths(1), PaymentStatus.SUBSCRIBING);
             }
 
             // 저장 로직
@@ -185,7 +186,7 @@ public class PaymentService {
             log.info("결제 취소 성공: {}", cancelResponse.getResponse());
 
             // 결제 상태를 CANCEL !
-            pay.canclePaymentStatus(PaymentStatus.CANCEL);
+            pay.cancelPaymentStatus(PaymentStatus.CANCEL);
             paymentRepository.save(pay);
         } else {
             log.error("결제 취소 실패: {}", cancelResponse.getMessage());
@@ -208,10 +209,9 @@ public class PaymentService {
 
         for (Pay pay : subscriptionPayments) {
             // 정기결제 상태가 만료된 경우 즉, 구독이 만료된 경우! 아래 로직을 실행 ~
-            if (!pay.isSubscriptionActive()) {
+            if (pay.isSubscriptionActive()) {
                 try {
                     String customerUid = pay.getCustomerUid();
-//                    System.out.println(customerUid);
                     String merchantUid = "subscription_" + pay.getMemberEmail() + "_" + LocalDateTime.now();
 
                     log.info("정기 결제 요청 시작: customerUid = {}, merchantUid = {}", customerUid, merchantUid);
@@ -225,15 +225,17 @@ public class PaymentService {
 
                     // 결제 요청을 수행
                     IamportResponse<Payment> response = iamportClient.againPayment(againPaymentData);
-//                    System.out.println(response);
-                    log.info(response.getMessage());
+//                    log.info(response.getMessage());
+                    String impUid = response.getResponse().getImpUid();
+                    Integer count = pay.getCount();
+                    count++;
 
                     // 결제 성공 여부 확인
                     if (response.getResponse() != null && "paid".equals(response.getResponse().getStatus())) {
                         // 결제가 성공한 경우, 다음 결제일 갱신
-                        pay.updateNextPaymentDate();
+                        pay.updateNextPaymentDate(impUid, count);
                         paymentRepository.save(pay);
-                        log.info("정기 결제 성공, 다음 결제일 갱신: {}", pay.getRequestTimeStamp());
+                        log.info("정기 결제 성공, 다음 결제일 갱신: {}", pay.getSubscriptionEndDate());
                     } else {
                         log.error("정기 결제 실패: {}", response.getMessage());
                     }
@@ -243,4 +245,33 @@ public class PaymentService {
             }
         }
     }
+
+    // 구독 취소하는 메서드
+    public IamportResponse<Payment> cancelSubscription(String impUid) throws Exception {
+        String actualImpUid = extractImpUid(impUid);  // impUid를 추출
+        Pay pay = paymentRepository.findByImpUid(actualImpUid);  // 결제 정보를 DB에서 조회
+
+        if (pay == null) {
+            throw new Exception("해당 결제 정보를 찾을 수 없습니다.");
+        }
+
+        // 구독 취소 처리
+        pay.cancelSubscription();  // 구독 상태를 취소로 업데이트
+        paymentRepository.save(pay);  // 업데이트된 결제 정보를 DB에 저장
+
+        // 구독 취소 후 아임포트에 결제 취소 요청을 보낼 필요가 있을 경우, 여기에 CancelData로 요청
+        CancelData cancelData = new CancelData(actualImpUid, true);  // impUid 기반으로 취소 요청 데이터 생성
+        IamportResponse<Payment> cancelResponse = iamportClient.cancelPaymentByImpUid(cancelData);  // 아임포트에 취소 요청
+
+        if (cancelResponse.getResponse() != null) {
+            log.info("구독 결제 취소 성공: {}", cancelResponse.getResponse());
+        } else {
+            log.error("구독 결제 취소 실패: {}", cancelResponse.getMessage());
+            throw new Exception("구독 취소 실패: " + cancelResponse.getMessage());
+        }
+
+        return cancelResponse;  // 취소 응답 반환
+    }
+
+
 }
