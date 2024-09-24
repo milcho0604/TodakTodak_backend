@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 @Builder
 public class PaymentListResDto {
     private Long id;
+    private String customerUid;  // 고객별 고유 ID (정기 결제용)
     private String memberEmail;
     private String buyerName;
     private String buyerTel;

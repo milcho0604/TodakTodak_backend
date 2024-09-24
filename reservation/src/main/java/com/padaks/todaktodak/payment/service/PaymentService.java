@@ -9,6 +9,7 @@ import com.padaks.todaktodak.payment.dto.PaymentReqDto;
 import com.padaks.todaktodak.payment.domain.PaymentStatus;
 import com.padaks.todaktodak.payment.repository.PaymentRepository;
 import com.siot.IamportRestClient.IamportClient;
+import com.siot.IamportRestClient.request.AgainPaymentData;
 import com.siot.IamportRestClient.request.CancelData;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
@@ -43,6 +44,18 @@ public class PaymentService {
         return member;
     }
 
+    // 단건 결제 처리
+    public PaymentReqDto processSinglePayment(String impUid) throws Exception {
+//        String actualImpUid = extractImpUid(impUid);
+        return processPayment(impUid, PaymentMethod.SINGLE);
+    }
+
+    // 정기 결제 처리
+    public PaymentReqDto processSubscriptionPayment(String impUid) throws Exception {
+//        String actualImpUid = extractImpUid(impUid);
+        return processPayment(impUid, PaymentMethod.SUBSCRIPTION);
+    }
+
     // impUid를 파싱하는 메서드
     private String extractImpUid(String impUidJson) {
         try {
@@ -56,17 +69,26 @@ public class PaymentService {
     }
 
     // 결제 로직 구현
-    public PaymentReqDto processPayment(String impUid) {
+    public PaymentReqDto processPayment(String impUid, PaymentMethod paymentMethod) throws Exception {
         MemberPayDto member = getMemberInfo();  // 현재 로그인한 사용자 정보
 //        System.out.println(impUid);
+
         String actualImpUid = extractImpUid(impUid);  // impUid 값 추출 함수 사용
 //        System.out.println("Extracted impUid: " + actualImpUid);
 
-        try {
-            // impUid를 통해 결제 정보 확인
-            System.out.println(actualImpUid);
-            IamportResponse<Payment> paymentResponse = iamportClient.paymentByImpUid(actualImpUid);
+        // impUid를 통해 결제 정보 확인
+        IamportResponse<Payment> paymentResponse = iamportClient.paymentByImpUid(actualImpUid);
 
+        if (paymentResponse.getResponse() == null) {
+            throw new Exception("결제 정보 없음: " + paymentResponse.getMessage());
+        }
+
+        BigDecimal amount = paymentResponse.getResponse().getAmount();
+        if (amount.compareTo(BigDecimal.valueOf(100)) != 0) {
+            throw new Exception("결제 금액 불일치");
+        }
+
+        try {
             // 결제 정보가 존재하는지 확인
             if (paymentResponse.getResponse() == null) {
                 throw new Exception("결제 요청 실패: " + paymentResponse.getMessage());
@@ -76,19 +98,22 @@ public class PaymentService {
             if (paymentResponse.getResponse().getAmount().intValue() != 100) {
                 throw new Exception("결제 금액 불일치");
             }
+            String customerUid = "customer_" + member.getMemberEmail();
 
             // Pay 엔티티 생성 후 저장
             Pay pay = Pay.builder()
                     .memberEmail(member.getMemberEmail())
                     .impUid(actualImpUid)
+                    .customerUid(customerUid)
                     .amount(BigDecimal.valueOf(100))
                     .buyerName(member.getName())
                     .buyerTel(member.getPhoneNumber())
                     .merchantUid("order_no_" + new Date().getTime())
                     .paymentStatus(PaymentStatus.OK)  // 결제 완료로 상태 업데이트
-                    .paymentMethod(PaymentMethod.SINGLE)
+                    .paymentMethod(paymentMethod)
                     .requestTimeStamp(LocalDateTime.now())
                     .approvalTimeStamp(LocalDateTime.now())  // 결제 승인 시간
+                    .subscriptionEndDate(LocalDateTime.now().plusMonths(1))  // 정기결제의 경우 다음 결제일을 1개월 후로 설정
                     .build();
 
             // 저장 로직
@@ -98,6 +123,7 @@ public class PaymentService {
             return PaymentReqDto.builder()
                     .id(pay.getId())
                     .memberEmail(pay.getMemberEmail())
+                    .customerUid(pay.getCustomerUid())
                     .impUid(pay.getImpUid())
                     .amount(pay.getAmount())
                     .merchantUid(pay.getMerchantUid())
@@ -163,28 +189,47 @@ public class PaymentService {
     }
 
 
-    @Scheduled(cron = "0 0 0 * * ?") // 매일 자정에 실행
-    public void processSubscriptionPayments() {
+
+    // 정기결제 상태 체크 및 다음 결제일 갱신
+    public void processSubscriptions() {
+        log.info("정기 결제 프로세스 시작");  // 로그 추가
         List<Pay> subscriptionPayments = paymentRepository.findByPaymentMethod(PaymentMethod.SUBSCRIPTION);
+        System.out.println("subservice");
+        System.out.println(subscriptionPayments.toString());
 
         for (Pay pay : subscriptionPayments) {
-            if (pay.getSubscriptionEndDate().isBefore(LocalDateTime.now())) {
+            // 정기결제 상태가 만료된 경우
+            if (!pay.isSubscriptionActive()) {
                 try {
-                    IamportResponse<Payment> response = iamportClient.paymentByImpUid(pay.getImpUid());
+                    String customerUid = pay.getCustomerUid();
+                    System.out.println(customerUid);
+                    String merchantUid = "subscription_" + pay.getMemberEmail() + "_" + LocalDateTime.now();
 
-                    if (response.getResponse() != null && response.getResponse().getStatus().equals("paid")) {
-                        log.info("정기 결제 성공: {}", pay.getImpUid());
-                        pay.isSubscriptionActive();
+                    log.info("정기 결제 요청 시작: customerUid = {}, merchantUid = {}", customerUid, merchantUid);
+
+                    // AgainPaymentData 객체 사용하여 정기 결제 요청 구성
+                    AgainPaymentData againPaymentData = new AgainPaymentData(customerUid, merchantUid, pay.getAmount());
+                    System.out.println("again: " + againPaymentData);
+                    log.info("AgainPaymentData: customerUid = {}, merchantUid = {}, amount = {}", customerUid, merchantUid, pay.getAmount());
+
+                    // 결제 요청을 수행
+                    IamportResponse<Payment> response = iamportClient.againPayment(againPaymentData);
+                    System.out.println(response);
+                    log.info(response.getMessage());
+
+                    // 결제 성공 여부 확인
+                    if (response.getResponse() != null && "paid".equals(response.getResponse().getStatus())) {
+                        // 결제가 성공한 경우, 다음 결제일 갱신
                         pay.updateNextPaymentDate();
                         paymentRepository.save(pay);
+                        log.info("정기 결제 성공, 다음 결제일 갱신: {}", pay.getRequestTimeStamp());
                     } else {
-                        log.warn("정기 결제 실패: {}", pay.getImpUid());
+                        log.error("정기 결제 실패: {}", response.getMessage());
                     }
                 } catch (Exception e) {
-                    log.error("정기 결제 처리 중 오류 발생: {}", e.getMessage());
+                    log.error("정기 결제 처리 중 오류 발생: ", e);
                 }
             }
         }
     }
-
 }

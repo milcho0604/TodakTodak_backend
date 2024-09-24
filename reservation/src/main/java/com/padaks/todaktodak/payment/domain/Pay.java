@@ -32,6 +32,8 @@ public class Pay extends BaseTimeEntity {
     @Column(nullable = false)
     private String memberEmail;  // 결제하는 사용자의 이메일
 
+    private String customerUid;  // 고객별 고유 ID (정기 결제용)
+
     private String buyerName;
     private String buyerTel;
     private String merchantUid;
@@ -79,6 +81,7 @@ public class Pay extends BaseTimeEntity {
         return PaymentListResDto.builder()
                 .id(this.id)
                 .buyerName(this.buyerName)
+                .customerUid(this.customerUid)
                 .memberEmail(this.memberEmail)
                 .amount(this.amount)
                 .buyerTel(this.buyerTel)

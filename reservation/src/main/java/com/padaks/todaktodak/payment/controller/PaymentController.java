@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -38,7 +39,7 @@ public class PaymentController {
     public ResponseEntity<?> processPayment(@RequestBody String impUid) {
         try {
             System.out.println("Received impUid: " + impUid);
-            PaymentReqDto paymentDto = paymentService.processPayment(impUid);
+            PaymentReqDto paymentDto = paymentService.processSinglePayment(impUid);
             return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "결제 성공", paymentDto.getImpUid()));
 //            return ResponseEntity.ok(paymentDto);
         } catch (Exception e) {
@@ -68,15 +69,27 @@ public class PaymentController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
+    // 정기 결제 요청
     @PostMapping("/sub")
-    public ResponseEntity<String> processSubscription() {
+    public ResponseEntity<?> subscriptionPayment(@RequestBody String impUid) {
         try {
-            paymentService.processSubscriptionPayments();
-            return ResponseEntity.ok("정기 결제 처리 완료");
+            PaymentReqDto paymentDto = paymentService.processSubscriptionPayment(impUid);
+            return ResponseEntity.ok(paymentDto);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("정기 결제 처리 중 오류 발생");
+            return ResponseEntity.badRequest().body("정기 결제 처리 실패: " + e.getMessage());
         }
     }
 
+    @Scheduled(cron = "0 0/1 * * * ?")  // 매 2분마다 실행 (테스트용)
+    public void processMonthlySubscriptions() {
+        log.info("정기 결제 스케줄러 시작");  // 스케줄러가 실행되었는지 확인
+        paymentService.processSubscriptions();
+    }
+
+    @PostMapping("/test-subscription")
+    public ResponseEntity<?> testSubscription() {
+        paymentService.processSubscriptions();  // 스케줄러 대신 수동으로 정기 결제 실행
+        return ResponseEntity.ok("정기 결제 테스트 완료");
+    }
 
 }
