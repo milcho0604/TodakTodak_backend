@@ -53,4 +53,9 @@ public class DoctorOperatingHoursService {
             throw new EntityNotFoundException("해당하는 의사와 동일 하지 않습니다.");
         }hours.updateOperatingHours(dto);
     }
+
+    public void deleteOperatingHours(Long operatingHoursId){
+        DoctorOperatingHours hours = doctorOperatingHoursRepository.findByIdOrThrow(operatingHoursId);
+        hours.updateDeleteAt();
+    }
 }

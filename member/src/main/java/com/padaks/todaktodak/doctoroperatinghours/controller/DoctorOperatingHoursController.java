@@ -36,14 +36,21 @@ public class DoctorOperatingHoursController {
     @GetMapping("/{doctorId}")
     public ResponseEntity<?> getOperatingHours(@PathVariable Long doctorId){
         List<DoctorOperatingHoursSimpleResDto> operatingHoursList = doctorOperatingHoursService.getOperatingHoursByDoctorId(doctorId);
-        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "의사영업시간 : ", operatingHoursList);
+        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "의사 근무시간 : ", operatingHoursList);
         return new ResponseEntity<>(commonResDto, HttpStatus.OK);
     }
 
     @PostMapping("/update/{doctorId}/{operatingHoursId}")
     public ResponseEntity<?> updateOperatingHours(@PathVariable Long doctorId, @PathVariable Long operatingHoursId, @RequestBody DoctorOperatingHoursReqDto dto){
         doctorOperatingHoursService.updateOperatingHours(doctorId, operatingHoursId, dto);
-        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK,"의사 영업시간 수정 성공", doctorId);
+        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK,"의사 근무시간 수정 성공", doctorId);
+        return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+    }
+
+    @PostMapping("/delete/{operatingHoursId}")
+    public ResponseEntity<?> deleteOperatingHours(@PathVariable Long operatingHoursId){
+        doctorOperatingHoursService.deleteOperatingHours(operatingHoursId);
+        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "의사 근무시간 삭제 성공", operatingHoursId);
         return new ResponseEntity<>(commonResDto, HttpStatus.OK);
     }
 }
