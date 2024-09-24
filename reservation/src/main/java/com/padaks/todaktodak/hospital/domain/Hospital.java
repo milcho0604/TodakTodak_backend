@@ -3,6 +3,7 @@ package com.padaks.todaktodak.hospital.domain;
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
 import com.padaks.todaktodak.hospital.dto.HospitalDTO.HospitalUpdateReqDto;
 import com.padaks.todaktodak.hospitaloperatinghours.domain.HospitalOperatingHours;
+import com.padaks.todaktodak.reservation.domain.Reservation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -60,6 +61,8 @@ public class Hospital extends BaseTimeEntity {
     @OneToMany(mappedBy = "hospital", cascade = CascadeType.ALL)
     private List<HospitalOperatingHours> hospitalOperatingHours;
 
+    @OneToMany(mappedBy = "hospital")
+    private List<Reservation> reservations;
 
     //== Custom methods ==//
     // 병원 이미지 URL 업데이트
