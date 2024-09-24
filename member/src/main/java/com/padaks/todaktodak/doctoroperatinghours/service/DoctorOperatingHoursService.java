@@ -1,5 +1,6 @@
 package com.padaks.todaktodak.doctoroperatinghours.service;
 
+import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.doctoroperatinghours.domain.DoctorOperatingHours;
 import com.padaks.todaktodak.doctoroperatinghours.dto.DoctorOperatingHoursReqDto;
 import com.padaks.todaktodak.doctoroperatinghours.dto.DoctorOperatingHoursSimpleResDto;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,5 +42,15 @@ public class DoctorOperatingHoursService {
                         hours.getOpenTime(),
                         hours.getCloseTime())
                 ).collect(Collectors.toList());
+    }
+
+    public void updateOperatingHours(Long doctorId, Long operatingHoursId, DoctorOperatingHoursReqDto dto){
+
+        Member doctor = memberRepository.findByIdOrThrow(doctorId);
+        DoctorOperatingHours hours = doctorOperatingHoursRepository.findByIdOrThrow(operatingHoursId);
+
+        if (!hours.getMember().getId().equals(doctorId)){
+            throw new EntityNotFoundException("해당하는 의사와 동일 하지 않습니다.");
+        }hours.updateOperatingHours(dto);
     }
 }

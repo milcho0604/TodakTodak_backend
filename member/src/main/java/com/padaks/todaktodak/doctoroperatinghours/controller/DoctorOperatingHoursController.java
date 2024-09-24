@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.ws.rs.Path;
 import java.util.List;
 
 @RestController
@@ -36,6 +37,13 @@ public class DoctorOperatingHoursController {
     public ResponseEntity<?> getOperatingHours(@PathVariable Long doctorId){
         List<DoctorOperatingHoursSimpleResDto> operatingHoursList = doctorOperatingHoursService.getOperatingHoursByDoctorId(doctorId);
         CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "의사영업시간 : ", operatingHoursList);
+        return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+    }
+
+    @PostMapping("/update/{doctorId}/{operatingHoursId}")
+    public ResponseEntity<?> updateOperatingHours(@PathVariable Long doctorId, @PathVariable Long operatingHoursId, @RequestBody DoctorOperatingHoursReqDto dto){
+        doctorOperatingHoursService.updateOperatingHours(doctorId, operatingHoursId, dto);
+        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK,"의사 영업시간 수정 성공", doctorId);
         return new ResponseEntity<>(commonResDto, HttpStatus.OK);
     }
 }
