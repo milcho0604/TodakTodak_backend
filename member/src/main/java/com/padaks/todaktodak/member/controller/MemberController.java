@@ -2,31 +2,23 @@ package com.padaks.todaktodak.member.controller;
 
 import com.padaks.todaktodak.common.dto.CommonErrorDto;
 import com.padaks.todaktodak.common.dto.CommonResDto;
-import com.padaks.todaktodak.config.JwtAuthFilter;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.dto.*;
-import com.padaks.todaktodak.member.service.CustomMemberDetailsService;
 import com.padaks.todaktodak.member.service.MemberAuthService;
 import com.padaks.todaktodak.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.persistence.EntityNotFoundException;
-import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 @RestController
@@ -40,22 +32,22 @@ public class MemberController {
 
 
     @GetMapping("/get/member")
-    public MemberDto getMember() {
+    public MemberPayDto getMember() {
         // 현재 인증된 사용자 정보 가져오기
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //        if (authentication != null && authentication.isAuthenticated()) {
 //            String memberEmail = authentication.getName(); // 인증된 사용자의 이메일 가져오기
 //            System.out.println("여기는 이메일을 찾는: " + memberEmail);
 //            Member member = memberService.findByMemberEmail(memberEmail);
-//            // 이메일로 MemberDto 생성 후 반환
-//            return new MemberDto(memberEmail, member.getName(), member.getPhoneNumber()); // 예시 데이터
+//            // 이메일로 MemberPayDto 생성 후 반환
+//            return new MemberPayDto(memberEmail, member.getName(), member.getPhoneNumber()); // 예시 데이터
 //        }
 //        String memberEmail = SecurityContextHolder.getContext().getAuthentication().getName();
 //        if (memberEmail.equals("anonymousUser")){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         System.out.println(email);
         Member member = memberService.findByMemberEmail(email);
-        return new MemberDto(member.getMemberEmail(), member.getName(), member.getPhoneNumber());
+        return new MemberPayDto(member.getMemberEmail(), member.getName(), member.getPhoneNumber(), member.getRole());
 //        }
 //        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "잘못된 요청입니다.");
     }
