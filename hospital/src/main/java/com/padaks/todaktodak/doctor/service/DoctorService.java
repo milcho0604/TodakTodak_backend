@@ -1,12 +1,11 @@
 package com.padaks.todaktodak.doctor.service;
 
 import com.padaks.todaktodak.configs.JwtTokenProvider;
-import com.padaks.todaktodak.configs.SecurityConfig;
 import com.padaks.todaktodak.doctor.domain.Doctor;
 import com.padaks.todaktodak.doctor.dto.DoctorListDto;
 import com.padaks.todaktodak.doctor.dto.DoctorLoginDto;
 import com.padaks.todaktodak.doctor.dto.DoctorSaveDto;
-import com.padaks.todaktodak.doctor.dto.DoctorUpdateDto;
+import com.padaks.todaktodak.doctor.dto.DoctorUpdateReqDto;
 import com.padaks.todaktodak.doctor.repository.DoctorRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,7 +55,7 @@ public class DoctorService {
     }
 
     @Transactional
-    public void updateDoctor(DoctorUpdateDto dto, MultipartFile imageSsr){
+    public void updateDoctor(DoctorUpdateReqDto dto, MultipartFile imageSsr){
         String doctorEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         Doctor doctor = doctorRepository.findByDoctorEmail(doctorEmail).orElseThrow(()-> new IllegalArgumentException("존재하지 않는 의사입니다."));
 

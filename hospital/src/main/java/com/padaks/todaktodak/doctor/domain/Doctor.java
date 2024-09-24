@@ -3,13 +3,12 @@ package com.padaks.todaktodak.doctor.domain;
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
 import com.padaks.todaktodak.doctor.dto.DoctorDetailDto;
 import com.padaks.todaktodak.doctor.dto.DoctorListDto;
-import com.padaks.todaktodak.doctor.dto.DoctorUpdateDto;
+import com.padaks.todaktodak.doctor.dto.DoctorUpdateReqDto;
 import com.padaks.todaktodak.doctoroperatinghours.domain.DoctorOperatingHours;
 import com.padaks.todaktodak.hospital.domain.Hospital;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -73,7 +72,7 @@ public class Doctor extends BaseTimeEntity {
         this.bio = bio;
     }
 
-    public void toUpdate(DoctorUpdateDto dto, String imageUrl){
+    public void toUpdate(DoctorUpdateReqDto dto, String imageUrl){
         this.password = dto.getPassword();
         this.bio = dto.getBio();
         this.profileImgUrl = imageUrl;

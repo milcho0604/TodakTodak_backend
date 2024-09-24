@@ -59,7 +59,7 @@ public class DoctorController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateDoctorInfo(@RequestBody DoctorUpdateDto dto,
+    public ResponseEntity<?> updateDoctorInfo(@RequestBody DoctorUpdateReqDto dto,
                                               @RequestPart(value = "image", required = false)MultipartFile imageSsr){
         try {
             doctorService.updateDoctor(dto, imageSsr);

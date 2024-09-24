@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DoctorUpdateDto {
+public class DoctorUpdateReqDto {
 //    private String doctorEmail;
     private Long id;
     private String password;

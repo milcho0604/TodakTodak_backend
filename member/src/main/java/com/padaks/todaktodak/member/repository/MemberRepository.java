@@ -1,6 +1,9 @@
 package com.padaks.todaktodak.member.repository;
 
 import com.padaks.todaktodak.member.domain.Member;
+import com.padaks.todaktodak.member.domain.Role;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -12,4 +15,5 @@ import java.util.Optional;
 public interface MemberRepository extends JpaRepository<Member, Long> {
     boolean existsByMemberEmail(String memberEmail);
     Optional<Member> findByMemberEmail(String memberEmail);
+    Page<Member> findByRole(Role role, Pageable pageable);
 }
