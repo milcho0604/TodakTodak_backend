@@ -38,6 +38,8 @@ public class Pay extends BaseTimeEntity {
     private String buyerTel;
     private String merchantUid;
 
+    private String name;
+
     @Column(nullable = false)
     private String impUid;  // 아임포트 고유 번호
 
@@ -71,15 +73,24 @@ public class Pay extends BaseTimeEntity {
         return LocalDateTime.now().isBefore(subscriptionEndDate);
     }
 
+    //    public void updateNextPaymentDate() {
+//        // 결제 주기 로직에 따라 다음 결제일 갱신
+//        this.requestTimeStamp = this.requestTimeStamp.plusMonths(1); // 예: 월별 결제
+//    }
     public void updateNextPaymentDate() {
         // 결제 주기 로직에 따라 다음 결제일 갱신
-        this.requestTimeStamp = this.requestTimeStamp.plusMonths(1); // 예: 월별 결제
+        this.subscriptionEndDate = this.subscriptionEndDate.plusMonths(1); // 예: 월별 결제
+    }
+
+    public void changeSubscriptionEndDate(LocalDateTime subscriptionEndDate){
+        this.subscriptionEndDate = subscriptionEndDate;
     }
 
 
-    public PaymentListResDto listFromEntity(){
+    public PaymentListResDto listFromEntity() {
         return PaymentListResDto.builder()
                 .id(this.id)
+                .name(this.name)
                 .buyerName(this.buyerName)
                 .customerUid(this.customerUid)
                 .memberEmail(this.memberEmail)
@@ -96,8 +107,6 @@ public class Pay extends BaseTimeEntity {
     public void canclePaymentStatus(PaymentStatus paymentStatus) {
         this.paymentStatus = paymentStatus;
     }
-
-
 
 
 }

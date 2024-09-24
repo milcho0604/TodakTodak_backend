@@ -46,13 +46,11 @@ public class PaymentService {
 
     // 단건 결제 처리
     public PaymentReqDto processSinglePayment(String impUid) throws Exception {
-//        String actualImpUid = extractImpUid(impUid);
         return processPayment(impUid, PaymentMethod.SINGLE);
     }
 
     // 정기 결제 처리
     public PaymentReqDto processSubscriptionPayment(String impUid) throws Exception {
-//        String actualImpUid = extractImpUid(impUid);
         return processPayment(impUid, PaymentMethod.SUBSCRIPTION);
     }
 
@@ -99,22 +97,35 @@ public class PaymentService {
                 throw new Exception("결제 금액 불일치");
             }
             String customerUid = "customer_" + member.getMemberEmail();
+            Pay pay = null;
 
+
+            String name = null;
+            if (paymentMethod.equals(PaymentMethod.SINGLE)) {
+                name = "비대면 진료";
+            } else {
+                name = "병원 구독";
+            }
             // Pay 엔티티 생성 후 저장
-            Pay pay = Pay.builder()
+            pay = Pay.builder()
                     .memberEmail(member.getMemberEmail())
                     .impUid(actualImpUid)
                     .customerUid(customerUid)
                     .amount(BigDecimal.valueOf(100))
                     .buyerName(member.getName())
+                    .name(name)
                     .buyerTel(member.getPhoneNumber())
                     .merchantUid("order_no_" + new Date().getTime())
                     .paymentStatus(PaymentStatus.OK)  // 결제 완료로 상태 업데이트
                     .paymentMethod(paymentMethod)
                     .requestTimeStamp(LocalDateTime.now())
                     .approvalTimeStamp(LocalDateTime.now())  // 결제 승인 시간
-                    .subscriptionEndDate(LocalDateTime.now().plusMonths(1))  // 정기결제의 경우 다음 결제일을 1개월 후로 설정
+                    .subscriptionEndDate(null)  // 정기결제의 경우 다음 결제일을 1개월 후로 설정
                     .build();
+
+            if (paymentMethod.equals(PaymentMethod.SUBSCRIPTION)){
+                pay.changeSubscriptionEndDate(LocalDateTime.now().plusMonths(1));
+            }
 
             // 저장 로직
             paymentRepository.save(pay);
@@ -128,6 +139,7 @@ public class PaymentService {
                     .amount(pay.getAmount())
                     .merchantUid(pay.getMerchantUid())
                     .buyerName(pay.getBuyerName())
+                    .name(pay.getName())
                     .buyerTel(pay.getBuyerTel())
                     .paymentStatus(pay.getPaymentStatus().toString())
                     .paymentMethod(pay.getPaymentMethod().toString())
@@ -183,38 +195,37 @@ public class PaymentService {
     }
 
     // 결제 내역 리스트 조회
-    public Page<PaymentListResDto> paymentList(Pageable pageable){
+    public Page<PaymentListResDto> paymentList(Pageable pageable) {
         Page<Pay> pays = paymentRepository.findAll(pageable);
         return pays.map(a -> a.listFromEntity());
     }
 
 
-
     // 정기결제 상태 체크 및 다음 결제일 갱신
     public void processSubscriptions() {
-        log.info("정기 결제 프로세스 시작");  // 로그 추가
+        log.info("정기 결제 프로세스 시작");
         List<Pay> subscriptionPayments = paymentRepository.findByPaymentMethod(PaymentMethod.SUBSCRIPTION);
-        System.out.println("subservice");
-        System.out.println(subscriptionPayments.toString());
 
         for (Pay pay : subscriptionPayments) {
-            // 정기결제 상태가 만료된 경우
+            // 정기결제 상태가 만료된 경우 즉, 구독이 만료된 경우! 아래 로직을 실행 ~
             if (!pay.isSubscriptionActive()) {
                 try {
                     String customerUid = pay.getCustomerUid();
-                    System.out.println(customerUid);
+//                    System.out.println(customerUid);
                     String merchantUid = "subscription_" + pay.getMemberEmail() + "_" + LocalDateTime.now();
 
                     log.info("정기 결제 요청 시작: customerUid = {}, merchantUid = {}", customerUid, merchantUid);
 
                     // AgainPaymentData 객체 사용하여 정기 결제 요청 구성
                     AgainPaymentData againPaymentData = new AgainPaymentData(customerUid, merchantUid, pay.getAmount());
-                    System.out.println("again: " + againPaymentData);
+                    againPaymentData.setBuyerName(pay.getBuyerName());
+                    againPaymentData.setName(pay.getName());
+
                     log.info("AgainPaymentData: customerUid = {}, merchantUid = {}, amount = {}", customerUid, merchantUid, pay.getAmount());
 
                     // 결제 요청을 수행
                     IamportResponse<Payment> response = iamportClient.againPayment(againPaymentData);
-                    System.out.println(response);
+//                    System.out.println(response);
                     log.info(response.getMessage());
 
                     // 결제 성공 여부 확인
