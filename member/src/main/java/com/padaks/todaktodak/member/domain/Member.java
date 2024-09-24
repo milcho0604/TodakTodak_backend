@@ -116,6 +116,9 @@ public class Member extends BaseTimeEntity {
     // 의사 약력 변경
     public void changeBio(String newBio){this.bio = newBio;}
 
+    //의사 소속된 병원 변경
+    public void changeHospitalId(Long hospitalId){this.hospitalId = hospitalId;}
+
     public String getRoleKey() {
         return this.role.getKey();
     }

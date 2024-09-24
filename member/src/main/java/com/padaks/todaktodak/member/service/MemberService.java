@@ -150,6 +150,16 @@ public class MemberService {
             System.out.println("약력이 수정되었습니다 :" + dto.getBio());
             isupdated = true;
         }
+        if (dto.getPhoneNumber() != null && dto.getPhoneNumber().isEmpty()){
+            member.changePhoneNumber(dto.getPhoneNumber());
+            System.out.println("전화번호가 수정되었습니다. :" + dto.getPhoneNumber());
+            isupdated = true;
+        }
+        if (dto.getHospitalId() != null){
+            member.changeHospitalId(dto.getHospitalId());
+            System.out.println("병원id가 수정되었습니다. : " + dto.getHospitalId());
+            isupdated = true;
+        }
 
         if (isupdated) {
             memberRepository.save(member);
