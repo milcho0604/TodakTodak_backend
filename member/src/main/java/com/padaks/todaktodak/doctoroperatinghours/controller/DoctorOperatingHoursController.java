@@ -3,6 +3,8 @@ package com.padaks.todaktodak.doctoroperatinghours.controller;
 import com.padaks.todaktodak.common.dto.CommonErrorDto;
 import com.padaks.todaktodak.common.dto.CommonResDto;
 import com.padaks.todaktodak.doctoroperatinghours.dto.DoctorOperatingHoursReqDto;
+import com.padaks.todaktodak.doctoroperatinghours.dto.DoctorOperatingHoursResDto;
+import com.padaks.todaktodak.doctoroperatinghours.dto.DoctorOperatingHoursSimpleResDto;
 import com.padaks.todaktodak.doctoroperatinghours.service.DoctorOperatingHoursService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,5 +30,12 @@ public class DoctorOperatingHoursController {
             CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.BAD_REQUEST, e.getMessage());
             return new ResponseEntity<>(commonErrorDto, HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("/{doctorId}")
+    public ResponseEntity<?> getOperatingHours(@PathVariable Long doctorId){
+        List<DoctorOperatingHoursSimpleResDto> operatingHoursList = doctorOperatingHoursService.getOperatingHoursByDoctorId(doctorId);
+        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "의사영업시간 : ", operatingHoursList);
+        return new ResponseEntity<>(commonResDto, HttpStatus.OK);
     }
 }

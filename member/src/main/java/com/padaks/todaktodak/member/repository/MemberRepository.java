@@ -1,6 +1,7 @@
 package com.padaks.todaktodak.member.repository;
 
 import com.padaks.todaktodak.common.exception.BaseException;
+import com.padaks.todaktodak.doctoroperatinghours.domain.DoctorOperatingHours;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.domain.Role;
 import org.springframework.data.domain.Page;
