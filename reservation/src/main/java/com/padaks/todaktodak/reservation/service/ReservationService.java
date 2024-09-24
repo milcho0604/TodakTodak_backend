@@ -4,23 +4,23 @@ import com.padaks.todaktodak.common.dto.DtoMapper;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.domain.ReserveType;
-import com.padaks.todaktodak.reservation.dto.CheckListReservationReqDto;
-import com.padaks.todaktodak.reservation.dto.CheckListReservationResDto;
+import com.padaks.todaktodak.reservation.dto.*;
 import com.padaks.todaktodak.reservation.domain.ReservationHistory;
 import com.padaks.todaktodak.reservation.domain.Status;
-import com.padaks.todaktodak.reservation.dto.ReservationSaveReqDto;
-import com.padaks.todaktodak.reservation.dto.UpdateStatusReservation;
 import com.padaks.todaktodak.reservation.repository.ReservationHistoryRepository;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.padaks.todaktodak.common.exception.exceptionType.ReservationExceptionType.*;
@@ -33,6 +33,9 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationHistoryRepository reservationHistoryRepository;
     private final DtoMapper dtoMapper;
+    private final RedisTemplate<String, Object> redisTemplate;
+
+    private static final String RESERVATION_LIST_KEY = "reservation_list";
 
 //    진료 미리 예약 기능
     public Reservation scheduleReservation(ReservationSaveReqDto dto){
@@ -49,9 +52,25 @@ public class ReservationService {
 
 //    당일 진료 예약 기능 구현.
     public Reservation immediateReservation(ReservationSaveReqDto dto){
-        log.info("ReservationSErvice[immediateReservation] : 시작");
+        log.info("ReservationService[immediateReservation] : 시작");
+
+        String key = RESERVATION_LIST_KEY + dto.getHospitalId();
+        if(Boolean.TRUE.equals(redisTemplate.hasKey(key))){
+            Set<Object> set = redisTemplate.opsForZSet().range(key,0, -1);
+            if(set.size() > 30){
+                throw new BaseException(TOOMANY_RESERVATION);
+            }
+        }
+
+        String sequenceKey = "sequence" + dto.getHospitalId();
+        Long sequence = redisTemplate.opsForValue().increment(sequenceKey, 1);
+
         Reservation reservation = dtoMapper.toReservation(dto);
-        return reservationRepository.save(reservation);
+        reservationRepository.save(reservation);
+
+        RedisDto redisDto = dtoMapper.toRedisDto(reservation);
+        redisTemplate.opsForZSet().add(key, redisDto, sequence);
+        return reservation;
     }
 
 //    예약 취소 기능
@@ -67,6 +86,12 @@ public class ReservationService {
         reservationHistory.setStatus(Status.Cancelled);
 //        reservationHistory 테이블에 저장.
         reservationHistoryRepository.save(reservationHistory);
+
+        //        Redis의 예약 찾기
+        String key = RESERVATION_LIST_KEY+reservation.getHospitalId();
+        RedisDto redisDto = dtoMapper.toRedisDto(reservation);
+//        list 에서 해당 예약을 삭제
+        redisTemplate.opsForZSet().remove(key, redisDto);
     }
     
 //    예약 조회 기능
