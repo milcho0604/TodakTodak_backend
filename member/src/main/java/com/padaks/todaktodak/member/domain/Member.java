@@ -1,6 +1,7 @@
 package com.padaks.todaktodak.member.domain;
 
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
+import com.padaks.todaktodak.member.dto.DoctorListResDto;
 import com.padaks.todaktodak.member.dto.MemberListResDto;
 import com.padaks.todaktodak.member.dto.MemberUpdateReqDto;
 import lombok.*;
@@ -40,9 +41,14 @@ public class Member extends BaseTimeEntity {
     private Address address;
     @ColumnDefault("0")
     private int noShowCount;
+
     @Column
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    private String bio;
+
+    private Long hospitalId;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<ChildParentsRelationship> childParentsRelationshipList;
@@ -107,6 +113,9 @@ public class Member extends BaseTimeEntity {
         this.password = newPassword;
     }
 
+    // 의사 약력 변경
+    public void changeBio(String newBio){this.bio = newBio;}
+
     public String getRoleKey() {
         return this.role.getKey();
     }
@@ -116,7 +125,7 @@ public class Member extends BaseTimeEntity {
         this.setDeletedTimeAt(LocalDateTime.now());  // 현재 시간을 삭제 시간으로 설정
     }
 
-    // 유저 목록 조히
+    // 유저 목록 조회
     public MemberListResDto listFromEntity(){
         return MemberListResDto.builder()
                 .id(this.id)
@@ -127,4 +136,13 @@ public class Member extends BaseTimeEntity {
                 .role(this.role)
                 .build();
     }
+
+    public DoctorListResDto doctorListFromEntity(){
+        return DoctorListResDto.builder()
+                .id(this.id)
+                .name(this.name)
+                .profileImgUrl(this.profileImgUrl)
+                .build();
+    }
+
 }
