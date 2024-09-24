@@ -1,14 +1,12 @@
 package com.padaks.todaktodak.hospital.domain;
 
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
-import com.padaks.todaktodak.doctor.domain.Doctor;
 import com.padaks.todaktodak.hospital.dto.HospitalDTO.HospitalUpdateReqDto;
 import com.padaks.todaktodak.hospitaloperatinghours.domain.HospitalOperatingHours;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -58,9 +56,6 @@ public class Hospital extends BaseTimeEntity {
     private String representativePhoneNumber; // 대표자 핸드폰 번호
 
     private Long untactFee; // 비대면진료비
-
-    @OneToMany(mappedBy = "hospital", cascade = CascadeType.ALL)
-    private List<Doctor> doctor;
 
     @OneToMany(mappedBy = "hospital", cascade = CascadeType.ALL)
     private List<HospitalOperatingHours> hospitalOperatingHours;
