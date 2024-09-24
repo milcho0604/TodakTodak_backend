@@ -2,6 +2,7 @@ package com.padaks.todaktodak.doctoroperatinghours.domain;
 
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
 import com.padaks.todaktodak.common.enumdir.DayOfHoliday;
+import com.padaks.todaktodak.doctoroperatinghours.dto.DoctorOperatingHoursReqDto;
 import com.padaks.todaktodak.member.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,4 +32,11 @@ public class DoctorOperatingHours extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private DayOfHoliday untack;
 
+    public void updateOperatingHours(DoctorOperatingHoursReqDto dto){
+        this.member = dto.getMember();
+        this.dayOfWeek = dto.getDayOfWeek();
+        this.openTime = dto.getOpenTime();
+        this.closeTime = dto.getCloseTime();
+        this.untack = dto.getUntack();
+    }
 }
