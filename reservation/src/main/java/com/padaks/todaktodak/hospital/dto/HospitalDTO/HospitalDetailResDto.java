@@ -48,6 +48,8 @@ public class HospitalDetailResDto {
 
     private Long untactFee; // 비대면진료비
 
+    private Boolean isAccept; // 가입승인여부
+
     public static HospitalDetailResDto fromEntity(Hospital hospital,
                                                   Long standby,
                                                   String distance
@@ -70,6 +72,7 @@ public class HospitalDetailResDto {
                 .representativeName(hospital.getRepresentativeName())
                 .representativePhoneNumber(hospital.getRepresentativePhoneNumber())
                 .untactFee(hospital.getUntactFee())
+                .isAccept(hospital.getIsAccept())
                 .build();
     }
 

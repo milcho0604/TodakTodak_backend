@@ -62,7 +62,7 @@ public class HospitalService {
 
     // 병원 승인
     public void acceptHospital(Long id){
-        Hospital hospital = hospitalRepository.findByIdOrThrow(id);
+        Hospital hospital = hospitalRepository.findByIdDeletedAtIsNullOrThrow(id);
         hospital.acceptHospital(); // isAccept = true (승인처리)
         memberFeign.acceptHospitalAdmin(hospital.getAdminEmail()); // 해당병원 admin deletedAt = null 처리 (존재하는 회원 처리)
     }
@@ -113,7 +113,7 @@ public class HospitalService {
                                                     BigDecimal latitude,
                                                     BigDecimal longitude){
 
-        List<Hospital> hospitalList = hospitalRepository.findByDongAndDeletedAtIsNull(dong);
+        List<Hospital> hospitalList = hospitalRepository.findByDongAndDeletedAtIsNullAndIsAcceptIsTrue(dong);
         List<HospitalListResDto> dtoList = new ArrayList<>();
         String distance = null;
         Long standby = null; // 실시간 대기자 수 : 이후 redis 붙일예정

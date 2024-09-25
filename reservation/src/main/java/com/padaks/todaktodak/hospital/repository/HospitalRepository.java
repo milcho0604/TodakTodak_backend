@@ -13,10 +13,17 @@ import static com.padaks.todaktodak.common.exception.exceptionType.HospitalExcep
 @Repository
 public interface HospitalRepository extends JpaRepository<Hospital, Long> {
 
-    // deleteAt이 null인 객체 찾음(삭제되지 않은 객체)
-    Optional<Hospital> findByIdAndDeletedAtIsNull(Long id);
+    // deleteAt이 null, isAccept가 true인 객체 찾음(삭제되지 않은 객체)
+    Optional<Hospital> findByIdAndDeletedAtIsNullAndIsAcceptIsTrue(Long id);
 
     default Hospital findByIdOrThrow(Long id) {
+        return findByIdAndDeletedAtIsNullAndIsAcceptIsTrue(id)
+                .orElseThrow(() -> new BaseException(HOSPITAL_NOT_FOUND));
+    }
+
+    // deleteAt이 null인 병원 (삭제되지 않은 병원)
+    Optional<Hospital> findByIdAndDeletedAtIsNull(Long id);
+    default Hospital findByIdDeletedAtIsNullOrThrow(Long id) {
         return findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new BaseException(HOSPITAL_NOT_FOUND));
     }
@@ -25,5 +32,5 @@ public interface HospitalRepository extends JpaRepository<Hospital, Long> {
     List<Hospital> findByDeletedAtIsNull();
 
     // 삭제되지 않은 병원리스트 중 '~~동'으로 병원찾기
-    List<Hospital> findByDongAndDeletedAtIsNull(String dong);
+    List<Hospital> findByDongAndDeletedAtIsNullAndIsAcceptIsTrue(String dong);
 }
