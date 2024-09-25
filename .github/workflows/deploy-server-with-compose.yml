@@ -66,5 +66,5 @@ jobs:
             
             sudo docker-compose pull && sudo docker-compose up -d
             
-            # 사용되지 않은 도커 이미지 삭제
-            sudo docker image prune -f
+#            # 사용되지 않은 도커 이미지 삭제
+#            sudo docker image prune -f
