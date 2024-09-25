@@ -25,7 +25,9 @@ public class Hospital extends BaseTimeEntity {
     @Column(name = "hospital_id")
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    private String adminEmail; // 병원 admin 이메일
+
+    @Column(nullable = false)
     private String name; // 병원이름
 
     @Column(nullable = false, unique = true)
@@ -50,6 +52,7 @@ public class Hospital extends BaseTimeEntity {
     @Column(precision = 9, scale = 6)
     private BigDecimal longitude; // 경도
 
+    @Column(nullable = false, unique = true)
     private String businessRegistrationInfo; // 사업자등록번호
 
     private String representativeName; // 대표자 이름
@@ -57,6 +60,8 @@ public class Hospital extends BaseTimeEntity {
     private String representativePhoneNumber; // 대표자 핸드폰 번호
 
     private Long untactFee; // 비대면진료비
+
+    private Boolean isAccept; // 가입승인여부
 
     @OneToMany(mappedBy = "hospital", cascade = CascadeType.ALL)
     private List<HospitalOperatingHours> hospitalOperatingHours;
@@ -84,5 +89,9 @@ public class Hospital extends BaseTimeEntity {
         this.representativeName = dto.getRepresentativeName();
         this.representativePhoneNumber = dto.getRepresentativePhoneNumber();
         this.untactFee = dto.getUntactFee();
+    }
+
+    public void acceptHospital(){
+        this.isAccept = true;
     }
 }
