@@ -27,21 +27,21 @@ spring:
             - Path=/member-service/**
           filters:
             - StripPrefix=1
-          uri: lb://member-service:todak-member
+          uri: lb://member-service
 
         - id: reservation-service
           predicates:
             - Path=/reservation-service/**
           filters:
             - StripPrefix=1
-          uri: lb://reservation-service:todak-reservation
+          uri: lb://reservation-service
 
         - id: community-service
           predicates:
             - Path=/community-service/**
           filters:
             - StripPrefix=1
-          uri: lb://community-service:todak-community
+          uri: lb://community-service
 
 eureka:
   client:
