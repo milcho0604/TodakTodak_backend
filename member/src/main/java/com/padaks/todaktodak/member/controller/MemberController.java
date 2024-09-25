@@ -52,6 +52,12 @@ public class MemberController {
 //        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "잘못된 요청입니다.");
     }
 
+    @GetMapping("/get/{email}")
+    public MemberResDto getMemberByEmail(@PathVariable String email) {
+        Member member = memberService.findByMemberEmail(email);
+        return new MemberResDto().fromEntity(member);
+    }
+
     // 회원가입
     @PostMapping("/create")
     public ResponseEntity<?> register(MemberSaveReqDto saveReqDto,
