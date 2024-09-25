@@ -1,5 +1,7 @@
 package com.padaks.todaktodak.hospital.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.padaks.todaktodak.common.dto.CommonResDto;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.common.exception.exceptionType.HospitalExceptionType;
 import com.padaks.todaktodak.hospital.domain.Hospital;
@@ -9,7 +11,6 @@ import com.padaks.todaktodak.util.DistanceCalculator;
 import com.padaks.todaktodak.util.S3ClientFileUpload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +28,7 @@ public class HospitalService {
     private final HospitalRepository hospitalRepository;
     private final S3ClientFileUpload s3ClientFileUpload;
     private final DistanceCalculator distanceCalculator;
+    private final MemberFeign memberFeign;
 
     // 병원등록
     public Hospital registerHospital(HospitalRegisterReqDto dto){
@@ -40,6 +42,29 @@ public class HospitalService {
         Hospital hospital = dto.toEntity(dto, imageUrl);
 
         return hospitalRepository.save(hospital); // Hospital 저장
+    }
+
+    // 병원등록 + 병원 admin 등록(Member에게 feign 요청)
+    // 회원가입 승인요청 -> 병원데이터 등록, 승인여부 false (미승인)
+    public HospitalAndAdminRegisterResDto registerHospitalAndAdmin(HospitalAndAdminRegisterReqDto dto){
+
+        Hospital hospital = hospitalRepository.save(dto.toEntity(dto)); // 병원 + 병원admin DTO -> 병원 엔티티로 조립
+        HospitalAdminSaveReqDto adminSaveReqDto = HospitalAdminSaveReqDto.fromDto(dto, hospital.getId()); // 병원admin(Member) 등록 request DTO
+
+        CommonResDto commonResDto = memberFeign.registerHospitalAdmin(adminSaveReqDto);
+        ObjectMapper objectMapper = new ObjectMapper();
+        Long hospitalAdminId = objectMapper.convertValue(commonResDto.getResult(), Long.class);
+
+        System.out.println("feign : 병원admin 회원 등록성공 회원id " + hospitalAdminId);
+
+        return HospitalAndAdminRegisterResDto.fromEntity(hospital, hospitalAdminId);
+    }
+
+    // 병원 승인
+    public void acceptHospital(Long id){
+        Hospital hospital = hospitalRepository.findByIdDeletedAtIsNullOrThrow(id);
+        hospital.acceptHospital(); // isAccept = true (승인처리)
+        memberFeign.acceptHospitalAdmin(hospital.getAdminEmail()); // 해당병원 admin deletedAt = null 처리 (존재하는 회원 처리)
     }
 
     // 병원 detail 조회
@@ -88,7 +113,7 @@ public class HospitalService {
                                                     BigDecimal latitude,
                                                     BigDecimal longitude){
 
-        List<Hospital> hospitalList = hospitalRepository.findByDongAndDeletedAtIsNull(dong);
+        List<Hospital> hospitalList = hospitalRepository.findByDongAndDeletedAtIsNullAndIsAcceptIsTrue(dong);
         List<HospitalListResDto> dtoList = new ArrayList<>();
         String distance = null;
         Long standby = null; // 실시간 대기자 수 : 이후 redis 붙일예정

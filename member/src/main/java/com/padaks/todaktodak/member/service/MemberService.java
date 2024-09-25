@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
 import java.util.Random;
 
 @Service
@@ -76,6 +77,27 @@ public class MemberService {
         return memberRepository.save(doctor);
     }
 
+    // 병원 admin 회원가입
+    public Member registerHospitalAdmin(HospitalAdminSaveReqDto dto){
+        validateRegistration(dto); // 회원가입 검증로직
+        Member hospitalAdmin = dto.toEntity(dto, passwordEncoder.encode(dto.getAdminPassword()));
+        Member unAcceptHospitalAdmin = memberRepository.save(hospitalAdmin);
+
+        // 개발자 admin이 회원가입 승인전까지는 deletedAt에 시간 넣어서 아직 없는 회원으로 간주
+        unAcceptHospitalAdmin.setDeletedTimeAt(LocalDateTime.now());
+
+        return unAcceptHospitalAdmin;
+    }
+
+    // 병원 admin 회원가입 승인
+    public void acceptHospitalAdmin(String email){
+        Member hospitalAdmin = memberRepository.findByMemberEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("이메일에 해당하는 병원 admin 회원이 없습니다."));
+
+        // 개발자 admin이 회원가입 승인하면 deletedAt = null 처리 -> 존재하는 회원으로 간주
+        hospitalAdmin.acceptHospitalAdmin();
+    }
+
     // 로그인
     public String login(MemberLoginDto loginDto) {
         Member member = memberRepository.findByMemberEmail(loginDto.getMemberEmail())
@@ -112,6 +134,18 @@ public class MemberService {
             throw new RuntimeException("이미 사용중인 이메일 입니다.");
         }
     }
+
+    // 병원 admin 회원가입 검증로직
+    private void validateRegistration(HospitalAdminSaveReqDto saveReqDto) {
+        if (saveReqDto.getAdminPassword().length() <= 7) {
+            throw new RuntimeException("비밀번호는 8자 이상이어야 합니다.");
+        }
+
+        if (memberRepository.existsByMemberEmail(saveReqDto.getAdminEmail())) {
+            throw new RuntimeException("이미 사용중인 이메일 입니다.");
+        }
+    }
+
 
     // 비밀번호 확인 및 검증 로렢
     private void validatePassword(String newPassword, String confirmPassword, String currentPassword) {

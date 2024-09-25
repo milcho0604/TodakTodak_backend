@@ -7,6 +7,7 @@ import com.padaks.todaktodak.hospital.service.HospitalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -24,6 +25,22 @@ public class HospitalController {
     public ResponseEntity<Object> registerHospital(@ModelAttribute HospitalRegisterReqDto hospitalRegisterReqDto){
         Hospital hospital = hospitalService.registerHospital(hospitalRegisterReqDto);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.CREATED, "병원등록성공", hospital.getId()), HttpStatus.CREATED);
+    }
+
+    // 병원 admin + 병원 등록 (미승인 상태)
+//    @PreAuthorize("hasRole('ROLE_HOSPTIALADMIN')")
+    @PostMapping("/hospital-admin/register")
+    public ResponseEntity<Object> registerHospitalAndAdmin(@RequestBody HospitalAndAdminRegisterReqDto dto){
+        HospitalAndAdminRegisterResDto hospitalAndAdminRegisterResDto
+                = hospitalService.registerHospitalAndAdmin(dto);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.CREATED, "병원, 병원 admin 등록 성공 (미승인)", hospitalAndAdminRegisterResDto), HttpStatus.CREATED);
+    }
+    // 병원 admin + 병원 승인처리
+    // 병원 : isAccept = true, 병원 admin : deletedAt = null
+    @PutMapping("/accept/{id}")
+    public ResponseEntity<Object> acceptHospital(@PathVariable Long id){
+        hospitalService.acceptHospital(id);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원, 병원 admin 가입 승인처리 성공", null),HttpStatus.OK);
     }
 
     // 병원 detail 조회

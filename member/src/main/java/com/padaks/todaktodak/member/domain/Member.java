@@ -23,19 +23,24 @@ public class Member extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
-    //    @Column
-//    private Long familyId;
+
     private String name;
+
     @Column(nullable = false, unique = true)
     private String memberEmail;
+
     //    @Column(nullable = false)
     private String password;
+
     @Column
     private String profileImgUrl;
+
     //    @Column(nullable = false, unique = true)
     private String phoneNumber;
+
     //    @Column(nullable = false)
     private String ssn;
+
     //    @Column(nullable = false)
     @Column(length = 255)
     private Address address;

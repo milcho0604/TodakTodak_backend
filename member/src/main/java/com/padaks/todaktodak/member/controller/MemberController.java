@@ -91,6 +91,18 @@ public class MemberController {
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "의사등록성공", member.getId()),HttpStatus.OK);
     }
 
+    @PostMapping("/hospital-admin/register")
+    public ResponseEntity<?> registerHospitalAdmin(@RequestBody HospitalAdminSaveReqDto dto){
+        Member unAcceptHospitalAdmin = memberService.registerHospitalAdmin(dto);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원 admin 등록성공(미승인)", unAcceptHospitalAdmin.getId()),HttpStatus.OK);
+    }
+
+    @PutMapping("/hospital-admin/accept")
+    public ResponseEntity<?> acceptHospitalAdmin(@RequestBody String email){
+        memberService.acceptHospitalAdmin(email);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원 admin 회원가입 승인완료", null),HttpStatus.OK);
+    }
+
     // 로그인
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody MemberLoginDto loginDto) {
