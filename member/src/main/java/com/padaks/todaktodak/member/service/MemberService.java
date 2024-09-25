@@ -33,9 +33,6 @@ public class MemberService {
     private final DtoMapper dtoMapper;
     private final S3ClientFileUpload s3ClientFileUpload;
 
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucketName; // S3 버킷 이름 가져오기
-
     // 간편하게 멤버 객체를 찾기 위한 findByMemberEmail
     public Member findByMemberEmail(String email) {
         System.out.println("이메일을 검증하는 부분:" + email);
@@ -50,7 +47,7 @@ public class MemberService {
         // 프로필 이미지 업로드 및 url로 저장 -> aws에서 이미지를 가져오는 방식
         String imageUrl = null;
         if (saveReqDto.getProfileImage() != null && !saveReqDto.getProfileImage().isEmpty()) {
-            imageUrl = s3ClientFileUpload.upload(saveReqDto.getProfileImage(), bucketName);
+            imageUrl = s3ClientFileUpload.upload(saveReqDto.getProfileImage());
             saveReqDto.setProfileImgUrl(imageUrl);
         }
 
@@ -64,7 +61,7 @@ public class MemberService {
         String imageUrl = null;
 
         if (imageSsr.isEmpty()){
-            imageUrl = s3ClientFileUpload.upload(imageSsr, bucketName);
+            imageUrl = s3ClientFileUpload.upload(imageSsr);
 //            dto.setProfileImgUrl(imageUrl);
         }
         Member doctor = dto.toEntity(passwordEncoder.encode(dto.getPassword()), imageUrl);
@@ -74,7 +71,7 @@ public class MemberService {
 
     public Member registerDoctor(DoctorSaveReqDto dto){
         MultipartFile image = dto.getProfileImage();
-        String imageUrl = s3ClientFileUpload.upload(image, bucketName);
+        String imageUrl = s3ClientFileUpload.upload(image);
         Member doctor = dto.toEntity(passwordEncoder.encode(dto.getPassword()), imageUrl);
         return memberRepository.save(doctor);
     }
@@ -142,7 +139,7 @@ public class MemberService {
         }
         // 프로필 이미지 수정
         if (dto.getProfileImage() != null && !dto.getProfileImage().isEmpty()){
-            String imageUrl = s3ClientFileUpload.upload(dto.getProfileImage(), bucketName);
+            String imageUrl = s3ClientFileUpload.upload(dto.getProfileImage());
             member.changePhoneNumber(imageUrl);
         }
         if (dto.getBio() != null){
@@ -185,7 +182,7 @@ public class MemberService {
 
         // 프로필 이미지 수정
         if (editReqDto.getProfileImage() != null && !editReqDto.getProfileImage().isEmpty()) {
-            String imageUrl = s3ClientFileUpload.upload(editReqDto.getProfileImage(), bucketName);
+            String imageUrl = s3ClientFileUpload.upload(editReqDto.getProfileImage());
             member.changeProfileImgUrl(imageUrl);
         }
 
