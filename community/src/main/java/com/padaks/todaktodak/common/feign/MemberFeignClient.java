@@ -1,8 +1,7 @@
-package com.padaks.todaktodak.report.service;
+package com.padaks.todaktodak.common.feign;
 
 import com.padaks.todaktodak.common.config.FeignConfig;
-import com.padaks.todaktodak.report.dto.MemberReportDto;
-import com.padaks.todaktodak.report.dto.ReportSaveReqDto;
+import com.padaks.todaktodak.report.dto.MemberFeignDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -11,5 +10,5 @@ import org.springframework.web.bind.annotation.GetMapping;
 public interface MemberFeignClient {
     @GetMapping("/member/get/member")
         // member-service에 구현된 경로
-    MemberReportDto getMemberEmail(); //ReportSaveReqDto 반환
+    MemberFeignDto getMemberEmail(); //ReportSaveReqDto 반환
 }

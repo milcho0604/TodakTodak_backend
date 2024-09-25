@@ -4,7 +4,7 @@ import com.padaks.todaktodak.comment.repository.CommentRepository;
 import com.padaks.todaktodak.common.dto.CommonErrorDto;
 import com.padaks.todaktodak.common.dto.CommonResDto;
 import com.padaks.todaktodak.post.repository.PostRepository;
-import com.padaks.todaktodak.report.dto.MemberReportDto;
+import com.padaks.todaktodak.report.dto.MemberFeignDto;
 import com.padaks.todaktodak.report.dto.ReportSaveReqDto;
 import com.padaks.todaktodak.report.service.ReportService;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ public class ReportController {
     @GetMapping("/get/member")
     private ResponseEntity<?> getMember(){
         try {
-            MemberReportDto dto = reportService.getMemberInfo();
+            MemberFeignDto dto = reportService.getMemberInfo();
             CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "member 정보를 가져왔습니다.", dto);
             return new ResponseEntity<>(commonResDto, HttpStatus.OK);
         }catch (Exception e){
