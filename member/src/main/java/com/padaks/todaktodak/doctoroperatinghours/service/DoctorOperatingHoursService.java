@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,6 +57,6 @@ public class DoctorOperatingHoursService {
 
     public void deleteOperatingHours(Long operatingHoursId){
         DoctorOperatingHours hours = doctorOperatingHoursRepository.findByIdOrThrow(operatingHoursId);
-        hours.updateDeleteAt();
+        hours.setDeletedTimeAt(LocalDateTime.now());
     }
 }
