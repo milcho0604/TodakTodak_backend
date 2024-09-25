@@ -15,13 +15,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("comment")
-public class CommontController {
+public class CommentController {
     private final CommentService commentService;
 
     @PostMapping("/create")
