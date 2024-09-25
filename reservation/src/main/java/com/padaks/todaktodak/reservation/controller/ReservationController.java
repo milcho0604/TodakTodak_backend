@@ -21,13 +21,13 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
-    @GetMapping("/scheduled")
+    @PostMapping("/scheduled")
     public ResponseEntity<?> treatScheduledReservation(@RequestBody ReservationSaveReqDto dto){
         Reservation reservation = reservationService.scheduleReservation(dto);
         return new ResponseEntity<>(reservation, HttpStatus.OK);
     }
 
-    @GetMapping("/immediate")
+    @PostMapping("/immediate")
     public ResponseEntity<?> treatImmediateReservation(@RequestBody ReservationSaveReqDto dto){
         Reservation reservation = reservationService.immediateReservation(dto);
         return new ResponseEntity<>(reservation, HttpStatus.OK);

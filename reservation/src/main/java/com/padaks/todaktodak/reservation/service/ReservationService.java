@@ -14,6 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.kafka.annotation.KafkaHandler;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,8 +37,9 @@ public class ReservationService {
     private final ReservationHistoryRepository reservationHistoryRepository;
     private final DtoMapper dtoMapper;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    private static final String RESERVATION_LIST_KEY = "reservation_list";
+    private static final String RESERVATION_LIST_KEY = "doctor_list";
 
 //    진료 미리 예약 기능
     public Reservation scheduleReservation(ReservationSaveReqDto dto){
@@ -50,26 +54,32 @@ public class ReservationService {
         return reservationRepository.save(reservation);
     }
 
-//    당일 진료 예약 기능 구현.
+//    당일 예약 기능
     public Reservation immediateReservation(ReservationSaveReqDto dto){
-        log.info("ReservationService[immediateReservation] : 시작");
-
+        log.info("KafkaListener[handleReservation] : 예약 요청 처리 시작");
+//        doctor 이메일로 찾아서 id로 바꿔주면 됨
         String key = RESERVATION_LIST_KEY + dto.getHospitalId();
-        if(Boolean.TRUE.equals(redisTemplate.hasKey(key))){
-            Set<Object> set = redisTemplate.opsForZSet().range(key,0, -1);
-            if(set.size() > 30){
+        // Redis에서 예약 개수 확인 (대기열 관리)
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
+            Set<Object> set = redisTemplate.opsForZSet().range(key, 0, -1);
+            if (set.size() > 30) {
                 throw new BaseException(TOOMANY_RESERVATION);
             }
         }
+        kafkaTemplate.send("reservationTopic", dto);
 
         String sequenceKey = "sequence" + dto.getHospitalId();
         Long sequence = redisTemplate.opsForValue().increment(sequenceKey, 1);
 
+        // 예약 저장
         Reservation reservation = dtoMapper.toReservation(dto);
         reservationRepository.save(reservation);
 
         RedisDto redisDto = dtoMapper.toRedisDto(reservation);
         redisTemplate.opsForZSet().add(key, redisDto, sequence);
+
+        log.info("KafkaListener[handleReservation] : 예약 처리 완료");
+
         return reservation;
     }
 
