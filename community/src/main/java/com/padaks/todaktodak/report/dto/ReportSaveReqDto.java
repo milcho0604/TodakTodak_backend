@@ -19,10 +19,10 @@ public class ReportSaveReqDto {
     private Long postId;
     private Long commentId;
 
-    public Report toEntity(Post post, Comment comment){
+    public Report toEntity(Post post, Comment comment, String reporterEmail, String reportedEmail){
         return Report.builder()
-                .reporterEmail(this.reporterEmail)
-                .reportedEmail(this.reportedEmail)
+                .reporterEmail(reporterEmail)
+                .reportedEmail(reportedEmail)
                 .reason(this.reason)
                 .post(post)
                 .comment(comment)

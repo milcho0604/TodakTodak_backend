@@ -25,10 +25,12 @@ public class PostsaveDto {
     @Column(nullable = false)
     private String content;
 
+    private MultipartFile postImage;
 
-    public Post toEntity(String postImgUrl) {
+
+    public Post toEntity(String postImgUrl, String memberEmail) {
         return Post.builder()
-                .memberEmail(this.memberEmail)
+                .memberEmail(memberEmail)
                 .title(this.title)
                 .content(this.content)
                 .postImgUrl(postImgUrl)

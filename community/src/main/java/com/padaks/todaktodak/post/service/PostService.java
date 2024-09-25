@@ -2,13 +2,11 @@ package com.padaks.todaktodak.post.service;
 
 import com.padaks.todaktodak.comment.dto.CommentDetailDto;
 import com.padaks.todaktodak.comment.service.CommentService;
-import com.padaks.todaktodak.common.exception.BaseException;
+import com.padaks.todaktodak.common.feign.MemberFeignClient;
 import com.padaks.todaktodak.post.domain.Post;
-import com.padaks.todaktodak.post.dto.PostDetailDto;
-import com.padaks.todaktodak.post.dto.PostListDto;
-import com.padaks.todaktodak.post.dto.PostUpdateReqDto;
-import com.padaks.todaktodak.post.dto.PostsaveDto;
+import com.padaks.todaktodak.post.dto.*;
 import com.padaks.todaktodak.post.repository.PostRepository;
+import com.padaks.todaktodak.report.dto.MemberFeignDto;
 import com.padaks.todaktodak.util.S3ClientFileUpload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,17 +26,27 @@ import java.util.List;
 @Transactional
 @RequiredArgsConstructor
 public class PostService {
+    private final MemberFeignClient memberPostFeignClient;
     private final PostRepository postRepository;
     private final S3ClientFileUpload s3ClientFileUpload;
     private final CommentService commentService;
 
-    public void create(PostsaveDto dto, MultipartFile imageSsr){
+    //member 객체 리턴, 토큰 포함
+    public MemberFeignDto getMemberInfo(){
+        MemberFeignDto member = memberPostFeignClient.getMemberEmail();
+        return member;
+    }
 
-        String imageUrl = null;
-        if (imageSsr != null && !imageSsr.isEmpty()){
-         imageUrl = s3ClientFileUpload.upload(imageSsr);
-        }
-        Post post = dto.toEntity(imageUrl);
+    public void create(PostsaveDto dto){
+
+        MultipartFile postImage = dto.getPostImage();
+        MemberFeignDto member = getMemberInfo();
+        String memberEmail = member.getMemberEmail();
+
+
+        String imageUrl = s3ClientFileUpload.upload(postImage);
+
+        Post post = dto.toEntity(imageUrl, memberEmail);
         postRepository.save(post);
     }
 

@@ -39,8 +39,12 @@ public class Member extends BaseTimeEntity {
     //    @Column(nullable = false)
     @Column(length = 255)
     private Address address;
+
     @ColumnDefault("0")
     private int noShowCount;
+
+    @ColumnDefault("0")
+    private int reportCount;
 
     @Column
     @Enumerated(EnumType.STRING)

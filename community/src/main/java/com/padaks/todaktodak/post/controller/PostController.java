@@ -2,11 +2,9 @@ package com.padaks.todaktodak.post.controller;
 
 import com.padaks.todaktodak.common.dto.CommonErrorDto;
 import com.padaks.todaktodak.common.dto.CommonResDto;
-import com.padaks.todaktodak.post.dto.PostDetailDto;
-import com.padaks.todaktodak.post.dto.PostListDto;
-import com.padaks.todaktodak.post.dto.PostUpdateReqDto;
-import com.padaks.todaktodak.post.dto.PostsaveDto;
+import com.padaks.todaktodak.post.dto.*;
 import com.padaks.todaktodak.post.service.PostService;
+import com.padaks.todaktodak.report.dto.MemberFeignDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,9 +24,9 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> register(@RequestBody PostsaveDto dto, @RequestPart(value = "image", required = false)MultipartFile imageSsr){
+    public ResponseEntity<?> register(@ModelAttribute PostsaveDto dto){
         try {
-            postService.create(dto, imageSsr);
+            postService.create(dto);
             CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "post 등록 성공", null);
             return new ResponseEntity<>(commonResDto, HttpStatus.OK);
         }catch (Exception e){
