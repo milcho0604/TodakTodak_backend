@@ -1,4 +1,4 @@
-package com.padaks.todaktodak.untact.config;
+package com.padaks.todaktodak.common.config;
 
 import com.padaks.todaktodak.untact.socket.SignalHandler;
 import org.springframework.context.annotation.Bean;

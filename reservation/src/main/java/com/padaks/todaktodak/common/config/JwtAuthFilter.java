@@ -1,4 +1,4 @@
-package com.padaks.todaktodak.configs;
+package com.padaks.todaktodak.common.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
