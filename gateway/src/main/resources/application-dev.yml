@@ -1,0 +1,49 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: ${SPRING_APPLICATION_NAME:todak}
+
+  cloud:
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: '${CORS_ALLOWED_ORIGINS:http://localhost:8081}'
+            allow-credentials: true
+            allowedHeaders: '*'
+            allowedMethods:
+              - PUT
+              - GET
+              - POST
+              - DELETE
+              - OPTIONS
+      routes:
+        - id: member-service
+          predicates:
+            - Path=/member-service/**
+          filters:
+            - StripPrefix=1
+          uri: lb://${MEMBER_SERVICE_URI:todak-member}
+
+        - id: reservation-service
+          predicates:
+            - Path=/reservation-service/**
+          filters:
+            - StripPrefix=1
+          uri: lb://${RESERVATION_SERVICE_URI:todak-reservation}
+
+        - id: community-service
+          predicates:
+            - Path=/community-service/**
+          filters:
+            - StripPrefix=1
+          uri: lb://${COMMUNITY_SERVICE_URI:todak-community}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}

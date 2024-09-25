@@ -85,11 +85,11 @@ cloud:
       static: ap-northeast-2
     s3:
       bucket: todak-file
-#eureka:
-#  client:
-#    serviceUrl:
-#      #      eureka의 member-service(서비스)로서 등록됨을 지정하겠다.
-#      defaultZone: http://localhost:8761/eureka/
+eureka:
+  client:
+    serviceUrl:
+      #      eureka의 member-service(서비스)로서 등록됨을 지정하겠다.
+      defaultZone: todak
 iamport:
   api_key: todak
   api_secret: todak
