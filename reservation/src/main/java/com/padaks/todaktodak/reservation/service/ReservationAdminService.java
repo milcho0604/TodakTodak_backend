@@ -30,7 +30,7 @@ public class ReservationAdminService {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    private static final String RESERVATION_LIST_KEY = "reservation_list";
+    private static final String RESERVATION_LIST_KEY = "doctor_list";
 
     public List<?> checkListReservation(
             CheckHospitalListReservationReqDto reqDto,
