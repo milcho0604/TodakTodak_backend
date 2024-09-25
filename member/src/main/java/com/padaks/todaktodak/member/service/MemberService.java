@@ -2,6 +2,7 @@ package com.padaks.todaktodak.member.service;
 
 import com.padaks.todaktodak.config.JwtTokenProvider;
 import com.padaks.todaktodak.member.domain.Member;
+import com.padaks.todaktodak.member.domain.Role;
 import com.padaks.todaktodak.member.dto.*;
 import com.padaks.todaktodak.member.repository.MemberRepository;
 import com.padaks.todaktodak.util.S3ClientFileUpload;
@@ -58,6 +59,26 @@ public class MemberService {
         memberRepository.save(member);
     }
 
+    public void createDoctor(DoctorSaveReqDto dto, MultipartFile imageSsr){
+        validateRegistration(dto);
+        String imageUrl = null;
+
+        if (imageSsr.isEmpty()){
+            imageUrl = s3ClientFileUpload.upload(imageSsr, bucketName);
+//            dto.setProfileImgUrl(imageUrl);
+        }
+        Member doctor = dto.toEntity(passwordEncoder.encode(dto.getPassword()), imageUrl);
+        memberRepository.save(doctor);
+
+    }
+
+    public Member registerDoctor(DoctorSaveReqDto dto){
+        MultipartFile image = dto.getProfileImage();
+        String imageUrl = s3ClientFileUpload.upload(image, bucketName);
+        Member doctor = dto.toEntity(passwordEncoder.encode(dto.getPassword()), imageUrl);
+        return memberRepository.save(doctor);
+    }
+
     // 로그인
     public String login(MemberLoginDto loginDto) {
         Member member = memberRepository.findByMemberEmail(loginDto.getMemberEmail())
@@ -84,6 +105,17 @@ public class MemberService {
             throw new RuntimeException("이미 사용중인 이메일 입니다.");
         }
     }
+
+    private void validateRegistration(DoctorSaveReqDto saveReqDto) {
+        if (saveReqDto.getPassword().length() <= 7) {
+            throw new RuntimeException("비밀번호는 8자 이상이어야 합니다.");
+        }
+
+        if (memberRepository.existsByMemberEmail(saveReqDto.getMemberEmail())) {
+            throw new RuntimeException("이미 사용중인 이메일 입니다.");
+        }
+    }
+
     // 비밀번호 확인 및 검증 로렢
     private void validatePassword(String newPassword, String confirmPassword, String currentPassword) {
         if (!newPassword.equals(confirmPassword)) {
@@ -97,6 +129,45 @@ public class MemberService {
         if (passwordEncoder.matches(newPassword, currentPassword)) {
             throw new RuntimeException("이전과 동일한 비밀번호로 설정할 수 없습니다.");
         }
+    }
+
+    public void updateDoctor(Member member, DoctorUpdateReqdto dto){
+        boolean isupdated = false;
+        // 비밀번호 수정
+        if (dto.getPassword() != null && !dto.getPassword().isEmpty()){
+            validatePassword(dto.getPassword(), dto.getConfirmPassword(), member.getPassword());
+            member.changePassword(passwordEncoder.encode(dto.getPassword()));
+            System.out.println("비밀번호가 변경되었습니다.");
+            isupdated = true;
+        }
+        // 프로필 이미지 수정
+        if (dto.getProfileImage() != null && !dto.getProfileImage().isEmpty()){
+            String imageUrl = s3ClientFileUpload.upload(dto.getProfileImage(), bucketName);
+            member.changePhoneNumber(imageUrl);
+        }
+        if (dto.getBio() != null){
+            member.changeBio(dto.getBio());
+            System.out.println("약력이 수정되었습니다 :" + dto.getBio());
+            isupdated = true;
+        }
+        if (dto.getPhoneNumber() != null && dto.getPhoneNumber().isEmpty()){
+            member.changePhoneNumber(dto.getPhoneNumber());
+            System.out.println("전화번호가 수정되었습니다. :" + dto.getPhoneNumber());
+            isupdated = true;
+        }
+        if (dto.getHospitalId() != null){
+            member.changeHospitalId(dto.getHospitalId());
+            System.out.println("병원id가 수정되었습니다. : " + dto.getHospitalId());
+            isupdated = true;
+        }
+
+        if (isupdated) {
+            memberRepository.save(member);
+            System.out.println("회원 정보가 저장되었습니다.");
+        } else {
+            System.out.println("변경된 정보가 없습니다.");
+        }
+
     }
 
     public void updateMember(Member member, MemberUpdateReqDto editReqDto) {
@@ -187,10 +258,14 @@ public class MemberService {
 //        if (!member.getRole().toString().equals("TodakAdmin")){
 //            throw new SecurityException("관리자만 접근이 가능합니다.");
 //        }
-        Page<Member> members = memberRepository.findAll(pageable);
+        Page<Member> members = memberRepository.findByRole(Role.Member, pageable);
         return members.map(a -> a.listFromEntity());
     }
 
+    public Page<DoctorListResDto> doctorList(Pageable pageable){
+        Page<Member> doctors = memberRepository.findByRole(Role.Doctor, pageable);
+        return doctors.map(a->a.doctorListFromEntity());
+    }
 
 
 //    유저 회원가입은 소셜만 되어있기 때문에 TodakAdmin만 따로 initialDataLoader로 선언해 주었음.

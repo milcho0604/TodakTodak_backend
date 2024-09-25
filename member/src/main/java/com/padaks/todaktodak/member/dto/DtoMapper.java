@@ -12,5 +12,4 @@ public interface DtoMapper {
     DtoMapper INSTANCE = Mappers.getMapper(DtoMapper.class);
 //    AdminSaveDto 를 Member 로 매핑해주는 코드
     Member toMember(AdminSaveDto adminSaveDto);
-
 }

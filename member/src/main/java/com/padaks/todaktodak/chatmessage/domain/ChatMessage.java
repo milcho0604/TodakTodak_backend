@@ -18,12 +18,17 @@ public class ChatMessage extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "chating_id")
+    @Column(name = "chat_message_id")
     private Long id;
-    private String senderEmail;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chat_room_id")
+    private ChatRoom chatRoom;
+
+    @Column(nullable = false)
     private String contents;
 
-    @OneToOne
-    @JoinColumn(name = "chatroom_id")
-    private ChatRoom chatRoom;
+    // 읽었는지 여부 (default : 안읽음, false)
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private Boolean isRead;
 }

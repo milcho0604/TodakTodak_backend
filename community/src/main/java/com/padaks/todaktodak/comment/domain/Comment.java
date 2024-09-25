@@ -7,6 +7,7 @@ import com.padaks.todaktodak.common.domain.BaseTimeEntity;
 import com.padaks.todaktodak.communitynotification.domain.Notification;
 import com.padaks.todaktodak.post.domain.Post;
 import com.padaks.todaktodak.post.dto.PostDetailDto;
+import com.padaks.todaktodak.report.domain.Report;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,6 +45,10 @@ public class Comment extends BaseTimeEntity{
     @OneToMany(mappedBy = "comment")
     @Builder.Default
     private List<Notification> communityNotificationList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<Report> reportList = new ArrayList<>();
 
     public CommentDetailDto listFromEntity(){
         return CommentDetailDto.builder()

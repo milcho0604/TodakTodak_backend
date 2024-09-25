@@ -1,4 +1,3 @@
-# s3 슬꺼로 바꿈
 server:
   port: 8080
 spring:
@@ -26,10 +25,10 @@ spring:
       matching-strategy: ant_path_matcher
 
   datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: todak
-    username: todak
-    password: todak
+      driver-class-name: org.mariadb.jdbc.Driver
+      url: todak
+      username: todak
+      password: todak
 
   jpa:
     database: mysql

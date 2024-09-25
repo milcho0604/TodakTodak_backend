@@ -59,11 +59,30 @@ public class MemberController {
         try {
             memberService.create(saveReqDto, imageSsr);
             return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "회원가입 성공", null));
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new CommonResDto(HttpStatus.BAD_REQUEST, "회원가입에 실패했습니다: " + e.getMessage(), null));
         }
+    }
+
+//    @PostMapping("/createDoctor")
+//    public ResponseEntity<?> doctorRegister(@RequestPart DoctorSaveReqDto dto, @RequestPart(value = "profileImage", required = false) MultipartFile imageSsr){
+//        try {
+//            memberService.createDoctor(dto, imageSsr);
+//            CommonResDto commonResDto = new CommonResDto(HttpStatus.OK,"의사등록 성공", null);
+//            return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+//        }catch (IllegalArgumentException e){
+//            e.printStackTrace();
+//            CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.BAD_REQUEST, e.getMessage());
+//            return new ResponseEntity<>(commonErrorDto, HttpStatus.BAD_REQUEST);
+//        }
+//    }
+
+    @PostMapping("/doctor/register")
+    public ResponseEntity<?> registerDoctor(@ModelAttribute DoctorSaveReqDto doctorSaveReqDto){
+        Member member = memberService.registerDoctor(doctorSaveReqDto);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "의사등록성공", member.getId()),HttpStatus.OK);
     }
 
     // 로그인
@@ -145,6 +164,21 @@ public class MemberController {
         }
     }
 
+    // 의사 정보 수정
+    @PostMapping("/edit-doctor")
+    public ResponseEntity<?> editDoctorInfo(@ModelAttribute DoctorUpdateReqdto dto){
+        try {
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            Member doctor = memberService.findByMemberEmail(email);
+            memberService.updateDoctor(doctor, dto);
+            CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "의사 정보를 수정하였습니다.", doctor);
+            return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+        }catch (EntityNotFoundException e){
+            e.printStackTrace();
+            CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.NOT_FOUND, "의사 정보가 존재하지 않습니다. -> " + e.getMessage());
+            return new ResponseEntity<>(commonErrorDto, HttpStatus.NOT_FOUND);
+        }
+    }
 
     // 회원 탈퇴
     @PostMapping("/delete-account")
@@ -196,5 +230,12 @@ public class MemberController {
         Page<MemberListResDto> memberListResDtos = memberService.memberList(pageable);
         CommonResDto dto = new CommonResDto(HttpStatus.OK,"회원목록을 조회합니다.", memberListResDtos);
         return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    @GetMapping("/doctorList")
+    public ResponseEntity<Object> doctorList(Pageable pageable){
+            Page<DoctorListResDto> dtos = memberService.doctorList(pageable);
+            CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "의사목록을 조회합니다.",dtos);
+            return new ResponseEntity<>(commonResDto, HttpStatus.OK);
     }
 }
