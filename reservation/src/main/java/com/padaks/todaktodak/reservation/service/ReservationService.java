@@ -4,12 +4,9 @@ import com.padaks.todaktodak.common.dto.DtoMapper;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.domain.ReserveType;
-import com.padaks.todaktodak.reservation.dto.CheckListReservationReqDto;
-import com.padaks.todaktodak.reservation.dto.CheckListReservationResDto;
+import com.padaks.todaktodak.reservation.dto.*;
 import com.padaks.todaktodak.reservation.domain.ReservationHistory;
 import com.padaks.todaktodak.reservation.domain.Status;
-import com.padaks.todaktodak.reservation.dto.ReservationSaveReqDto;
-import com.padaks.todaktodak.reservation.dto.UpdateStatusReservation;
 import com.padaks.todaktodak.reservation.repository.ReservationHistoryRepository;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +30,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationHistoryRepository reservationHistoryRepository;
     private final DtoMapper dtoMapper;
+    private final MemberFeign memberFeign;
 
 //    진료 미리 예약 기능
     public Reservation scheduleReservation(ReservationSaveReqDto dto){
@@ -44,7 +42,9 @@ public class ReservationService {
                     throw new BaseException(RESERVATION_DUPLICATE);
                 });
         Reservation reservation = dtoMapper.toReservation(dto);
-        return reservationRepository.save(reservation);
+        Reservation savedReservation = reservationRepository.save(reservation);
+        sendReservationNotification(savedReservation);
+        return savedReservation;
     }
 
 //    당일 진료 예약 기능 구현.
@@ -102,5 +102,23 @@ public class ReservationService {
 //       예약의 상태를 completed로 변경한다
         reservation.updateStatus(updateStatusReservation.getStatus());
         return reservation;
+    }
+
+    public void sendReservationNotification(Reservation reservation) {
+        MemberResDto member = memberFeign.getMemberByEmail(reservation.getMemberEmail());
+        String content = String.format("환자 %s님이 %s에 %s의 예약을 했습니다.",
+                member.getName(),
+                reservation.getReservationDate().toString(),
+                reservation.getReservationTime().toString()
+        );
+//        알림 받는 사람 병원 admin Email로 변경해야함
+        NotificationReqDto notificationReqDto = NotificationReqDto.builder()
+                .memberEmail(reservation.getDoctorEmail())
+                .type("RESERVATION_NOTIFICATION")
+                .content(content)
+                .refId(reservation.getId())
+                .build();
+
+        memberFeign.sendReservationNotification(notificationReqDto);
     }
 }

@@ -4,7 +4,6 @@ import com.padaks.todaktodak.chatroom.domain.ChatRoom;
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
 import com.padaks.todaktodak.hospital.domain.Hospital;
 import com.padaks.todaktodak.medicalchart.domain.MedicalChart;
-import com.padaks.todaktodak.reservationnotification.domain.Notification;
 import com.padaks.todaktodak.review.domain.Review;
 import lombok.*;
 
@@ -65,8 +64,6 @@ public class Reservation extends BaseTimeEntity {
     @JoinColumn(name = "hospital_id")
     private Hospital hospital;
 
-    @OneToMany(mappedBy = "reservation")
-    private List<Notification> notificationList = new ArrayList<>();
 
     @OneToOne(mappedBy = "reservation")
     private Review review;
