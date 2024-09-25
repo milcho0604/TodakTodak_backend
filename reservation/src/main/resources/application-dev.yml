@@ -89,7 +89,8 @@ eureka:
   client:
     serviceUrl:
       #      eureka의 member-service(서비스)로서 등록됨을 지정하겠다.
-      defaultZone: todak
+      defaultZone: ${EUREKA_SERVER_URL:http://eureka:8761/eureka/}
+
 iamport:
   api_key: todak
   api_secret: todak
