@@ -28,11 +28,11 @@ public class PostsaveDto {
     private MultipartFile postImage;
 
 
-    public Post toEntity(PostsaveDto dto,String postImgUrl, String memberEmail) {
+    public Post toEntity(String postImgUrl, String memberEmail) {
         return Post.builder()
                 .memberEmail(memberEmail)
-                .title(dto.getTitle())
-                .content(dto.getContent())
+                .title(this.title)
+                .content(this.content)
                 .postImgUrl(postImgUrl)
                 .build();
     }

@@ -49,7 +49,7 @@ public class PostService {
 
         String imageUrl = s3ClientFileUpload.upload(postImage, bucketName);
 
-        Post post = dto.toEntity(dto, imageUrl, memberEmail);
+        Post post = dto.toEntity(imageUrl, memberEmail);
         postRepository.save(post);
     }
 

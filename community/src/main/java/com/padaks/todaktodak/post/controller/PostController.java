@@ -23,20 +23,6 @@ import javax.persistence.EntityNotFoundException;
 public class PostController {
     private final PostService postService;
 
-    @GetMapping("/get/member")
-    private ResponseEntity<?> getMember(){
-        try {
-            MemberFeignDto dto = postService.getMemberInfo();
-            CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "member 정보를 가져왔습니다.", dto);
-            return new ResponseEntity<>(commonResDto, HttpStatus.OK);
-        }catch (Exception e){
-            e.printStackTrace();
-            CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.BAD_REQUEST, e.getMessage());
-            return new ResponseEntity<>(commonErrorDto, HttpStatus.BAD_REQUEST);
-        }
-    }
-
-
     @PostMapping("/create")
     public ResponseEntity<?> register(@ModelAttribute PostsaveDto dto){
         try {
