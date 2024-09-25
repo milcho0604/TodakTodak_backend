@@ -40,7 +40,7 @@ public class JwtAuthFilter extends GenericFilter {
         try {
             if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
                 String token = bearerToken.substring(7);
-                System.out.println(token);
+//                System.out.println(token);
 
                 // Secret Key를 Base64 URL-safe로 디코딩하여 사용
                 byte[] decodedSecretKey = Base64.getUrlDecoder().decode(secretKey);
@@ -63,7 +63,7 @@ public class JwtAuthFilter extends GenericFilter {
                     authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
                 }
 
-                System.out.println(claims.getSubject());
+//                System.out.println(claims.getSubject());
                 // 사용자 정보를 기반으로 Authentication 객체 생성
                 UserDetails userDetails = new User(claims.getSubject(), "", authorities);
                 Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, token, authorities);
