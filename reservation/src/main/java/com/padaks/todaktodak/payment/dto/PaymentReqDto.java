@@ -2,6 +2,7 @@ package com.padaks.todaktodak.payment.dto;
 
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -16,7 +17,9 @@ public class PaymentReqDto {
     private String buyerTel;      // 구매자 전화번호
     private String merchantUid;
     private String impUid;
-    private int amount;
+    private String name;
+    private String customerUid;  // 고객별 고유 ID (정기 결제용)
+    private BigDecimal amount;
     private String paymentStatus;  // 문자열로 상태 전달 해야함
     private String paymentMethod;
     private LocalDateTime requestTimeStamp;
