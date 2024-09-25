@@ -1,7 +1,7 @@
 package com.padaks.todaktodak.payment.controller;
 
 import com.padaks.todaktodak.common.dto.CommonResDto;
-import com.padaks.todaktodak.payment.dto.MemberPayDto;
+import com.padaks.todaktodak.common.dto.MemberFeignDto;
 import com.padaks.todaktodak.payment.dto.PaymentListResDto;
 import com.padaks.todaktodak.payment.dto.PaymentReqDto;
 import com.padaks.todaktodak.payment.service.PaymentService;
@@ -26,7 +26,7 @@ public class PaymentController {
     @GetMapping("/get/member")
     private ResponseEntity<?> getMemberTest(){
         try {
-            MemberPayDto memberDto = paymentService.getMemberInfo();
+            MemberFeignDto memberDto = paymentService.getMemberInfo();
             return ResponseEntity.ok(memberDto);
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);

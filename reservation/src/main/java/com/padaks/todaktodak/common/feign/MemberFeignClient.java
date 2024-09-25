@@ -1,7 +1,7 @@
-package com.padaks.todaktodak.payment.service;
+package com.padaks.todaktodak.common.feign;
 
 import com.padaks.todaktodak.common.config.FeignConfig;
-import com.padaks.todaktodak.payment.dto.MemberPayDto;
+import com.padaks.todaktodak.common.dto.MemberFeignDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -10,5 +10,5 @@ import org.springframework.web.bind.annotation.GetMapping;
 public interface MemberFeignClient {
     @GetMapping("/member/get/member")
         // member-service에 구현된 경로
-    MemberPayDto getMemberEmail();  // MemberPayDto 반환
+    MemberFeignDto getMemberEmail();  // MemberPayDto 반환
 }
