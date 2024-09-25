@@ -34,7 +34,7 @@ spring:
             - Path=/reservation-service/**
           filters:
             - StripPrefix=1
-          uri: lb://reservation-service
+          uri: lb:ws://reservation-service
 
         - id: community-service
           predicates:
