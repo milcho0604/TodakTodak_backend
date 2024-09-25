@@ -46,4 +46,4 @@ spring:
 eureka:
   client:
     serviceUrl:
-      defaultZone: todak
+      defaultZone: http://eureka:8761/eureka/
