@@ -74,4 +74,5 @@ public class HospitalController {
         List<HospitalListResDto> hospitalList = hospitalService.getHospitalList(dong, latitude, longitude);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원 리스트 조회성공", hospitalList), HttpStatus.OK);
     }
+
 }

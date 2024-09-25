@@ -26,6 +26,10 @@ public class MemberSaveReqDto {
     private MultipartFile profileImage;
 
     @Builder.Default
+    private boolean isVerified = true;
+
+
+    @Builder.Default
     private Role role = Role.Member;
 
     public Member toEntity(String password) {

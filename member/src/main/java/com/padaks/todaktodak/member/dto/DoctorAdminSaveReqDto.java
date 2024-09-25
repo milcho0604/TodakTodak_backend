@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotEmpty;
 
@@ -14,16 +13,13 @@ import javax.validation.constraints.NotEmpty;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AdminDoctorSaveReqDto {
+public class DoctorAdminSaveReqDto {
     @NotEmpty(message = "name is essential")
     private String name;
     @NotEmpty(message = "email is essential")
     private String memberEmail;
     @NotEmpty(message = "password is essential")
     private String password;
-    private String phoneNumber;
-    private String bio;
-//    private String profileImgUrl;
     private Long hospitalId;
 
     @Builder.Default
@@ -37,7 +33,6 @@ public class AdminDoctorSaveReqDto {
                 .password(password)
                 .name(this.name)
                 .memberEmail(this.memberEmail)
-                .bio(this.bio)
                 .role(this.role)
                 .hospitalId(hospitalId)
                 .build();

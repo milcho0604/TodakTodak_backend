@@ -12,4 +12,6 @@ import lombok.NoArgsConstructor;
 public class MemberLoginDto {
     private String memberEmail;
     private String password;
+    private boolean isVerified;
+
 }

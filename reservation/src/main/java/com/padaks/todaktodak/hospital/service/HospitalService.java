@@ -30,6 +30,8 @@ public class HospitalService {
     private final DistanceCalculator distanceCalculator;
     private final MemberFeign memberFeign;
 
+    private final MemberFeign memberFeignClient;
+
     // 병원등록
     public Hospital registerHospital(HospitalRegisterReqDto dto){
 

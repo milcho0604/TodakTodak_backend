@@ -32,6 +32,9 @@ public class DoctorSaveReqDto {
     @Builder.Default
     private Role role = Role.Doctor;
 
+    @Builder.Default
+    private boolean isVerified = false;
+
     public Member toEntity(String password, String imageUrl) {
         return Member.builder()
                 .password(password)
