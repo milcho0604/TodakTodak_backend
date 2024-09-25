@@ -1,9 +1,10 @@
 package com.padaks.todaktodak.payment.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.padaks.todaktodak.common.dto.MemberFeignDto;
+import com.padaks.todaktodak.common.feign.MemberFeignClient;
 import com.padaks.todaktodak.payment.domain.Pay;
 import com.padaks.todaktodak.payment.domain.PaymentMethod;
-import com.padaks.todaktodak.payment.dto.MemberPayDto;
 import com.padaks.todaktodak.payment.dto.PaymentListResDto;
 import com.padaks.todaktodak.payment.dto.PaymentReqDto;
 import com.padaks.todaktodak.payment.domain.PaymentStatus;
@@ -38,8 +39,8 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
 
     // member 객체 리턴, 토큰 포함
-    public MemberPayDto getMemberInfo() {
-        MemberPayDto member = memberFeignClient.getMemberEmail();  // Feign Client에 토큰 추가
+    public MemberFeignDto getMemberInfo() {
+        MemberFeignDto member = memberFeignClient.getMemberEmail();  // Feign Client에 토큰 추가
 //        System.out.println("멤버 디버깅을 위한: " + member);
         return member;
     }
@@ -68,7 +69,7 @@ public class PaymentService {
 
     // 결제 로직 구현
     public PaymentReqDto processPayment(String impUid, PaymentMethod paymentMethod) throws Exception {
-        MemberPayDto member = getMemberInfo();  // 현재 로그인한 사용자 정보
+        MemberFeignDto member = getMemberInfo();  // 현재 로그인한 사용자 정보
 //        System.out.println(impUid);
 
         String actualImpUid = extractImpUid(impUid);  // impUid 값 추출 함수 사용

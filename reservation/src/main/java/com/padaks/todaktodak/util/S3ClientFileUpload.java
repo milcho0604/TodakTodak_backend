@@ -1,6 +1,7 @@
 package com.padaks.todaktodak.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -15,12 +16,15 @@ public class S3ClientFileUpload {
 
     private final S3Client s3Client;
 
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
+
     @Autowired
     public S3ClientFileUpload(S3Client s3Client) {
         this.s3Client = s3Client;
     }
 
-    public String upload(MultipartFile file, String bucket) {
+    public String upload(MultipartFile file) {
         String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
 
         try {

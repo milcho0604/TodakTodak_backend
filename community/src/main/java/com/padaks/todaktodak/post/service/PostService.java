@@ -31,9 +31,6 @@ public class PostService {
     private final S3ClientFileUpload s3ClientFileUpload;
     private final CommentService commentService;
 
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucketName; // S3 버킷 이름 가져오기
-
     //member 객체 리턴, 토큰 포함
     public MemberFeignDto getMemberInfo(){
         MemberFeignDto member = memberPostFeignClient.getMemberEmail();
@@ -47,7 +44,7 @@ public class PostService {
         String memberEmail = member.getMemberEmail();
 
 
-        String imageUrl = s3ClientFileUpload.upload(postImage, bucketName);
+        String imageUrl = s3ClientFileUpload.upload(postImage);
 
         Post post = dto.toEntity(imageUrl, memberEmail);
         postRepository.save(post);
@@ -72,7 +69,7 @@ public class PostService {
         Post post = postRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("존재하지 않는 Post입니다."));
         MultipartFile image = dto.getPostImg();
         if (image != null && !image.isEmpty()){
-            String imageUrl = s3ClientFileUpload.upload(image, bucketName);
+            String imageUrl = s3ClientFileUpload.upload(image);
             post.updateImage(imageUrl);
         }
         post.update(dto);

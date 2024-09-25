@@ -28,16 +28,13 @@ public class HospitalService {
     private final S3ClientFileUpload s3ClientFileUpload;
     private final DistanceCalculator distanceCalculator;
 
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucket;
-
     // 병원등록
     public Hospital registerHospital(HospitalRegisterReqDto dto){
 
         MultipartFile hospitalImage = dto.getHospitalImage();
 
         // S3에 파일 업로드
-        String imageUrl = s3ClientFileUpload.upload(hospitalImage, bucket); // S3Client를 통해 S3에 이미지 업로드
+        String imageUrl = s3ClientFileUpload.upload(hospitalImage); // S3Client를 통해 S3에 이미지 업로드
 
         // Hospital 엔티티 생성 및 저장
         Hospital hospital = dto.toEntity(dto, imageUrl);
@@ -63,7 +60,7 @@ public class HospitalService {
         Hospital hospital = hospitalRepository.findByIdOrThrow(dto.getId());
         MultipartFile hospitalImage = dto.getHospitalImage();
 
-        String imageUrl = s3ClientFileUpload.upload(hospitalImage, bucket); // S3에 이미지 업로드
+        String imageUrl = s3ClientFileUpload.upload(hospitalImage); // S3에 이미지 업로드
 
         hospital.updateHospitalImageUrl(imageUrl);
         hospital.updateHospitalInfo(dto);
