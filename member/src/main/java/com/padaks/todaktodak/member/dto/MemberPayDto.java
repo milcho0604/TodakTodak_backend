@@ -13,4 +13,5 @@ public class MemberPayDto {
     private String name;
     private String phoneNumber;
     private Role role;
+    private Long hospitalId;
 }

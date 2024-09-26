@@ -1,13 +1,16 @@
 package com.padaks.todaktodak.hospital.controller;
 
 import com.padaks.todaktodak.common.dto.CommonResDto;
+import com.padaks.todaktodak.common.dto.MemberFeignDto;
 import com.padaks.todaktodak.hospital.domain.Hospital;
 import com.padaks.todaktodak.hospital.dto.HospitalDTO.*;
+import com.padaks.todaktodak.hospital.repository.HospitalRepository;
 import com.padaks.todaktodak.hospital.service.HospitalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -18,6 +21,7 @@ import java.util.List;
 @RequestMapping("/hospital")
 public class HospitalController {
     private final HospitalService hospitalService;
+    private final HospitalRepository hospitalRepository;
 
     // 병원생성 (병원 admin만 가능) 이후 주석해제 예정
 //    @PreAuthorize("hasRole('ROLE_HOSPTIALADMIN')")
@@ -75,4 +79,12 @@ public class HospitalController {
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원 리스트 조회성공", hospitalList), HttpStatus.OK);
     }
 
+    // 병원 정보를 멤버로 전송
+    @GetMapping("/get/hospital")
+    public HospitalFeignDto getHospital(){
+        MemberFeignDto memberFeignDto = hospitalService.getMemberInfo();
+        Long id = memberFeignDto.getHospitalId();
+        Hospital hospital = hospitalRepository.findByIdOrThrow(id);
+        return new HospitalFeignDto(hospital.getId(), hospital.getName(), hospital.getPhoneNumber());
+    }
 }

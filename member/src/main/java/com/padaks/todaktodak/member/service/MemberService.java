@@ -1,5 +1,6 @@
 package com.padaks.todaktodak.member.service;
 
+import com.padaks.todaktodak.common.feign.HospitalFeignClient;
 import com.padaks.todaktodak.config.JwtTokenProvider;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.domain.Role;
@@ -32,6 +33,7 @@ public class MemberService {
     private final RedisService redisService;
     private final DtoMapper dtoMapper;
     private final S3ClientFileUpload s3ClientFileUpload;
+    private final HospitalFeignClient hospitalFeignClient;
 
     // 간편하게 멤버 객체를 찾기 위한 findByMemberEmail
     public Member findByMemberEmail(String email) {
@@ -137,10 +139,6 @@ public class MemberService {
     }
     // 어드민이 병원 의사를 등록할때 검증 메서드
     private void validateRegistration(DoctorAdminSaveReqDto saveReqDto) {
-        if (saveReqDto.getPassword().length() <= 7) {
-            throw new RuntimeException("비밀번호는 8자 이상이어야 합니다.");
-        }
-
         if (memberRepository.existsByMemberEmail(saveReqDto.getMemberEmail())) {
             throw new RuntimeException("이미 사용중인 이메일 입니다.");
         }
@@ -327,11 +325,20 @@ public class MemberService {
         if (adminMember.getRole().equals("Member")){
             throw new SecurityException("의사를 등록할 권한이 없습니다.");
         }
+        HospitalFeignDto hospitalFeignDto = getHospital();
+        String password = hospitalFeignDto.getPhoneNumber();
+        password = passwordEncoder.encode(password);
 
         validateRegistration(dto);
         Long hosId = adminMember.getHospitalId();
-        Member doctor = dto.toEntity(passwordEncoder.encode(dto.getPassword()), hosId);
+        Member doctor = dto.toEntity(password, hosId);
         return memberRepository.save(doctor);
+    }
+
+
+    public HospitalFeignDto getHospital(){
+        HospitalFeignDto hospitalFeignDto = hospitalFeignClient.getHospitalInfo();
+        return hospitalFeignDto;
     }
 
 }

@@ -47,7 +47,7 @@ public class MemberController {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         System.out.println(email);
         Member member = memberService.findByMemberEmail(email);
-        return new MemberPayDto(member.getMemberEmail(), member.getName(), member.getPhoneNumber(), member.getRole());
+        return new MemberPayDto(member.getMemberEmail(), member.getName(), member.getPhoneNumber(), member.getRole(), member.getHospitalId());
 //        }
 //        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "잘못된 요청입니다.");
     }
@@ -262,5 +262,15 @@ public class MemberController {
             Page<DoctorListResDto> dtos = memberService.doctorList(pageable);
             CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "의사목록을 조회합니다.",dtos);
             return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+    }
+
+    @GetMapping("/get/hospital")
+    private ResponseEntity<?> getMemberTest(){
+        try {
+            HospitalFeignDto hospitalFeignDto = memberService.getHospital();
+            return ResponseEntity.ok(hospitalFeignDto);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
 }

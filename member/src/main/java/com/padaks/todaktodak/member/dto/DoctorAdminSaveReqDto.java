@@ -18,9 +18,6 @@ public class DoctorAdminSaveReqDto {
     private String name;
     @NotEmpty(message = "email is essential")
     private String memberEmail;
-    @NotEmpty(message = "password is essential")
-    private String password;
-    private Long hospitalId;
 
     @Builder.Default
     private Role role = Role.Doctor;

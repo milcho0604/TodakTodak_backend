@@ -18,5 +18,4 @@ public interface MemberFeign {
     @PutMapping("/member/hospital-admin/accept")
     void acceptHospitalAdmin(@RequestBody String email);
 
-
 }
