@@ -69,6 +69,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         String token = jwtTokenprovider.kakaoToken(memberEmail, getMemberId,"Member");
         System.out.println("토큰은!!!!" + token);
+        System.out.println("========================");
+        System.out.println(token);
+        System.out.println("========================");
 
         // 리다이렉트 URL 설정 (아래 먼저는 로컬호스트 환경에서, 두번째는 프론트 환경에서)
 //        String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8082/loginSuccess")
