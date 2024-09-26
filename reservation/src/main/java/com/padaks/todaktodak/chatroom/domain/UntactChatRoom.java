@@ -1,7 +1,7 @@
 package com.padaks.todaktodak.chatroom.domain;
 
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
-import com.padaks.todaktodak.reservation.domain.Reservation;
+import com.padaks.todaktodak.medicalchart.domain.MedicalChart;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,13 +14,13 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Builder
 @Getter
-public class ChatRoom extends BaseTimeEntity {
+public class UntactChatRoom extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "chatroom_id")
+    @Column(name = "untact_chat_room_id")
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "reservation_id")
-    private Reservation reservation;
+    @JoinColumn(name = "medical_chart_id")
+    private MedicalChart medicalChart;
 }
