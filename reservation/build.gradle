@@ -48,6 +48,11 @@ dependencies {
 	implementation 'software.amazon.awssdk:s3:2.17.58'
 	//	feignclient 의존성
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+//	localdatetime 형식을 redis 에 넣기 위한 의존성
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+	implementation 'org.springframework.kafka:spring-kafka'
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
 	// iamPort 의존성 추가
 	implementation 'com.github.iamport:iamport-rest-client-java:0.2.23'
@@ -63,8 +68,6 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5' // JSON 처리용
-
-
 }
 
 ext{
