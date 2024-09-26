@@ -32,6 +32,12 @@ public class HospitalAndAdminRegisterResDto {
 
     private String hospitalAdminEmail; // 병원 admin 회원 이메일
 
+    private String representativeName; // 대표자 이름
+
+    private String representativePhoneNumber; // 대표자 핸드폰 번호
+
+    private Boolean isAccept; // 가입승인여부
+
     private Long hospitalAdminId; // 병원 admin 회원 id
 
     public static HospitalAndAdminRegisterResDto fromEntity(Hospital hospital,
@@ -46,6 +52,9 @@ public class HospitalAndAdminRegisterResDto {
                 .hospitalPhoneNumber(hospital.getPhoneNumber())
                 .businessRegistrationInfo(hospital.getBusinessRegistrationInfo())
                 .hospitalAdminEmail(hospital.getAdminEmail())
+                .representativeName(hospital.getRepresentativeName())
+                .representativePhoneNumber(hospital.getRepresentativePhoneNumber())
+                .isAccept(hospital.getIsAccept())
                 .hospitalAdminId(hospitalAdminId)
                 .build();
     }
