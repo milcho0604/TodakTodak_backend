@@ -40,6 +40,7 @@ public class ReservationService {
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     private static final String RESERVATION_LIST_KEY = "doctor_list";
+    private final MemberFeign memberFeign;
 
 //    진료 미리 예약 기능
     public Reservation scheduleReservation(ReservationSaveReqDto dto){
@@ -51,7 +52,9 @@ public class ReservationService {
                     throw new BaseException(RESERVATION_DUPLICATE);
                 });
         Reservation reservation = dtoMapper.toReservation(dto);
-        return reservationRepository.save(reservation);
+        Reservation savedReservation = reservationRepository.save(reservation);
+        sendReservationNotification(savedReservation);
+        return savedReservation;
     }
 
 //    당일 예약 기능
@@ -137,5 +140,23 @@ public class ReservationService {
 //       예약의 상태를 completed로 변경한다
         reservation.updateStatus(updateStatusReservation.getStatus());
         return reservation;
+    }
+
+    public void sendReservationNotification(Reservation reservation) {
+        MemberResDto member = memberFeign.getMemberByEmail(reservation.getMemberEmail());
+        String content = String.format("환자 %s님이 %s에 %s의 예약을 했습니다.",
+                member.getName(),
+                reservation.getReservationDate().toString(),
+                reservation.getReservationTime().toString()
+        );
+//        알림 받는 사람 병원 admin Email로 변경해야함
+        NotificationReqDto notificationReqDto = NotificationReqDto.builder()
+                .memberEmail(reservation.getDoctorEmail())
+                .type("RESERVATION_NOTIFICATION")
+                .content(content)
+                .refId(reservation.getId())
+                .build();
+
+        memberFeign.sendReservationNotification(notificationReqDto);
     }
 }

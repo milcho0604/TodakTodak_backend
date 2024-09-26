@@ -8,34 +8,63 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout branch
+      - name: Checkout branch
         uses: actions/checkout@v2
 
-      - name: build image
-        working-directory: .
-        run: docker build -t todak-member/todak-member:latest .
+      - name: Build eureka image
+        working-directory: ./eureka
+        run: docker build -t milcho0604/todak-eureka:latest .
 
-      - name: dockerhub login
+      - name: Build gateway image
+        working-directory: ./gateway
+        run: docker build -t milcho0604/todak-gateway:latest .
+
+      - name: Build member image
+        working-directory: ./member
+        run: docker build -t milcho0604/todak-member:latest .
+
+      - name: Build reservation image
+        working-directory: ./reservation  # reservation 디렉토리로 이동
+        run: docker build -t milcho0604/todak-reservation:latest .
+
+      - name: Build community image
+        working-directory: ./community  # community 디렉토리로 이동
+        run: docker build -t milcho0604/todak-community:latest .
+
+      - name: DockerHub login
         uses: docker/login-action@v1
         with:
-          username: ${{secrets.DOCKER_EMAIL}}
-          password: ${{secrets.DOCKER_PASSWORD}}
-      - name: push to dockerhub
-        run: docker push todak-member/todak-member:latest
+          username: ${{ secrets.DOCKER_EMAIL }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: ec2 ssh login and docker compose update
+      - name: Push eureka image to DockerHub
+        run: docker push milcho0604/todak-eureka:latest
+
+      - name: Push gateway image to DockerHub
+        run: docker push milcho0604/todak-gateway:latest
+
+      - name: Push member image to DockerHub
+        run: docker push milcho0604/todak-member:latest
+
+      - name: Push reservation image to DockerHub
+        run: docker push milcho0604/todak-reservation:latest
+
+      - name: Push community image to DockerHub
+        run: docker push milcho0604/todak-community:latest
+
+      - name: EC2 SSH login and Docker Compose update
         uses: appleboy/ssh-action@master
         with:
-          host: ec2-3-39-223-238.ap-northeast-2.compute.amazonaws.com
+          host: ec2-3-39-0-201.ap-northeast-2.compute.amazonaws.com
           username: ubuntu
-          key: ${{secrets.EC2_PEMKEY}}
+          key: ${{ secrets.EC2_PEMKEY }}
           script: |
             if ! type docker > /dev/null ; then
-              sudo snap install docker || echo "docker install failed"
+            sudo snap install docker || echo "docker install failed"
             fi 
-            sudo docker login --username ${{secrets.DOCKER_EMAIL}} --password ${{secrets.DOCKER_PASSWORD}}
-
+            sudo docker login --username ${{ secrets.DOCKER_EMAIL }} --password ${{ secrets.DOCKER_PASSWORD }}
+            
             sudo docker-compose pull && sudo docker-compose up -d
-
-
-# scp -i "my-keypair.pem" /Users/milcho/code/spring/orderSystem/docker-compose.yml ubuntu@ec2-3-39-223-238.ap-northeast-2.compute.amazonaws.com:/home/ubuntu
+            
+            # 사용되지 않은 도커 이미지 삭제
+            sudo docker image prune -f

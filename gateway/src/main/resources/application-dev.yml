@@ -1,0 +1,49 @@
+server:
+  port: todak
+
+spring:
+  application:
+    name: todak
+
+  cloud:
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: 'https://todak.vercel.app'
+            allow-credentials: true
+            allowedHeaders: '*'
+            allowedMethods:
+              - PUT
+              - GET
+              - POST
+              - DELETE
+              - OPTIONS
+      routes:
+        - id: member-service
+          predicates:
+            - Path=/member-service/**
+          filters:
+            - StripPrefix=1
+          uri: lb://member-service
+
+        - id: reservation-service
+          predicates:
+            - Path=/reservation-service/**
+          filters:
+            - StripPrefix=1
+          uri: lb:ws://reservation-service
+
+        - id: community-service
+          predicates:
+            - Path=/community-service/**
+          filters:
+            - StripPrefix=1
+          uri: lb://community-service
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://eureka:8761/eureka/

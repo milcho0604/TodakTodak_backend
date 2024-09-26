@@ -26,4 +26,7 @@ public class BaseTimeEntity {
         this.deletedAt = deletedAt;
     }
 
+    public void acceptHospitalAdmin(){
+        this.deletedAt = null;
+    }
 }

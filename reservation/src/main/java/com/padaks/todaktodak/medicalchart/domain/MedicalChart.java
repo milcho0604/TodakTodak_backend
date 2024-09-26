@@ -1,7 +1,7 @@
 package com.padaks.todaktodak.medicalchart.domain;
 
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
-import com.padaks.todaktodak.payment.domain.Payment;
+import com.padaks.todaktodak.payment.domain.Pay;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,19 +19,31 @@ public class MedicalChart extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "medical_record_id")
+    @Column(name = "medical_chart_id")
     private Long id;
+
     private int fee;
-    public enum PaymentStatus{
-        결제요청,
-        결제완료
+
+    public enum MedicalStatus{
+        진료중,
+        진료완료,
+        결제완료;
     }
     @Enumerated(EnumType.STRING)
-    private PaymentStatus paymentStatus;
+    private MedicalStatus medicalStatus;
+
     @OneToOne
     @JoinColumn(name = "reservation_id")
     private Reservation reservation;
 
     @OneToOne(mappedBy = "medicalChart")
-    private Payment payment;
+    private Pay payment;
+
+    public void complete() {
+        this.medicalStatus = MedicalStatus.진료완료;
+    }
+
+    public void pay() {
+        this.medicalStatus = MedicalStatus.결제완료;
+    }
 }
