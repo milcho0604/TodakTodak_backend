@@ -59,6 +59,8 @@ public class Member extends BaseTimeEntity {
 
     private Long hospitalId;
 
+    private String fcmToken;
+
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<ChildParentsRelationship> childParentsRelationshipList;
 
@@ -85,6 +87,10 @@ public class Member extends BaseTimeEntity {
     }
     public Member updateName(String name) {
         this.name = name;
+        return this;
+    }
+    public Member updateFcmToken(String fcmToken){
+        this.fcmToken = fcmToken;
         return this;
     }
 
