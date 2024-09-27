@@ -25,7 +25,7 @@ public class KafkaReservationProducerConfig {
 
     @Bean
     public NewTopic reservationTopic(){
-        return new NewTopic("reservationTopic", 10 , (short) 1);
+        return new NewTopic("reservationImmediate", 10 , (short) 1);
     }
 
     @Bean
