@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.stereotype.Service;
 import retrofit2.http.Header;
@@ -42,7 +43,8 @@ public class ReservationKafkaConsumer {
     @KafkaListener(topics = "reservationImmediate", groupId = "group_id", containerFactory = "kafkaListenerContainerFactory")
     public void consumerReservation(String message,
                                     @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String hospitalKey,
-                                    @Header(KafkaHeaders.RECEIVED_PARTITION_ID) String partition) {
+                                    @Header(KafkaHeaders.RECEIVED_PARTITION_ID) String partition,
+                                    Acknowledgment acknowledgment) {
         log.info("ReservationConsumer[consumerReservation] : Kafka 메시지 수신 - 병원 파티션 {}, 의사 {}", hospitalKey, partition);
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -55,7 +57,7 @@ public class ReservationKafkaConsumer {
                     throw new BaseException(TOOMANY_RESERVATION);
                 }
             }
-            String sequenceKey = "sequence" + dto.getHospitalId();
+            String sequenceKey = "sequence" + ":" +dto.getHospitalId();
             Long sequence = redisTemplate.opsForValue().increment(sequenceKey, 1);
 
             Reservation reservation = dtoMapper.toReservation(dto);
@@ -63,6 +65,7 @@ public class ReservationKafkaConsumer {
             RedisDto redisDto = dtoMapper.toRedisDto(reservation);
 
             redisTemplate.opsForZSet().add(key, redisDto, sequence);
+            acknowledgment.acknowledge();
             log.info("KafkaListener[handleReservation] : 예약 대기열 처리 완료");
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

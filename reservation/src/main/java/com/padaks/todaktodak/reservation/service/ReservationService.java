@@ -3,6 +3,7 @@ package com.padaks.todaktodak.reservation.service;
 import com.padaks.todaktodak.chatroom.service.UntactChatRoomService;
 import com.padaks.todaktodak.common.dto.DtoMapper;
 import com.padaks.todaktodak.common.exception.BaseException;
+import com.padaks.todaktodak.hospital.domain.Hospital;
 import com.padaks.todaktodak.hospital.repository.HospitalRepository;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.dto.*;
@@ -64,10 +65,15 @@ public class ReservationService {
 //    당일 예약 기능
     public void immediateReservation(ReservationSaveReqDto dto){
         log.info("ReservationService[immediateReservation] : 예약 요청 처리 시작");
-        hospitalRepository.findById(dto.getHospitalId())
+        Hospital hospital = hospitalRepository.findById(dto.getHospitalId())
                 .orElseThrow(() -> new BaseException(HOSPITAL_NOT_FOUND));
+
+        MemberResDto memberResDto = memberFeign.getMember(dto.getMemberEmail());
+        DoctorResDto doctorResDto = memberFeign.getDoctor(dto.getDoctorEmail());
+
+        int partition = hospital.getId().intValue();
         String doctorKey = dto.getDoctorEmail();
-        kafkaTemplate.send("reservationImmediate", doctorKey , dto)
+        kafkaTemplate.send("reservationImmediate",partition,doctorKey , dto)
                 .addCallback(
                         success -> log.info("Sent message to partition: {}",
                                 Objects.requireNonNull(success).getRecordMetadata().partition()),

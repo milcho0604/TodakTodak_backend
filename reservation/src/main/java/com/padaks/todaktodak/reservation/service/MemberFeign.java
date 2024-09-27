@@ -21,7 +21,7 @@ public interface MemberFeign {
     @GetMapping("/member/get/{email}")
     MemberResDto getMemberByEmail(@PathVariable String email);
 
-    @GetMapping("/member/get/{email}")
+    @GetMapping("/member/detail/{email}")
     DoctorResDto getDoctor(@PathVariable String email);
 
     @GetMapping("/child/detail/{id}")
