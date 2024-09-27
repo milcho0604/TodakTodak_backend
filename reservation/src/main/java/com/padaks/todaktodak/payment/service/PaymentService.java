@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,7 @@ import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +43,8 @@ public class PaymentService {
     private final IamportClient iamportClient;
     private final PaymentRepository paymentRepository;
     private final MedicalChartRepository medicalChartRepository;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final ObjectMapper objectMapper;
     public static MedicalChart medicalChart;
 
 
@@ -136,6 +140,20 @@ public class PaymentService {
 
             // 저장 로직
             paymentRepository.save(pay);
+            String memberEmail = pay.getMemberEmail();
+
+            // 메시지 데이터 객체 생성
+            Map<String, Object> messageData = new HashMap<>();
+            messageData.put("memberEmail", memberEmail);
+            messageData.put("fee", fee);
+            messageData.put("name", name);
+
+            // 객체를 JSON 문자열로 변환
+            String message = objectMapper.writeValueAsString(messageData);
+
+            // Kafka로 메시지 전송
+            kafkaTemplate.send("payment-success", message);
+            log.info("결제 성공 메시지를 Kafka로 전송: {}", message);
 
             // 성공적으로 결제된 PaymentReqDto 반환
             return PaymentReqDto.builder()
@@ -156,6 +174,21 @@ public class PaymentService {
 
         } catch (Exception e) {
             log.error("결제 처리 중 오류 발생: ", e);
+
+            String memberEmail = member.getMemberEmail();
+
+            // 메시지 데이터 객체 생성
+            Map<String, Object> messageData = new HashMap<>();
+            messageData.put("memberEmail", memberEmail);
+            messageData.put("fee", fee);
+            messageData.put("impUid", impUid);
+
+            // 객체를 JSON 문자열로 변환
+            String message = objectMapper.writeValueAsString(messageData);
+
+            // Kafka로 메시지 전송
+            kafkaTemplate.send("payment-fail", message);
+            log.info("결제 성공 메시지를 Kafka로 전송: {}", message);
             throw new RuntimeException("결제 처리 실패", e);
         }
     }
@@ -216,6 +249,22 @@ public class PaymentService {
             // 저장 로직
             paymentRepository.save(pay);
 
+            String memberEmail = pay.getMemberEmail();
+            BigDecimal fee = pay.getAmount();
+
+            // 메시지 데이터 객체 생성
+            Map<String, Object> messageData = new HashMap<>();
+            messageData.put("memberEmail", memberEmail);
+            messageData.put("fee", fee);
+            messageData.put("name", name);
+
+            // 객체를 JSON 문자열로 변환
+            String message = objectMapper.writeValueAsString(messageData);
+
+            // Kafka로 메시지 전송
+            kafkaTemplate.send("payment-success", message);
+            log.info("결제 성공 메시지를 Kafka로 전송: {}", message);
+
             // 성공적으로 결제된 PaymentReqDto 반환
             return PaymentReqDto.builder()
                     .id(pay.getId())
@@ -235,6 +284,19 @@ public class PaymentService {
 
         } catch (Exception e) {
             log.error("결제 처리 중 오류 발생: ", e);
+            String memberEmail = member.getMemberEmail();
+            // 메시지 데이터 객체 생성
+            Map<String, Object> messageData = new HashMap<>();
+            messageData.put("memberEmail", memberEmail);
+            messageData.put("fee", amount);
+            messageData.put("impUid", impUid);
+
+            // 객체를 JSON 문자열로 변환
+            String message = objectMapper.writeValueAsString(messageData);
+
+            // Kafka로 메시지 전송
+            kafkaTemplate.send("payment-fail", messageData);
+            log.error("결제 실패 메시지를 Kafka로 전송: {}", messageData);
             throw new RuntimeException("결제 처리 실패", e);
         }
     }
@@ -273,8 +335,43 @@ public class PaymentService {
             // 결제 상태를 CANCEL !
             pay.cancelPaymentStatus(PaymentStatus.CANCEL);
             paymentRepository.save(pay);
+
+            String memberEmail = pay.getMemberEmail();
+            BigDecimal fee = pay.getAmount();
+            String name = pay.getName();
+
+            // 메시지 데이터 객체 생성
+            Map<String, Object> messageData = new HashMap<>();
+            messageData.put("memberEmail", memberEmail);
+            messageData.put("fee", fee);
+            messageData.put("name", name);
+
+            // 객체를 JSON 문자열로 변환
+            String message = objectMapper.writeValueAsString(messageData);
+
+            // Kafka로 메시지 전송
+            kafkaTemplate.send("payment-cancel", message);
+            log.info("결제 취소 메시지를 Kafka로 전송: {}", message);
+
         } else {
             log.error("결제 취소 실패: {}", cancelResponse.getMessage());
+
+            String memberEmail = pay.getMemberEmail();
+            BigDecimal fee = pay.getAmount();
+            String name = pay.getName();
+
+            // 메시지 데이터 객체 생성
+            Map<String, Object> messageData = new HashMap<>();
+            messageData.put("memberEmail", memberEmail);
+            messageData.put("fee", fee);
+            messageData.put("name", name);
+
+            // 객체를 JSON 문자열로 변환
+            String message = objectMapper.writeValueAsString(messageData);
+
+            // Kafka로 메시지 전송
+            kafkaTemplate.send("payment-cancel-fail", message);
+            log.error("결제 취소 실패 메시지를 Kafka로 전송: {}", message);
             throw new Exception("결제 취소 실패: " + cancelResponse.getMessage());
         }
         return cancelResponse;
@@ -324,9 +421,43 @@ public class PaymentService {
                         // 결제가 성공한 경우, 다음 결제일 갱신
                         pay.updateNextPaymentDate(impUid, count);
                         paymentRepository.save(pay);
+
+                        // 메시지에 포함할 데이터 설정
+                        String memberEmail = pay.getMemberEmail();
+                        BigDecimal fee = pay.getAmount();
+                        String name = pay.getName();
+
+                        // 메시지 데이터 객체 생성
+                        Map<String, Object> messageData = new HashMap<>();
+                        messageData.put("memberEmail", memberEmail);
+                        messageData.put("fee", fee);
+                        messageData.put("name", name);
+
+                        // 객체를 JSON 문자열로 변환
+                        String message = objectMapper.writeValueAsString(messageData);
+
+                        // Kafka로 메시지 전송
+                        kafkaTemplate.send("payment-success", message);
+                        log.info("결제 성공 메시지를 Kafka로 전송: {}", message);
+
                         log.info("정기 결제 성공, 다음 결제일 갱신: {}", pay.getSubscriptionEndDate());
                     } else {
                         log.error("정기 결제 실패: {}", response.getMessage());
+                        String memberEmail = pay.getMemberEmail();
+
+                        // 메시지 데이터 객체 생성
+                        Map<String, Object> messageData = new HashMap<>();
+                        messageData.put("memberEmail", memberEmail);
+                        messageData.put("fee", pay.getAmount());
+                        messageData.put("impUid", impUid);
+
+                        // 객체를 JSON 문자열로 변환
+                        String message = objectMapper.writeValueAsString(messageData);
+
+                        // Kafka로 메시지 전송
+                        kafkaTemplate.send("payment-fail", message);
+                        log.info("결제 성공 메시지를 Kafka로 전송: {}", message);
+                        throw new RuntimeException("결제 처리 실패");
                     }
                 } catch (Exception e) {
                     log.error("정기 결제 처리 중 오류 발생: ", e);
@@ -354,8 +485,40 @@ public class PaymentService {
 
         if (cancelResponse.getResponse() != null) {
             log.info("구독 결제 취소 성공: {}", cancelResponse.getResponse());
+            String memberEmail = pay.getMemberEmail();
+            BigDecimal fee = pay.getAmount();
+            String name = pay.getName();
+
+            // 메시지 데이터 객체 생성
+            Map<String, Object> messageData = new HashMap<>();
+            messageData.put("memberEmail", memberEmail);
+            messageData.put("fee", fee);
+            messageData.put("name", name);
+
+            // 객체를 JSON 문자열로 변환
+            String message = objectMapper.writeValueAsString(messageData);
+
+            // Kafka로 메시지 전송
+            kafkaTemplate.send("payment-cancel", message);
+            log.info("결제 취소 메시지를 Kafka로 전송: {}", message);
         } else {
             log.error("구독 결제 취소 실패: {}", cancelResponse.getMessage());
+            String memberEmail = pay.getMemberEmail();
+            BigDecimal fee = pay.getAmount();
+            String name = pay.getName();
+
+            // 메시지 데이터 객체 생성
+            Map<String, Object> messageData = new HashMap<>();
+            messageData.put("memberEmail", memberEmail);
+            messageData.put("fee", fee);
+            messageData.put("name", name);
+
+            // 객체를 JSON 문자열로 변환
+            String message = objectMapper.writeValueAsString(messageData);
+
+            // Kafka로 메시지 전송
+            kafkaTemplate.send("payment-cancel-fail", message);
+            log.error("결제 취소 실패 메시지를 Kafka로 전송: {}", message);
             throw new Exception("구독 취소 실패: " + cancelResponse.getMessage());
         }
         return cancelResponse;  // 취소 응답 반환
