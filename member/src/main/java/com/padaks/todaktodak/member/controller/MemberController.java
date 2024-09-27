@@ -264,6 +264,10 @@ public class MemberController {
             return new ResponseEntity<>(commonResDto, HttpStatus.OK);
     }
 
+    @GetMapping("/detail/{email}")
+    public Object memberDetail(@PathVariable String email){
+        return memberService.memberDetail(email);
+    }
     @GetMapping("/get/hospital")
     private ResponseEntity<?> getMemberTest(){
         try {

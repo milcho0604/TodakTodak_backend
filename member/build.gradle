@@ -81,6 +81,9 @@ dependencies {
 	//feignclient 를 사용하기 위한 의존성 추가
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
+	//FCM 사용을 위한 의존성 추가
+	implementation 'com.google.firebase:firebase-admin:9.3.0'
+
 }
 
 ext {
