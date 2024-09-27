@@ -61,6 +61,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             String address = "임시주소입니다. 변경해주세요";
             member.updateAddress(address);
         }
+        if (member.isVerified() == false) {
+            member.updateVerified();
+        }
         memberRepository.save(member);
 
         return new DefaultOAuth2User(

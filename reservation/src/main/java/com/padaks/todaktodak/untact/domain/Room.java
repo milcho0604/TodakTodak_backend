@@ -11,16 +11,16 @@ import java.util.Objects;
 
 public class Room {
 //    @NotNull
-    private final Long id;
+    private final String id;
     // sockets by user names
     @JsonIgnore
     private final Map<String, WebSocketSession> clients = new HashMap<>();
 
-    public Room(Long id) {
+    public Room(String id) {
         this.id = id;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 

@@ -59,7 +59,11 @@ public class Member extends BaseTimeEntity {
 
     private Long hospitalId;
 
+
     private String fcmToken;
+
+    private boolean isVerified;
+
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<ChildParentsRelationship> childParentsRelationshipList;
@@ -106,6 +110,10 @@ public class Member extends BaseTimeEntity {
     // 프로필 이미지 URL 변경
     public void changeProfileImgUrl(String newUrl) {
         this.profileImgUrl = newUrl;
+    }
+
+    public void updateVerified(){
+        this.isVerified = true;
     }
 
     // 이름 변경

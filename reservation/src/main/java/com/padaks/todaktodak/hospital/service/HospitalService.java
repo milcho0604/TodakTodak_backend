@@ -2,8 +2,10 @@ package com.padaks.todaktodak.hospital.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.padaks.todaktodak.common.dto.CommonResDto;
+import com.padaks.todaktodak.common.dto.MemberFeignDto;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.common.exception.exceptionType.HospitalExceptionType;
+import com.padaks.todaktodak.common.feign.MemberFeignClient;
 import com.padaks.todaktodak.hospital.domain.Hospital;
 import com.padaks.todaktodak.hospital.dto.HospitalDTO.*;
 import com.padaks.todaktodak.hospital.repository.HospitalRepository;
@@ -29,6 +31,13 @@ public class HospitalService {
     private final S3ClientFileUpload s3ClientFileUpload;
     private final DistanceCalculator distanceCalculator;
     private final MemberFeign memberFeign;
+    private final MemberFeignClient memberFeignClient;
+
+    public MemberFeignDto getMemberInfo() {
+        MemberFeignDto member = memberFeignClient.getMemberEmail();  // Feign Client에 토큰 추가
+//        System.out.println("멤버 디버깅을 위한: " + member);
+        return member;
+    }
 
     // 병원등록
     public Hospital registerHospital(HospitalRegisterReqDto dto){
@@ -126,5 +135,7 @@ public class HospitalService {
         }
         return dtoList;
     }
+
+
 
 }

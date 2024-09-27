@@ -35,7 +35,7 @@ public class RoomService {
         return rooms.stream().filter(r -> r.getId().equals(parser.parseId(sid).get())).findAny();
     }
 
-    public Long getRoomId(Room room) {
+    public String getRoomId(Room room) {
         return room.getId();
     }
 

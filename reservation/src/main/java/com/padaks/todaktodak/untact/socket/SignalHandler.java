@@ -32,18 +32,12 @@ public class SignalHandler extends TextWebSocketHandler {
     // session id to room mapping
     private Map<String, Room> sessionIdToRoomMap = new HashMap<>();
 
-    // message types, used in signalling:
-    // text message
+    // signalling에 사용되는 메시지 타입
     private static final String MSG_TYPE_TEXT = "text";
-    // SDP Offer message
     private static final String MSG_TYPE_OFFER = "offer";
-    // SDP Answer message
     private static final String MSG_TYPE_ANSWER = "answer";
-    // New ICE Candidate message
     private static final String MSG_TYPE_ICE = "ice";
-    // join room data message
     private static final String MSG_TYPE_JOIN = "join";
-    // leave room data message
     private static final String MSG_TYPE_LEAVE = "leave";
 
     @Override
@@ -66,19 +60,16 @@ public class SignalHandler extends TextWebSocketHandler {
         try {
             WebSocketMessage message = objectMapper.readValue(textMessage.getPayload(), WebSocketMessage.class);
             logger.info("[ws] Message of {} type from {} received", message.getType(), message.getFrom());
-            String userName = message.getFrom(); // origin of the message
-            String data = message.getData(); // payload
+            String userName = message.getFrom(); // 보낸 사용자
+            String data = message.getData(); // 방 정보
 
             Room room;
             switch (message.getType()) {
                 // text message from client has been received
                 case MSG_TYPE_TEXT:
                     logger.info("[ws] Text message: {}", message.getData());
-                    // message.data is the text sent by client
-                    // process text message if needed
                     break;
 
-                // process signal received from client
                 case MSG_TYPE_OFFER:
                 case MSG_TYPE_ANSWER:
                 case MSG_TYPE_ICE:
@@ -108,7 +99,7 @@ public class SignalHandler extends TextWebSocketHandler {
                     }
                     break;
 
-                // identify user and their opponent
+                // 사용자가 화상채팅에 들어왔을 때
                 case MSG_TYPE_JOIN:
                     // message.data contains connected room id
                     logger.info("[ws] {} has joined Room: #{}", userName, message.getData());
@@ -119,23 +110,39 @@ public class SignalHandler extends TextWebSocketHandler {
                     sessionIdToRoomMap.put(session.getId(), room);
                     break;
 
+                // 사용자가 화상채팅을 나갔을 때
                 case MSG_TYPE_LEAVE:
-                    // message data contains connected room id
                     logger.info("[ws] {} is going to leave Room: #{}", userName, message.getData());
-                    // room id taken by session id
                     room = sessionIdToRoomMap.get(session.getId());
-                    // remove the client which leaves from the Room clients list
+                    // leave 메시지 보낸 회원 찾기
                     Optional<String> client = roomService.getClients(room).entrySet().stream()
                             .filter(entry -> Objects.equals(entry.getValue().getId(), session.getId()))
                             .map(Map.Entry::getKey)
                             .findAny();
-                    client.ifPresent(c -> roomService.removeClientByName(room, c));
+                    client.ifPresent(c -> {
+                        // 해당 멤버 삭제
+                        roomService.removeClientByName(room, c);
+
+                        // 방에 있는 다른 사용자에게 해당 사용자가 나갔음을 알림
+                        roomService.getClients(room).forEach((clientName, clientSession) -> {
+                            if (!clientName.equals(userName)) {  // Don't send to the leaving client
+                                sendMessage(clientSession,
+                                    new WebSocketMessage(
+                                        userName,  // 나가는 사용자의 이름
+                                        MSG_TYPE_LEAVE,  // 메시지 타입 'leave'
+                                        null,  // 추가적인 데이터 없음
+                                        null,  // ICE 후보 없음
+                                        null   // SDP 없음
+
+                                ));
+                            }
+                        });
+                    });
                     break;
 
-                // something should be wrong with the received message, since it's type is unrecognizable
+                // 예기치 못한 메시지를 받을 때, 로그
                 default:
                     logger.info("[ws] Type of the received message {} is undefined!", message.getType());
-                    // handle this if needed
             }
 
         } catch (IOException e) {

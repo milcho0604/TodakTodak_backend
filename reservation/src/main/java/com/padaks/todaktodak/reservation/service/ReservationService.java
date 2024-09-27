@@ -1,5 +1,6 @@
 package com.padaks.todaktodak.reservation.service;
 
+import com.padaks.todaktodak.chatroom.service.UntactChatRoomService;
 import com.padaks.todaktodak.common.dto.DtoMapper;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.reservation.domain.Reservation;
@@ -41,6 +42,7 @@ public class ReservationService {
 
     private static final String RESERVATION_LIST_KEY = "doctor_list";
     private final MemberFeign memberFeign;
+    private final UntactChatRoomService untactChatRoomService;
 
 //    진료 미리 예약 기능
     public Reservation scheduleReservation(ReservationSaveReqDto dto){
@@ -77,13 +79,16 @@ public class ReservationService {
         // 예약 저장
         Reservation reservation = dtoMapper.toReservation(dto);
         reservationRepository.save(reservation);
-
+        if (reservation.isUntact()) {
+            untactChatRoomService.untactCreate(reservation);
+        }
         RedisDto redisDto = dtoMapper.toRedisDto(reservation);
         redisTemplate.opsForZSet().add(key, redisDto, sequence);
 
         log.info("KafkaListener[handleReservation] : 예약 처리 완료");
 
         return reservation;
+
     }
 
 //    예약 취소 기능
