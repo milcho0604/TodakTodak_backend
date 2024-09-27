@@ -5,5 +5,4 @@ import lombok.Data;
 @Data
 public class RoomRequest {
     private String id;
-    private String uuid;
 }

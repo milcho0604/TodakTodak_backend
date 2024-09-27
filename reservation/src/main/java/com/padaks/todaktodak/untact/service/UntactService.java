@@ -24,9 +24,9 @@ public class UntactService {
         return roomService.getRooms();
     }
 
-    public void processRoomSelection(String sid, String uuid) {
-        Optional<Long> optionalId = parser.parseId(sid);
-        optionalId.ifPresent(id -> Optional.ofNullable(uuid).ifPresent(name -> roomService.addRoom(new Room(id))));
+    public void processRoomSelection(String sid) {
+        Optional<String> optionalId = parser.parseId(sid);
+        optionalId.ifPresent(id -> roomService.addRoom(new Room(id)));
     }
 
     public Long getRandomRoomNumber() {

@@ -14,13 +14,15 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Builder
 @Getter
-public class ChatRoom extends BaseTimeEntity {
+public class UntactChatRoom extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "chatroom_id")
+    @Column(name = "untact_chat_room_id")
     private Long id;
 
     @OneToOne
     @JoinColumn(name = "reservation_id")
     private Reservation reservation;
+
+    private String code;
 }
