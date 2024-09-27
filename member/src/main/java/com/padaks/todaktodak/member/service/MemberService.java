@@ -2,6 +2,7 @@ package com.padaks.todaktodak.member.service;
 
 import com.padaks.todaktodak.common.dto.DtoMapper;
 import com.padaks.todaktodak.common.exception.BaseException;
+import com.padaks.todaktodak.common.feign.HospitalFeignClient;
 import com.padaks.todaktodak.config.JwtTokenProvider;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.domain.Role;
@@ -10,7 +11,6 @@ import com.padaks.todaktodak.member.repository.MemberRepository;
 import com.padaks.todaktodak.util.S3ClientFileUpload;
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,6 +37,7 @@ public class MemberService {
     private final RedisService redisService;
     private final DtoMapper dtoMapper;
     private final S3ClientFileUpload s3ClientFileUpload;
+    private final HospitalFeignClient hospitalFeignClient;
 
     // 간편하게 멤버 객체를 찾기 위한 findByMemberEmail
     public Member findByMemberEmail(String email) {
@@ -57,24 +58,23 @@ public class MemberService {
         }
 
         Member member = saveReqDto.toEntity(passwordEncoder.encode(saveReqDto.getPassword()));
-//        member.setProfileImgUrl(imageUrl); ------- 지우면 울어요.
         memberRepository.save(member);
     }
 
-    public void createDoctor(DoctorSaveReqDto dto, MultipartFile imageSsr){
+//    public void createDoctor(DoctorSaveReqDto dto, MultipartFile imageSsr){
+//        validateRegistration(dto);
+//        String imageUrl = null;
+//
+//        if (imageSsr.isEmpty()){
+//            imageUrl = s3ClientFileUpload.upload(imageSsr);
+////            dto.setProfileImgUrl(imageUrl);
+//        }
+//        Member doctor = dto.toEntity(passwordEncoder.encode(dto.getPassword()), imageUrl);
+//        memberRepository.save(doctor);
+//    }
+
+    public Member createDoctor(DoctorSaveReqDto dto){
         validateRegistration(dto);
-        String imageUrl = null;
-
-        if (imageSsr.isEmpty()){
-            imageUrl = s3ClientFileUpload.upload(imageSsr);
-//            dto.setProfileImgUrl(imageUrl);
-        }
-        Member doctor = dto.toEntity(passwordEncoder.encode(dto.getPassword()), imageUrl);
-        memberRepository.save(doctor);
-
-    }
-
-    public Member registerDoctor(DoctorSaveReqDto dto){
         MultipartFile image = dto.getProfileImage();
         String imageUrl = s3ClientFileUpload.upload(image);
         Member doctor = dto.toEntity(passwordEncoder.encode(dto.getPassword()), imageUrl);
@@ -106,6 +106,9 @@ public class MemberService {
     public String login(MemberLoginDto loginDto) {
         Member member = memberRepository.findByMemberEmail(loginDto.getMemberEmail())
                 .orElseThrow(() -> new RuntimeException("잘못된 이메일/비밀번호 입니다."));
+        if (member.isVerified() == false){
+            throw new SecurityException("이메일 인증이 필요합니다.");
+        }
 
         if (!passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {
             throw new RuntimeException("잘못된 이메일/비밀번호 입니다.");
@@ -134,6 +137,12 @@ public class MemberService {
             throw new RuntimeException("비밀번호는 8자 이상이어야 합니다.");
         }
 
+        if (memberRepository.existsByMemberEmail(saveReqDto.getMemberEmail())) {
+            throw new RuntimeException("이미 사용중인 이메일 입니다.");
+        }
+    }
+    // 어드민이 병원 의사를 등록할때 검증 메서드
+    private void validateRegistration(DoctorAdminSaveReqDto saveReqDto) {
         if (memberRepository.existsByMemberEmail(saveReqDto.getMemberEmail())) {
             throw new RuntimeException("이미 사용중인 이메일 입니다.");
         }
@@ -277,6 +286,8 @@ public class MemberService {
     // java 라이브러리 메일 서비스
     public boolean verifyEmail(String email, String code) {
         if (redisService.verifyCode(email, code)) {
+            Member member = findByMemberEmail(email);
+            member.updateVerified();
             return true;
         } else {
             throw new RuntimeException("인증 코드가 유효하지 않습니다.");
@@ -324,5 +335,27 @@ public class MemberService {
         else{
             throw new BaseException(MEMBER_NOT_FOUND);
         }
+    }
+    // 어드민이 자신이 속한 병원에 의사를 등록하는 메서드
+    public Member doctorAdminCreate(DoctorAdminSaveReqDto dto){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Member adminMember = findByMemberEmail(email);
+        if (adminMember.getRole().equals("Member")){
+            throw new SecurityException("의사를 등록할 권한이 없습니다.");
+        }
+        HospitalFeignDto hospitalFeignDto = getHospital();
+        String password = hospitalFeignDto.getPhoneNumber();
+        password = passwordEncoder.encode(password);
+
+        validateRegistration(dto);
+        Long hosId = adminMember.getHospitalId();
+        Member doctor = dto.toEntity(password, hosId);
+        return memberRepository.save(doctor);
+    }
+
+
+    public HospitalFeignDto getHospital(){
+        HospitalFeignDto hospitalFeignDto = hospitalFeignClient.getHospitalInfo();
+        return hospitalFeignDto;
     }
 }

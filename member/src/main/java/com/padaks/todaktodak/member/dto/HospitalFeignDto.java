@@ -9,9 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MemberLoginDto {
-    private String memberEmail;
-    private String password;
-    private boolean isVerified;
-
+public class HospitalFeignDto {
+    Long hospitalId;
+    String name;
+    String phoneNumber;
 }

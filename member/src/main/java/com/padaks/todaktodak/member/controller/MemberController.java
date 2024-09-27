@@ -47,7 +47,7 @@ public class MemberController {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         System.out.println(email);
         Member member = memberService.findByMemberEmail(email);
-        return new MemberPayDto(member.getMemberEmail(), member.getName(), member.getPhoneNumber(), member.getRole());
+        return new MemberPayDto(member.getMemberEmail(), member.getName(), member.getPhoneNumber(), member.getRole(), member.getHospitalId());
 //        }
 //        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "잘못된 요청입니다.");
     }
@@ -87,7 +87,7 @@ public class MemberController {
 
     @PostMapping("/doctor/register")
     public ResponseEntity<?> registerDoctor(@ModelAttribute DoctorSaveReqDto doctorSaveReqDto){
-        Member member = memberService.registerDoctor(doctorSaveReqDto);
+        Member member = memberService.createDoctor(doctorSaveReqDto);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "의사등록성공", member.getId()),HttpStatus.OK);
     }
 
@@ -97,10 +97,17 @@ public class MemberController {
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원 admin 등록성공(미승인)", unAcceptHospitalAdmin.getId()),HttpStatus.OK);
     }
 
+
     @PutMapping("/hospital-admin/accept")
     public ResponseEntity<?> acceptHospitalAdmin(@RequestBody String email){
         memberService.acceptHospitalAdmin(email);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원 admin 회원가입 승인완료", null),HttpStatus.OK);
+    }
+
+    @PostMapping("/doctor-admin/register")
+    public ResponseEntity<?> doctorAdmin(@RequestBody DoctorAdminSaveReqDto dto){
+        Member doctorAdminCreate = memberService.doctorAdminCreate(dto);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "해당 병원의 의사 등록 성공", doctorAdminCreate.getId()),HttpStatus.OK);
     }
 
     // 로그인
@@ -260,5 +267,14 @@ public class MemberController {
     @GetMapping("/detail/{email}")
     public Object memberDetail(@PathVariable String email){
         return memberService.memberDetail(email);
+    }
+    @GetMapping("/get/hospital")
+    private ResponseEntity<?> getMemberTest(){
+        try {
+            HospitalFeignDto hospitalFeignDto = memberService.getHospital();
+            return ResponseEntity.ok(hospitalFeignDto);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
 }

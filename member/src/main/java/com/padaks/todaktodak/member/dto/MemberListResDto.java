@@ -19,4 +19,6 @@ public class MemberListResDto {
     private Address address;
     private String memberEmail;
     private Role role;
+    private boolean isVerified;
+
 }

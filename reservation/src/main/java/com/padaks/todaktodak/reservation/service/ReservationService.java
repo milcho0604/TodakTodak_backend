@@ -1,5 +1,6 @@
 package com.padaks.todaktodak.reservation.service;
 
+import com.padaks.todaktodak.chatroom.service.UntactChatRoomService;
 import com.padaks.todaktodak.common.dto.DtoMapper;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.hospital.repository.HospitalRepository;
@@ -39,6 +40,7 @@ public class ReservationService {
 
     private static final String RESERVATION_LIST_KEY = "doctor_";
     private final MemberFeign memberFeign;
+    private final UntactChatRoomService untactChatRoomService;
 
 //    진료 미리 예약 기능
     public Reservation scheduleReservation(ReservationSaveReqDto dto){
