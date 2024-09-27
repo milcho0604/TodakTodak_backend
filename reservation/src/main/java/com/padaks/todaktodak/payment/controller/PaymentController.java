@@ -108,10 +108,6 @@ public class PaymentController {
     public ResponseEntity<?> getMedicalChartFee(){
         try {
             String email = SecurityContextHolder.getContext().getAuthentication().getName();
-            System.out.println("이메일 검증1");
-            System.out.println(email);
-            System.out.println("이메일 검증2");
-            System.out.println(paymentService.medicalChart.getReservation().getMemberEmail());
             int fee = 0;
             if(email.equals(paymentService.medicalChart.getReservation().getMemberEmail())){
                 fee = paymentService.medicalChart.getFee();

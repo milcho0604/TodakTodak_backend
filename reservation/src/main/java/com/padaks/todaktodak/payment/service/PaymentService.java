@@ -127,6 +127,7 @@ public class PaymentService {
                     .merchantUid("order_no_" + new Date().getTime())
                     .paymentStatus(PaymentStatus.OK)  // 결제 완료로 상태 업데이트
                     .paymentMethod(paymentMethod)
+                    .medicalChart(medicalChart)
                     .requestTimeStamp(LocalDateTime.now())
                     .approvalTimeStamp(LocalDateTime.now())  // 결제 승인 시간
                     .subscriptionEndDate(null)  // 정기결제의 경우 다음 결제일을 1개월 후로 설정
@@ -204,12 +205,11 @@ public class PaymentService {
                     .name(name)
                     .buyerTel(member.getPhoneNumber())
                     .merchantUid("order_no_" + new Date().getTime())
-                    .paymentStatus(PaymentStatus.OK)  // 결제 완료로 상태 업데이트
+                    .paymentStatus(PaymentStatus.SUBSCRIBING)  // 결제 완료로 상태 업데이트
                     .paymentMethod(paymentMethod)
                     .requestTimeStamp(LocalDateTime.now())
                     .approvalTimeStamp(LocalDateTime.now())  // 결제 승인 시간
                     .subscriptionEndDate(LocalDateTime.now().plusMonths(1))
-                    .subscriptionEndDate(null)  // 정기결제의 경우 다음 결제일을 1개월 후로 설정
                     .count(0)
                     .build();
 
@@ -290,9 +290,13 @@ public class PaymentService {
     // 정기결제 상태 체크 및 다음 결제일 갱신
     public void processSubscriptions() {
         log.info("정기 결제 프로세스 시작");
-        List<Pay> subscriptionPayments = paymentRepository.findByPaymentMethod(PaymentMethod.SUBSCRIPTION);
+//        List<Pay> subscriptionPayments = paymentRepository.findByPaymentMethod(PaymentMethod.SUBSCRIPTION);
+        List<Pay> subscriptionPayments = paymentRepository.findByPaymentMethodAndPaymentStatus(
+                PaymentMethod.SUBSCRIPTION, PaymentStatus.SUBSCRIBING);
 
         for (Pay pay : subscriptionPayments) {
+            System.out.println(pay);
+            System.out.println(pay.getPaymentStatus());
             // 정기결제 상태가 만료된 경우 즉, 구독이 만료된 경우! 아래 로직을 실행 ~
             if (pay.isSubscriptionActive()) {
                 try {
@@ -354,9 +358,6 @@ public class PaymentService {
             log.error("구독 결제 취소 실패: {}", cancelResponse.getMessage());
             throw new Exception("구독 취소 실패: " + cancelResponse.getMessage());
         }
-
         return cancelResponse;  // 취소 응답 반환
     }
-
-
 }
