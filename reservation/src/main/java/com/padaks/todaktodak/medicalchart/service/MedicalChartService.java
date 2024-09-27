@@ -26,9 +26,10 @@ public class MedicalChartService {
         Reservation reservation = reservationRepository.findById(dto.getReservationId())
                 .orElseThrow(() -> new BaseException(RESERVATION_NOT_FOUND));
 //        의사 이메일을 통해 의사를 찾아온 뒤, 비대면 진료비를 요청
-        String doctorEmail =  reservation.getDoctorEmail();
-        // feign 요청 로직
-        int fee = 1000;
+        int fee;
+        if(reservation.getHospital()==null ||reservation.getHospital().getUntactFee()==null) {
+            throw new IllegalArgumentException("예약에 병원 값이 없거나 병원에 fee정보가 존재하지 않습니다.");
+        } else fee = Math.toIntExact(reservation.getHospital().getUntactFee());
         MedicalChart medicalChart = dto.toEntity(reservation, fee);
         MedicalChart saved = medicalChartRepository.save(medicalChart);
         return new MedicalChartResDto().fromEntity(saved);
