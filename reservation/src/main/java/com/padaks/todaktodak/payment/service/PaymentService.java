@@ -54,9 +54,6 @@ public class PaymentService {
     public MedicalChart getMediChartId(Long id){
         medicalChart = medicalChartRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 진료내역입니다."));
-        System.out.println("메디차트: " + medicalChart);
-        int fee = medicalChart.getFee();
-        System.out.println(fee);
         return medicalChart;
     }
 
