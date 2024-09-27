@@ -46,7 +46,7 @@ public class Reservation extends BaseTimeEntity {
 
     private LocalTime reservationTime;
 
-    private boolean isUntact;
+    private boolean untact;
 
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -66,6 +66,8 @@ public class Reservation extends BaseTimeEntity {
     @OneToOne(mappedBy = "reservation")
     private Review review;
 
+    @OneToOne(mappedBy = "reservation")
+    private UntactChatRoom chatRoom;
 
     @OneToOne(mappedBy = "reservation")
     private MedicalChart medicalChart;

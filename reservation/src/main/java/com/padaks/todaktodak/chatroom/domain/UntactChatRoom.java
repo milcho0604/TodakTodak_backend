@@ -1,7 +1,7 @@
 package com.padaks.todaktodak.chatroom.domain;
 
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
-import com.padaks.todaktodak.medicalchart.domain.MedicalChart;
+import com.padaks.todaktodak.reservation.domain.Reservation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,6 +21,8 @@ public class UntactChatRoom extends BaseTimeEntity {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "medical_chart_id")
-    private MedicalChart medicalChart;
+    @JoinColumn(name = "reservation_id")
+    private Reservation reservation;
+
+    private String code;
 }

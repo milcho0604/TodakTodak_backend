@@ -24,7 +24,7 @@ public class ReservationSaveReqDto {
     private ReserveType reservationType;
     private LocalDate reservationDate;
     private LocalTime reservationTime;
-    private boolean isUntact;
+    private boolean untact;
     private MedicalItem medicalItem;
     private Status status;
     private String field;

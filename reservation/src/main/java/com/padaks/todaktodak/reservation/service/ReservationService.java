@@ -1,5 +1,6 @@
 package com.padaks.todaktodak.reservation.service;
 
+import com.padaks.todaktodak.chatroom.service.UntactChatRoomService;
 import com.padaks.todaktodak.common.dto.DtoMapper;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.reservation.domain.Reservation;
@@ -31,6 +32,7 @@ public class ReservationService {
     private final ReservationHistoryRepository reservationHistoryRepository;
     private final DtoMapper dtoMapper;
     private final MemberFeign memberFeign;
+    private final UntactChatRoomService untactChatRoomService;
 
 //    진료 미리 예약 기능
     public Reservation scheduleReservation(ReservationSaveReqDto dto){
@@ -50,7 +52,11 @@ public class ReservationService {
 //    당일 진료 예약 기능 구현.
     public Reservation immediateReservation(ReservationSaveReqDto dto){
         log.info("ReservationSErvice[immediateReservation] : 시작");
+        log.info(String.valueOf(dto.isUntact()));
         Reservation reservation = dtoMapper.toReservation(dto);
+        if (reservation.isUntact()) {
+            untactChatRoomService.untactCreate(reservation);
+        }
         return reservationRepository.save(reservation);
     }
 
