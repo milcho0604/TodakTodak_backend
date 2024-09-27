@@ -7,23 +7,15 @@ import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.dto.RedisDto;
 import com.padaks.todaktodak.reservation.dto.ReservationSaveReqDto;
-import com.padaks.todaktodak.reservation.dto.ReservationSaveResDto;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.support.KafkaHeaders;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import retrofit2.http.Header;
 
-import java.time.Duration;
-import java.util.Collections;
 import java.util.Set;
 
 import static com.padaks.todaktodak.common.exception.exceptionType.ReservationExceptionType.TOOMANY_RESERVATION;
@@ -31,13 +23,11 @@ import static com.padaks.todaktodak.common.exception.exceptionType.ReservationEx
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ReservationConsumer {
+public class ReservationKafkaConsumer {
 
     private final RedisTemplate<String, Object> redisTemplate;
     private final DtoMapper dtoMapper;
     private final ReservationRepository reservationRepository;
-    private final DefaultKafkaConsumerFactory kafkaConsumerFactory;
-    private final ObjectMapper objectMapper;
 
 // 레디스의 동작 여부를 감지
     private boolean isRedisAvailable(){
@@ -48,7 +38,8 @@ public class ReservationConsumer {
             return false; // Redis가 꺼져 있거나 연결이 실패한 경우
         }
     }
-    @KafkaListener(topics = "reservationTopic", groupId = "group_id", containerFactory = "kafkaListenerContainerFactory")
+
+    @KafkaListener(topics = "reservationImmediate", groupId = "group_id", containerFactory = "kafkaListenerContainerFactory")
     public void consumerReservation(String message,
                                     @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String hospitalKey,
                                     @Header(KafkaHeaders.RECEIVED_PARTITION_ID) String partition) {

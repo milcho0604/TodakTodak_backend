@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.padaks.todaktodak.common.exception.exceptionType.HospitalExceptionType.*;
@@ -64,9 +65,10 @@ public class ReservationService {
         hospitalRepository.findById(dto.getHospitalId())
                 .orElseThrow(() -> new BaseException(HOSPITAL_NOT_FOUND));
         String doctorKey = dto.getDoctorEmail();
-        kafkaTemplate.send("reservationTopic", doctorKey , dto)
+        kafkaTemplate.send("reservationImmediate", doctorKey , dto)
                 .addCallback(
-                        success -> log.info("Sent message to partition: {}", success.getRecordMetadata().partition()),
+                        success -> log.info("Sent message to partition: {}",
+                                Objects.requireNonNull(success).getRecordMetadata().partition()),
                         failure -> log.error("Failed to send message", failure)
                 );
 
@@ -97,7 +99,7 @@ public class ReservationService {
 //    예약 조회 기능
     public List<?> checkListReservation(CheckListReservationResDto resDto, Pageable pageable){
 //        feign 으로 연결 되면 여기에 email 로 해당 user 찾는 로직이 들어갈 예정
-        
+        MemberResDto member = memberFeign.getMember(resDto.getEmail());
 //        여기서 페이징 처리할 예정 -> 페이징 처리하면서 예약
 //        여기서 미리 예약 , 당일 예약 분기처리도 해줄 예정
         Page<Reservation> reservationPage;

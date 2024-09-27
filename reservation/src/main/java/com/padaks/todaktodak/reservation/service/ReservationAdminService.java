@@ -4,7 +4,6 @@ import com.padaks.todaktodak.common.dto.DtoMapper;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.dto.CheckHospitalListReservationReqDto;
-import com.padaks.todaktodak.reservation.dto.CheckHospitalListReservationResDto;
 import com.padaks.todaktodak.reservation.dto.RedisDto;
 import com.padaks.todaktodak.reservation.dto.UpdateStatusReservation;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
