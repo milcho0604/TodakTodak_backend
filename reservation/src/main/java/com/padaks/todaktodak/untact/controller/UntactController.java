@@ -31,7 +31,7 @@ public class UntactController {
     @PostMapping("/room")
     public ResponseEntity<Void> createRoom(@RequestBody RoomRequest roomRequest) {
         log.info("[createRoom] 실행");
-        untactService.processRoomSelection(roomRequest.getId(), roomRequest.getUuid());
+        untactService.processRoomSelection(roomRequest.getId());
         return ResponseEntity.ok().build();
     }
 

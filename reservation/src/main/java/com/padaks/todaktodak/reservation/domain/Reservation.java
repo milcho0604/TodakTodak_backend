@@ -1,6 +1,6 @@
 package com.padaks.todaktodak.reservation.domain;
 
-import com.padaks.todaktodak.chatroom.domain.ChatRoom;
+import com.padaks.todaktodak.chatroom.domain.UntactChatRoom;
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
 import com.padaks.todaktodak.hospital.domain.Hospital;
 import com.padaks.todaktodak.medicalchart.domain.MedicalChart;
@@ -10,8 +10,6 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -48,7 +46,7 @@ public class Reservation extends BaseTimeEntity {
 
     private LocalTime reservationTime;
 
-    private boolean isUntact;
+    private boolean untact;
 
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -69,7 +67,7 @@ public class Reservation extends BaseTimeEntity {
     private Review review;
 
     @OneToOne(mappedBy = "reservation")
-    private ChatRoom chatRoom;
+    private UntactChatRoom chatRoom;
 
     @OneToOne(mappedBy = "reservation")
     private MedicalChart medicalChart;
