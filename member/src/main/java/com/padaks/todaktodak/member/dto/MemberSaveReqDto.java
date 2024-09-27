@@ -39,6 +39,7 @@ public class MemberSaveReqDto {
                 .memberEmail(this.memberEmail)
                 .profileImgUrl(this.profileImgUrl)
                 .phoneNumber(this.phoneNumber)
+                .isVerified(this.isVerified)
                 .ssn(this.ssn)
                 .address(this.address)
                 .role(this.role)

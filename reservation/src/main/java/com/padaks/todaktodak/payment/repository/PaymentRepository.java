@@ -2,6 +2,7 @@ package com.padaks.todaktodak.payment.repository;
 
 import com.padaks.todaktodak.payment.domain.Pay;
 import com.padaks.todaktodak.payment.domain.PaymentMethod;
+import com.padaks.todaktodak.payment.domain.PaymentStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,5 +14,7 @@ import java.util.List;
 public interface PaymentRepository extends JpaRepository<Pay, Long> {
     Pay findByImpUid(String impUid);
     Page<Pay> findAll(Pageable pageable);
-    List<Pay> findByPaymentMethod(PaymentMethod paymentMethod);
+//    List<Pay> findByPaymentMethod(PaymentMethod paymentMethod);
+List<Pay> findByPaymentMethodAndPaymentStatus(PaymentMethod paymentMethod, PaymentStatus paymentStatus);
+
 }
