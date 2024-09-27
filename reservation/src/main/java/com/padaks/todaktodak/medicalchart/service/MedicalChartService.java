@@ -5,6 +5,7 @@ import com.padaks.todaktodak.medicalchart.domain.MedicalChart;
 import com.padaks.todaktodak.medicalchart.dto.MedicalChartResDto;
 import com.padaks.todaktodak.medicalchart.dto.MedicalChartSaveReqDto;
 import com.padaks.todaktodak.medicalchart.repository.MedicalChartRepository;
+import com.padaks.todaktodak.payment.service.PaymentService;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,8 @@ import static com.padaks.todaktodak.common.exception.exceptionType.ReservationEx
 public class MedicalChartService {
     private final MedicalChartRepository medicalChartRepository;
     private final ReservationRepository reservationRepository;
+    private final PaymentService paymentService;
+
     public MedicalChartResDto medicalChartCreate(MedicalChartSaveReqDto dto) {
         Reservation reservation = reservationRepository.findById(dto.getReservationId())
                 .orElseThrow(() -> new BaseException(RESERVATION_NOT_FOUND));
@@ -31,6 +34,8 @@ public class MedicalChartService {
         int fee = 1000;
         MedicalChart medicalChart = dto.toEntity(reservation, fee);
         MedicalChart saved = medicalChartRepository.save(medicalChart);
+        paymentService.getMediChartId(saved.getId());
+
         return new MedicalChartResDto().fromEntity(saved);
     }
 

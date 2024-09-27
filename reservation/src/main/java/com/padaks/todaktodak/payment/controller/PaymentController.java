@@ -102,4 +102,14 @@ public class PaymentController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CommonResDto(HttpStatus.BAD_REQUEST,"구독 취소 실패: " + e.getMessage(), null));
         }
     }
+
+    @GetMapping("/get/fee")
+    public ResponseEntity<?> getMedicalChartFee(){
+        try {
+            int fee = paymentService.medicalChart.getFee();
+            return ResponseEntity.ok(fee);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
 }

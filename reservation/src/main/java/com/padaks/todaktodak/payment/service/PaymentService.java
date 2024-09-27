@@ -3,6 +3,8 @@ package com.padaks.todaktodak.payment.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.padaks.todaktodak.common.dto.MemberFeignDto;
 import com.padaks.todaktodak.common.feign.MemberFeignClient;
+import com.padaks.todaktodak.medicalchart.domain.MedicalChart;
+import com.padaks.todaktodak.medicalchart.repository.MedicalChartRepository;
 import com.padaks.todaktodak.payment.domain.Pay;
 import com.padaks.todaktodak.payment.domain.PaymentMethod;
 import com.padaks.todaktodak.payment.dto.PaymentListResDto;
@@ -22,6 +24,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -37,11 +40,24 @@ public class PaymentService {
     private final MemberFeignClient memberFeignClient;
     private final IamportClient iamportClient;
     private final PaymentRepository paymentRepository;
+    private final MedicalChartRepository medicalChartRepository;
+    public static MedicalChart medicalChart;
+
 
     // member 객체 리턴, 토큰 포함
     public MemberFeignDto getMemberInfo() {
         MemberFeignDto member = memberFeignClient.getMemberEmail();  // Feign Client에 토큰 추가
         return member;
+    }
+
+    // 진료 내역 객체 리턴
+    public MedicalChart getMediChartId(Long id){
+        medicalChart = medicalChartRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 진료내역입니다."));
+        System.out.println("메디차트: " + medicalChart);
+        int fee = medicalChart.getFee();
+        System.out.println(fee);
+        return medicalChart;
     }
 
     // 단건 결제 처리
@@ -51,7 +67,7 @@ public class PaymentService {
 
     // 정기 결제 처리
     public PaymentReqDto processSubscriptionPayment(String impUid) throws Exception {
-        return processPayment(impUid, PaymentMethod.SUBSCRIPTION);
+        return subPayment(impUid, PaymentMethod.SUBSCRIPTION);
     }
 
     // impUid를 파싱하는 메서드
@@ -66,8 +82,88 @@ public class PaymentService {
         }
     }
 
-    // 결제 로직 구현
+    // 단건 결제 로직 구현
     public PaymentReqDto processPayment(String impUid, PaymentMethod paymentMethod) throws Exception {
+        MemberFeignDto member = getMemberInfo();  // 현재 로그인한 사용자 정보
+//        System.out.println(impUid);
+
+        int fee = medicalChart.getFee();
+
+        String actualImpUid = extractImpUid(impUid);  // impUid 값 추출 함수 사용
+//        System.out.println("Extracted impUid: " + actualImpUid);
+
+        // impUid를 통해 결제 정보 확인
+        IamportResponse<Payment> paymentResponse = iamportClient.paymentByImpUid(actualImpUid);
+
+        if (paymentResponse.getResponse() == null) {
+            throw new Exception("결제 정보 없음: " + paymentResponse.getMessage());
+        }
+
+        BigDecimal amount = paymentResponse.getResponse().getAmount();
+        if (amount.compareTo(BigDecimal.valueOf(fee)) != 0) {
+            throw new Exception("결제 금액 불일치");
+        }
+
+        try {
+            // 결제 정보가 존재하는지 확인
+            if (paymentResponse.getResponse() == null) {
+                throw new Exception("결제 요청 실패: " + paymentResponse.getMessage());
+            }
+
+            // 결제 금액 및 기타 검증 로직 (여기서는 금액 100원으로 고정)
+            if (paymentResponse.getResponse().getAmount().intValue() != fee) {
+                throw new Exception("결제 금액 불일치");
+            }
+            String customerUid = "customer_" + member.getMemberEmail();
+            Pay pay = null;
+
+            String name = "비대면 진료";
+            // Pay 엔티티 생성 후 저장
+            pay = Pay.builder()
+                    .memberEmail(member.getMemberEmail())
+                    .impUid(actualImpUid)
+                    .customerUid(customerUid)
+                    .amount(BigDecimal.valueOf(fee))
+                    .buyerName(member.getName())
+                    .name(name)
+                    .buyerTel(member.getPhoneNumber())
+                    .merchantUid("order_no_" + new Date().getTime())
+                    .paymentStatus(PaymentStatus.OK)  // 결제 완료로 상태 업데이트
+                    .paymentMethod(paymentMethod)
+                    .requestTimeStamp(LocalDateTime.now())
+                    .approvalTimeStamp(LocalDateTime.now())  // 결제 승인 시간
+                    .subscriptionEndDate(null)  // 정기결제의 경우 다음 결제일을 1개월 후로 설정
+                    .count(0)
+                    .build();
+
+            // 저장 로직
+            paymentRepository.save(pay);
+
+            // 성공적으로 결제된 PaymentReqDto 반환
+            return PaymentReqDto.builder()
+                    .id(pay.getId())
+                    .memberEmail(pay.getMemberEmail())
+                    .customerUid(pay.getCustomerUid())
+                    .impUid(pay.getImpUid())
+                    .amount(pay.getAmount())
+                    .merchantUid(pay.getMerchantUid())
+                    .buyerName(pay.getBuyerName())
+                    .name(pay.getName())
+                    .buyerTel(pay.getBuyerTel())
+                    .paymentStatus(pay.getPaymentStatus().toString())
+                    .paymentMethod(pay.getPaymentMethod().toString())
+                    .requestTimeStamp(pay.getRequestTimeStamp())
+                    .approvalTimeStamp(pay.getApprovalTimeStamp())
+                    .build();
+
+        } catch (Exception e) {
+            log.error("결제 처리 중 오류 발생: ", e);
+            throw new RuntimeException("결제 처리 실패", e);
+        }
+    }
+
+    // 정기 결제 로직
+    public PaymentReqDto subPayment(String impUid, PaymentMethod paymentMethod) throws Exception {
         MemberFeignDto member = getMemberInfo();  // 현재 로그인한 사용자 정보
 //        System.out.println(impUid);
 
@@ -82,7 +178,7 @@ public class PaymentService {
         }
 
         BigDecimal amount = paymentResponse.getResponse().getAmount();
-        if (amount.compareTo(BigDecimal.valueOf(100)) != 0) {
+        if (amount.compareTo(BigDecimal.valueOf(1000000)) != 0) {
             throw new Exception("결제 금액 불일치");
         }
 
@@ -93,25 +189,20 @@ public class PaymentService {
             }
 
             // 결제 금액 및 기타 검증 로직 (여기서는 금액 100원으로 고정)
-            if (paymentResponse.getResponse().getAmount().intValue() != 100) {
+            if (paymentResponse.getResponse().getAmount().intValue() != 1000000) {
                 throw new Exception("결제 금액 불일치");
             }
             String customerUid = "customer_" + member.getMemberEmail();
             Pay pay = null;
 
+            String name = "정기 구독";
 
-            String name = null;
-            if (paymentMethod.equals(PaymentMethod.SINGLE)) {
-                name = "비대면 진료";
-            } else {
-                name = "병원 구독";
-            }
             // Pay 엔티티 생성 후 저장
             pay = Pay.builder()
                     .memberEmail(member.getMemberEmail())
                     .impUid(actualImpUid)
                     .customerUid(customerUid)
-                    .amount(BigDecimal.valueOf(100))
+                    .amount(BigDecimal.valueOf(1000000))
                     .buyerName(member.getName())
                     .name(name)
                     .buyerTel(member.getPhoneNumber())
@@ -120,13 +211,10 @@ public class PaymentService {
                     .paymentMethod(paymentMethod)
                     .requestTimeStamp(LocalDateTime.now())
                     .approvalTimeStamp(LocalDateTime.now())  // 결제 승인 시간
+                    .subscriptionEndDate(LocalDateTime.now().plusMonths(1))
                     .subscriptionEndDate(null)  // 정기결제의 경우 다음 결제일을 1개월 후로 설정
                     .count(0)
                     .build();
-
-            if (paymentMethod.equals(PaymentMethod.SUBSCRIPTION)){
-                pay.changeSubscriptionEndDate(LocalDateTime.now().plusMonths(1), PaymentStatus.SUBSCRIBING);
-            }
 
             // 저장 로직
             paymentRepository.save(pay);
