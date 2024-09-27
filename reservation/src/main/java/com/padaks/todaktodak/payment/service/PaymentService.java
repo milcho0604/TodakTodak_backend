@@ -41,7 +41,6 @@ public class PaymentService {
     // member 객체 리턴, 토큰 포함
     public MemberFeignDto getMemberInfo() {
         MemberFeignDto member = memberFeignClient.getMemberEmail();  // Feign Client에 토큰 추가
-//        System.out.println("멤버 디버깅을 위한: " + member);
         return member;
     }
 

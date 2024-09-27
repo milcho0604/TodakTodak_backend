@@ -101,7 +101,7 @@ public class ReservationService {
         reservationHistoryRepository.save(reservationHistory);
 
         //        Redis의 예약 찾기
-        String key = RESERVATION_LIST_KEY+reservation.getHospitalId();
+        String key = RESERVATION_LIST_KEY+reservation.getHospital().getId();
         RedisDto redisDto = dtoMapper.toRedisDto(reservation);
 //        list 에서 해당 예약을 삭제
         redisTemplate.opsForZSet().remove(key, redisDto);
