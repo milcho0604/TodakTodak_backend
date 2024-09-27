@@ -49,4 +49,9 @@ public class ChildController {
         childService.shareChild(dto);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK,"자녀 공유 성공",null),HttpStatus.OK);
     }
+
+    @GetMapping("/detail/{id}")
+    public ChildResDto getMyChild(@PathVariable Long id){
+        return childService.getMyChild(id);
+    }
 }

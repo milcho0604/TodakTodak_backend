@@ -13,10 +13,6 @@ public class MemberExceptionHandler {
         ExceptionType exceptionType = e.getExceptionType();
 
         return ResponseEntity.status(exceptionType.httpStatus())
-                .body(ErrorResponse.builder()
-                        .name(exceptionType.name())
-                        .message(exceptionType.message())
-                        .httpStatus(e.exceptionType.httpStatus())
-                        .build());
+                .body(ErrorResponse.of(exceptionType));
     }
 }

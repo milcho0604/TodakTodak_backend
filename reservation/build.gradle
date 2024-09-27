@@ -52,7 +52,7 @@ dependencies {
 //	localdatetime 형식을 redis 에 넣기 위한 의존성
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 	implementation 'org.springframework.kafka:spring-kafka'
-	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
 
 	// iamPort 의존성 추가
 	implementation 'com.github.iamport:iamport-rest-client-java:0.2.23'

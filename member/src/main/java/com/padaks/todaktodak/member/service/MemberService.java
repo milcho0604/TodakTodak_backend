@@ -1,5 +1,7 @@
 package com.padaks.todaktodak.member.service;
 
+import com.padaks.todaktodak.common.dto.DtoMapper;
+import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.common.feign.HospitalFeignClient;
 import com.padaks.todaktodak.config.JwtTokenProvider;
 import com.padaks.todaktodak.member.domain.Member;
@@ -20,6 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.Random;
+
+import static com.padaks.todaktodak.common.exception.exceptionType.MemberExceptionType.MEMBER_NOT_FOUND;
 
 @Service
 @Slf4j
@@ -318,6 +322,20 @@ public class MemberService {
         memberRepository.save(member);
     }
 
+    //    reservation 에서 doctor를 찾기 위한 로직
+    public Object memberDetail(String email){
+        Member member = memberRepository.findByMemberEmail(email)
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+        if(member.getRole().equals(Role.Doctor)){
+            return dtoMapper.toDoctorResDto(member);
+        }
+        else if(member.getRole().equals(Role.Member)){
+            return dtoMapper.toMemberResDto(member);
+        }
+        else{
+            throw new BaseException(MEMBER_NOT_FOUND);
+        }
+    }
     // 어드민이 자신이 속한 병원에 의사를 등록하는 메서드
     public Member doctorAdminCreate(DoctorAdminSaveReqDto dto){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -340,5 +358,4 @@ public class MemberService {
         HospitalFeignDto hospitalFeignDto = hospitalFeignClient.getHospitalInfo();
         return hospitalFeignDto;
     }
-
 }

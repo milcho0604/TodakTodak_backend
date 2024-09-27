@@ -4,7 +4,6 @@ import com.padaks.todaktodak.common.dto.DtoMapper;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.dto.CheckHospitalListReservationReqDto;
-import com.padaks.todaktodak.reservation.dto.CheckHospitalListReservationResDto;
 import com.padaks.todaktodak.reservation.dto.RedisDto;
 import com.padaks.todaktodak.reservation.dto.UpdateStatusReservation;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
@@ -61,7 +60,7 @@ public class ReservationAdminService {
         reservation.updateStatus(updateStatusReservation.getStatus());
 
 //        Redis의 예약 찾기
-        String key = RESERVATION_LIST_KEY+reservation.getHospitalId();
+        String key = RESERVATION_LIST_KEY+reservation.getHospital().getId();
         RedisDto redisDto = dtoMapper.toRedisDto(reservation);
 //        list 에서 해당 예약을 삭제
         redisTemplate.opsForZSet().remove(key, redisDto);
