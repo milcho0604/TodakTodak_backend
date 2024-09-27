@@ -14,11 +14,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.kafka.annotation.KafkaHandler;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.padaks.todaktodak.common.exception.exceptionType.ReservationExceptionType.*;
@@ -31,6 +37,10 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationHistoryRepository reservationHistoryRepository;
     private final DtoMapper dtoMapper;
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+
+    private static final String RESERVATION_LIST_KEY = "doctor_list";
     private final MemberFeign memberFeign;
     private final UntactChatRoomService untactChatRoomService;
 
@@ -49,15 +59,36 @@ public class ReservationService {
         return savedReservation;
     }
 
-//    당일 진료 예약 기능 구현.
+//    당일 예약 기능
     public Reservation immediateReservation(ReservationSaveReqDto dto){
-        log.info("ReservationSErvice[immediateReservation] : 시작");
-        log.info(String.valueOf(dto.isUntact()));
+        log.info("KafkaListener[handleReservation] : 예약 요청 처리 시작");
+//        doctor 이메일로 찾아서 id로 바꿔주면 됨
+        String key = RESERVATION_LIST_KEY + dto.getHospitalId();
+        // Redis에서 예약 개수 확인 (대기열 관리)
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
+            Set<Object> set = redisTemplate.opsForZSet().range(key, 0, -1);
+            if (set.size() > 30) {
+                throw new BaseException(TOOMANY_RESERVATION);
+            }
+        }
+        kafkaTemplate.send("reservationTopic", dto);
+
+        String sequenceKey = "sequence" + dto.getHospitalId();
+        Long sequence = redisTemplate.opsForValue().increment(sequenceKey, 1);
+
+        // 예약 저장
         Reservation reservation = dtoMapper.toReservation(dto);
+        reservationRepository.save(reservation);
         if (reservation.isUntact()) {
             untactChatRoomService.untactCreate(reservation);
         }
-        return reservationRepository.save(reservation);
+        RedisDto redisDto = dtoMapper.toRedisDto(reservation);
+        redisTemplate.opsForZSet().add(key, redisDto, sequence);
+
+        log.info("KafkaListener[handleReservation] : 예약 처리 완료");
+
+        return reservation;
+
     }
 
 //    예약 취소 기능
@@ -73,6 +104,12 @@ public class ReservationService {
         reservationHistory.setStatus(Status.Cancelled);
 //        reservationHistory 테이블에 저장.
         reservationHistoryRepository.save(reservationHistory);
+
+        //        Redis의 예약 찾기
+        String key = RESERVATION_LIST_KEY+reservation.getHospitalId();
+        RedisDto redisDto = dtoMapper.toRedisDto(reservation);
+//        list 에서 해당 예약을 삭제
+        redisTemplate.opsForZSet().remove(key, redisDto);
     }
     
 //    예약 조회 기능
