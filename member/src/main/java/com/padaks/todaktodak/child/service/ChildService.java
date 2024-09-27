@@ -8,6 +8,8 @@ import com.padaks.todaktodak.child.dto.ChildUpdateReqDto;
 import com.padaks.todaktodak.child.repository.ChildRepository;
 import com.padaks.todaktodak.childparentsrelationship.domain.ChildParentsRelationship;
 import com.padaks.todaktodak.childparentsrelationship.service.ChildParentsRelationshipService;
+import com.padaks.todaktodak.common.dto.DtoMapper;
+import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.common.service.AESUtil;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.repository.MemberRepository;
@@ -24,11 +26,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.padaks.todaktodak.common.exception.exceptionType.MemberExceptionType.*;
+
+
 @Service
 @Slf4j
 @Transactional
 @RequiredArgsConstructor
 public class ChildService {
+    private final DtoMapper dtoMapper;
     private final ChildRepository childRepository;
     private final MemberRepository memberRepository;
     private final ChildParentsRelationshipService childParentsRelationshipService;
@@ -126,5 +132,12 @@ public class ChildService {
         Member shared = memberRepository.findById(dto.getSharedId())
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다"));
         childParentsRelationshipService.createRelationship(child, shared);
+    }
+
+    public ChildResDto getMyChild(Long id){
+        Child child = childRepository.findById(id)
+                .orElseThrow(() -> new BaseException(CHILD_NOT_FOUND));
+
+        return dtoMapper.toChildResDto(child);
     }
 }

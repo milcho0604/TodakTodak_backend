@@ -38,7 +38,12 @@ public interface DtoMapper {
                 throw new IllegalArgumentException("Unknown ResType: " + resType);
         }
     }
-    ReservationHistory toReservationHistory(Reservation reservation);
+
+    @Mapping(source = "hospitalId", target = "hospitalId")
+    ReservationHistory toReservationHistory(Reservation reservation, Long hospitalId);
+
+    ReservationSaveResDto toReservationSaveResDto(Reservation reservation);
+
 
     CheckHospitalListReservationResDto toHospitalListReservation(Reservation reservation);
 

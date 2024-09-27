@@ -256,4 +256,9 @@ public class MemberController {
             CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "의사목록을 조회합니다.",dtos);
             return new ResponseEntity<>(commonResDto, HttpStatus.OK);
     }
+
+    @GetMapping("/detail/{email}")
+    public Object memberDetail(@PathVariable String email){
+        return memberService.memberDetail(email);
+    }
 }

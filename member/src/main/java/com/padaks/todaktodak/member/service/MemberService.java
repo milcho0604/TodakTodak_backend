@@ -1,5 +1,7 @@
 package com.padaks.todaktodak.member.service;
 
+import com.padaks.todaktodak.common.dto.DtoMapper;
+import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.config.JwtTokenProvider;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.domain.Role;
@@ -20,6 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.Random;
+
+import static com.padaks.todaktodak.common.exception.exceptionType.MemberExceptionType.MEMBER_NOT_FOUND;
 
 @Service
 @Slf4j
@@ -305,5 +309,20 @@ public class MemberService {
 //        DtoMapper의 toMember 를 사용하여 member에 자동으로 mapping 해준다.
         Member member = dtoMapper.toMember(dto);
         memberRepository.save(member);
+    }
+
+    //    reservation 에서 doctor를 찾기 위한 로직
+    public Object memberDetail(String email){
+        Member member = memberRepository.findByMemberEmail(email)
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+        if(member.getRole().equals(Role.Doctor)){
+            return dtoMapper.toDoctorResDto(member);
+        }
+        else if(member.getRole().equals(Role.Member)){
+            return dtoMapper.toMemberResDto(member);
+        }
+        else{
+            throw new BaseException(MEMBER_NOT_FOUND);
+        }
     }
 }
