@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -106,6 +107,10 @@ public class PaymentController {
     @GetMapping("/get/fee")
     public ResponseEntity<?> getMedicalChartFee(){
         try {
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            System.out.println("이메일 검증");
+            System.out.println(email);
+            System.out.println(paymentService.medicalChart.getReservation().getMemberEmail());
             int fee = paymentService.medicalChart.getFee();
             return ResponseEntity.ok(fee);
         }catch (Exception e){

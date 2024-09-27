@@ -10,6 +10,7 @@ import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +36,7 @@ public class MedicalChartService {
         } else fee = Math.toIntExact(reservation.getHospital().getUntactFee());
         MedicalChart medicalChart = dto.toEntity(reservation, fee);
         MedicalChart saved = medicalChartRepository.save(medicalChart);
+
         paymentService.getMediChartId(saved.getId());
 
         return new MedicalChartResDto().fromEntity(saved);
