@@ -4,6 +4,9 @@ import com.google.firebase.messaging.*;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.dto.FcmTokenSaveRequest;
 import com.padaks.todaktodak.member.repository.MemberRepository;
+import com.padaks.todaktodak.notification.domain.Notification;
+import com.padaks.todaktodak.notification.domain.Type;
+import com.padaks.todaktodak.notification.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +18,7 @@ import java.util.concurrent.ExecutionException;
 public class FcmService {
 
     private final MemberRepository memberRepository;
+    private final NotificationRepository notificationRepository;
 
     @Transactional
     public void saveFcmToken(Long memberId, FcmTokenSaveRequest dto){
@@ -24,17 +28,32 @@ public class FcmService {
 
     public void sendTestMessage(Long memberId){
         Member member = memberRepository.findByIdOrThrow(memberId);
+
         String token = member.getFcmToken();
 
-        if (token == null || token.isEmpty()){
+        if (token == null || token.isEmpty()) {
             throw new EntityNotFoundException("FCM token not found for memberId: " + memberId);
         }
+
+        String title = "알림 제목";
+        String body = "알림 내용";
+
+        Notification notification = Notification.builder()
+                .member(member)
+                .content(title +"\n"+ body)  //알림 내용 저장
+                .isRead(false)      //notification 생성될때 = false -> 사용자가 알림 누르는 순간 true로 바껴야함
+                .type(Type.POST)    //상황에 맞게 타입 입력 필요 if post
+                .refId(null)        //등록된 post의 Id
+                .build();
+
+        //db에 Notification 저장
+        notificationRepository.save(notification);
 
         Message message = Message.builder()
                 .setWebpushConfig(WebpushConfig.builder()
                         .setNotification(WebpushNotification.builder()
-                                .setTitle("알림 제목")
-                                .setBody("알림 내용")
+                                .setTitle(title)
+                                .setBody(body)
                                 .build())
                         .build())
                 .setToken(token)
