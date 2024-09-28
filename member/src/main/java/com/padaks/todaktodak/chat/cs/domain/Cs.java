@@ -1,6 +1,6 @@
-package com.padaks.todaktodak.cs.domain;
+package com.padaks.todaktodak.chat.cs.domain;
 
-import com.padaks.todaktodak.chatroom.domain.ChatRoom;
+import com.padaks.todaktodak.chat.chatroom.domain.ChatRoom;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,4 +25,9 @@ public class Cs {
 
     @OneToOne(mappedBy = "cs")
     private ChatRoom chatRoom;
+
+    public enum CsStatus {
+        INPROCESS, // 처리중
+        COMPLETED // 처리완료
+    }
 }

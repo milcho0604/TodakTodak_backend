@@ -2,6 +2,7 @@ package com.padaks.todaktodak.common.domain;
 
 import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
@@ -13,7 +14,7 @@ public class BaseTimeEntity {
     @CreationTimestamp
     private LocalDateTime createdTimeAt;
 
-    @CreationTimestamp
+    @UpdateTimestamp
     private LocalDateTime updatedTimeAt;
 
     private LocalDateTime deletedTimeAt;
