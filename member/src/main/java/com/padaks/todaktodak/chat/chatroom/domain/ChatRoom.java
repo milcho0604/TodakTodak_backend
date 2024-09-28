@@ -35,10 +35,4 @@ public class ChatRoom extends BaseTimeEntity {
     @OneToOne
     @JoinColumn(name = "cs_id")
     private Cs cs;
-
-    private LocalDateTime recentChatTime;
-
-    public void updateRecentTime(LocalDateTime now){
-        this.recentChatTime = now;
-    }
 }

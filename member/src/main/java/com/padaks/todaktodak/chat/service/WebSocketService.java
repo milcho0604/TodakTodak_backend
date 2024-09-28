@@ -1,4 +1,4 @@
-package com.padaks.todaktodak.chat;
+package com.padaks.todaktodak.chat.service;
 
 import com.padaks.todaktodak.chat.chatmessage.domain.ChatMessage;
 import com.padaks.todaktodak.chat.chatmessage.dto.ChatMessageReqDto;
@@ -12,8 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -29,14 +27,12 @@ public class WebSocketService {
     public void sendMessage(Long chatRoomId, ChatMessageReqDto dto){
         // chat room 찾기
         ChatRoom chatRoom = chatRoomRepository.findByIdOrThrow(dto.getChatRoomId());
+
+        // 보낸 사람 찾기
+        Member sender = memberRepository.findByIdOrThrow(dto.getSenderId());
+        ChatMessage chatMessage = ChatMessageReqDto.toEntity(chatRoom, sender, dto.getContents());
+        chatMessageRepository.save(chatMessage); // 메시지 저장
+
         messagingTemplate.convertAndSend("/sub/chatroom/" + chatRoomId, dto);
-
-//        // 보낸 사람 찾기
-//        Member sender = memberRepository.findByIdOrThrow(dto.getSenderId());
-//        ChatMessage chatMessage = ChatMessageReqDto.toEntity(chatRoom, sender, dto.getContents());
-//        chatMessageRepository.save(chatMessage); // 메시지 저장
-//
-//        chatRoom.updateRecentTime(LocalDateTime.now()); // 채팅방의 최근 채팅시간 update
-
     }
 }

@@ -1,15 +1,12 @@
-package com.padaks.todaktodak.chat;
+package com.padaks.todaktodak.chat.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.padaks.todaktodak.chat.chatmessage.domain.ChatMessage;
+import com.padaks.todaktodak.chat.service.WebSocketService;
 import com.padaks.todaktodak.chat.chatmessage.dto.ChatMessageReqDto;
-import com.padaks.todaktodak.chat.chatroom.domain.ChatRoom;
 import com.padaks.todaktodak.config.JwtTokenProvider;
-import com.padaks.todaktodak.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
