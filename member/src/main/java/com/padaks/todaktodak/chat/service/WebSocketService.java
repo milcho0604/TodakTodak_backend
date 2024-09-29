@@ -10,6 +10,7 @@ import com.padaks.todaktodak.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,8 +29,10 @@ public class WebSocketService {
         // chat room 찾기
         ChatRoom chatRoom = chatRoomRepository.findByIdOrThrow(dto.getChatRoomId());
 
+        String memberEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
         // 보낸 사람 찾기
-        Member sender = memberRepository.findByIdOrThrow(dto.getSenderId());
+        Member sender = memberRepository.findByMemberEmailOrThrow(memberEmail);
         ChatMessage chatMessage = ChatMessageReqDto.toEntity(chatRoom, sender, dto.getContents());
         chatMessageRepository.save(chatMessage); // 메시지 저장
 

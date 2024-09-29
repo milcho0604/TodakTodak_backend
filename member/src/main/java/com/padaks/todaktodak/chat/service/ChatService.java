@@ -29,7 +29,7 @@ public class ChatService {
     private static final Long ADMIN_ID = 1L; // Admin 고정 ID
 
     // 채팅방 생성
-    public Long createChatRoom(Long memberId){
+    public ChatRoom createChatRoom(Long memberId){
         Member member = memberRepository.findByIdOrThrow(memberId);
 
         // 새로운 채팅방 생성, member와 admin의 1:1 채팅방
@@ -37,8 +37,7 @@ public class ChatService {
                 .member(member)
                 .build();
 
-        chatRoomRepository.save(chatRoom);
-        return chatRoom.getId();
+        return chatRoomRepository.save(chatRoom);
     }
 
     // 채팅방 모든 메시지 조회

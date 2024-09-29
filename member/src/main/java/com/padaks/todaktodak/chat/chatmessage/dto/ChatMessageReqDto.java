@@ -16,7 +16,7 @@ public class ChatMessageReqDto {
 
     private Long chatRoomId; // 채팅방 id
 
-    private Long senderId; // 송신자 id
+//    private Long senderId; // 송신자 id
 
     private String contents; // 메시지 내용
 
