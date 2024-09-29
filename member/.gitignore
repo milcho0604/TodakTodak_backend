@@ -4,7 +4,6 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-application.yml
 #src/main/resources/application**.yml
 src/main/resources/application-local.yml
 src/main/resources/padak-todak-firebase-adminsdk-d2ths-d5d3744918.json

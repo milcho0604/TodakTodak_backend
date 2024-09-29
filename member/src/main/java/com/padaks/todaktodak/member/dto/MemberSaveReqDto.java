@@ -26,7 +26,7 @@ public class MemberSaveReqDto {
     private MultipartFile profileImage;
 
     @Builder.Default
-    private boolean isVerified = true;
+    private boolean verified = true;
 
 
     @Builder.Default

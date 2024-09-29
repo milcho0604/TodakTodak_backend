@@ -33,7 +33,7 @@ public class DoctorSaveReqDto {
     private Role role = Role.Doctor;
 
     @Builder.Default
-    private boolean isVerified = false;
+    private boolean verified = false;
 
     public Member toEntity(String password, String imageUrl) {
         return Member.builder()

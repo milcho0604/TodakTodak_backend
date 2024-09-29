@@ -5,9 +5,6 @@ import com.padaks.todaktodak.comment.dto.CommentDetailDto;
 import com.padaks.todaktodak.comment.dto.CommentSaveDto;
 import com.padaks.todaktodak.comment.dto.CommentUpdateReqDto;
 import com.padaks.todaktodak.comment.repository.CommentRepository;
-import com.padaks.todaktodak.communitynotification.controller.SseController;
-import com.padaks.todaktodak.communitynotification.domain.Notification;
-import com.padaks.todaktodak.communitynotification.repository.NotificationRepository;
 import com.padaks.todaktodak.post.domain.Post;
 import com.padaks.todaktodak.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +25,6 @@ import java.util.stream.Collectors;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
-    private final NotificationRepository notificationRepository;
-    private SseController sseController;
 
     public Comment createComment(CommentSaveDto dto){
 
