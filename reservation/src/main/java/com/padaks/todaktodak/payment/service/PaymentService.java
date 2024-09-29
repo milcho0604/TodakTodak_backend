@@ -295,7 +295,7 @@ public class PaymentService {
             String message = objectMapper.writeValueAsString(messageData);
 
             // Kafka로 메시지 전송
-            kafkaTemplate.send("payment-fail", messageData);
+            kafkaTemplate.send("payment-fail", message);
             log.error("결제 실패 메시지를 Kafka로 전송: {}", messageData);
             throw new RuntimeException("결제 처리 실패", e);
         }
@@ -358,13 +358,13 @@ public class PaymentService {
 
             String memberEmail = pay.getMemberEmail();
             BigDecimal fee = pay.getAmount();
-            String name = pay.getName();
-
+//            String name = pay.getName();
+            String impUid2 = pay.getImpUid();
             // 메시지 데이터 객체 생성
             Map<String, Object> messageData = new HashMap<>();
             messageData.put("memberEmail", memberEmail);
             messageData.put("fee", fee);
-            messageData.put("name", name);
+            messageData.put("impUid", impUid2);
 
             // 객체를 JSON 문자열로 변환
             String message = objectMapper.writeValueAsString(messageData);
@@ -445,17 +445,18 @@ public class PaymentService {
                         log.error("정기 결제 실패: {}", response.getMessage());
                         String memberEmail = pay.getMemberEmail();
 
+                        String impUid2 = pay.getImpUid();
                         // 메시지 데이터 객체 생성
                         Map<String, Object> messageData = new HashMap<>();
                         messageData.put("memberEmail", memberEmail);
                         messageData.put("fee", pay.getAmount());
-                        messageData.put("impUid", impUid);
+                        messageData.put("impUid", impUid2);
 
                         // 객체를 JSON 문자열로 변환
                         String message = objectMapper.writeValueAsString(messageData);
 
                         // Kafka로 메시지 전송
-                        kafkaTemplate.send("payment-fail", message);
+                        kafkaTemplate.send("payment-cancel-fail", message);
                         log.info("결제 성공 메시지를 Kafka로 전송: {}", message);
                         throw new RuntimeException("결제 처리 실패");
                     }
@@ -495,6 +496,9 @@ public class PaymentService {
             messageData.put("fee", fee);
             messageData.put("name", name);
 
+
+
+
             // 객체를 JSON 문자열로 변환
             String message = objectMapper.writeValueAsString(messageData);
 
@@ -507,11 +511,12 @@ public class PaymentService {
             BigDecimal fee = pay.getAmount();
             String name = pay.getName();
 
+            String impUid2 = pay.getImpUid();
             // 메시지 데이터 객체 생성
             Map<String, Object> messageData = new HashMap<>();
             messageData.put("memberEmail", memberEmail);
             messageData.put("fee", fee);
-            messageData.put("name", name);
+            messageData.put("impUid", impUid2);
 
             // 객체를 JSON 문자열로 변환
             String message = objectMapper.writeValueAsString(messageData);
