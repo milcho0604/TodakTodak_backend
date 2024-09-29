@@ -45,6 +45,15 @@ dependencies {
 	// Security
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 
+	// WebSocket
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	// Gson : 객체와 JSON 상호 변환해주는 라이브러리
+	implementation 'com.google.code.gson:gson:2.10.1'
+	// STOMP
+	implementation 'org.webjars:stomp-websocket:2.3.4'
+	// SockJS : websocket 지원하지 않는 낮은버전의 브라우저에도 websocket 사용할 수 있게 해줌
+	implementation 'org.webjars:sockjs-client:1.5.1'
+
 	// JSON Web Token (JWT)
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
