@@ -28,7 +28,7 @@ public class Comment extends BaseTimeEntity{
     @Column(name = "comment_id")
     private Long id;
     @Column(nullable = false)
-    private String doctorEmail;
+    private String doctorEmail; //post 작성자 / 의사
     @Column(nullable = false)
     private String content;
 

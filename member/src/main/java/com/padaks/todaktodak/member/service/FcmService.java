@@ -21,6 +21,7 @@ public class FcmService {
     private final NotificationRepository notificationRepository;
 
     @Transactional
+//    public void saveFcmToken(Long memberId, FcmTokenSaveRequest dto){
     public void saveFcmToken(Long memberId, FcmTokenSaveRequest dto){
         Member member = memberRepository.findByIdOrThrow(memberId);
         member.updateFcmToken(dto.getFcmToken());

@@ -84,6 +84,9 @@ dependencies {
 	//FCM 사용을 위한 의존성 추가
 	implementation 'com.google.firebase:firebase-admin:9.3.0'
 
+	//kafka
+	implementation 'org.springframework.kafka:spring-kafka'
+
 }
 
 ext {

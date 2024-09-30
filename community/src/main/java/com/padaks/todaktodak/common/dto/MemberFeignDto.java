@@ -1,4 +1,4 @@
-package com.padaks.todaktodak.report.dto;
+package com.padaks.todaktodak.common.dto;
 
 import lombok.Data;
 
