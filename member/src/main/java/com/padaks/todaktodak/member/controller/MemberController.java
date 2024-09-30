@@ -91,8 +91,8 @@ public class MemberController {
             System.out.println("Generated JWT Token: " + token);
             return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "로그인 성공", token));
         } catch (SecurityException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new CommonErrorDto(HttpStatus.UNAUTHORIZED, "이메일 인증이 필요합니다."));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new CommonErrorDto(HttpStatus.FORBIDDEN, "이메일 인증이 필요합니다."));
         } catch (RuntimeException e) {
             e.printStackTrace();
             if (e.getMessage().contains("비활성화 상태")) {
