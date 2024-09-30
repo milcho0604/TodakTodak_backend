@@ -8,9 +8,6 @@ import lombok.Getter;
 public class BaseException extends RuntimeException{
     ExceptionType exceptionType;
 
-    public BaseException(ChatExceptionType chatExceptionType) {
-    }
-
     @Override
     public String getMessage(){
         return exceptionType.message();

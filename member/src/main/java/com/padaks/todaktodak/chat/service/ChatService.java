@@ -29,8 +29,8 @@ public class ChatService {
     private static final Long ADMIN_ID = 1L; // Admin 고정 ID
 
     // 채팅방 생성
-    public ChatRoom createChatRoom(Long memberId){
-        Member member = memberRepository.findByIdOrThrow(memberId);
+    public ChatRoom createChatRoom(String memberEmail){
+        Member member = memberRepository.findByMemberEmailOrThrow(memberEmail);
 
         // 새로운 채팅방 생성, member와 admin의 1:1 채팅방
         ChatRoom chatRoom = ChatRoom.builder()

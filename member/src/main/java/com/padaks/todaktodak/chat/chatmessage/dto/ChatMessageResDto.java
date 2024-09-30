@@ -14,14 +14,14 @@ import java.time.LocalDateTime;
 @Builder
 public class ChatMessageResDto {
     private Long messageId;
-    private Long senderId;
+    private String senderName;
     private String contents;
     private String createdAt;
 
     public static ChatMessageResDto fromEntity(ChatMessage message) {
         return ChatMessageResDto.builder()
                 .messageId(message.getId())
-                .senderId(message.getSender().getId())
+                .senderName(message.getSender().getName())
                 .contents(message.getContents())
                 .createdAt(message.getCreatedAt().toString())
                 .build();

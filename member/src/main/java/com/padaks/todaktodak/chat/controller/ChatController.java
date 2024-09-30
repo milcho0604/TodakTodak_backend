@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,8 +24,9 @@ public class ChatController {
 
     // 채팅방 생성 (회원이 새로운 상담을 시작할 때)
     @PostMapping("/chatroom/create")
-    public ResponseEntity<?> createChatRoom(@RequestBody Long memberId) {
-        ChatRoom chatRoom = chatService.createChatRoom(memberId);
+    public ResponseEntity<?> createChatRoom() {
+        String memberEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        ChatRoom chatRoom = chatService.createChatRoom(memberEmail);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.CREATED, "채팅방 생성 성공", chatRoom.getId()),HttpStatus.CREATED);
     }
 

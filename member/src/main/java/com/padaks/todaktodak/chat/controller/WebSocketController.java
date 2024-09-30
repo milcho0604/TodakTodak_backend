@@ -4,11 +4,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.padaks.todaktodak.chat.service.WebSocketService;
 import com.padaks.todaktodak.chat.chatmessage.dto.ChatMessageReqDto;
 import com.padaks.todaktodak.config.JwtTokenProvider;
+import com.padaks.todaktodak.config.StompHandler;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 public class WebSocketController {
@@ -20,7 +24,9 @@ public class WebSocketController {
     @MessageMapping("/{chatRoomId}") // /pub/1
     public void sendMessage(ChatMessageReqDto chatMessageReqDto,
                             @DestinationVariable(value = "chatRoomId") Long chatRoomId) throws JsonProcessingException {
+        log.info("ChatMessageReqDto : {}", chatMessageReqDto);
         webSocketService.sendMessage(chatRoomId, chatMessageReqDto);
     }
+
 
 }

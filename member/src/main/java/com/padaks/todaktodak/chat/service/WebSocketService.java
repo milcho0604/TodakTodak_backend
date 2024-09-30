@@ -14,6 +14,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
+
 @Slf4j
 @RequiredArgsConstructor
 @Transactional
@@ -26,16 +28,18 @@ public class WebSocketService {
     private final SimpMessageSendingOperations messagingTemplate;
 
     public void sendMessage(Long chatRoomId, ChatMessageReqDto dto){
+        log.info("DTO: {}", dto);
         // chat room 찾기
         ChatRoom chatRoom = chatRoomRepository.findByIdOrThrow(dto.getChatRoomId());
-
+        log.info("ChatRoom: {}", chatRoom);
         String memberEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-
+        log.info("Member Email: {}", memberEmail);
         // 보낸 사람 찾기
         Member sender = memberRepository.findByMemberEmailOrThrow(memberEmail);
+        log.info("Sender: {}", sender);
         ChatMessage chatMessage = ChatMessageReqDto.toEntity(chatRoom, sender, dto.getContents());
         chatMessageRepository.save(chatMessage); // 메시지 저장
 
-        messagingTemplate.convertAndSend("/sub/chatroom/" + chatRoomId, dto);
+        messagingTemplate.convertAndSend("/sub/" + chatRoomId, dto);
     }
 }
