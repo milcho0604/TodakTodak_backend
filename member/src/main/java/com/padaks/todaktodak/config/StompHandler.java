@@ -1,5 +1,7 @@
 package com.padaks.todaktodak.config;
 
+import com.padaks.todaktodak.member.domain.Member;
+import com.padaks.todaktodak.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -9,53 +11,67 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@Order(Ordered.HIGHEST_PRECEDENCE + 99) // 구성된 인터셉터들 간의 작업 우선순위를 지정해서 최우선순위를 부여
+@Order(Ordered.HIGHEST_PRECEDENCE + 99)
 public class StompHandler implements ChannelInterceptor {
-    // WebSocket 연결 시 요청 header의 jwt token 유효성을 검증하는 코드
-    // 유효하지 않은 jwt토큰이 세팅될 경우 websocket 연결을 하지 않고 예외처리 된다.
-    private final JwtTokenProvider jwtTokenProvider;
 
-    /**
-     * 메시지가 실제로 채널로 전송되기 전에 호출된다.
-     * publisher가 send하기 전에 실행
-     */
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UserDetailsService userDetailsService;
+    private final MemberRepository memberRepository;
+
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        // StompHeaderAccessor는 STOMP 프로토콜 상의 메시지 헤더를 편리하게 다루기 위한 도구.
-        // StompHeaderAccessor.wrap()으로 메시지를 감싸면 STOMP의 헤더에 직접 접근할 수 있다.
-        // 클라이언트에서 첫 연결 시 헤더에 TOKEN을 담아주면 인증 절차가 진행된다.
         final StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
         log.info("preSend 진입");
-        // 웹소켓 연결 시 헤더의 jwt token 유효성 검증
-        String bearerToken = null;
-        if (StompCommand.CONNECT == accessor.getCommand()) {
-            // "Authorization"이라는 이름의 헤더를 찾아 그 헤더의 첫 번째 값을 반환.
-            // Authorization 헤더의 형식 => `Authorization: <type> <credentials>`
-            // type: 사용하는 인증 방식.(e.g., Bearer)
-            // credentials: 인증 방식에 따른 인증 정보(토큰)를 의미한다. 발급받은 JWT 토큰
-            bearerToken = accessor.getFirstNativeHeader("Authorization");
-            // 토큰 검증
-            jwtTokenProvider.validateWebSocketToken(bearerToken);
 
-            // 저장
-            String sessionId = accessor.getSessionId();
-            String memberEmail = jwtTokenProvider.getEmailFromToken(bearerToken);
+        if (StompCommand.CONNECT.equals(accessor.getCommand())) {
+            String bearerToken = accessor.getFirstNativeHeader("token");
 
+            if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+                bearerToken = bearerToken.substring(7); // "Bearer " 제거
+                if (jwtTokenProvider.validateToken(bearerToken)) {
+                    String email = jwtTokenProvider.getEmailFromToken(bearerToken);
+
+                    // UserDetails 로드
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                    if (userDetails != null) {
+                        // Member 검증
+                        Member member = memberRepository.findByMemberEmail(email).orElse(null);
+                        if (member != null && member.getDeletedAt() == null) {
+                            // SecurityContext에 인증 정보 설정
+                            UsernamePasswordAuthenticationToken authentication =
+                                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                            log.info("WebSocket 연결 성공 - Email: {}", email);
+                        } else {
+                            log.error("회원 정보가 유효하지 않거나 삭제된 계정입니다.");
+                        }
+                    } else {
+                        log.error("사용자 정보를 로드할 수 없습니다.");
+                    }
+                } else {
+                    log.error("유효하지 않은 JWT 토큰입니다.");
+                }
+            } else {
+                log.error("JWT 토큰이 없습니다.");
+            }
         }
 
-        if (StompCommand.DISCONNECT == accessor.getCommand()) {
+        if (StompCommand.DISCONNECT.equals(accessor.getCommand())) {
             log.info("WebSocket DISCONNECT");
-            String sessionId = accessor.getSessionId();
-
+            SecurityContextHolder.clearContext();
         }
 
         return message;
     }
-
 }

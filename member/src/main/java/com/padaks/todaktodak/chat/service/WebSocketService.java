@@ -32,8 +32,11 @@ public class WebSocketService {
         // chat room 찾기
         ChatRoom chatRoom = chatRoomRepository.findByIdOrThrow(dto.getChatRoomId());
         log.info("ChatRoom: {}", chatRoom);
+
+        System.out.println();
         String memberEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        log.info("Member Email: {}", memberEmail);
+        System.out.println("멤버 이메일은" + memberEmail);
+        log.info("시큐리티 Member Email: {}", memberEmail);
         // 보낸 사람 찾기
         Member sender = memberRepository.findByMemberEmailOrThrow(memberEmail);
         log.info("Sender: {}", sender);
