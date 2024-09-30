@@ -23,8 +23,8 @@ public class ReservationController {
 
     @PostMapping("/scheduled")
     public ResponseEntity<?> treatScheduledReservation(@RequestBody ReservationSaveReqDto dto){
-        Reservation reservation = reservationService.scheduleReservation(dto);
-        return new ResponseEntity<>(reservation, HttpStatus.OK);
+        reservationService.scheduleReservation(dto);
+        return new ResponseEntity<>("스케쥴 예약 완료", HttpStatus.OK);
     }
 
     @PostMapping("/immediate")
