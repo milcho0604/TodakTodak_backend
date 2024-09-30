@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -14,14 +15,23 @@ public class RealTimeService {
     private final FirebaseDatabase database= FirebaseDatabase.getInstance();
     private final DatabaseReference databaseReference= database.getReference("data");
 
-    public void create(String userId, String newData) {
+    public void updateWaitingLine(List<WaitingTurnDto> turnList) {
+        for (WaitingTurnDto waitingTurnDto : turnList) {
+            update(waitingTurnDto.reservationId, waitingTurnDto.getTurnNumber());
+        }
+    }
+    public void addWaitingLine(WaitingTurnDto turnDto) {
+        update(turnDto.reservationId, turnDto.getTurnNumber());
+    }
+
+    public void reset(String Id, String newData) {
         log.info("create");
         // Firebase Database 인스턴스를 가져옴
         // "medi"라는 경로에 대한 참조 생성
 
         // Medi 객체 생성
         Map<String, Object> create = new HashMap<>();
-        create.put("id", userId);
+        create.put("id", Id);
         create.put("data", newData);
 
         // Firebase Realtime Database에 데이터 저장 (CompletionListener 사용)

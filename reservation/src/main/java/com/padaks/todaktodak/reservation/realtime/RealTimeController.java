@@ -2,10 +2,9 @@ package com.padaks.todaktodak.reservation.realtime;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,5 +22,10 @@ public class RealTimeController {
     public void read(String id){
         log.info("read");
         realTimeService.readDataOnce(id);
+    }
+    // 테스트를 위한 api
+    @PostMapping("/updateTurn")
+    public void updateTurn(@RequestBody List<WaitingTurnDto> dto){
+        realTimeService.updateWaitingLine(dto);
     }
 }
