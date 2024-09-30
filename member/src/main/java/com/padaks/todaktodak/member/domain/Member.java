@@ -62,7 +62,8 @@ public class Member extends BaseTimeEntity {
 
     private String fcmToken;
 
-    private boolean verified;
+    @Builder.Default
+    private boolean isVerified = false;
 
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
@@ -113,7 +114,7 @@ public class Member extends BaseTimeEntity {
     }
 
     public void updateVerified(){
-        this.verified = true;
+        this.isVerified = true;
     }
 
     // 이름 변경

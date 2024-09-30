@@ -49,7 +49,6 @@ public class OAuthAttributes {
         kakaoAccount.get(profile.get("nickname"));
 
         return OAuthAttributes.builder()
-                .name((String) profile.get("nickname"))
                 .memberEmail((String) kakaoAccount.get("email"))
                 .pictureURL((String) profile.get("profile_image_url"))
                 .attributes(attributes)

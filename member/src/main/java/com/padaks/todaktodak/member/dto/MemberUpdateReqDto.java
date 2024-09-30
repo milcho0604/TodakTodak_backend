@@ -17,4 +17,15 @@ public class MemberUpdateReqDto {
     private String phoneNumber;
     private Address address;
     private MultipartFile profileImage; // 프로필 이미지 추가
+    private String profileImgUrl; // 기존 프로필 이미지 URL
+
+    public static MemberUpdateReqDto fromEntity(Member member) {
+        return MemberUpdateReqDto.builder()
+                .name(member.getName())
+                .memberEmail(member.getMemberEmail())
+                .phoneNumber(member.getPhoneNumber())
+                .address(member.getAddress())
+                .profileImgUrl(member.getProfileImgUrl())
+                .build();
+    }
 }

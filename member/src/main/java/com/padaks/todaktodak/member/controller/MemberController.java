@@ -30,25 +30,11 @@ public class MemberController {
     private final MemberService memberService;
     private final MemberAuthService memberAuthService;
 
-
     @GetMapping("/get/member")
     public MemberPayDto getMember() {
-        // 현재 인증된 사용자 정보 가져오기
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        if (authentication != null && authentication.isAuthenticated()) {
-//            String memberEmail = authentication.getName(); // 인증된 사용자의 이메일 가져오기
-//            System.out.println("여기는 이메일을 찾는: " + memberEmail);
-//            Member member = memberService.findByMemberEmail(memberEmail);
-//            // 이메일로 MemberPayDto 생성 후 반환
-//            return new MemberPayDto(memberEmail, member.getName(), member.getPhoneNumber()); // 예시 데이터
-//        }
-//        String memberEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-//        if (memberEmail.equals("anonymousUser")){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Member member = memberService.findByMemberEmail(email);
         return new MemberPayDto(member.getMemberEmail(), member.getName(), member.getPhoneNumber(), member.getRole(), member.getHospitalId());
-//        }
-//        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "잘못된 요청입니다.");
     }
 
     @GetMapping("/get/{email}")
@@ -60,7 +46,7 @@ public class MemberController {
     // 회원가입
     @PostMapping("/create")
     public ResponseEntity<?> register(MemberSaveReqDto saveReqDto,
-            @RequestPart(value = "image", required = false) MultipartFile imageSsr) {
+                                      @RequestPart(value = "image", required = false) MultipartFile imageSsr) {
         try {
             memberService.create(saveReqDto, imageSsr);
             return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "회원가입 성공", null));
@@ -71,42 +57,28 @@ public class MemberController {
         }
     }
 
-//    @PostMapping("/createDoctor")
-//    public ResponseEntity<?> doctorRegister(@RequestPart DoctorSaveReqDto dto, @RequestPart(value = "profileImage", required = false) MultipartFile imageSsr){
-//        try {
-//            memberService.createDoctor(dto, imageSsr);
-//            CommonResDto commonResDto = new CommonResDto(HttpStatus.OK,"의사등록 성공", null);
-//            return new ResponseEntity<>(commonResDto, HttpStatus.OK);
-//        }catch (IllegalArgumentException e){
-//            e.printStackTrace();
-//            CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.BAD_REQUEST, e.getMessage());
-//            return new ResponseEntity<>(commonErrorDto, HttpStatus.BAD_REQUEST);
-//        }
-//    }
-
     @PostMapping("/doctor/register")
-    public ResponseEntity<?> registerDoctor(@ModelAttribute DoctorSaveReqDto doctorSaveReqDto){
+    public ResponseEntity<?> registerDoctor(@ModelAttribute DoctorSaveReqDto doctorSaveReqDto) {
         Member member = memberService.createDoctor(doctorSaveReqDto);
-        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "의사등록성공", member.getId()),HttpStatus.OK);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "의사등록성공", member.getId()), HttpStatus.OK);
     }
 
     @PostMapping("/hospital-admin/register")
-    public ResponseEntity<?> registerHospitalAdmin(@RequestBody HospitalAdminSaveReqDto dto){
+    public ResponseEntity<?> registerHospitalAdmin(@RequestBody HospitalAdminSaveReqDto dto) {
         Member unAcceptHospitalAdmin = memberService.registerHospitalAdmin(dto);
-        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원 admin 등록성공(미승인)", unAcceptHospitalAdmin.getId()),HttpStatus.OK);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원 admin 등록성공(미승인)", unAcceptHospitalAdmin.getId()), HttpStatus.OK);
     }
 
-
     @PutMapping("/hospital-admin/accept")
-    public ResponseEntity<?> acceptHospitalAdmin(@RequestBody String email){
+    public ResponseEntity<?> acceptHospitalAdmin(@RequestBody String email) {
         memberService.acceptHospitalAdmin(email);
-        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원 admin 회원가입 승인완료", null),HttpStatus.OK);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원 admin 회원가입 승인완료", null), HttpStatus.OK);
     }
 
     @PostMapping("/doctor-admin/register")
-    public ResponseEntity<?> doctorAdmin(@RequestBody DoctorAdminSaveReqDto dto){
+    public ResponseEntity<?> doctorAdmin(@RequestBody DoctorAdminSaveReqDto dto) {
         Member doctorAdminCreate = memberService.doctorAdminCreate(dto);
-        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "해당 병원의 의사 등록 성공", doctorAdminCreate.getId()),HttpStatus.OK);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "해당 병원의 의사 등록 성공", doctorAdminCreate.getId()), HttpStatus.OK);
     }
 
     // 로그인
@@ -116,6 +88,9 @@ public class MemberController {
             String token = memberService.login(loginDto);
             System.out.println("Generated JWT Token: " + token);
             return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "로그인 성공", token));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new CommonErrorDto(HttpStatus.FORBIDDEN, "이메일 인증이 필요합니다."));
         } catch (RuntimeException e) {
             e.printStackTrace();
             if (e.getMessage().contains("비활성화 상태")) {
@@ -150,7 +125,6 @@ public class MemberController {
         try {
             EmailVerificationDto emailVerificationDto = memberAuthService.checkSignUpVerificationEmail(
                     requestDto.getVerificationToken(), requestDto.getVerificationNumber());
-
             // 인증 성공 응답
             return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "이메일 인증이 성공적으로 완료되었습니다.", emailVerificationDto));
         } catch (IllegalArgumentException e) {
@@ -163,6 +137,19 @@ public class MemberController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new CommonErrorDto(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 인증 처리 중 오류가 발생했습니다."));
+        }
+    }
+
+    @GetMapping("/edit-info")
+    public ResponseEntity<?> getEditUserInfo(@AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            Member member = memberService.findByMemberEmail(userDetails.getUsername());
+            MemberUpdateReqDto memberUpdateReqDto = MemberUpdateReqDto.fromEntity(member);
+            return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "회원 정보 수정 조회 성공", memberUpdateReqDto));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new CommonResDto(HttpStatus.UNAUTHORIZED, "Invalid token", null));
         }
     }
 
@@ -184,20 +171,21 @@ public class MemberController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new CommonResDto(HttpStatus.BAD_REQUEST, "회원 정보 수정에 실패했습니다. -> " + e.getMessage(), null));
+                    .body(new CommonResDto(HttpStatus.BAD_REQUEST, "회원 정보 수정에 실패했습니다:" +
+                            " " + e.getMessage(), null));
         }
     }
 
     // 의사 정보 수정
     @PostMapping("/edit-doctor")
-    public ResponseEntity<?> editDoctorInfo(@ModelAttribute DoctorUpdateReqdto dto){
+    public ResponseEntity<?> editDoctorInfo(@ModelAttribute DoctorUpdateReqdto dto) {
         try {
             String email = SecurityContextHolder.getContext().getAuthentication().getName();
             Member doctor = memberService.findByMemberEmail(email);
             memberService.updateDoctor(doctor, dto);
             CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "의사 정보를 수정하였습니다.", doctor);
             return new ResponseEntity<>(commonResDto, HttpStatus.OK);
-        }catch (EntityNotFoundException e){
+        } catch (EntityNotFoundException e) {
             e.printStackTrace();
             CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.NOT_FOUND, "의사 정보가 존재하지 않습니다. -> " + e.getMessage());
             return new ResponseEntity<>(commonErrorDto, HttpStatus.NOT_FOUND);
@@ -215,13 +203,12 @@ public class MemberController {
             }
             memberService.deleteAccount(userDetails.getUsername());
             return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "회원 탈퇴에 성공하였습니다.", userDetails.getUsername()));
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new CommonResDto(HttpStatus.BAD_REQUEST, "회원 탈퇴에 실패하였습니다", null));
         }
     }
-
 
     // java 라이브러리 메일 서비스 : 인증 코드 전송
     @PostMapping("/send-verification-code")
@@ -229,6 +216,7 @@ public class MemberController {
         memberService.sendVerificationEmail(verificationDto.getMemberEmail());
         return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "인증 코드 전송에 성공하였습니다.", null));
     }
+
     // java 라이브러리 메일 서비스 : 인증 코드 확인
     @PostMapping("/verify-email")
     public ResponseEntity<?> verifyEmail(@RequestBody JavaEmailVerificationDto verificationDto) {
@@ -250,30 +238,53 @@ public class MemberController {
     // member list
 //    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/list")
-    public ResponseEntity<Object> userList(Pageable pageable){
+    public ResponseEntity<Object> userList(Pageable pageable) {
         Page<MemberListResDto> memberListResDtos = memberService.memberList(pageable);
-        CommonResDto dto = new CommonResDto(HttpStatus.OK,"회원목록을 조회합니다.", memberListResDtos);
+        CommonResDto dto = new CommonResDto(HttpStatus.OK, "회원목록을 조회합니다.", memberListResDtos);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
     @GetMapping("/doctorList")
-    public ResponseEntity<Object> doctorList(Pageable pageable){
-            Page<DoctorListResDto> dtos = memberService.doctorList(pageable);
-            CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "의사목록을 조회합니다.",dtos);
-            return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+    public ResponseEntity<Object> doctorList(Pageable pageable) {
+        Page<DoctorListResDto> dtos = memberService.doctorList(pageable);
+        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "의사목록을 조회합니다.", dtos);
+        return new ResponseEntity<>(commonResDto, HttpStatus.OK);
     }
 
     @GetMapping("/detail/{email}")
-    public Object memberDetail(@PathVariable String email){
+    public Object memberDetail(@PathVariable String email) {
         return memberService.memberDetail(email);
     }
+
     @GetMapping("/get/hospital")
-    private ResponseEntity<?> getMemberTest(){
+    private ResponseEntity<?> getMemberTest() {
         try {
             HospitalFeignDto hospitalFeignDto = memberService.getHospital();
             return ResponseEntity.ok(hospitalFeignDto);
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
+
+    // email 찾기
+    @PostMapping("/find/email")
+    public ResponseEntity<?> findEmail(@RequestBody MemberFindIdDto findIdDto) {
+        try {
+            String maskedEmail = memberService.findId(findIdDto);
+            if (maskedEmail == null) {
+                throw new EntityNotFoundException("해당 이름과 전화번호로 등록된 사용자가 없습니다.");
+            }
+            CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "아이디 찾기가 완료되었습니다.", maskedEmail);
+            return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            // 존재하지 않는 사용자에 대한 명확한 예외 처리
+            CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다.");
+            return new ResponseEntity<>(commonErrorDto, HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            e.printStackTrace();
+            CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.BAD_REQUEST, "이메일 찾기에 실패했습니다.");
+            return new ResponseEntity<>(commonErrorDto, HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }

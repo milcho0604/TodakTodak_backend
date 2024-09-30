@@ -80,18 +80,6 @@ public class MemberService {
 
     }
 
-//    public void createDoctor(DoctorSaveReqDto dto, MultipartFile imageSsr){
-//        validateRegistration(dto);
-//        String imageUrl = null;
-//
-//        if (imageSsr.isEmpty()){
-//            imageUrl = s3ClientFileUpload.upload(imageSsr);
-////            dto.setProfileImgUrl(imageUrl);
-//        }
-//        Member doctor = dto.toEntity(passwordEncoder.encode(dto.getPassword()), imageUrl);
-//        memberRepository.save(doctor);
-//    }
-
     public Member createDoctor(DoctorSaveReqDto dto){
         validateRegistration(dto);
         MultipartFile image = dto.getProfileImage();
@@ -233,7 +221,7 @@ public class MemberService {
 
     }
 
-    public void updateMember(Member member, MemberUpdateReqDto editReqDto) {
+    public void updateMember(Member member, MemberUpdateReqDto editReqDto) throws Exception {
         boolean isUpdated = false; // 업데이트 여부를 체크할 변수
 
         System.out.println("editReq는?");
@@ -254,9 +242,15 @@ public class MemberService {
 
         // 이름, 전화번호, 주소 업데이트
         if (editReqDto.getName() != null) {
-            member.changeName(editReqDto.getName());
-            System.out.println("이름이 변경되었습니다: " + member.getName());
-            isUpdated = true;
+            if (editReqDto.getName().equals("이름을 변경해주세요")){
+                throw new Exception("이름을 변경해주세요");
+            }else {
+                member.changeName(editReqDto.getName());
+                System.out.println("이름이 변경되었습니다: " + member.getName());
+                isUpdated = true;
+                member.updateVerified();
+            }
+
         }
         if (editReqDto.getPhoneNumber() != null) {
             System.out.println("real");
@@ -372,9 +366,26 @@ public class MemberService {
         return memberRepository.save(doctor);
     }
 
-
+    // 병원 정보 가져오는 feign
     public HospitalFeignDto getHospital(){
         HospitalFeignDto hospitalFeignDto = hospitalFeignClient.getHospitalInfo();
         return hospitalFeignDto;
     }
+
+    // email 찾기
+    public String findId(MemberFindIdDto findIdDto) {
+        Member member = memberRepository.findByNameAndPhoneNumber(findIdDto.getName(), findIdDto.getPhoneNumber())
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
+        System.out.println(findIdDto.getName());
+        System.out.println(findIdDto.getPhoneNumber());
+        System.out.println(member);
+        System.out.println(member.getMemberEmail());
+        return maskEmail(member.getMemberEmail());
+    }
+
+    // email 마스킹 처리 메서드
+    private String maskEmail(String email) {
+        return email.substring(0, 4) + "******" + email.substring(email.indexOf("@"));
+    }
+
 }
