@@ -6,7 +6,7 @@ import com.padaks.todaktodak.common.feign.MemberFeignClient;
 import com.padaks.todaktodak.post.domain.Post;
 import com.padaks.todaktodak.post.repository.PostRepository;
 import com.padaks.todaktodak.report.domain.Report;
-import com.padaks.todaktodak.report.dto.MemberFeignDto;
+import com.padaks.todaktodak.common.dto.MemberFeignDto;
 import com.padaks.todaktodak.report.dto.ReportListResDto;
 import com.padaks.todaktodak.report.dto.ReportSaveReqDto;
 import com.padaks.todaktodak.report.repository.ReportRepository;

@@ -26,7 +26,7 @@ public class MemberSaveReqDto {
     private MultipartFile profileImage;
 
     @Builder.Default
-    private boolean isVerified = true;
+    private boolean verified = true;
 
 
     @Builder.Default
@@ -39,7 +39,7 @@ public class MemberSaveReqDto {
                 .memberEmail(this.memberEmail)
                 .profileImgUrl(this.profileImgUrl)
                 .phoneNumber(this.phoneNumber)
-                .isVerified(this.isVerified)
+                .verified(this.verified)
                 .ssn(this.ssn)
                 .address(this.address)
                 .role(this.role)

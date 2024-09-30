@@ -4,7 +4,6 @@ import com.padaks.todaktodak.comment.dto.CommentDetailDto;
 import com.padaks.todaktodak.comment.dto.CommentUpdateReqDto;
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
 
-import com.padaks.todaktodak.communitynotification.domain.Notification;
 import com.padaks.todaktodak.post.domain.Post;
 import com.padaks.todaktodak.post.dto.PostDetailDto;
 import com.padaks.todaktodak.report.domain.Report;
@@ -29,7 +28,7 @@ public class Comment extends BaseTimeEntity{
     @Column(name = "comment_id")
     private Long id;
     @Column(nullable = false)
-    private String doctorEmail;
+    private String doctorEmail; //post 작성자 / 의사
     @Column(nullable = false)
     private String content;
 
@@ -41,10 +40,6 @@ public class Comment extends BaseTimeEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private Comment parent;
-
-    @OneToMany(mappedBy = "comment")
-    @Builder.Default
-    private List<Notification> communityNotificationList = new ArrayList<>();
 
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
     @Builder.Default

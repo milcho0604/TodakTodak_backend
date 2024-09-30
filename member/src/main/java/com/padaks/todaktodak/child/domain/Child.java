@@ -26,6 +26,7 @@ public class Child extends BaseTimeEntity {
     private String name;
     @Column(nullable = false, unique = true)
     private String ssn;
+    private String profileImgUrl;
 
     @OneToMany(mappedBy = "child", cascade = CascadeType.ALL)
     private List<ChildParentsRelationship> childParentsRelationshipList;

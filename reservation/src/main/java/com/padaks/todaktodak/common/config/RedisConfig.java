@@ -52,4 +52,24 @@ public class RedisConfig {
         redisTemplate.setConnectionFactory(redisConnectionFactory);
         return redisTemplate;
     }
+
+    @Bean
+    @Qualifier("2")
+    public RedisConnectionFactory redisScheduledConnectionFactory(){
+        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
+        configuration.setHostName(host);
+        configuration.setPort(port);
+        configuration.setDatabase(4);
+        return new LettuceConnectionFactory(configuration);
+    }
+
+    @Bean
+    @Qualifier("2")
+    public RedisTemplate<String, Object> redisScheduledTemplate(@Qualifier("2") RedisConnectionFactory redisConnectionFactory){
+        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper()));
+        redisTemplate.setConnectionFactory(redisConnectionFactory);
+        return redisTemplate;
+    }
 }

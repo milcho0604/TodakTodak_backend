@@ -1,8 +1,12 @@
 package com.padaks.todaktodak.reservation.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.padaks.todaktodak.chatroom.service.UntactChatRoomService;
 import com.padaks.todaktodak.common.dto.DtoMapper;
 import com.padaks.todaktodak.common.exception.BaseException;
+import com.padaks.todaktodak.hospital.domain.Hospital;
 import com.padaks.todaktodak.hospital.repository.HospitalRepository;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.dto.*;
@@ -12,6 +16,7 @@ import com.padaks.todaktodak.reservation.repository.ReservationHistoryRepository
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -19,6 +24,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -34,6 +41,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationHistoryRepository reservationHistoryRepository;
     private final DtoMapper dtoMapper;
+    @Qualifier("1")
     private final RedisTemplate<String, Object> redisTemplate;
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final HospitalRepository hospitalRepository;
@@ -42,32 +50,48 @@ public class ReservationService {
     private final MemberFeign memberFeign;
     private final UntactChatRoomService untactChatRoomService;
 
-//    진료 미리 예약 기능
-    public Reservation scheduleReservation(ReservationSaveReqDto dto){
-        log.info("ReservationService[scheduleReservation] : 시작");
+//    진료 스케줄 예약 기능
+    public void scheduleReservation(ReservationSaveReqDto dto){
+        log.info("ReservationService[scheduleReservation] : 스케줄 예약 요청 처리 시작");
+        List<LocalTime> timeSlots = ReservationTimeSlot.timeSlots();
 
-        hospitalRepository.findById(dto.getHospitalId())
+        Hospital hospital = hospitalRepository.findById(dto.getHospitalId())
                         .orElseThrow(() -> new BaseException(HOSPITAL_NOT_FOUND));
 
-//        진료 예약 시 해당 의사 선생님의 예약이 존재할 경우 Exception을 발생 시키기 위한 코드
-        reservationRepository.findByDoctorEmailAndReservationDateAndReservationTime
-                (dto.getDoctorEmail(), dto.getReservationDate(), dto.getReservationTime())
-                .ifPresent(reservation -> {
-                    throw new BaseException(RESERVATION_DUPLICATE);
-                });
-        Reservation reservation = dtoMapper.toReservation(dto);
-        Reservation savedReservation = reservationRepository.save(reservation);
-        sendReservationNotification(savedReservation);
-        return savedReservation;
+        LocalTime selectedTime = dto.getReservationTime();
+
+        if(timeSlots.contains(selectedTime)){
+            int partition = timeSlots.indexOf(selectedTime);
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModules(new JavaTimeModule());
+            objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+            String message;
+            try {
+                message = objectMapper.writeValueAsString(dto);
+                reservationRepository.findByDoctorEmailAndReservationDateAndReservationTime
+                                (dto.getDoctorEmail(), dto.getReservationDate(), dto.getReservationTime())
+                        .ifPresent(reservation -> {
+                            throw new BaseException(RESERVATION_DUPLICATE);
+                        });
+                kafkaTemplate.send("reservationSchedule", partition, dto.getDoctorEmail() ,message);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
 //    당일 예약 기능
     public void immediateReservation(ReservationSaveReqDto dto){
         log.info("ReservationService[immediateReservation] : 예약 요청 처리 시작");
-        hospitalRepository.findById(dto.getHospitalId())
+        Hospital hospital = hospitalRepository.findById(dto.getHospitalId())
                 .orElseThrow(() -> new BaseException(HOSPITAL_NOT_FOUND));
+
+        MemberResDto memberResDto = memberFeign.getMember(dto.getMemberEmail());
+        DoctorResDto doctorResDto = memberFeign.getDoctor(dto.getDoctorEmail());
+
+        int partition = hospital.getId().intValue();
         String doctorKey = dto.getDoctorEmail();
-        kafkaTemplate.send("reservationImmediate", doctorKey , dto)
+        kafkaTemplate.send("reservationImmediate",partition,doctorKey , dto)
                 .addCallback(
                         success -> log.info("Sent message to partition: {}",
                                 Objects.requireNonNull(success).getRecordMetadata().partition()),
@@ -92,7 +116,7 @@ public class ReservationService {
         reservationHistoryRepository.save(reservationHistory);
 
         //        Redis의 예약 찾기
-        String key = RESERVATION_LIST_KEY+2;
+        String key = reservationHistory.getHospitalId() + ":" + reservationHistory.getDoctorEmail();
         RedisDto redisDto = dtoMapper.toRedisDto(reservation);
 //        list 에서 해당 예약을 삭제
         redisTemplate.opsForZSet().remove(key, redisDto);
@@ -124,30 +148,12 @@ public class ReservationService {
         return dto;
     }
 
-//    예약 접수 기능 (병원 admin의 예약 상태 변경)
-    public Reservation receipt(UpdateStatusReservation updateStatusReservation) {
-        Reservation reservation = reservationRepository.findById(updateStatusReservation.getId())
+//    대기열 순위 보기
+    public Long rankReservationQueue(Long id){
+        Reservation reservation = reservationRepository.findByIdAndStatus(id, Status.Confirmed)
                 .orElseThrow(() -> new BaseException(RESERVATION_NOT_FOUND));
-//       예약의 상태를 completed로 변경한다
-        reservation.updateStatus(updateStatusReservation.getStatus());
-        return reservation;
-    }
-
-    public void sendReservationNotification(Reservation reservation) {
-        MemberResDto member = memberFeign.getMemberByEmail(reservation.getMemberEmail());
-        String content = String.format("환자 %s님이 %s에 %s의 예약을 했습니다.",
-                member.getName(),
-                reservation.getReservationDate().toString(),
-                reservation.getReservationTime().toString()
-        );
-//        알림 받는 사람 병원 admin Email로 변경해야함
-        NotificationReqDto notificationReqDto = NotificationReqDto.builder()
-                .memberEmail(reservation.getDoctorEmail())
-                .type("RESERVATION_NOTIFICATION")
-                .content(content)
-                .refId(reservation.getId())
-                .build();
-
-        memberFeign.sendReservationNotification(notificationReqDto);
+        RedisDto redisDto = dtoMapper.toRedisDto(reservation);
+        String key = reservation.getHospital().getId() + ":" + reservation.getDoctorEmail();
+        return redisTemplate.opsForZSet().rank(key, redisDto);
     }
 }

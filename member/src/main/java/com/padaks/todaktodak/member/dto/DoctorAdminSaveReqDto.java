@@ -23,7 +23,7 @@ public class DoctorAdminSaveReqDto {
     private Role role = Role.Doctor;
 
     @Builder.Default
-    private boolean isVerified = false;
+    private boolean verified = false;
 
     public Member toEntity(String password, Long hospitalId) {
         return Member.builder()
