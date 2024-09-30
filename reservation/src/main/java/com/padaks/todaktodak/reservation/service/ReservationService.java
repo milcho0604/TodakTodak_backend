@@ -52,7 +52,6 @@ public class ReservationService {
 //    진료 스케줄 예약 기능
     public void scheduleReservation(ReservationSaveReqDto dto){
         log.info("ReservationService[scheduleReservation] : 스케줄 예약 요청 처리 시작");
-
         List<LocalTime> timeSlots = ReservationTimeSlot.timeSlots();
 
         hospitalRepository.findById(dto.getHospitalId())
@@ -68,15 +67,15 @@ public class ReservationService {
             String message;
             try {
                 message = objectMapper.writeValueAsString(dto);
+                reservationRepository.findByDoctorEmailAndReservationDateAndReservationTime
+                                (dto.getDoctorEmail(), dto.getReservationDate(), dto.getReservationTime())
+                        .ifPresent(reservation -> {
+                            throw new BaseException(RESERVATION_DUPLICATE);
+                        });
+                kafkaTemplate.send("reservationSchedule", partition, dto.getDoctorEmail() ,message);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            reservationRepository.findByDoctorEmailAndReservationDateAndReservationTime
-                            (dto.getDoctorEmail(), dto.getReservationDate(), dto.getReservationTime())
-                    .ifPresent(reservation -> {
-                        throw new BaseException(RESERVATION_DUPLICATE);
-                    });
-            kafkaTemplate.send("reservationSchedule", partition, dto.getDoctorEmail() ,message);
         }
     }
 

@@ -103,7 +103,6 @@ public class ReservationKafkaConsumer {
                                      @Header(KafkaHeaders.RECEIVED_PARTITION_ID) String partition,
                                      Acknowledgment acknowledgment) {
         log.info("ReservationConsumer[consumerReservation] : Kafka 메시지 수신");
-
         if (message.startsWith("\"") && message.endsWith("\"")) {
             message = message.substring(1, message.length() -1).replace("\"", "\"");
             message = message.replace("\\", "");
@@ -138,17 +137,21 @@ public class ReservationKafkaConsumer {
                     Reservation savedReservation = reservationRepository.save(reservation);
                     sendReservationNotification(savedReservation);
                 }finally {
-                    acknowledgment.acknowledge();
                     redisScheduleTemplate.delete(lockKey);
                     log.info("ReservationConsumer[consumerReservation] : 락 해제 완료");
                 }
             }else{
-                acknowledgment.acknowledge();
-//                락을 얻지 못했을 경우
+                log.info("ReservationConsumer[consumerReservation] : 락을 얻지 못함, 예약 처리 실패");
                 throw new BaseException(LOCK_OCCUPANCY);
             }
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Kafka 메시지 처리중 오류 발생 : " + e.getMessage());
+            log.error("Kafka 메시지 처리중 JSON 처리 오류 발생: {}", e.getMessage());
+        } catch (BaseException e){
+            log.error("Kafka 메시지 처리중 JSON 처리 오류 발생: {}", e.getMessage());
+        }
+        finally {
+            // 예외 여부에 상관없이 메시지는 acknowledge 처리
+            acknowledgment.acknowledge();
         }
     }
 
