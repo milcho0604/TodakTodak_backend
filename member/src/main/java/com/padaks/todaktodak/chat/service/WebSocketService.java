@@ -33,7 +33,7 @@ public class WebSocketService {
         ChatRoom chatRoom = chatRoomRepository.findByIdOrThrow(dto.getChatRoomId());
         log.info("ChatRoom: {}", chatRoom);
 
-        System.out.println();
+        System.out.println("여기까지");
         String memberEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         System.out.println("멤버 이메일은" + memberEmail);
         log.info("시큐리티 Member Email: {}", memberEmail);
