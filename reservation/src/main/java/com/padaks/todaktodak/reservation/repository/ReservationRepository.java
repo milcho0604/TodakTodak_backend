@@ -24,4 +24,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             (String doctorEmail, LocalDate reservationDate, LocalTime reservationTime);
 
     Optional<Reservation> findById(Long id);
+
+    Optional<Reservation> findByIdAndStatus(Long id, Status status);
 }

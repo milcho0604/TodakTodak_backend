@@ -5,10 +5,12 @@ import com.padaks.todaktodak.medicalchart.domain.MedicalChart;
 import com.padaks.todaktodak.medicalchart.dto.MedicalChartResDto;
 import com.padaks.todaktodak.medicalchart.dto.MedicalChartSaveReqDto;
 import com.padaks.todaktodak.medicalchart.repository.MedicalChartRepository;
+import com.padaks.todaktodak.payment.service.PaymentService;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,15 +24,21 @@ import static com.padaks.todaktodak.common.exception.exceptionType.ReservationEx
 public class MedicalChartService {
     private final MedicalChartRepository medicalChartRepository;
     private final ReservationRepository reservationRepository;
+    private final PaymentService paymentService;
+
     public MedicalChartResDto medicalChartCreate(MedicalChartSaveReqDto dto) {
         Reservation reservation = reservationRepository.findById(dto.getReservationId())
                 .orElseThrow(() -> new BaseException(RESERVATION_NOT_FOUND));
 //        의사 이메일을 통해 의사를 찾아온 뒤, 비대면 진료비를 요청
-        String doctorEmail =  reservation.getDoctorEmail();
-        // feign 요청 로직
-        int fee = 1000;
+        int fee;
+        if(reservation.getHospital()==null ||reservation.getHospital().getUntactFee()==null) {
+            throw new IllegalArgumentException("예약에 병원 값이 없거나 병원에 fee정보가 존재하지 않습니다.");
+        } else fee = Math.toIntExact(reservation.getHospital().getUntactFee());
         MedicalChart medicalChart = dto.toEntity(reservation, fee);
         MedicalChart saved = medicalChartRepository.save(medicalChart);
+
+        paymentService.getMediChartId(saved.getId());
+
         return new MedicalChartResDto().fromEntity(saved);
     }
 

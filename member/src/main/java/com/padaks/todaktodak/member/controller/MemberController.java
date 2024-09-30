@@ -45,7 +45,6 @@ public class MemberController {
 //        String memberEmail = SecurityContextHolder.getContext().getAuthentication().getName();
 //        if (memberEmail.equals("anonymousUser")){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        System.out.println(email);
         Member member = memberService.findByMemberEmail(email);
         return new MemberPayDto(member.getMemberEmail(), member.getName(), member.getPhoneNumber(), member.getRole(), member.getHospitalId());
 //        }

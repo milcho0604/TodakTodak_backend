@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -100,6 +101,21 @@ public class PaymentController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CommonResDto(HttpStatus.BAD_REQUEST,"구독 취소 실패: " + e.getMessage(), null));
+        }
+    }
+
+    @GetMapping("/get/fee")
+    public ResponseEntity<?> getMedicalChartFee(){
+        try {
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            int fee = 0;
+            if(email.equals(paymentService.medicalChart.getReservation().getMemberEmail())){
+                fee = paymentService.medicalChart.getFee();
+            }
+            System.out.println(fee);
+            return ResponseEntity.ok(fee);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
 }

@@ -69,6 +69,7 @@ dependencies {
 	// oauth 인증
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.security:spring-security-oauth2-client'
+
 	// 타임리프
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
