@@ -53,4 +53,10 @@ public class ReservationController {
 
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
+
+    @GetMapping("/rank/{id}")
+    public ResponseEntity<?> rankReservationQueue(@PathVariable Long id){
+        Long res = reservationService.rankReservationQueue(id);
+        return new ResponseEntity<>(res, HttpStatus.OK);
+    }
 }

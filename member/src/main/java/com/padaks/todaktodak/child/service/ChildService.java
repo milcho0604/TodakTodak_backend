@@ -13,12 +13,14 @@ import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.common.service.AESUtil;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.repository.MemberRepository;
+import com.padaks.todaktodak.util.S3ClientFileUpload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.crypto.SecretKey;
 import javax.persistence.EntityNotFoundException;
@@ -38,12 +40,13 @@ public class ChildService {
     private final ChildRepository childRepository;
     private final MemberRepository memberRepository;
     private final ChildParentsRelationshipService childParentsRelationshipService;
+    private final S3ClientFileUpload s3ClientFileUpload;
     // 환경 변수에서 암호화 키를 가져옴
     @Value("${encryption.secret-key}")
     private String secretKeyString;
 
     // 자녀 등록 (주민등록번호 암호화)
-    public ChildRegisterResDto createChild(String name, String ssn) {
+    public ChildRegisterResDto createChild(String name, String ssn, MultipartFile image) {
         String encryptedSsn;
         try {
             SecretKey secretKey = AESUtil.getSecretKeyFromString(secretKeyString);
@@ -65,10 +68,12 @@ public class ChildService {
                     .parents(parentName)
                     .build();
         }
+        String imageUrl = s3ClientFileUpload.upload(image);
 
         Child child = Child.builder()
                 .name(name)
                 .ssn(encryptedSsn)
+                .profileImgUrl(imageUrl)
                 .build();
         childRepository.save(child);
 

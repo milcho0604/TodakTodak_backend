@@ -8,6 +8,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import com.padaks.todaktodak.common.dto.DtoMapper;
 import com.padaks.todaktodak.common.exception.BaseException;
+import com.padaks.todaktodak.hospital.domain.Hospital;
+import com.padaks.todaktodak.hospital.repository.HospitalRepository;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.dto.MemberResDto;
 import com.padaks.todaktodak.reservation.dto.NotificationReqDto;
@@ -29,6 +31,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static com.padaks.todaktodak.common.exception.exceptionType.ReservationExceptionType.*;
+import static com.padaks.todaktodak.common.exception.exceptionType.HospitalExceptionType.HOSPITAL_NOT_FOUND;
 
 @Service
 @Slf4j
@@ -40,10 +43,16 @@ public class ReservationKafkaConsumer {
     private final ReservationRepository reservationRepository;
     private final MemberFeign memberFeign;
     private final ObjectMapper objectMapper;
-
+    private final HospitalRepository hospitalRepository;
+  
     @Autowired
     public ReservationKafkaConsumer(@Qualifier("1") RedisTemplate<String, Object> redisTemplate,
-                                    @Qualifier("2") RedisTemplate<String, Object> redisScheduledTemplate, DtoMapper dtoMapper, ReservationRepository reservationRepository, MemberFeign memberFeign, ObjectMapper objectMapper) {
+                                    @Qualifier("2") RedisTemplate<String, Object> redisScheduledTemplate, 
+                                    DtoMapper dtoMapper, 
+                                    ReservationRepository reservationRepository, 
+                                    MemberFeign memberFeign, 
+                                    ObjectMapper objectMapper,
+                                    HospitalRepository hospitalRepository) {
         this.redisTemplate = redisTemplate;
         this.redisScheduleTemplate = redisScheduledTemplate;
         this.dtoMapper = dtoMapper;
@@ -56,9 +65,11 @@ public class ReservationKafkaConsumer {
 //        의도하지 않은 파라미터는 무시하겠다.
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         this.objectMapper = objectMapper;
+        this.hospitalRepository = hospitalRepository;
     }
 
-// 레디스의 동작 여부를 감지
+
+    // 레디스의 동작 여부를 감지
     private boolean isRedisAvailable(){
         try {
             // Redis에 간단한 ping 요청을 보내서 상태를 확인
@@ -68,10 +79,11 @@ public class ReservationKafkaConsumer {
         }
     }
 
-    @KafkaListener(topics = "reservationImmediate", groupId = "group_id", containerFactory = "kafkaListenerContainerFactory")
+    @KafkaListener(topics = "reservationImmediate", groupId = "reservation_id", containerFactory = "kafkaListenerContainerFactory")
     public void consumerReservation(String message,
                                     @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String hospitalKey,
-                                    @Header(KafkaHeaders.RECEIVED_PARTITION_ID) String partition) {
+                                    @Header(KafkaHeaders.RECEIVED_PARTITION_ID) String partition,
+                                    Acknowledgment acknowledgment) {
         log.info("ReservationConsumer[consumerReservation] : Kafka 메시지 수신 - 병원 파티션 {}, 의사 {}", hospitalKey, partition);
 
         try {
@@ -83,14 +95,16 @@ public class ReservationKafkaConsumer {
                     throw new BaseException(TOOMANY_RESERVATION);
                 }
             }
-            String sequenceKey = "sequence" + dto.getHospitalId();
+            String sequenceKey = "sequence" + ":" +dto.getHospitalId();
             Long sequence = redisTemplate.opsForValue().increment(sequenceKey, 1);
-
-            Reservation reservation = dtoMapper.toReservation(dto);
+            Hospital hospital = hospitalRepository.findById(dto.getHospitalId())
+                    .orElseThrow(()-> new BaseException(HOSPITAL_NOT_FOUND));
+            Reservation reservation = dtoMapper.toReservation(dto, hospital);
             reservationRepository.save(reservation);
             RedisDto redisDto = dtoMapper.toRedisDto(reservation);
 
             redisTemplate.opsForZSet().add(key, redisDto, sequence);
+            acknowledgment.acknowledge();
             log.info("KafkaListener[handleReservation] : 예약 대기열 처리 완료");
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

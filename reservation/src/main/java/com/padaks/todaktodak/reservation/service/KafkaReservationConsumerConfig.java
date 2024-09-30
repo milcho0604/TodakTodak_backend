@@ -27,7 +27,7 @@ public class KafkaReservationConsumerConfig {
     public DefaultKafkaConsumerFactory<String, Object> consumerFactory(){
         Map<String, Object> config = new HashMap<>();
         config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        config.put(ConsumerConfig.GROUP_ID_CONFIG, "group_id");
+        config.put(ConsumerConfig.GROUP_ID_CONFIG, "reservation_id");
         config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffset);
 
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
@@ -38,7 +38,7 @@ public class KafkaReservationConsumerConfig {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory(){
+    public ConcurrentKafkaListenerContainerFactory<String, String> ppKafkaListenerContainerFactory(){
         ConcurrentKafkaListenerContainerFactory<String, String> factory
                 = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
