@@ -356,8 +356,12 @@ public class MemberService {
 
     // email 찾기
     public String findId(MemberFindIdDto findIdDto) {
-        Member member = memberRepository.findByNameAndPhoneNumber(findIdDto.getName(), findIdDto.getPhone())
+        Member member = memberRepository.findByNameAndPhoneNumber(findIdDto.getName(), findIdDto.getPhoneNumber())
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
+        System.out.println(findIdDto.getName());
+        System.out.println(findIdDto.getPhoneNumber());
+        System.out.println(member);
+        System.out.println(member.getMemberEmail());
         return maskEmail(member.getMemberEmail());
     }
 

@@ -7,5 +7,5 @@ import lombok.Getter;
 @Builder
 public class MemberFindIdDto {
     private String name;
-    private String phone;
+    private String phoneNumber;
 }

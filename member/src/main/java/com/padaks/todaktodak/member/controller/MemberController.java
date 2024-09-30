@@ -267,16 +267,24 @@ public class MemberController {
     }
 
     // email 찾기
-    @PostMapping("/find-id")
-    public ResponseEntity<?> findId(@RequestBody MemberFindIdDto findIdDto) {
+    @PostMapping("/find/email")
+    public ResponseEntity<?> findEmail(@RequestBody MemberFindIdDto findIdDto) {
         try {
             String maskedEmail = memberService.findId(findIdDto);
-            CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "아이디 찾기가 완료되었습니다.",maskedEmail);
+            if (maskedEmail == null) {
+                throw new EntityNotFoundException("해당 이름과 전화번호로 등록된 사용자가 없습니다.");
+            }
+            CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "아이디 찾기가 완료되었습니다.", maskedEmail);
             return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            // 존재하지 않는 사용자에 대한 명확한 예외 처리
+            CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다.");
+            return new ResponseEntity<>(commonErrorDto, HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             e.printStackTrace();
-            CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.BAD_REQUEST,"존재하지 않는 사용자입니다.");
+            CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.BAD_REQUEST, "이메일 찾기에 실패했습니다.");
             return new ResponseEntity<>(commonErrorDto, HttpStatus.BAD_REQUEST);
         }
     }
+
 }
