@@ -30,7 +30,6 @@ public class MemberController {
     private final MemberService memberService;
     private final MemberAuthService memberAuthService;
 
-
     @GetMapping("/get/member")
     public MemberPayDto getMember() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -69,7 +68,6 @@ public class MemberController {
         Member unAcceptHospitalAdmin = memberService.registerHospitalAdmin(dto);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원 admin 등록성공(미승인)", unAcceptHospitalAdmin.getId()), HttpStatus.OK);
     }
-
 
     @PutMapping("/hospital-admin/accept")
     public ResponseEntity<?> acceptHospitalAdmin(@RequestBody String email) {
@@ -212,7 +210,6 @@ public class MemberController {
         }
     }
 
-
     // java 라이브러리 메일 서비스 : 인증 코드 전송
     @PostMapping("/send-verification-code")
     public ResponseEntity<?> sendVerificationCode(@RequestBody EmailVerificationDto verificationDto) {
@@ -266,6 +263,20 @@ public class MemberController {
             return ResponseEntity.ok(hospitalFeignDto);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
+    // email 찾기
+    @PostMapping("/find-id")
+    public ResponseEntity<?> findId(@RequestBody MemberFindIdDto findIdDto) {
+        try {
+            String maskedEmail = memberService.findId(findIdDto);
+            CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "아이디 찾기가 완료되었습니다.",maskedEmail);
+            return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.BAD_REQUEST,"존재하지 않는 사용자입니다.");
+            return new ResponseEntity<>(commonErrorDto, HttpStatus.BAD_REQUEST);
         }
     }
 }

@@ -62,18 +62,6 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-//    public void createDoctor(DoctorSaveReqDto dto, MultipartFile imageSsr){
-//        validateRegistration(dto);
-//        String imageUrl = null;
-//
-//        if (imageSsr.isEmpty()){
-//            imageUrl = s3ClientFileUpload.upload(imageSsr);
-////            dto.setProfileImgUrl(imageUrl);
-//        }
-//        Member doctor = dto.toEntity(passwordEncoder.encode(dto.getPassword()), imageUrl);
-//        memberRepository.save(doctor);
-//    }
-
     public Member createDoctor(DoctorSaveReqDto dto){
         validateRegistration(dto);
         MultipartFile image = dto.getProfileImage();
@@ -360,9 +348,22 @@ public class MemberService {
         return memberRepository.save(doctor);
     }
 
-
+    // 병원 정보 가져오는 feign
     public HospitalFeignDto getHospital(){
         HospitalFeignDto hospitalFeignDto = hospitalFeignClient.getHospitalInfo();
         return hospitalFeignDto;
     }
+
+    // email 찾기
+    public String findId(MemberFindIdDto findIdDto) {
+        Member member = memberRepository.findByNameAndPhoneNumber(findIdDto.getName(), findIdDto.getPhone())
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
+        return maskEmail(member.getMemberEmail());
+    }
+
+    // email 마스킹 처리 메서드
+    private String maskEmail(String email) {
+        return email.substring(0, 4) + "******" + email.substring(email.indexOf("@"));
+    }
+
 }
