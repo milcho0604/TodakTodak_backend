@@ -49,8 +49,9 @@ public class StompHandler implements ChannelInterceptor {
                         if (member != null && member.getDeletedAt() == null) {
                             // SecurityContext에 인증 정보 설정
                             UsernamePasswordAuthenticationToken authentication =
-                                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                                    new UsernamePasswordAuthenticationToken(userDetails, bearerToken, userDetails.getAuthorities());
                             SecurityContextHolder.getContext().setAuthentication(authentication);
+                            accessor.setUser(authentication);
 
                             log.info("WebSocket 연결 성공 - Email: {}", email);
                         } else {
