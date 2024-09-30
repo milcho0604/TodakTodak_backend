@@ -46,6 +46,7 @@ public class RedisConfig {
                 .shutdownTimeout(Duration.ZERO)
                 .build();
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(host, port);
+        redisStandaloneConfiguration.setDatabase(2);
         return new LettuceConnectionFactory(redisStandaloneConfiguration, lettuceClientConfiguration);
     }
 
