@@ -1,5 +1,7 @@
 package com.padaks.todaktodak.child.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.padaks.todaktodak.child.domain.Child;
 import com.padaks.todaktodak.child.dto.ChildRegisterResDto;
 import com.padaks.todaktodak.child.dto.ChildResDto;
@@ -17,6 +19,7 @@ import com.padaks.todaktodak.util.S3ClientFileUpload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,9 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.crypto.SecretKey;
 import javax.persistence.EntityNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.padaks.todaktodak.common.exception.exceptionType.MemberExceptionType.*;
 
@@ -41,6 +42,8 @@ public class ChildService {
     private final MemberRepository memberRepository;
     private final ChildParentsRelationshipService childParentsRelationshipService;
     private final S3ClientFileUpload s3ClientFileUpload;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final ObjectMapper objectMapper;
     // 환경 변수에서 암호화 키를 가져옴
     @Value("${encryption.secret-key}")
     private String secretKeyString;
@@ -128,7 +131,6 @@ public class ChildService {
     public void deleteChild(Long id) {
         Child child = childRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 자녀입니다"));
         child.delete();
-
     }
 
     // 자녀 공유 기능
@@ -137,6 +139,30 @@ public class ChildService {
         Member shared = memberRepository.findById(dto.getSharedId())
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다"));
         childParentsRelationshipService.createRelationship(child, shared);
+
+        String sharerEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Member sharer = memberRepository.findByMemberEmail(sharerEmail).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
+
+
+        // 메시지 데이터 객체 생성
+        Map<String, Object> messageData = new HashMap<>();
+        messageData.put("memberEmail", shared.getMemberEmail()); // 받는 사람 = 자녀 공유 받는 사람
+        messageData.put("childId", child.getId());
+        messageData.put("childName", child.getName());
+        messageData.put("sharer", sharer.getName());
+
+
+        // 객체를 JSON 문자열로 변환
+        String message = null;
+        try {
+            message = objectMapper.writeValueAsString(messageData);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("객체를 JSON 문자열로 변환하는데 실패했습니다.");
+        }
+
+        // Kafka로 메시지 전송
+        kafkaTemplate.send("child-share", message);
+        log.info("자녀 공유 성공 메시지를 Kafka로 전송: {}", message);
     }
 
     public ChildResDto getMyChild(Long id){
