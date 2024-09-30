@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -305,6 +306,43 @@ public class MemberController {
             e.printStackTrace();
             CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.BAD_REQUEST, "이메일 찾기에 실패했습니다.");
             return new ResponseEntity<>(commonErrorDto, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    // 비밀번호 재설정 링크 전송
+    @PostMapping("/find/password")
+    public ResponseEntity<?> findPassword(@RequestBody MemberFindPasswordDto dto) {
+        try {
+            memberService.sendPasswordResetLink(dto);
+            return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "비밀번호 재설정 링크를 전송하였습니다.", null));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new CommonResDto(HttpStatus.BAD_REQUEST, "올바른 이메일을 입력해주세요.", null));
+        }
+    }
+
+    @GetMapping("/reset/password")
+    public ResponseEntity<?> showResetPasswordPage(@RequestParam("token") String token) {
+        // 토큰 유효성 검사 등 추가 로직 수행 가능
+
+        // 이 단계에서 Vue.js로의 페이지 렌더링을 의도
+        // ResponseEntity는 JSON 응답을 반환하는 대신 Vue.js 페이지로 리디렉션합니다.
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Location", "/reset/password?token=" + token);
+        return new ResponseEntity<>(headers, HttpStatus.FOUND);
+    }
+
+    // 비밀번호 재설정
+    @PostMapping("/reset/password")
+    public ResponseEntity<?> resetPassword(@RequestBody PasswordResetDto dto) {
+        try {
+            memberService.resetPassword(dto);
+            return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "비밀번호 재설정에 성공하였습니다.", null));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new CommonResDto(HttpStatus.BAD_REQUEST, "비밀번호 재설정에 실패했습니다: " + e.getMessage(), null));
         }
     }
 
