@@ -1,4 +1,4 @@
-package com.padaks.todaktodak.chatmessage.service;
+package com.padaks.todaktodak.chat.chatmessage.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

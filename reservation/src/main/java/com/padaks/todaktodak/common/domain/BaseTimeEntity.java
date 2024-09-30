@@ -16,6 +16,7 @@ public class BaseTimeEntity {
 
     @CreationTimestamp
     private LocalDateTime createdAt;
+
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
