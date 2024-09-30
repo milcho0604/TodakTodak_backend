@@ -27,6 +27,13 @@ spring:
             - StripPrefix=1
           uri: lb://member-service
 
+        - id: member-service-ws
+          predicates:
+            - Path=/member-service/**
+          filters:
+            - StripPrefix=1
+          uri: ws://member-service
+
         - id: reservation-service
           predicates:
             - Path=/reservation-service/**

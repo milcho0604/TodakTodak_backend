@@ -58,7 +58,7 @@ public class HospitalService {
     public HospitalAndAdminRegisterResDto registerHospitalAndAdmin(HospitalAndAdminRegisterReqDto dto){
 
         Hospital hospital = hospitalRepository.save(dto.toEntity(dto)); // 병원 + 병원admin DTO -> 병원 엔티티로 조립
-        HospitalAdminSaveReqDto adminSaveReqDto = HospitalAdminSaveReqDto.fromDto(dto, hospital.getId()); // 병원admin(Member) 등록 request DTO
+        HospitalAdminSaveReqDto adminSaveReqDto = HospitalAdminSaveReqDto.fromDto(dto, hospital.getId()); // 병원 admin(Member) 등록 request DTO
 
         CommonResDto commonResDto = memberFeign.registerHospitalAdmin(adminSaveReqDto);
         ObjectMapper objectMapper = new ObjectMapper();
@@ -91,12 +91,14 @@ public class HospitalService {
 
     // 병원 수정
     public HospitalUpdateResDto updateHospital(HospitalUpdateReqDto dto){
+        String imageUrl = null;
         Hospital hospital = hospitalRepository.findByIdOrThrow(dto.getId());
-        MultipartFile hospitalImage = dto.getHospitalImage();
 
-        String imageUrl = s3ClientFileUpload.upload(hospitalImage); // S3에 이미지 업로드
+        if(dto.getHospitalImage() != null && !dto.getHospitalImage().isEmpty()){
+            imageUrl = s3ClientFileUpload.upload(dto.getHospitalImage()); // S3에 이미지 업로드
+            hospital.updateHospitalImageUrl(imageUrl);
+        }
 
-        hospital.updateHospitalImageUrl(imageUrl);
         hospital.updateHospitalInfo(dto);
 
         Hospital updatedHospital = hospitalRepository.save(hospital);

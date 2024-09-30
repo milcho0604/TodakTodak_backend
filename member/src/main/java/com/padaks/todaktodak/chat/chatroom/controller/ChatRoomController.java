@@ -1,4 +1,4 @@
-package com.padaks.todaktodak.chatroom.controller;
+package com.padaks.todaktodak.chat.chatroom.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

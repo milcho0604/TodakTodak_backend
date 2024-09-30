@@ -48,7 +48,9 @@ public class HospitalAndAdminRegisterReqDto {
                 .longitude(dto.getLongitude()) // 경도
                 .phoneNumber(dto.getHospitalPhoneNumber()) // 병원전화번호
                 .businessRegistrationInfo(dto.getBusinessRegistrationInfo()) // 사업자등록번호
+                .representativeName(dto.getAdminName()) // 대표자 이름
                 .adminEmail(dto.getAdminEmail()) // 병원 admin 이메일
+                .representativePhoneNumber(dto.getAdminPhoneNumber()) // 대표자 핸드폰 번호
                 .isAccept(false) // 개발자admin 승인전까지 승인여부 false
                 .build();
     }

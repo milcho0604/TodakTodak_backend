@@ -1,5 +1,6 @@
 package com.padaks.todaktodak.config;
 
+import com.padaks.todaktodak.common.exception.BaseException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -76,4 +77,19 @@ public class JwtTokenProvider {
             return false;
         }
     }
+
+    public void validateWebSocketToken(String bearerToken) {
+        try {
+            // log.info("line 40. 토큰 검증 {}", bearerToken);
+            String token = bearerToken.replace("Bearer ", "");
+
+            Claims claims = Jwts.parser()
+                    .setSigningKey(secretKey)
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (Exception e) {
+            throw new RuntimeException("validateWebSocketToken : 유효하지 않은 토큰입니다");
+        }
+    }
+
 }
