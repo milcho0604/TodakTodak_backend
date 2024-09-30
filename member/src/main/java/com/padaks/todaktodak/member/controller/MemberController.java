@@ -47,7 +47,7 @@ public class MemberController {
     // 회원가입
     @PostMapping("/create")
     public ResponseEntity<?> register(MemberSaveReqDto saveReqDto,
-            @RequestPart(value = "image", required = false) MultipartFile imageSsr) {
+                                      @RequestPart(value = "image", required = false) MultipartFile imageSsr) {
         try {
             memberService.create(saveReqDto, imageSsr);
             return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "회원가입 성공", null));
@@ -59,28 +59,28 @@ public class MemberController {
     }
 
     @PostMapping("/doctor/register")
-    public ResponseEntity<?> registerDoctor(@ModelAttribute DoctorSaveReqDto doctorSaveReqDto){
+    public ResponseEntity<?> registerDoctor(@ModelAttribute DoctorSaveReqDto doctorSaveReqDto) {
         Member member = memberService.createDoctor(doctorSaveReqDto);
-        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "의사등록성공", member.getId()),HttpStatus.OK);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "의사등록성공", member.getId()), HttpStatus.OK);
     }
 
     @PostMapping("/hospital-admin/register")
-    public ResponseEntity<?> registerHospitalAdmin(@RequestBody HospitalAdminSaveReqDto dto){
+    public ResponseEntity<?> registerHospitalAdmin(@RequestBody HospitalAdminSaveReqDto dto) {
         Member unAcceptHospitalAdmin = memberService.registerHospitalAdmin(dto);
-        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원 admin 등록성공(미승인)", unAcceptHospitalAdmin.getId()),HttpStatus.OK);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원 admin 등록성공(미승인)", unAcceptHospitalAdmin.getId()), HttpStatus.OK);
     }
 
 
     @PutMapping("/hospital-admin/accept")
-    public ResponseEntity<?> acceptHospitalAdmin(@RequestBody String email){
+    public ResponseEntity<?> acceptHospitalAdmin(@RequestBody String email) {
         memberService.acceptHospitalAdmin(email);
-        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원 admin 회원가입 승인완료", null),HttpStatus.OK);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원 admin 회원가입 승인완료", null), HttpStatus.OK);
     }
 
     @PostMapping("/doctor-admin/register")
-    public ResponseEntity<?> doctorAdmin(@RequestBody DoctorAdminSaveReqDto dto){
+    public ResponseEntity<?> doctorAdmin(@RequestBody DoctorAdminSaveReqDto dto) {
         Member doctorAdminCreate = memberService.doctorAdminCreate(dto);
-        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "해당 병원의 의사 등록 성공", doctorAdminCreate.getId()),HttpStatus.OK);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "해당 병원의 의사 등록 성공", doctorAdminCreate.getId()), HttpStatus.OK);
     }
 
     // 로그인
@@ -90,6 +90,9 @@ public class MemberController {
             String token = memberService.login(loginDto);
             System.out.println("Generated JWT Token: " + token);
             return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "로그인 성공", token));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new CommonErrorDto(HttpStatus.UNAUTHORIZED, "이메일 인증이 필요합니다."));
         } catch (RuntimeException e) {
             e.printStackTrace();
             if (e.getMessage().contains("비활성화 상태")) {
@@ -138,6 +141,7 @@ public class MemberController {
                     .body(new CommonErrorDto(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 인증 처리 중 오류가 발생했습니다."));
         }
     }
+
     @GetMapping("/edit-info")
     public ResponseEntity<?> getEditUserInfo(@AuthenticationPrincipal UserDetails userDetails) {
         try {
@@ -150,6 +154,7 @@ public class MemberController {
                     .body(new CommonResDto(HttpStatus.UNAUTHORIZED, "Invalid token", null));
         }
     }
+
     // 회원 정보 수정
     @PostMapping("/edit-info")
     public ResponseEntity<?> editMemberInfo(
@@ -168,20 +173,21 @@ public class MemberController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new CommonResDto(HttpStatus.BAD_REQUEST, "회원 정보 수정에 실패했습니다. -> " + e.getMessage(), null));
+                    .body(new CommonResDto(HttpStatus.BAD_REQUEST, "회원 정보 수정에 실패했습니다:" +
+                            " " + e.getMessage(), null));
         }
     }
 
     // 의사 정보 수정
     @PostMapping("/edit-doctor")
-    public ResponseEntity<?> editDoctorInfo(@ModelAttribute DoctorUpdateReqdto dto){
+    public ResponseEntity<?> editDoctorInfo(@ModelAttribute DoctorUpdateReqdto dto) {
         try {
             String email = SecurityContextHolder.getContext().getAuthentication().getName();
             Member doctor = memberService.findByMemberEmail(email);
             memberService.updateDoctor(doctor, dto);
             CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "의사 정보를 수정하였습니다.", doctor);
             return new ResponseEntity<>(commonResDto, HttpStatus.OK);
-        }catch (EntityNotFoundException e){
+        } catch (EntityNotFoundException e) {
             e.printStackTrace();
             CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.NOT_FOUND, "의사 정보가 존재하지 않습니다. -> " + e.getMessage());
             return new ResponseEntity<>(commonErrorDto, HttpStatus.NOT_FOUND);
@@ -199,7 +205,7 @@ public class MemberController {
             }
             memberService.deleteAccount(userDetails.getUsername());
             return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "회원 탈퇴에 성공하였습니다.", userDetails.getUsername()));
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new CommonResDto(HttpStatus.BAD_REQUEST, "회원 탈퇴에 실패하였습니다", null));
@@ -213,6 +219,7 @@ public class MemberController {
         memberService.sendVerificationEmail(verificationDto.getMemberEmail());
         return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "인증 코드 전송에 성공하였습니다.", null));
     }
+
     // java 라이브러리 메일 서비스 : 인증 코드 확인
     @PostMapping("/verify-email")
     public ResponseEntity<?> verifyEmail(@RequestBody JavaEmailVerificationDto verificationDto) {
@@ -234,29 +241,30 @@ public class MemberController {
     // member list
 //    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/list")
-    public ResponseEntity<Object> userList(Pageable pageable){
+    public ResponseEntity<Object> userList(Pageable pageable) {
         Page<MemberListResDto> memberListResDtos = memberService.memberList(pageable);
-        CommonResDto dto = new CommonResDto(HttpStatus.OK,"회원목록을 조회합니다.", memberListResDtos);
+        CommonResDto dto = new CommonResDto(HttpStatus.OK, "회원목록을 조회합니다.", memberListResDtos);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
     @GetMapping("/doctorList")
-    public ResponseEntity<Object> doctorList(Pageable pageable){
-            Page<DoctorListResDto> dtos = memberService.doctorList(pageable);
-            CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "의사목록을 조회합니다.",dtos);
-            return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+    public ResponseEntity<Object> doctorList(Pageable pageable) {
+        Page<DoctorListResDto> dtos = memberService.doctorList(pageable);
+        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "의사목록을 조회합니다.", dtos);
+        return new ResponseEntity<>(commonResDto, HttpStatus.OK);
     }
 
     @GetMapping("/detail/{email}")
-    public Object memberDetail(@PathVariable String email){
+    public Object memberDetail(@PathVariable String email) {
         return memberService.memberDetail(email);
     }
+
     @GetMapping("/get/hospital")
-    private ResponseEntity<?> getMemberTest(){
+    private ResponseEntity<?> getMemberTest() {
         try {
             HospitalFeignDto hospitalFeignDto = memberService.getHospital();
             return ResponseEntity.ok(hospitalFeignDto);
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }

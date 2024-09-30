@@ -215,7 +215,7 @@ public class MemberService {
 
     }
 
-    public void updateMember(Member member, MemberUpdateReqDto editReqDto) {
+    public void updateMember(Member member, MemberUpdateReqDto editReqDto) throws Exception {
         boolean isUpdated = false; // 업데이트 여부를 체크할 변수
 
         System.out.println("editReq는?");
@@ -236,9 +236,15 @@ public class MemberService {
 
         // 이름, 전화번호, 주소 업데이트
         if (editReqDto.getName() != null) {
-            member.changeName(editReqDto.getName());
-            System.out.println("이름이 변경되었습니다: " + member.getName());
-            isUpdated = true;
+            if (editReqDto.getName().equals("이름을 변경해주세요")){
+                throw new Exception("이름을 변경해주세요");
+            }else {
+                member.changeName(editReqDto.getName());
+                System.out.println("이름이 변경되었습니다: " + member.getName());
+                isUpdated = true;
+                member.updateVerified();
+            }
+
         }
         if (editReqDto.getPhoneNumber() != null) {
             System.out.println("real");
