@@ -138,7 +138,18 @@ public class MemberController {
                     .body(new CommonErrorDto(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 인증 처리 중 오류가 발생했습니다."));
         }
     }
-
+    @GetMapping("/edit-info")
+    public ResponseEntity<?> getEditUserInfo(@AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            Member member = memberService.findByMemberEmail(userDetails.getUsername());
+            MemberUpdateReqDto memberUpdateReqDto = MemberUpdateReqDto.fromEntity(member);
+            return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "회원 정보 수정 조회 성공", memberUpdateReqDto));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new CommonResDto(HttpStatus.UNAUTHORIZED, "Invalid token", null));
+        }
+    }
     // 회원 정보 수정
     @PostMapping("/edit-info")
     public ResponseEntity<?> editMemberInfo(

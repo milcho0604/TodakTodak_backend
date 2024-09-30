@@ -62,7 +62,8 @@ public class Member extends BaseTimeEntity {
 
     private String fcmToken;
 
-    private boolean isVerified;
+    @Builder.Default
+    private boolean isVerified = false;
 
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)

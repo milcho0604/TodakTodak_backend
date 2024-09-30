@@ -46,7 +46,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         }
 
 //        System.out.println("핸들러입니다!!! 넘오올까요?");
-        System.out.println(memberEmail);
+//        System.out.println(memberEmail);
         Member member = memberRepository.findByMemberEmail(memberEmail)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 카카오 회원입니다."));
 
@@ -64,14 +64,27 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 //        System.out.println("========================");
 
         // 리다이렉트 URL 설정 (아래 먼저는 로컬호스트 환경에서, 두번째는 프론트 환경에서)
+        String targetUrl = null;
+
+        if (member.isVerified() == true){
+            targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8081/loginSuccess")
+                    .queryParam("token", token)
+                    .build().toUriString();
+        } else {
+            targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8081/updateSuccess")
+                    .queryParam("token", token)
+                    .build().toUriString();
+        }
+
+
 
 //        String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8082/loginSuccess")
-        String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8081/loginSuccess")
+//        String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8081/loginSuccess")
 //        String targetUrl = UriComponentsBuilder.fromUriString("https://www.teenkiri.site/loginSuccess")
-                .queryParam("token", token)
-                .build().toUriString();
+//                .queryParam("token", token)
+//                .build().toUriString();
 
-        System.out.println(token);
+//        System.out.println(token);
 
         // 리다이렉트 수행
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
