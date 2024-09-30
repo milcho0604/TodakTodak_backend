@@ -12,21 +12,23 @@ import java.io.InputStream;
 public class FirebaseConfig {
     @PostConstruct
     public void init() {
-        try {
-            ClassLoader classLoader = getClass().getClassLoader();
-            InputStream serviceAccount = classLoader.getResourceAsStream("padak-todak-firebase-adminsdk-d2ths-d5d3744918.json");
+        if (FirebaseApp.getApps().isEmpty()) { // FirebaseApp이 초기화되지 않은 경우에만 초기화
+            try {
+                ClassLoader classLoader = getClass().getClassLoader();
+                InputStream serviceAccount = classLoader.getResourceAsStream("padak-todak-firebase-adminsdk-d2ths-d5d3744918.json");
 
-            if (serviceAccount == null) {
-                throw new IllegalArgumentException("Firebase service account file not found");
+                if (serviceAccount == null) {
+                    throw new IllegalArgumentException("Firebase service account file not found");
+                }
+
+                FirebaseOptions options = FirebaseOptions.builder()
+                        .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                        .setDatabaseUrl("https://padak-todak-default-rtdb.asia-southeast1.firebasedatabase.app")
+                        .build();
+                FirebaseApp.initializeApp(options);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-
-            FirebaseOptions options = FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                    .setDatabaseUrl("https://padak-todak-default-rtdb.asia-southeast1.firebasedatabase.app")
-                    .build();
-            FirebaseApp.initializeApp(options);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 }

@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final MemberRepository memberRepository;
+
     public NotificationResDto notificationCreate(NotificationReqDto dto) {
         log.info(dto.getMemberEmail());
         Member member = memberRepository.findByMemberEmail(dto.getMemberEmail())

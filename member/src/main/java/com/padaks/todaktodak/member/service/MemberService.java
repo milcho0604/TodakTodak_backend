@@ -8,6 +8,7 @@ import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.domain.Role;
 import com.padaks.todaktodak.member.dto.*;
 import com.padaks.todaktodak.member.repository.MemberRepository;
+import com.padaks.todaktodak.notification.domain.Type;
 import com.padaks.todaktodak.util.S3ClientFileUpload;
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,7 @@ public class MemberService {
     private final DtoMapper dtoMapper;
     private final S3ClientFileUpload s3ClientFileUpload;
     private final HospitalFeignClient hospitalFeignClient;
+    private final FcmService fcmService;
 
     // 간편하게 멤버 객체를 찾기 위한 findByMemberEmail
     public Member findByMemberEmail(String email) {
@@ -58,8 +60,24 @@ public class MemberService {
             saveReqDto.setProfileImgUrl(imageUrl);
         }
 
+
         Member member = saveReqDto.toEntity(passwordEncoder.encode(saveReqDto.getPassword()));
         memberRepository.save(member);
+
+        // 알림을 보내는 사람? -> 댓글을 단 사람 댓글을 작성한 사람의 email과 게시글 주인의 email || id
+        // 커뮤니티에서 알림을 보내기 위해 필요한 내용은?
+        // FCM 보내는 로직
+        // 회원가입시 관리자에게 알림 전송
+        String memberEmail = "todak@test.com";
+        Member member1 = memberRepository.findByMemberEmail(memberEmail)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 관리자"));
+        //fcm message 전송 (수신받을 멤버 id, "메세지 title", 메세지"body")
+//        fcmService.sendTestMessage(member1.getId(), "회원가입", "테스트 알림");
+        fcmService.sendMessage(member1.getId(), "회원가입", saveReqDto.getMemberEmail()+"회원이 가입하였습니다", Type.REGISTER);
+    }
+
+    private void sendMessage(){
+
     }
 
 //    public void createDoctor(DoctorSaveReqDto dto, MultipartFile imageSsr){

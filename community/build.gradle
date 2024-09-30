@@ -55,6 +55,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation group: 'io.lettuce', name: 'lettuce-core', version: '6.4.0.RELEASE'
 
+	//kafka
+	implementation 'org.springframework.kafka:spring-kafka'
+
 	// Jackson for JSON serialization/deserialization
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
 

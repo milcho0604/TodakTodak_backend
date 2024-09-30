@@ -32,7 +32,7 @@ public class Notification extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Type type;
 
-    private Long refId;
+    private Long refId; //post, comment id 저장하는데
 
     public void read() {
         this.isRead = true;

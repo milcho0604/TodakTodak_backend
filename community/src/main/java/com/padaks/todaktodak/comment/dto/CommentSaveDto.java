@@ -24,11 +24,11 @@ public class CommentSaveDto {
     @NotEmpty(message = "content is essential")
     private String content;
 
-    public Comment toEntity(Post post, Comment parent){
+    public Comment toEntity(Post post, Comment parent, String writerEmail){
         return Comment.builder()
                 .post(post)
                 .id(this.id)
-                .doctorEmail(this.doctorEmail)
+                .doctorEmail(writerEmail)
                 .content(this.content)
                 .parent(parent)
                 .build();

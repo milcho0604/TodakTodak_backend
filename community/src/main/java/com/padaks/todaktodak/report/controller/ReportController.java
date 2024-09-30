@@ -4,7 +4,7 @@ import com.padaks.todaktodak.comment.repository.CommentRepository;
 import com.padaks.todaktodak.common.dto.CommonErrorDto;
 import com.padaks.todaktodak.common.dto.CommonResDto;
 import com.padaks.todaktodak.post.repository.PostRepository;
-import com.padaks.todaktodak.report.dto.MemberFeignDto;
+import com.padaks.todaktodak.common.dto.MemberFeignDto;
 import com.padaks.todaktodak.report.dto.ReportSaveReqDto;
 import com.padaks.todaktodak.report.service.ReportService;
 import lombok.RequiredArgsConstructor;
