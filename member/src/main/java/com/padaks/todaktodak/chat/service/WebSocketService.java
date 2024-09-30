@@ -27,14 +27,13 @@ public class WebSocketService {
     private final MemberRepository memberRepository;
     private final SimpMessageSendingOperations messagingTemplate;
 
-    public void sendMessage(Long chatRoomId, ChatMessageReqDto dto){
+    public void sendMessage(Long chatRoomId, String memberEmail, ChatMessageReqDto dto){
         log.info("DTO: {}", dto);
         // chat room 찾기
         ChatRoom chatRoom = chatRoomRepository.findByIdOrThrow(dto.getChatRoomId());
         log.info("ChatRoom: {}", chatRoom);
 
         System.out.println("여기까지");
-        String memberEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         System.out.println("멤버 이메일은" + memberEmail);
         log.info("시큐리티 Member Email: {}", memberEmail);
         // 보낸 사람 찾기

@@ -25,7 +25,8 @@ public class WebSocketController {
     public void sendMessage(ChatMessageReqDto chatMessageReqDto,
                             @DestinationVariable(value = "chatRoomId") Long chatRoomId) throws JsonProcessingException {
         log.info("ChatMessageReqDto : {}", chatMessageReqDto);
-        webSocketService.sendMessage(chatRoomId, chatMessageReqDto);
+        String memberEmail = jwtTokenProvider.getEmailFromToken(chatMessageReqDto.getToken());
+        webSocketService.sendMessage(chatRoomId, memberEmail, chatMessageReqDto);
     }
 
 

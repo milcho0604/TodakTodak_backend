@@ -16,7 +16,7 @@ public class ChatMessageReqDto {
 
     private Long chatRoomId; // 채팅방 id
 
-//    private String memberEmail; // 회원이메일
+    private String token; // 멤버 토큰
 
     private String contents; // 메시지 내용
 
