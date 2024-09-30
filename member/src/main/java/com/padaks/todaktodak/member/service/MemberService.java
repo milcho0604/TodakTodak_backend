@@ -73,7 +73,7 @@ public class MemberService {
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 관리자"));
         //fcm message 전송 (수신받을 멤버 id, "메세지 title", 메세지"body")
 //        fcmService.sendTestMessage(member1.getId(), "회원가입", "테스트 알림");
-        fcmService.sendMessage(member1.getId(), "회원가입", saveReqDto.getMemberEmail()+"회원이 가입하였습니다", Type.REGISTER);
+//        fcmService.sendMessage(member1.getId(), "회원가입", saveReqDto.getMemberEmail()+"회원이 가입하였습니다", Type.REGISTER);
     }
 
     private void sendMessage(){

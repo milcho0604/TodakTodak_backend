@@ -41,20 +41,6 @@ public class FcmController {
         }
     }
 
-
-    @PostMapping("/test/notice")
-    public ResponseEntity<?> testNotification(@RequestHeader Long myId,  @RequestBody String title, String body){
-        try {
-            fcmService.sendTestMessage(myId, title, body);
-            CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "test성공", null);
-            return new ResponseEntity<>(commonResDto, HttpStatus.OK);
-        }catch (Exception e){
-            e.printStackTrace();
-            CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.INTERNAL_SERVER_ERROR,"알림 전송 중 오류 발생: " + e.getMessage());
-            return new ResponseEntity<>(commonErrorDto, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     @PostMapping("/send")
     public ResponseEntity<?> sendNotification(@RequestBody Long myId, @RequestBody String title, String body, Type type){
         try {
