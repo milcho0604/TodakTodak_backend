@@ -1,5 +1,6 @@
 package com.padaks.todaktodak.reservation.controller;
 
+import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.dto.CheckListReservationResDto;
 import com.padaks.todaktodak.reservation.dto.ReservationSaveReqDto;
@@ -23,8 +24,12 @@ public class ReservationController {
 
     @PostMapping("/scheduled")
     public ResponseEntity<?> treatScheduledReservation(@RequestBody ReservationSaveReqDto dto){
-        Reservation reservation = reservationService.scheduleReservation(dto);
-        return new ResponseEntity<>(reservation, HttpStatus.OK);
+        try{
+            reservationService.scheduleReservation(dto);
+            return new ResponseEntity<>("스케쥴 예약 완료", HttpStatus.OK);
+        }catch (BaseException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping("/immediate")
@@ -47,5 +52,11 @@ public class ReservationController {
         List<?> dto = reservationService.checkListReservation(resDto, pageable);
 
         return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    @GetMapping("/rank/{id}")
+    public ResponseEntity<?> rankReservationQueue(@PathVariable Long id){
+        Long res = reservationService.rankReservationQueue(id);
+        return new ResponseEntity<>(res, HttpStatus.OK);
     }
 }

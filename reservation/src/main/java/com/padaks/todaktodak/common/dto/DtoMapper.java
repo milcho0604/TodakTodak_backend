@@ -1,5 +1,6 @@
 package com.padaks.todaktodak.common.dto;
 
+import com.padaks.todaktodak.hospital.domain.Hospital;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.domain.ReserveType;
 import com.padaks.todaktodak.reservation.dto.*;
@@ -19,7 +20,9 @@ public interface DtoMapper {
 //    instance를 생성해 주어야 매퍼에 대한 접근이 가능.
     DtoMapper INSTANCE = Mappers.getMapper(DtoMapper.class);
 
-    Reservation toReservation(ReservationSaveReqDto reservationSaveReqDto);
+    @Mapping(target = "hospital", source = "hospital")
+    @Mapping(target = "id", ignore = true)
+    Reservation toReservation(ReservationSaveReqDto reservationSaveReqDto, Hospital hospital);
 
     CheckListReservationReqDto toListReservation(Reservation reservation);
 

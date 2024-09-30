@@ -29,6 +29,11 @@ public class KafkaReservationProducerConfig {
     }
 
     @Bean
+    public NewTopic reservationScheduleTopic(){
+        return new NewTopic("reservationSchedule", 18, (short) 1);
+    }
+
+    @Bean
     public ProducerFactory<String, Object> producerFactory(){
         Map<String, Object> config = new HashMap<>();
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
