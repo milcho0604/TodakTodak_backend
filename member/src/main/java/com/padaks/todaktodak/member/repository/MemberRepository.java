@@ -26,4 +26,12 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
         return findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("해당 member를 찾을 수 없습니다."));
     }
+
+    // 탈퇴하지 않은 멤버 이메일찾기
+    Optional<Member> findByMemberEmailAndDeletedAtIsNull(String memberEmail);
+
+    default Member findByMemberEmailOrThrow(String memberEmail){
+        return findByMemberEmailAndDeletedAtIsNull(memberEmail)
+                .orElseThrow(() -> new EntityNotFoundException("email에 해당하는 회원을 찾을 수 없습니다."));
+    }
 }

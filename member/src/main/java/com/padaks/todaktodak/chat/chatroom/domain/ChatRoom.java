@@ -1,8 +1,8 @@
-package com.padaks.todaktodak.chatroom.domain;
+package com.padaks.todaktodak.chat.chatroom.domain;
 
-import com.padaks.todaktodak.chatmessage.domain.ChatMessage;
+import com.padaks.todaktodak.chat.chatmessage.domain.ChatMessage;
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
-import com.padaks.todaktodak.cs.domain.Cs;
+import com.padaks.todaktodak.chat.cs.domain.Cs;
 import com.padaks.todaktodak.member.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class ChatRoom extends BaseTimeEntity {
 
     @ManyToOne
     @JoinColumn(name = "member_id")
-    private Member member;
+    private Member member; // 일반회원
 
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
     private List<ChatMessage> chatMessages = new ArrayList<>();
