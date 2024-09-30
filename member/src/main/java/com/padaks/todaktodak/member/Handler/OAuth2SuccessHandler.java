@@ -45,7 +45,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             }
         }
 
-        System.out.println("핸들러입니다!!! 넘오올까요?");
+//        System.out.println("핸들러입니다!!! 넘오올까요?");
         System.out.println(memberEmail);
         Member member = memberRepository.findByMemberEmail(memberEmail)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 카카오 회원입니다."));
@@ -54,26 +54,17 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             throw new IllegalStateException("탈퇴한 회원입니다.");
         }
 
-//        if (member.getReportCount() >= 5) {
-//            member = member.deleteEmail(); // 이메일 삭제
-//            memberRepository.save(member);
-
-            // del_user 테이블에 이메일 삽입
-//            DelUser delUser = DelUser.toEntity(email);
-//            delUserRepository.save(delUser);
-
-//            throw new RuntimeException("해당 계정은 비활성화 상태입니다.");
-//        }
-
         Long getMemberId = member.getId();
 
         String token = jwtTokenprovider.kakaoToken(memberEmail, getMemberId,"Member");
-        System.out.println("토큰은!!!!" + token);
-        System.out.println("========================");
-        System.out.println(token);
-        System.out.println("========================");
+
+//        System.out.println("토큰은!!!!" + token);
+//        System.out.println("========================");
+//        System.out.println(token);
+//        System.out.println("========================");
 
         // 리다이렉트 URL 설정 (아래 먼저는 로컬호스트 환경에서, 두번째는 프론트 환경에서)
+
 //        String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8082/loginSuccess")
         String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8081/loginSuccess")
 //        String targetUrl = UriComponentsBuilder.fromUriString("https://www.teenkiri.site/loginSuccess")
