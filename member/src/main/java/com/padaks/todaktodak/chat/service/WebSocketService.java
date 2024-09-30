@@ -42,6 +42,8 @@ public class WebSocketService {
         ChatMessage chatMessage = ChatMessageReqDto.toEntity(chatRoom, sender, dto.getContents());
         chatMessageRepository.save(chatMessage); // 메시지 저장
 
-        messagingTemplate.convertAndSend("/sub/" + chatRoomId, dto);
+        ChatMessageReqDto messageDto = ChatMessageReqDto.fromEntity(dto, chatRoom, sender);
+
+        messagingTemplate.convertAndSend("/sub/" + chatRoomId, messageDto);
     }
 }

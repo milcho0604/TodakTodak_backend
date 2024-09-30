@@ -33,9 +33,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     // 클라이언트로부터 들어오는 메시지를 처리하는 MessageChannel을 구성하는 역할을 한다.
     // registration.interceptors 메서드를 사용해서 STOMP 메시지 처리를 구성하는 메시지 채널에 custom한 인터셉터를 추가 구성하여
     // 채널의 현재 인터셉터 목록에 추가하는 단계를 거친다.
-    @Override
-    public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(stompHandler);
-    }
+//    @Override
+//    public void configureClientInboundChannel(ChannelRegistration registration) {
+//        registration.interceptors(stompHandler);
+//    }
 
 }
