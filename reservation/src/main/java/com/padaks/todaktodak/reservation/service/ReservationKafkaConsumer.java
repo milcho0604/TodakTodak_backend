@@ -44,15 +44,10 @@ public class ReservationKafkaConsumer {
     private final MemberFeign memberFeign;
     private final ObjectMapper objectMapper;
     private final HospitalRepository hospitalRepository;
-  
+
     @Autowired
     public ReservationKafkaConsumer(@Qualifier("1") RedisTemplate<String, Object> redisTemplate,
-                                    @Qualifier("2") RedisTemplate<String, Object> redisScheduledTemplate, 
-                                    DtoMapper dtoMapper, 
-                                    ReservationRepository reservationRepository, 
-                                    MemberFeign memberFeign, 
-                                    ObjectMapper objectMapper,
-                                    HospitalRepository hospitalRepository) {
+                                    @Qualifier("2") RedisTemplate<String, Object> redisScheduledTemplate, DtoMapper dtoMapper, ReservationRepository reservationRepository, MemberFeign memberFeign, ObjectMapper objectMapper, HospitalRepository hospitalRepository) {
         this.redisTemplate = redisTemplate;
         this.redisScheduleTemplate = redisScheduledTemplate;
         this.dtoMapper = dtoMapper;
@@ -68,8 +63,7 @@ public class ReservationKafkaConsumer {
         this.hospitalRepository = hospitalRepository;
     }
 
-
-    // 레디스의 동작 여부를 감지
+// 레디스의 동작 여부를 감지
     private boolean isRedisAvailable(){
         try {
             // Redis에 간단한 ping 요청을 보내서 상태를 확인
@@ -79,11 +73,10 @@ public class ReservationKafkaConsumer {
         }
     }
 
-    @KafkaListener(topics = "reservationImmediate", groupId = "reservation_id", containerFactory = "kafkaListenerContainerFactory")
+    @KafkaListener(topics = "reservationImmediate", groupId = "group_id", containerFactory = "kafkaListenerContainerFactory")
     public void consumerReservation(String message,
                                     @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String hospitalKey,
-                                    @Header(KafkaHeaders.RECEIVED_PARTITION_ID) String partition,
-                                    Acknowledgment acknowledgment) {
+                                    @Header(KafkaHeaders.RECEIVED_PARTITION_ID) String partition) {
         log.info("ReservationConsumer[consumerReservation] : Kafka 메시지 수신 - 병원 파티션 {}, 의사 {}", hospitalKey, partition);
 
         try {
@@ -95,16 +88,16 @@ public class ReservationKafkaConsumer {
                     throw new BaseException(TOOMANY_RESERVATION);
                 }
             }
-            String sequenceKey = "sequence" + ":" +dto.getHospitalId();
+            String sequenceKey = "sequence" + dto.getHospitalId();
             Long sequence = redisTemplate.opsForValue().increment(sequenceKey, 1);
+
             Hospital hospital = hospitalRepository.findById(dto.getHospitalId())
-                    .orElseThrow(()-> new BaseException(HOSPITAL_NOT_FOUND));
+                    .orElseThrow(() -> new BaseException(HOSPITAL_NOT_FOUND));
             Reservation reservation = dtoMapper.toReservation(dto, hospital);
             reservationRepository.save(reservation);
             RedisDto redisDto = dtoMapper.toRedisDto(reservation);
 
             redisTemplate.opsForZSet().add(key, redisDto, sequence);
-            acknowledgment.acknowledge();
             log.info("KafkaListener[handleReservation] : 예약 대기열 처리 완료");
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -147,7 +140,9 @@ public class ReservationKafkaConsumer {
                             .ifPresent(reservation -> {
                                 throw new BaseException(RESERVATION_DUPLICATE);
                             });
-                    Reservation reservation = dtoMapper.toReservation(dto);
+                    Hospital hospital = hospitalRepository.findById(dto.getHospitalId())
+                            .orElseThrow(() -> new BaseException(HOSPITAL_NOT_FOUND));
+                    Reservation reservation = dtoMapper.toReservation(dto, hospital);
                     Reservation savedReservation = reservationRepository.save(reservation);
                     sendReservationNotification(savedReservation);
                 }finally {
