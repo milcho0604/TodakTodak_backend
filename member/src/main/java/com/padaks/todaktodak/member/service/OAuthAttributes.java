@@ -13,7 +13,6 @@ public class OAuthAttributes {
 
     private Map<String, Object> attributes;
     private String nameAttributeKey;
-    private String name;
     private String memberEmail;
     private String pictureURL;
 
@@ -24,7 +23,6 @@ public class OAuthAttributes {
 
         this.attributes = attributes;
         this.nameAttributeKey = nameAttributeKey;
-        this.name = name;
         this.memberEmail = memberEmail;
         this.pictureURL = pictureURL;
     }
@@ -45,7 +43,6 @@ public class OAuthAttributes {
 
         Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
         Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
-//        System.out.println("여기서 부터닦ㅆ%!!!!!!!!!!!!!!!!!!!");
         kakaoAccount.get(profile.get("nickname"));
 
         return OAuthAttributes.builder()
@@ -58,7 +55,6 @@ public class OAuthAttributes {
 
     public Member toEntity() {
         return Member.builder()
-                .name(name)
                 .memberEmail(memberEmail)
                 .role(Role.Member)
                 .build();

@@ -4,6 +4,7 @@ import com.padaks.todaktodak.common.dto.DtoMapper;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.common.feign.HospitalFeignClient;
 import com.padaks.todaktodak.config.JwtTokenProvider;
+import com.padaks.todaktodak.member.domain.Address;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.domain.Role;
 import com.padaks.todaktodak.member.dto.*;
@@ -167,7 +168,7 @@ public class MemberService {
     }
 
 
-    // 비밀번호 확인 및 검증 로렢
+    // 비밀번호 확인 및 검증 로
     private void validatePassword(String newPassword, String confirmPassword, String currentPassword) {
         if (!newPassword.equals(confirmPassword)) {
             throw new RuntimeException("동일하지 않은 비밀번호 입니다.");
@@ -261,11 +262,14 @@ public class MemberService {
             System.out.println("전화번호가 변경되었습니다: " + member.getPhoneNumber());
             isUpdated = true;
         }
+
         if (editReqDto.getAddress() != null) {
-            member.changeAddress(editReqDto.getAddress());
+            Address newAddress = new Address(editReqDto.getAddress().getCity(), editReqDto.getAddress().getStreet(), editReqDto.getAddress().getZipcode());
+            member.changeAddress(newAddress);
             System.out.println("주소가 변경되었습니다: " + member.getAddress());
             isUpdated = true;
         }
+
 
         // 수정된 회원 정보 저장
         if (isUpdated) {

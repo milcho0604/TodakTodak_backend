@@ -1,7 +1,9 @@
 package com.padaks.todaktodak.member.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.padaks.todaktodak.common.dto.CommonErrorDto;
 import com.padaks.todaktodak.common.dto.CommonResDto;
+import com.padaks.todaktodak.member.domain.Address;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.dto.*;
 import com.padaks.todaktodak.member.service.MemberAuthService;
@@ -156,13 +158,32 @@ public class MemberController {
     // 회원 정보 수정
     @PostMapping("/edit-info")
     public ResponseEntity<?> editMemberInfo(
-            @ModelAttribute MemberUpdateReqDto updateReqDto) {
+            @RequestParam("name") String name,
+            @RequestParam("phoneNumber") String phoneNumber,
+            @RequestParam("address") String addressJson, // JSON 문자열로 받은 주소
+            @RequestParam(value = "profileImage", required = false) MultipartFile profileImage,
+            @RequestParam(value = "password", required = false) String password,
+            @RequestParam(value = "confirmPassword", required = false) String confirmPassword) {
         try {
+            // JSON 문자열을 Address 객체로 변환
+            ObjectMapper objectMapper = new ObjectMapper();
+            Address address = objectMapper.readValue(addressJson, Address.class);
+
             String email = SecurityContextHolder.getContext().getAuthentication().getName();
             Member member = memberService.findByMemberEmail(email);
 
+            // DTO 생성 및 값 설정
+            MemberUpdateReqDto updateReqDto = MemberUpdateReqDto.builder()
+                    .name(name)
+                    .phoneNumber(phoneNumber)
+                    .address(address)
+                    .profileImage(profileImage)
+                    .password(password)
+                    .confirmPassword(confirmPassword)
+                    .build();
+
             // 회원 정보 업데이트
-            memberService.updateMember(member, updateReqDto); // profileImage 추가
+            memberService.updateMember(member, updateReqDto); // profileImage 포함 업데이트
 
             return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "회원 정보를 수정하였습니다.", member));
         } catch (EntityNotFoundException e) {
@@ -171,10 +192,10 @@ public class MemberController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new CommonResDto(HttpStatus.BAD_REQUEST, "회원 정보 수정에 실패했습니다:" +
-                            " " + e.getMessage(), null));
+                    .body(new CommonResDto(HttpStatus.BAD_REQUEST, "회원 정보 수정에 실패했습니다: " + e.getMessage(), null));
         }
     }
+
 
     // 의사 정보 수정
     @PostMapping("/edit-doctor")

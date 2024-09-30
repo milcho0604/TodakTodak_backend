@@ -48,7 +48,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         member = saveOrUpdate(attributes);
 
 
-
         if (member.getName() == null){
             String temp = "이름을 변경해주세요";
             member.updateName(temp);
@@ -73,7 +72,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     private Member saveOrUpdate(OAuthAttributes attributes) {
 
         Member member = memberRepository.findByMemberEmail(attributes.getMemberEmail())
-                .map(entity -> entity.update(attributes.getName()))
                 .orElse(attributes.toEntity());
         return memberRepository.save(member);
     }

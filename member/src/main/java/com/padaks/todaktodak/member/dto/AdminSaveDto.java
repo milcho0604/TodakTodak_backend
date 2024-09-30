@@ -16,5 +16,5 @@ public class AdminSaveDto {
     private String phoneNumber;
     private String password;
     private Role role;
-    private boolean verified;
+    private boolean isVerified;
 }
