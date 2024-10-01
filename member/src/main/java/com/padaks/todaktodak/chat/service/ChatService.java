@@ -54,4 +54,11 @@ public class ChatService {
         ChatRoom chatRoom = chatRoomRepository.findByIdOrThrow(chatRoomId);
         chatRoom.setDeletedTimeAt(LocalDateTime.now()); // 채팅방 deletedAt = 현재시간
     }
+
+    // 해당 회원이 속한 채팅방 리스트 (회원입장 채팅방 리스트)
+
+
+    // 채팅방 리스트(admin입장 채팅방 리스트)
+
+
 }

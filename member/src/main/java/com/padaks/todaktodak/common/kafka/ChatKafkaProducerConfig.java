@@ -40,6 +40,5 @@ public class ChatKafkaProducerConfig {
     public KafkaTemplate<String, Object> chatKafkaTemplate(){
 
         return new KafkaTemplate<>(chatKafkaProducerFactory());
-
     }
 }

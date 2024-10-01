@@ -45,8 +45,8 @@ public class ChatKafkaConsumerConfig {
         // 다중 스레드에서 kafka 메시지 소비할 수 있도록 설정하는 Kafka 리스너 팩토리
         ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(chatKafkaConsumerFactory()); // chatKafkaConsumerFactory로 부터 Consumer설정 받아와서 사용
-        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL); // 메시지 소비 후 자동으로 확인(acknowledge)할지 여부
-        // MANUAL : 수동확인설정. 메시지 직접 처리완료로 표시
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD); // 메시지 소비 후 자동으로 확인(acknowledge)할지 여부
+        // MANUAL : 수동확인설정. 메시지 직접 처리완료로 표시 , RECORD : 메시지마다 자동으로 확인
 
         System.out.println("chatKafkaListenerContainerFactory Bean has been created! : 채팅 카프카 리스너 컨테이너");
 

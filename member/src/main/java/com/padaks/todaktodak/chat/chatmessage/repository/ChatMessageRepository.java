@@ -11,4 +11,8 @@ import java.util.List;
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
     // 채팅방 기준으로 모든 메시지 찾아오기
     List<ChatMessage> findByChatRoom(ChatRoom chatRoom);
+
+    // 채팅방 기준으로 모든 메시지를 최근 생성된 순으로 찾아오기
+    List<ChatMessage> findByChatRoomOrderByCreatedAtDesc(ChatRoom chatRoom);
+
 }

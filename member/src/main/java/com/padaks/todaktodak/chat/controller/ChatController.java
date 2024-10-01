@@ -30,12 +30,19 @@ public class ChatController {
         return new ResponseEntity<>(new CommonResDto(HttpStatus.CREATED, "채팅방 생성 성공", chatRoom.getId()),HttpStatus.CREATED);
     }
 
-
     // 채팅방의 모든 메시지 조회
     @GetMapping("/chatroom/{chatRoomId}/messages")
     public ResponseEntity<?> getMessages(@PathVariable Long chatRoomId) {
         List<ChatMessageResDto> messages = chatService.getMessages(chatRoomId);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "채팅방 메시지 조회 성공", messages), HttpStatus.OK);
     }
+
+    // 채팅방 삭제
+    @DeleteMapping("/delete/{chatroomId}")
+    public ResponseEntity<?> deleteChatRoom(@PathVariable Long chatRoomId){
+        chatService.deleteChatRoom(chatRoomId);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "채팅방 삭제 성공", null), HttpStatus.OK);
+    }
+
 
 }
