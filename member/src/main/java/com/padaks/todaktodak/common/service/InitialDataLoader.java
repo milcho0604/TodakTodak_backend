@@ -28,7 +28,7 @@ public class InitialDataLoader implements CommandLineRunner {
                             .password(passwordEncoder.encode("12341234"))
                             .phoneNumber("010-1111-2222")
                             .role(Role.TodakAdmin)
-                            .verified(true)
+                            .isVerified(true)
                     .build());
         }
     }

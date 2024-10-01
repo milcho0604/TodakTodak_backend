@@ -4,6 +4,7 @@ import com.padaks.todaktodak.common.dto.DtoMapper;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.common.feign.HospitalFeignClient;
 import com.padaks.todaktodak.config.JwtTokenProvider;
+import com.padaks.todaktodak.member.domain.Address;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.domain.Role;
 import com.padaks.todaktodak.member.dto.*;
@@ -14,10 +15,17 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
@@ -167,7 +175,7 @@ public class MemberService {
     }
 
 
-    // 비밀번호 확인 및 검증 로렢
+    // 비밀번호 확인 및 검증 로
     private void validatePassword(String newPassword, String confirmPassword, String currentPassword) {
         if (!newPassword.equals(confirmPassword)) {
             throw new RuntimeException("동일하지 않은 비밀번호 입니다.");
@@ -261,11 +269,14 @@ public class MemberService {
             System.out.println("전화번호가 변경되었습니다: " + member.getPhoneNumber());
             isUpdated = true;
         }
+
         if (editReqDto.getAddress() != null) {
-            member.changeAddress(editReqDto.getAddress());
+            Address newAddress = new Address(editReqDto.getAddress().getCity(), editReqDto.getAddress().getStreet(), editReqDto.getAddress().getZipcode());
+            member.changeAddress(newAddress);
             System.out.println("주소가 변경되었습니다: " + member.getAddress());
             isUpdated = true;
         }
+
 
         // 수정된 회원 정보 저장
         if (isUpdated) {
@@ -386,6 +397,37 @@ public class MemberService {
     // email 마스킹 처리 메서드
     private String maskEmail(String email) {
         return email.substring(0, 4) + "******" + email.substring(email.indexOf("@"));
+    }
+
+    // 비밀번호 재설정 링크 전송
+    public void sendPasswordResetLink(MemberFindPasswordDto dto) {
+        Member member = memberRepository.findByMemberEmail(dto.getMemberEmail())
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
+        // userId를 추가 인자로 전달하여 토큰 생성
+        String resetToken = jwtTokenprovider.createToken(member.getMemberEmail(), member.getRole().name(), member.getId());
+
+        // Redis에 저장 (필요한 경우)
+        redisService.saveVerificationCode(dto.getMemberEmail(), resetToken);
+
+        // 이메일 전송
+//        String passwordResetLink = "https://www.teenkiri.site/user/reset-password?token=" + resetToken;
+//        "http:localhost8080://member-service/member/reset/password"
+        // 비밀번호 재설정 링크 URL 수정
+        String passwordResetLink = "http://localhost:8081/member/reset/password?token=" + resetToken;
+
+        emailService.sendSimpleMessage(dto.getMemberEmail(), "비밀번호 재설정", "비밀번호 재설정 링크: " + passwordResetLink);
+    }
+
+    // 비밀번호 재설정
+    public void resetPassword(PasswordResetDto dto) {
+        String email = jwtTokenprovider.getEmailFromToken(dto.getToken());
+        Member member = memberRepository.findByMemberEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
+
+        validatePassword(dto.getNewPassword(), dto.getConfirmPassword(), member.getPassword());
+
+        member.resetPassword(passwordEncoder.encode(dto.getNewPassword()));
+        memberRepository.save(member);
     }
 
 }
