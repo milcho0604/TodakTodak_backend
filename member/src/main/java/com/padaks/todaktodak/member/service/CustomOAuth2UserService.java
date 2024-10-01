@@ -62,7 +62,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         }
         if (member.getPhoneNumber() == null){
             String phone = "핸드폰 번호를 입력해주세요";
-            member.updatePhoneNumber(phone);로그인
+            member.updatePhoneNumber(phone);
         }
 //        if (member.isVerified() == false) {
 //            member.updateVerified();
