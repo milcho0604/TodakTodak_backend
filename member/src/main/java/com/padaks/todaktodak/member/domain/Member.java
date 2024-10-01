@@ -176,4 +176,7 @@ public class Member extends BaseTimeEntity {
         this.password = password;
     }
 
+    public void updatePhoneNumber(String phone) {
+        this.phoneNumber = phone;
+    }
 }
