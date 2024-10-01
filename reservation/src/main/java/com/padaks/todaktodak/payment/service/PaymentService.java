@@ -90,6 +90,8 @@ public class PaymentService {
 
         int fee = medicalChart.getFee();
 
+        String adminEmail = medicalChart.getReservation().getHospital().getAdminEmail();
+
         String actualImpUid = extractImpUid(impUid);  // impUid 값 추출 함수 사용
 //        System.out.println("Extracted impUid: " + actualImpUid);
 
@@ -147,9 +149,11 @@ public class PaymentService {
             messageData.put("memberEmail", memberEmail);
             messageData.put("fee", fee);
             messageData.put("name", name);
+            messageData.put("adminEmail", adminEmail);
 
             // 객체를 JSON 문자열로 변환
             String message = objectMapper.writeValueAsString(messageData);
+
 
             // Kafka로 메시지 전송
             kafkaTemplate.send("payment-success", message);
@@ -182,6 +186,7 @@ public class PaymentService {
             messageData.put("memberEmail", memberEmail);
             messageData.put("fee", fee);
             messageData.put("impUid", impUid);
+            messageData.put("adminEmail", adminEmail);
 
             // 객체를 JSON 문자열로 변환
             String message = objectMapper.writeValueAsString(messageData);
