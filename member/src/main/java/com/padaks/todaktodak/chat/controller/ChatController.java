@@ -3,6 +3,7 @@ package com.padaks.todaktodak.chat.controller;
 import com.padaks.todaktodak.chat.chatmessage.dto.ChatMessageReqDto;
 import com.padaks.todaktodak.chat.chatmessage.dto.ChatMessageResDto;
 import com.padaks.todaktodak.chat.chatroom.domain.ChatRoom;
+import com.padaks.todaktodak.chat.chatroom.dto.ChatRoomListResDto;
 import com.padaks.todaktodak.chat.service.ChatService;
 import com.padaks.todaktodak.common.dto.CommonResDto;
 import lombok.RequiredArgsConstructor;
@@ -38,11 +39,24 @@ public class ChatController {
     }
 
     // 채팅방 삭제
-    @DeleteMapping("/delete/{chatroomId}")
+    @DeleteMapping("/chatroom/delete/{chatroomId}")
     public ResponseEntity<?> deleteChatRoom(@PathVariable Long chatRoomId){
         chatService.deleteChatRoom(chatRoomId);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "채팅방 삭제 성공", null), HttpStatus.OK);
     }
 
+    // 해당 회원이 속한 채팅방 리스트 (회원입장 채팅방 리스트)
+    @GetMapping("/chatroom/list/member")
+    private ResponseEntity<?> getMemberChatRoomList(){
+        List<ChatRoomListResDto> chatRoomList = chatService.getMemberChatRoomList();
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "회원 채팅방 리스트 조회 성공", chatRoomList), HttpStatus.OK);
+    }
+
+    // admin 채팅방 리스트 (admin입장 채팅방 리스트)
+    @GetMapping("/chatroom/list/admin")
+    private ResponseEntity<?> getAdminChatRoomList(){
+        List<ChatRoomListResDto> chatRoomList = chatService.getAdminChatRoomList();
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "admin 채팅방 리스트 조회 성공", chatRoomList), HttpStatus.OK);
+    }
 
 }
