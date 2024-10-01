@@ -73,10 +73,11 @@ public class ReservationKafkaConsumer {
         }
     }
 
-    @KafkaListener(topics = "reservationImmediate", groupId = "group_id", containerFactory = "kafkaListenerContainerFactory")
+    @KafkaListener(topics = "reservationImmediate", groupId = "group_id", containerFactory = "ppKafkaListenerContainerFactory")
     public void consumerReservation(String message,
                                     @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String hospitalKey,
-                                    @Header(KafkaHeaders.RECEIVED_PARTITION_ID) String partition) {
+                                    @Header(KafkaHeaders.RECEIVED_PARTITION_ID) String partition,
+                                    Acknowledgment acknowledgment) {
         log.info("ReservationConsumer[consumerReservation] : Kafka 메시지 수신 - 병원 파티션 {}, 의사 {}", hospitalKey, partition);
 
         try {
@@ -98,13 +99,14 @@ public class ReservationKafkaConsumer {
             RedisDto redisDto = dtoMapper.toRedisDto(reservation);
 
             redisTemplate.opsForZSet().add(key, redisDto, sequence);
+            acknowledgment.acknowledge();
             log.info("KafkaListener[handleReservation] : 예약 대기열 처리 완료");
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
 
-    @KafkaListener(topics = "reservationSchedule", groupId = "Schedule_id", containerFactory = "kafkaListenerContainerFactory")
+    @KafkaListener(topics = "reservationSchedule", groupId = "Schedule_id", containerFactory = "ppKafkaListenerContainerFactory")
     public void scheduledReservation(String message,
                                      @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String doctorKey,
                                      @Header(KafkaHeaders.RECEIVED_PARTITION_ID) String partition,
@@ -130,7 +132,7 @@ public class ReservationKafkaConsumer {
                 isLockState = redisScheduleTemplate.opsForValue().setIfAbsent(lockKey, "LOCKED", 2, TimeUnit.MINUTES);
             } else {
                 // 로그 출력 또는 예외 처리
-                throw new IllegalStateException("redisTemplate or opsForValue is null");
+                throw new BaseException(REDIS_ERROR);
             }
             if(Boolean.TRUE.equals(isLockState)){
                 try{
@@ -147,6 +149,7 @@ public class ReservationKafkaConsumer {
                     sendReservationNotification(savedReservation);
                 }finally {
                     redisScheduleTemplate.delete(lockKey);
+                    acknowledgment.acknowledge();
                     log.info("ReservationConsumer[consumerReservation] : 락 해제 완료");
                 }
             }else{
