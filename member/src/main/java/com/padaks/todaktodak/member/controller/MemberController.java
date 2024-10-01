@@ -159,6 +159,7 @@ public class MemberController {
     // 회원 정보 수정
     @PostMapping("/edit-info")
     public ResponseEntity<?> editMemberInfo(
+            @RequestParam("name") String name,
             @RequestParam("phoneNumber") String phoneNumber,
             @RequestParam("address") String addressJson, // JSON 문자열로 받은 주소
             @RequestParam(value = "profileImage", required = false) MultipartFile profileImage,
@@ -174,6 +175,7 @@ public class MemberController {
 
             // DTO 생성 및 값 설정
             MemberUpdateReqDto updateReqDto = MemberUpdateReqDto.builder()
+                    .name(name)
                     .phoneNumber(phoneNumber)
                     .address(address)
                     .profileImage(profileImage)
