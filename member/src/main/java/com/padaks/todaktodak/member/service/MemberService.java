@@ -425,5 +425,11 @@ public class MemberService {
         member.resetPassword(passwordEncoder.encode(dto.getNewPassword()));
         memberRepository.save(member);
     }
-
+    // 신고 카운트 증가시키는 메서드
+    public int reportCountUp(String email) {
+        log.info(email);
+        Member member = memberRepository.findByMemberEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
+        return member.reportCountUp();
+    }
 }

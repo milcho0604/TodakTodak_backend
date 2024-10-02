@@ -345,5 +345,11 @@ public class MemberController {
                     .body(new CommonResDto(HttpStatus.BAD_REQUEST, "비밀번호 재설정에 실패했습니다: " + e.getMessage(), null));
         }
     }
+    // 신고 카운트 증가
+    @PostMapping("/report/count/{memberEmail}")
+    public int reportCountUp(@PathVariable String memberEmail) {
+        log.info(memberEmail);
+        return memberService.reportCountUp(memberEmail);
+    }
 
 }
