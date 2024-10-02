@@ -3,6 +3,7 @@ package com.padaks.todaktodak.review.domain;
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.review.dto.ReviewListResDto;
+import com.padaks.todaktodak.review.dto.ReviewUpdateReqDto;
 import lombok.*;
 import org.hibernate.annotations.Check;
 
@@ -43,5 +44,10 @@ public class Review extends BaseTimeEntity {
                 .name(this.name)
                 .createdAt(this.getCreatedAt())
                 .build();
+    }
+
+    public void updateReview(ReviewUpdateReqDto dto){
+        this.rating = dto.getRating();
+        this.contents = dto.getContents();
     }
 }

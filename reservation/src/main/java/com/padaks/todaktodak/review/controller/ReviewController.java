@@ -1,12 +1,23 @@
 package com.padaks.todaktodak.review.controller;
 
+import com.padaks.todaktodak.common.dto.CommonErrorDto;
+import com.padaks.todaktodak.common.dto.CommonResDto;
+import com.padaks.todaktodak.review.domain.Review;
+import com.padaks.todaktodak.review.dto.ReviewListResDto;
 import com.padaks.todaktodak.review.dto.ReviewSaveReqDto;
+import com.padaks.todaktodak.review.dto.ReviewUpdateReqDto;
 import com.padaks.todaktodak.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping("/review")
@@ -16,9 +27,53 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
+    // 리뷰 생성
     @PostMapping("/create")
-    public ResponseEntity<?> reviewCreate(@RequestBody ReviewSaveReqDto dto){
-        reviewService.createReview(dto);
-        return new ResponseEntity<>("작성 완료", HttpStatus.OK);
+    public ResponseEntity<?> createReview(@RequestBody ReviewSaveReqDto dto) {
+        try {
+            Review review = reviewService.createReview(dto);
+            return new ResponseEntity<>(new CommonResDto(HttpStatus.CREATED, "리뷰가 작성되었습니다.", review.getId()), HttpStatus.CREATED);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(new CommonErrorDto(HttpStatus.BAD_REQUEST, e.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (IllegalStateException e) {
+            return new ResponseEntity<>(new CommonErrorDto(HttpStatus.CONFLICT, e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new CommonErrorDto(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // 병원 ID 기준으로 리뷰 목록 조회
+    @GetMapping("/list/{hospital_id}")
+    public ResponseEntity<?> getReviews(@PathVariable("hospital_id") Long hospitalId,
+                                        @PageableDefault(size = 10, sort = "createdTime", direction = Sort.Direction.DESC) Pageable pageable) {
+        try {
+            Page<ReviewListResDto> reviews = reviewService.reviewListResDtos(hospitalId, pageable);
+            return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "리뷰 목록입니다.", reviews), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new CommonErrorDto(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    // 리뷰 수정
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateReview(@PathVariable Long id, @RequestBody ReviewUpdateReqDto dto) {
+        try {
+            reviewService.updateReview(id, dto);
+            return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "리뷰가 성공적으로 수정되었습니다.", id), HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(new CommonErrorDto(HttpStatus.NOT_FOUND, e.getMessage()), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // 리뷰 삭제 (soft delete)
+    @GetMapping("/delete/{id}")
+    public ResponseEntity<?> deleteReview(@PathVariable Long id) {
+        try {
+            reviewService.deletedReview(id);
+            return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "리뷰가 삭제되었습니다.", id), HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(new CommonErrorDto(HttpStatus.NOT_FOUND, e.getMessage()), HttpStatus.NOT_FOUND);
+        }
     }
 }

@@ -10,6 +10,7 @@ import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import com.padaks.todaktodak.review.domain.Review;
 import com.padaks.todaktodak.review.dto.ReviewListResDto;
 import com.padaks.todaktodak.review.dto.ReviewSaveReqDto;
+import com.padaks.todaktodak.review.dto.ReviewUpdateReqDto;
 import com.padaks.todaktodak.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,14 +59,25 @@ public class ReviewService {
         Page<Reservation> reservations = reservationRepository.findAllByHospitalId(hospitalId, pageable);
         // 예약에 연결된 리뷰 리스트를 반환
         return reservations.map(reservation -> {
-            Review review = reviewRepository.findByReservationId(reservation.getId())
+            Review review = reviewRepository.findByReservationIdAndDeletedAtIsNull(reservation.getId())
                     .orElseThrow(() -> new EntityNotFoundException("해당 예약에 대한 리뷰가 존재하지 않습니다."));
             return review.listFromEntity();
         });
     }
 
-//    public void updateReview()
+    // 리뷰 수정
+    public void updateReview(Long id, ReviewUpdateReqDto dto){
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 리뷰입니다."));
+        review.updateReview(dto);
+        reviewRepository.save(review);
+    }
 
-
-
+    // 리뷰 삭제
+    public void deletedReview (Long id){
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 리뷰입니다."));
+        review.updateDeleteAt();
+        reviewRepository.save(review);
+    }
 }
