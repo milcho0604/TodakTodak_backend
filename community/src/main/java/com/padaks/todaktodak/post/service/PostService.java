@@ -62,12 +62,13 @@ public class PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(()-> new EntityNotFoundException("존재하지 않는 post입니다."));
 
-
         // 조회수 증가 로직 추가
         incrementPostViews(id);
+        Long viewCount = getPostViews(id);
+        Long likeCount = getPostLikesCount(id);
 
         List<CommentDetailDto> comments = commentService.getCommentByPostId(id);
-        PostDetailDto postDetailDto = PostDetailDto.fromEntity(post, comments);
+        PostDetailDto postDetailDto = PostDetailDto.fromEntity(post, comments, viewCount, likeCount);
         return postDetailDto;
     }
 
@@ -107,8 +108,15 @@ public class PostService {
     public Long getPostViews(Long postId) {
         String key = "post:views:" + postId;
         Object value = redisTemplate.opsForValue().get(key);
-        return value == null ? 0 : (Long) value;
+        if (value instanceof Integer) {
+            return ((Integer) value).longValue();  // Integer를 Long으로 변환
+        } else if (value instanceof Long) {
+            return (Long) value;
+        } else {
+            return 0L;
+        }
     }
+
 
     // Redis 좋아요 추가
     public void likePost(Long postId) {
@@ -143,7 +151,14 @@ public class PostService {
     // Redis 좋아요 수 조회
     public Long getPostLikesCount(Long postId) {
         String key = "post:likes:" + postId;
-        return redisTemplate.opsForSet().size(key);  // 좋아요 수 조회
+        Object value = redisTemplate.opsForSet().size(key);
+        if (value instanceof Integer) {
+            return ((Integer) value).longValue();  // Integer를 Long으로 변환
+        } else if (value instanceof Long) {
+            return (Long) value;
+        } else {
+            return 0L;
+        }
     }
 }
 

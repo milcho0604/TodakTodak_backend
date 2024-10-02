@@ -79,7 +79,7 @@ public class PostController {
     }
 
     // 조회수 증가 및 조회
-    @GetMapping("/detail/{id}/views")
+    @GetMapping("/detail/views/{id}")
     public ResponseEntity<?> getPostViews(@PathVariable Long id) {
         try {
             postService.incrementPostViews(id); // 조회수 증가
@@ -94,7 +94,7 @@ public class PostController {
     }
 
     // 좋아요 추가
-    @PostMapping("/detail/{id}/like")
+    @PostMapping("/detail/like/{id}")
     public ResponseEntity<?> likePost(@PathVariable Long id) {
         try {
             postService.likePost(id);
@@ -108,7 +108,7 @@ public class PostController {
     }
 
     // 좋아요 취소
-    @PostMapping("/detail/{id}/unlike")
+    @PostMapping("/detail/unlike/{id}")
     public ResponseEntity<?> unlikePost(@PathVariable Long id) {
         try {
             postService.unlikePost(id);
