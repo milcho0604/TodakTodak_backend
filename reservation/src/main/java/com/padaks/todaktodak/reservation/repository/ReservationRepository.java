@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.*;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -28,6 +29,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     Optional<Reservation> findByIdAndStatus(Long id, Status status);
 
     // 병원 ID로 예약 목록을 페이징 처리하여 조회
-    Page<Reservation> findAllByHospitalId(Long hospitalId, Pageable pageable);
+    List<Reservation> findAllByHospitalId(Long hospitalId);
 
 }

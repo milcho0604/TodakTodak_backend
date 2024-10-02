@@ -45,11 +45,12 @@ public class ReviewController {
     // 병원 ID 기준으로 리뷰 목록 조회
     @GetMapping("/list/{hospital_id}")
     public ResponseEntity<?> getReviews(@PathVariable("hospital_id") Long hospitalId,
-                                        @PageableDefault(size = 10, sort = "createdTime", direction = Sort.Direction.DESC) Pageable pageable) {
+                                        @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         try {
             Page<ReviewListResDto> reviews = reviewService.reviewListResDtos(hospitalId, pageable);
             return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "리뷰 목록입니다.", reviews), HttpStatus.OK);
         } catch (EntityNotFoundException e) {
+            e.printStackTrace();
             return new ResponseEntity<>(new CommonErrorDto(HttpStatus.NOT_FOUND, "리뷰 또는 예약 내역을 찾을 수 없습니다: " + e.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             e.printStackTrace();  // 서버 콘솔에 오류 출력

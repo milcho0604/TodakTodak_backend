@@ -20,6 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -54,16 +57,20 @@ public class ReviewService {
     }
 
     // 리뷰 리스트 (병원 ID 기준)
-    public Page<ReviewListResDto> reviewListResDtos(Long hospitalId, Pageable pageable){
-        // 병원에 속한 예약 목록을 페이징 처리하여 가져옴
-        Page<Reservation> reservations = reservationRepository.findAllByHospitalId(hospitalId, pageable);
-        // 예약에 연결된 리뷰 리스트를 반환
-        return reservations.map(reservation -> {
-            Review review = reviewRepository.findByReservationIdAndDeletedAtIsNull(reservation.getId())
-                    .orElseThrow(() -> new EntityNotFoundException("해당 예약에 대한 리뷰가 존재하지 않습니다."));
-            return review.listFromEntity();
-        });
+    public Page<ReviewListResDto> reviewListResDtos(Long hospitalId, Pageable pageable) {
+        // 병원 ID에 속한 예약을 조회하여 예약 ID를 가져옴
+        List<Reservation> reservations = reservationRepository.findAllByHospitalId(hospitalId);
+
+        // 예약 목록에서 리뷰가 있는 예약만 조회하여 페이징 처리
+        Page<Review> reviews = reviewRepository.findByReservationInAndDeletedAtIsNull(reservations, pageable);
+
+        // 리뷰를 DTO로 변환하여 페이징된 결과로 반환
+        Page<ReviewListResDto> reviewDtos = reviews.map(review -> review.listFromEntity());
+
+        return reviewDtos;
     }
+
+
 
     // 리뷰 수정
     public void updateReview(Long id, ReviewUpdateReqDto dto){
