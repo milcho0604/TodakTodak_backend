@@ -6,11 +6,10 @@ import com.padaks.todaktodak.reservation.domain.ReserveType;
 import com.padaks.todaktodak.reservation.dto.*;
 import com.padaks.todaktodak.reservation.domain.ReservationHistory;
 import com.padaks.todaktodak.review.domain.Review;
-import com.padaks.todaktodak.review.dto.CreateReviewReqDto;
+import com.padaks.todaktodak.review.dto.ReviewSaveReqDto;
 import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
 // Mapper 어노테이션을 붙이면 MapStruct 가 자동으로 DtoMapper 구현체를 생성해준다.
@@ -52,10 +51,10 @@ public interface DtoMapper {
 
 //    Review 의 reservation 을 파라미터로 받음 reservation으로 매핑.
     @Mapping(source = "reservation", target = "reservation")
-//    CreateReviewReqDto 에서 id 는 매핑 타겟에서 제외하겠다.
-//    제외 하지 않으면 CreateReviewReqDto 에서 id 도 매핑하려고 했어 오류가 나거나 잘못된 값 매핑 가능성이 있음.
+//    ReviewSaveReqDto 에서 id 는 매핑 타겟에서 제외하겠다.
+//    제외 하지 않으면 ReviewSaveReqDto 에서 id 도 매핑하려고 했어 오류가 나거나 잘못된 값 매핑 가능성이 있음.
     @Mapping(target = "id", ignore = true)
-    Review toReview(CreateReviewReqDto createReviewReqDto, Reservation reservation);
+    Review toReview(ReviewSaveReqDto createReviewReqDto, Reservation reservation);
 
     RedisDto toRedisDto(Reservation reservation);
 }

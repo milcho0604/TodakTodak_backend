@@ -1,6 +1,6 @@
 package com.padaks.todaktodak.review.controller;
 
-import com.padaks.todaktodak.review.dto.CreateReviewReqDto;
+import com.padaks.todaktodak.review.dto.ReviewSaveReqDto;
 import com.padaks.todaktodak.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,10 +17,8 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> reviewCreate(@RequestBody CreateReviewReqDto dto){
-
-        reviewService.reviewCreate(dto);
-
+    public ResponseEntity<?> reviewCreate(@RequestBody ReviewSaveReqDto dto){
+        reviewService.createReview(dto);
         return new ResponseEntity<>("작성 완료", HttpStatus.OK);
     }
 }

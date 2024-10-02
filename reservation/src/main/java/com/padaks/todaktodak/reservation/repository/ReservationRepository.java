@@ -26,4 +26,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     Optional<Reservation> findById(Long id);
 
     Optional<Reservation> findByIdAndStatus(Long id, Status status);
+
+    // 병원 ID로 예약 목록을 페이징 처리하여 조회
+    Page<Reservation> findAllByHospitalId(Long hospitalId, Pageable pageable);
+
 }
