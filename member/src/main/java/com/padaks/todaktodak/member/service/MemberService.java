@@ -250,7 +250,7 @@ public class MemberService {
 
         // 이름, 전화번호, 주소 업데이트
         if (editReqDto.getName() != null) {
-            if (editReqDto.getName().equals("이름을 변경해주세요")){
+            if (editReqDto.getName().equals("이름을 입력해주세요")){
                 throw new Exception("이름을 변경해주세요");
             }else {
                 member.changeName(editReqDto.getName());
@@ -387,10 +387,6 @@ public class MemberService {
     public String findId(MemberFindIdDto findIdDto) {
         Member member = memberRepository.findByNameAndPhoneNumber(findIdDto.getName(), findIdDto.getPhoneNumber())
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
-        System.out.println(findIdDto.getName());
-        System.out.println(findIdDto.getPhoneNumber());
-        System.out.println(member);
-        System.out.println(member.getMemberEmail());
         return maskEmail(member.getMemberEmail());
     }
 
