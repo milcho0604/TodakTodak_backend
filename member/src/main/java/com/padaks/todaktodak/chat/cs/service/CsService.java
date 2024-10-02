@@ -35,7 +35,7 @@ public class CsService {
         ChatRoom chatRoom = chatRoomRepository.findByIdOrThrow(dto.getChatRoomId());
 
         for(Cs cs : chatRoom.getCsList()){ // 채팅방에 엮여있는 CS 리스트 순회
-            if(cs.getDeletedAt() != null){
+            if(cs.getDeletedAt() == null){
                 // 삭제되지 않은 CS 내역이 이미 존재할 경우 하나의 채팅방에 2개이상의 CS가 존재하는 것으로 간주
                 throw new IllegalStateException("해당 채팅방에 이미 상담내역이 작성되었습니다.");
             }
@@ -51,7 +51,7 @@ public class CsService {
         Cs cs = csRepository.findByIdOrThrow(dto.getId());
         cs.updateCs(dto, chatRoom); // cs에서 업데이트
 
-        return cs;
+        return csRepository.save(cs);
     }
 
     // CS id로 CS 조회
@@ -74,6 +74,7 @@ public class CsService {
                 .orElseThrow(()-> new EntityNotFoundException("id에 해당하는 CS 내역이 존재하지 않습니다."));
 
         cs.setDeletedTimeAt(LocalDateTime.now());
+        csRepository.save(cs);
     }
 
 }

@@ -11,5 +11,5 @@ public enum CsStatus {
     COMPLETED("COMPLETED", "처리완료");
 
     private final String key;
-    private final String string;
+    private final String value;
 }

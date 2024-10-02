@@ -36,9 +36,9 @@ public class ChatRoomListResDto {
                 .chatRoomId(chatRoom.getId())
                 .ChatRoomCreatedAt(chatRoom.getCreatedAt())
                 .recentChatTime(chatRoom.getRecentChatTime())
-                .lastMessage(chatMessage.getContents())
-                .senderName(chatMessage.getSender().getName())
-                .senderProfileImgUrl(chatMessage.getSender().getProfileImgUrl())
+                .lastMessage(chatMessage != null ? chatMessage.getContents() : null)
+                .senderName(chatMessage != null ? chatMessage.getSender().getName() : null)
+                .senderProfileImgUrl(chatMessage != null ? chatMessage.getSender().getProfileImgUrl() : null)
                 .build();
     }
 
