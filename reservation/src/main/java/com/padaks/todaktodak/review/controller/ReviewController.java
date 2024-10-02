@@ -3,6 +3,7 @@ package com.padaks.todaktodak.review.controller;
 import com.padaks.todaktodak.common.dto.CommonErrorDto;
 import com.padaks.todaktodak.common.dto.CommonResDto;
 import com.padaks.todaktodak.review.domain.Review;
+import com.padaks.todaktodak.review.dto.ReviewDetailDto;
 import com.padaks.todaktodak.review.dto.ReviewListResDto;
 import com.padaks.todaktodak.review.dto.ReviewSaveReqDto;
 import com.padaks.todaktodak.review.dto.ReviewUpdateReqDto;
@@ -79,5 +80,14 @@ public class ReviewController {
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(new CommonErrorDto(HttpStatus.NOT_FOUND, e.getMessage()), HttpStatus.NOT_FOUND);
         }
+    }
+
+    // 병원의 리뷰 통계 (평균 점수 및 평점별 개수) 조회
+    @GetMapping("/detail/{hospitalId}")
+    public ResponseEntity<ReviewDetailDto> getReviewStatistics(
+            @PathVariable Long hospitalId,
+            Pageable pageable) {
+        ReviewDetailDto reviewDetailDto = reviewService.reviewDetail(hospitalId, pageable);
+        return ResponseEntity.ok(reviewDetailDto);
     }
 }

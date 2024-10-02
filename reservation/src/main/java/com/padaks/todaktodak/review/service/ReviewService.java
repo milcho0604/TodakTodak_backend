@@ -8,6 +8,7 @@ import com.padaks.todaktodak.hospital.repository.HospitalRepository;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import com.padaks.todaktodak.review.domain.Review;
+import com.padaks.todaktodak.review.dto.ReviewDetailDto;
 import com.padaks.todaktodak.review.dto.ReviewListResDto;
 import com.padaks.todaktodak.review.dto.ReviewSaveReqDto;
 import com.padaks.todaktodak.review.dto.ReviewUpdateReqDto;
@@ -70,8 +71,6 @@ public class ReviewService {
         return reviewDtos;
     }
 
-
-
     // 리뷰 수정
     public void updateReview(Long id, ReviewUpdateReqDto dto){
         Review review = reviewRepository.findById(id)
@@ -81,10 +80,43 @@ public class ReviewService {
     }
 
     // 리뷰 삭제
-    public void deletedReview (Long id){
+    public void deletedReview(Long id){
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 리뷰입니다."));
         review.updateDeleteAt();
         reviewRepository.save(review);
+    }
+
+    // 병원의 리뷰 점수 평균과 평점별 리뷰 개수를 계산
+    public ReviewDetailDto reviewDetail(Long hospitalId, Pageable pageable) {
+        // 병원에 속한 모든 예약을 조회
+        List<Reservation> reservations = reservationRepository.findAllByHospitalId(hospitalId);
+
+        // 예약 목록에서 리뷰를 페이징 처리하여 조회
+        Page<Review> reviewPage = reviewRepository.findByReservationInAndDeletedAtIsNull(reservations, pageable);
+
+        // 리뷰가 없으면 기본값 반환
+        if (reviewPage.isEmpty()) {
+            return new ReviewDetailDto(0.0, 0, 0, 0, 0, 0);
+        }
+
+        // 리뷰의 점수를 합산하고 평균을 계산 (소수점 첫째 자리까지 표시)
+        double averageRating = reviewPage.getContent().stream()
+                .mapToInt(Review::getRating)
+                .average()
+                .orElse(0.0);
+
+// 소수점 첫째 자리까지만 유지
+        averageRating = Math.round(averageRating * 10.0) / 10.0;
+
+        // 평점별 리뷰 개수 계산 (1점부터 5점까지)
+        long count1Star = reviewPage.getContent().stream().filter(review -> review.getRating() == 1).count();
+        long count2Stars = reviewPage.getContent().stream().filter(review -> review.getRating() == 2).count();
+        long count3Stars = reviewPage.getContent().stream().filter(review -> review.getRating() == 3).count();
+        long count4Stars = reviewPage.getContent().stream().filter(review -> review.getRating() == 4).count();
+        long count5Stars = reviewPage.getContent().stream().filter(review -> review.getRating() == 5).count();
+
+        // 결과를 DTO로 반환
+        return new ReviewDetailDto(averageRating, count1Star, count2Stars, count3Stars, count4Stars, count5Stars);
     }
 }
