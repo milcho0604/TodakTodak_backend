@@ -3,7 +3,6 @@ package com.padaks.todaktodak.review.service;
 import com.padaks.todaktodak.common.dto.DtoMapper;
 import com.padaks.todaktodak.common.dto.MemberFeignDto;
 import com.padaks.todaktodak.common.feign.MemberFeignClient;
-import com.padaks.todaktodak.hospital.domain.Hospital;
 import com.padaks.todaktodak.hospital.repository.HospitalRepository;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
@@ -22,8 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -43,18 +40,28 @@ public class ReviewService {
         return member;
     }
 
-    // 리뷰 생성
-    public Review createReview(ReviewSaveReqDto dto){
+    // 리뷰 생성 (예약당 하나의 리뷰만 생성 가능 1:1 관계이므로)
+    public Review createReview(ReviewSaveReqDto dto) {
         MemberFeignDto memberFeignDto = getMemberInfo();
         String email = memberFeignDto.getMemberEmail();
         String name = memberFeignDto.getName();
+
+        // 예약 정보 조회
         Reservation reservation = reservationRepository.findById(dto.getReservationId())
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 예약내역입니다."));
-        if (reservation.getMemberEmail().equals(email)){
-            return reviewRepository.save(dto.toEntity(email, reservation, name));
-        } else {
+
+        // 예약자와 리뷰 작성자의 이메일 비교
+        if (!reservation.getMemberEmail().equals(email)) {
             throw new RuntimeException("예약 정보가 일치하지 않습니다.");
         }
+
+        // 예약에 이미 리뷰가 있는지 확인
+        if (reviewRepository.existsByReservationId(dto.getReservationId())) {
+            throw new RuntimeException("이미 이 예약에 대한 리뷰가 존재합니다.");
+        }
+
+        // 검증을 통과하면 리뷰 생성
+        return reviewRepository.save(dto.toEntity(email, reservation, name));
     }
 
     // 리뷰 리스트 (병원 ID 기준)
