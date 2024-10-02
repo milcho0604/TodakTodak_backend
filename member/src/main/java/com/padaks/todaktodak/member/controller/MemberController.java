@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -344,6 +345,11 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new CommonResDto(HttpStatus.BAD_REQUEST, "비밀번호 재설정에 실패했습니다: " + e.getMessage(), null));
         }
+    }
+
+    @PostMapping("/member/test")
+    public void updateNoShowCount(){
+        memberService.updateNoShowCount();
     }
 
 }
