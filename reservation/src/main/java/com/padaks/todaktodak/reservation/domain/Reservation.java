@@ -36,6 +36,9 @@ public class Reservation extends BaseTimeEntity {
     @Column(nullable = false)
     private Long childId;
 
+    @Column
+    private String doctorName;
+
     @Column(nullable = false)
     private String doctorEmail;
 

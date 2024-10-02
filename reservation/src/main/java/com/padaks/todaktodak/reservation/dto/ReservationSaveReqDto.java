@@ -20,6 +20,7 @@ public class ReservationSaveReqDto {
     private String memberEmail;
     private Long childId;
     private Long hospitalId;
+    private String doctorName;
     private String doctorEmail;
     private ReserveType reservationType;
     private LocalDate reservationDate;
