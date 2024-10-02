@@ -441,6 +441,17 @@ public class MemberService {
         }
         log.info("멤버 탈퇴 처리 요청 완료");
     }
+
+    @Scheduled(cron = "0 0 0 2 * *")
+    public void clearNoShowCount(){
+        log.info("노쇼 카운트 초기화 실행");
+        List<Member> memberList = memberRepository.findAllByNoShowCountGreaterThanEqualAndDeletedAtIsNotNull(1);
+        for(Member member : memberList){
+            member.clearNoShowCount();
+        }
+        log.info("노쇼 카운트 초기화 완료");
+    }
+
     // 신고 카운트 증가시키는 메서드
     public int reportCountUp(String email) {
         log.info(email);
