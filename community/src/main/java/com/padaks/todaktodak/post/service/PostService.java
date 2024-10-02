@@ -11,8 +11,10 @@ import com.padaks.todaktodak.util.S3ClientFileUpload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 //import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +31,8 @@ public class PostService {
     private final PostRepository postRepository;
     private final S3ClientFileUpload s3ClientFileUpload;
     private final CommentService commentService;
+    @Qualifier("7") // Redis 퀄리파이어 설정
+    private final RedisTemplate<String, Object> redisTemplate;
 
     //member 객체 리턴, 토큰 포함
     public MemberFeignDto getMemberInfo(){
@@ -58,6 +62,10 @@ public class PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(()-> new EntityNotFoundException("존재하지 않는 post입니다."));
 
+
+        // 조회수 증가 로직 추가
+        incrementPostViews(id);
+
         List<CommentDetailDto> comments = commentService.getCommentByPostId(id);
         PostDetailDto postDetailDto = PostDetailDto.fromEntity(post, comments);
         return postDetailDto;
@@ -78,6 +86,64 @@ public class PostService {
     public void deletePost(Long id){
         Post post = postRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 post입니다."));
         post.updateDeleteAt();
+    }
+
+    // Redis 조회수 증가 로직
+    public void incrementPostViews(Long postId) {
+        MemberFeignDto member = getMemberInfo();
+        String memberEmail = member.getMemberEmail();
+
+        String key = "post:views:" + postId;
+        String userKey = "post:views:users:" + postId;
+
+        Boolean hasViewed = redisTemplate.opsForSet().isMember(userKey, memberEmail);
+        if (!Boolean.TRUE.equals(hasViewed)) {
+            redisTemplate.opsForValue().increment(key, 1);  // 조회수 1 증가
+//            redisTemplate.opsForSet().add(userKey, memberEmail);  // 중복 방지용 유저 이메일 저장 추후 추가할 수 있음
+        }
+    }
+
+    // Redis 조회수 조회
+    public Long getPostViews(Long postId) {
+        String key = "post:views:" + postId;
+        Object value = redisTemplate.opsForValue().get(key);
+        return value == null ? 0 : (Long) value;
+    }
+
+    // Redis 좋아요 추가
+    public void likePost(Long postId) {
+        MemberFeignDto member = getMemberInfo();
+        String memberEmail = member.getMemberEmail();
+
+        String key = "post:likes:" + postId;
+        String userKey = "post:likes:users:" + postId;
+
+        Boolean hasLiked = redisTemplate.opsForSet().isMember(userKey, memberEmail);
+        if (!Boolean.TRUE.equals(hasLiked)) {
+            redisTemplate.opsForSet().add(key, memberEmail);  // 좋아요 누른 사용자 저장
+            redisTemplate.opsForSet().add(userKey, memberEmail);  // 중복 방지용 이메일 저장
+        }
+    }
+
+    // Redis 좋아요 취소
+    public void unlikePost(Long postId) {
+        MemberFeignDto member = getMemberInfo();
+        String memberEmail = member.getMemberEmail();
+
+        String key = "post:likes:" + postId;
+        String userKey = "post:likes:users:" + postId;
+
+        Boolean hasLiked = redisTemplate.opsForSet().isMember(userKey, memberEmail);
+        if (Boolean.TRUE.equals(hasLiked)) {
+            redisTemplate.opsForSet().remove(key, memberEmail);  // 좋아요 취소
+            redisTemplate.opsForSet().remove(userKey, memberEmail);  // 중복 방지 이메일 제거
+        }
+    }
+
+    // Redis 좋아요 수 조회
+    public Long getPostLikesCount(Long postId) {
+        String key = "post:likes:" + postId;
+        return redisTemplate.opsForSet().size(key);  // 좋아요 수 조회
     }
 }
 
