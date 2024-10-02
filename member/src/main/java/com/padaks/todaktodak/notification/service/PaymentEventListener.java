@@ -39,7 +39,6 @@ public class PaymentEventListener {
             System.out.println("Received Payment Success DTO: " + paymentSuccessDto);
 
             // 메시지 처리 후 수동 오프셋 커밋
-
             acknowledgment.acknowledge();
         } catch (Exception e) {
             System.err.println("Error processing payment success message: " + e.getMessage());
