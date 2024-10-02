@@ -12,6 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
+
     Page<Review> findByReservationInAndDeletedAtIsNull(List<Reservation> reservations, Pageable pageable);
     boolean existsByReservationId(Long reservationId);
 }

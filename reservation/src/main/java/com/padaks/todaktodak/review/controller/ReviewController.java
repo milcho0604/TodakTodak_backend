@@ -39,6 +39,7 @@ public class ReviewController {
         } catch (IllegalStateException e) {
             return new ResponseEntity<>(new CommonErrorDto(HttpStatus.CONFLICT, e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(new CommonErrorDto(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

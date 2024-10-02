@@ -30,9 +30,7 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final ReservationRepository reservationRepository;
-    private final DtoMapper dtoMapper;
     private final MemberFeignClient memberFeignClient;
-    private final HospitalRepository hospitalRepository;
 
     // member 객체 리턴, 토큰 포함
     public MemberFeignDto getMemberInfo() {
