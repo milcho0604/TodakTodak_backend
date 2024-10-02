@@ -31,4 +31,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     // 병원 ID로 예약 목록을 페이징 처리하여 조회
     List<Reservation> findAllByHospitalId(Long hospitalId);
 
+
+    List<Reservation> findAllByReservationDateAndReservationTime(LocalDate localDate, LocalTime localTime);
 }

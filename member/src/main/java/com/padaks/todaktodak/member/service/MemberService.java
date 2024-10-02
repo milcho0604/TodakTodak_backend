@@ -2,34 +2,28 @@ package com.padaks.todaktodak.member.service;
 
 import com.padaks.todaktodak.common.dto.DtoMapper;
 import com.padaks.todaktodak.common.exception.BaseException;
-import com.padaks.todaktodak.common.feign.HospitalFeignClient;
+import com.padaks.todaktodak.common.feign.ReservationFeignClient;
 import com.padaks.todaktodak.config.JwtTokenProvider;
 import com.padaks.todaktodak.member.domain.Address;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.domain.Role;
 import com.padaks.todaktodak.member.dto.*;
 import com.padaks.todaktodak.member.repository.MemberRepository;
-import com.padaks.todaktodak.notification.domain.Type;
 import com.padaks.todaktodak.util.S3ClientFileUpload;
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Random;
 
 import static com.padaks.todaktodak.common.exception.exceptionType.MemberExceptionType.MEMBER_NOT_FOUND;
@@ -46,7 +40,7 @@ public class MemberService {
     private final RedisService redisService;
     private final DtoMapper dtoMapper;
     private final S3ClientFileUpload s3ClientFileUpload;
-    private final HospitalFeignClient hospitalFeignClient;
+    private final ReservationFeignClient reservationFeignClient;
     private final FcmService fcmService;
 
     // 간편하게 멤버 객체를 찾기 위한 findByMemberEmail
@@ -379,7 +373,7 @@ public class MemberService {
 
     // 병원 정보 가져오는 feign
     public HospitalFeignDto getHospital(){
-        HospitalFeignDto hospitalFeignDto = hospitalFeignClient.getHospitalInfo();
+        HospitalFeignDto hospitalFeignDto = reservationFeignClient.getHospitalInfo();
         return hospitalFeignDto;
     }
 
@@ -424,6 +418,19 @@ public class MemberService {
 
         member.resetPassword(passwordEncoder.encode(dto.getNewPassword()));
         memberRepository.save(member);
+    }
+//    Noshow 카운트 증가
+    @Scheduled(cron = "0 0,30 9-12,13-22 * * *")
+    public void updateNoShowCount(){
+        log.info("노쇼 카운트 스케줄 시작");
+        String token = jwtTokenprovider.createToken("todka@test.com", Role.TodakAdmin.name(), 0L);
+        List<String> mem = reservationFeignClient.getMember("Bearer " + token);
+        for(String email : mem){
+            Member member = memberRepository.findByMemberEmail(email)
+                    .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+            member.incressNoShowCount();
+        }
+        log.info("노쇼 카운트 스케줄 종료");
     }
     // 신고 카운트 증가시키는 메서드
     public int reportCountUp(String email) {
