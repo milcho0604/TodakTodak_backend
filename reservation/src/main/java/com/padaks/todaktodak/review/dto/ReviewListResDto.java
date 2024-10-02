@@ -20,5 +20,4 @@ public class ReviewListResDto {
     private int rating;
     private String contents;
     private LocalDateTime createdAt;
-
 }

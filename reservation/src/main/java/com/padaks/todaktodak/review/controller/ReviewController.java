@@ -49,14 +49,17 @@ public class ReviewController {
         try {
             Page<ReviewListResDto> reviews = reviewService.reviewListResDtos(hospitalId, pageable);
             return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "리뷰 목록입니다.", reviews), HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(new CommonErrorDto(HttpStatus.NOT_FOUND, "리뷰 또는 예약 내역을 찾을 수 없습니다: " + e.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>(new CommonErrorDto(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
+            e.printStackTrace();  // 서버 콘솔에 오류 출력
+            return new ResponseEntity<>(new CommonErrorDto(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
 
     // 리뷰 수정
-    @PutMapping("/update/{id}")
+    @PostMapping("/update/{id}")
     public ResponseEntity<?> updateReview(@PathVariable Long id, @RequestBody ReviewUpdateReqDto dto) {
         try {
             reviewService.updateReview(id, dto);
