@@ -176,4 +176,9 @@ public class Member extends BaseTimeEntity {
         this.password = password;
     }
 
+    // 신고 카운트 증가시키는 메서드
+    public int reportCountUp() {
+        return this.reportCount++;
+    }
+
 }
