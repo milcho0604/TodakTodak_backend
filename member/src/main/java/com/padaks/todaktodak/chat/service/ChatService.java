@@ -38,9 +38,10 @@ public class ChatService {
     private static final Long ADMIN_ID = 1L; // Admin 고정 ID
 
     // 채팅방 생성
-    public ChatRoom createChatRoom(String memberEmail){
+    public ChatRoom createChatRoom(){
+        String memberEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         Member member = memberRepository.findByMemberEmailOrThrow(memberEmail);
-
+        log.info("line:44 memberEmail {}", memberEmail);
         // 새로운 채팅방 생성, member와 admin의 1:1 채팅방
         ChatRoom chatRoom = ChatRoom.builder()
                 .member(member)
@@ -68,6 +69,7 @@ public class ChatService {
     // 해당 회원이 속한 채팅방 리스트 (회원입장 채팅방 리스트)
     public List<ChatRoomListResDto> getMemberChatRoomList(){
         String memberEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        System.out.println("line 71 memberEmail : " + memberEmail);
         Member member = memberRepository.findByMemberEmailOrThrow(memberEmail);
 
         // 해당 회원이 속한 모든 채팅방 조회

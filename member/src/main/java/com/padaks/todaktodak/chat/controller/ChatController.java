@@ -26,8 +26,7 @@ public class ChatController {
     // 채팅방 생성 (회원이 새로운 상담을 시작할 때)
     @PostMapping("/chatroom/create")
     public ResponseEntity<?> createChatRoom() {
-        String memberEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        ChatRoom chatRoom = chatService.createChatRoom(memberEmail);
+        ChatRoom chatRoom = chatService.createChatRoom();
         return new ResponseEntity<>(new CommonResDto(HttpStatus.CREATED, "채팅방 생성 성공", chatRoom.getId()),HttpStatus.CREATED);
     }
 
