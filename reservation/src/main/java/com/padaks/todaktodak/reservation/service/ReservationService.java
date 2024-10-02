@@ -18,6 +18,7 @@ import com.padaks.todaktodak.reservation.repository.ReservationHistoryRepository
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.asm.Advice;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -52,16 +53,25 @@ public class ReservationService {
     private final HospitalRepository hospitalRepository;
 
     private final MemberFeign memberFeign;
+    private final MemberFeignClient memberFeignClient;
     private final UntactChatRoomService untactChatRoomService;
+
+    // member 객체 리턴, 토큰 포함
+    public MemberFeignDto getMemberInfo() {
+        MemberFeignDto member = memberFeignClient.getMemberEmail();  // Feign Client에 토큰 추가
+        return member;
+    }
 
 //    진료 스케줄 예약 기능
     public void scheduleReservation(ReservationSaveReqDto dto){
         log.info("ReservationService[scheduleReservation] : 스케줄 예약 요청 처리 시작");
         List<LocalTime> timeSlots = ReservationTimeSlot.timeSlots();
 
-        Hospital hospital = hospitalRepository.findById(dto.getHospitalId())
-                        .orElseThrow(() -> new BaseException(HOSPITAL_NOT_FOUND));
+        DoctorResDto doctorResDto = memberFeign.getDoctor(dto.getDoctorEmail());
 
+        String email = getMemberInfo().getMemberEmail();
+        dto.setMemberEmail(email);
+        dto.setDoctorName(doctorResDto.getName());
         LocalTime selectedTime = dto.getReservationTime();
 
         if(timeSlots.contains(selectedTime)){
@@ -90,8 +100,11 @@ public class ReservationService {
         Hospital hospital = hospitalRepository.findById(dto.getHospitalId())
                 .orElseThrow(() -> new BaseException(HOSPITAL_NOT_FOUND));
 
-        MemberResDto memberResDto = memberFeign.getMember(dto.getMemberEmail());
         DoctorResDto doctorResDto = memberFeign.getDoctor(dto.getDoctorEmail());
+        String email = getMemberInfo().getMemberEmail();
+        dto.setMemberEmail(email);
+        dto.setDoctorName(doctorResDto.getName());
+        dto.setReservationDate(LocalDate.now());
 
         int partition = hospital.getId().intValue();
         String doctorKey = dto.getDoctorEmail();

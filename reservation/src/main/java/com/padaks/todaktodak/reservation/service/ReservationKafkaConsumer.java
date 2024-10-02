@@ -7,7 +7,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import com.padaks.todaktodak.common.dto.DtoMapper;
+import com.padaks.todaktodak.common.dto.MemberFeignDto;
 import com.padaks.todaktodak.common.exception.BaseException;
+import com.padaks.todaktodak.common.feign.MemberFeignClient;
 import com.padaks.todaktodak.hospital.domain.Hospital;
 import com.padaks.todaktodak.hospital.repository.HospitalRepository;
 import com.padaks.todaktodak.reservation.domain.Reservation;
@@ -18,18 +20,23 @@ import com.padaks.todaktodak.reservation.dto.ReservationSaveReqDto;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.stereotype.Service;
 import retrofit2.http.Header;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import static com.padaks.todaktodak.common.exception.exceptionType.GlobalExceptionType.JSON_PARSING_ERROR;
 import static com.padaks.todaktodak.common.exception.exceptionType.ReservationExceptionType.*;
 import static com.padaks.todaktodak.common.exception.exceptionType.HospitalExceptionType.HOSPITAL_NOT_FOUND;
 
@@ -44,15 +51,17 @@ public class ReservationKafkaConsumer {
     private final MemberFeign memberFeign;
     private final ObjectMapper objectMapper;
     private final HospitalRepository hospitalRepository;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @Autowired
     public ReservationKafkaConsumer(@Qualifier("1") RedisTemplate<String, Object> redisTemplate,
-                                    @Qualifier("2") RedisTemplate<String, Object> redisScheduledTemplate, DtoMapper dtoMapper, ReservationRepository reservationRepository, MemberFeign memberFeign, ObjectMapper objectMapper, HospitalRepository hospitalRepository) {
+                                    @Qualifier("2") RedisTemplate<String, Object> redisScheduledTemplate, DtoMapper dtoMapper, ReservationRepository reservationRepository, MemberFeign memberFeign, ObjectMapper objectMapper, HospitalRepository hospitalRepository, KafkaTemplate<String, Object> kafkaTemplate) {
         this.redisTemplate = redisTemplate;
         this.redisScheduleTemplate = redisScheduledTemplate;
         this.dtoMapper = dtoMapper;
         this.reservationRepository = reservationRepository;
         this.memberFeign = memberFeign;
+        this.kafkaTemplate = kafkaTemplate;
 //        Java 8 의 LocalTime, LocalDate 처리를 위한 TimeModule
         objectMapper.registerModules(new JavaTimeModule());
 //        파라미터 인수의 각 매채로 매핑 하겠다. - enum
@@ -86,10 +95,15 @@ public class ReservationKafkaConsumer {
             RedisDto redisDto = dtoMapper.toRedisDto(reservation);
 
             redisTemplate.opsForZSet().add(key, redisDto, sequence);
+
+            Map<String, Object> messageData = createMessageData(reservation);
+            String notificationMessage = objectMapper.writeValueAsString(messageData);
+            kafkaTemplate.send("immediate-notification", notificationMessage);
+
             acknowledgment.acknowledge();
             log.info("KafkaListener[handleReservation] : 예약 대기열 처리 완료");
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new BaseException(JSON_PARSING_ERROR);
         }
     }
 
@@ -130,7 +144,11 @@ public class ReservationKafkaConsumer {
                             .orElseThrow(() -> new BaseException(HOSPITAL_NOT_FOUND));
                     Reservation reservation = dtoMapper.toReservation(dto, hospital);
                     Reservation savedReservation = reservationRepository.save(reservation);
-                    sendReservationNotification(savedReservation);
+
+                    Map<String, Object> messageData = createMessageData(reservation);
+                    String notificationMessage = objectMapper.writeValueAsString(messageData);
+
+                    kafkaTemplate.send("scheduled-notification", notificationMessage);
                 }finally {
                     redisScheduleTemplate.delete(lockKey);
                     log.info("ReservationConsumer[consumerReservation] : 락 해제 완료");
@@ -140,9 +158,9 @@ public class ReservationKafkaConsumer {
                 throw new BaseException(LOCK_OCCUPANCY);
             }
         } catch (JsonProcessingException e) {
-            log.error("Kafka 메시지 처리중 JSON 처리 오류 발생: {}", e.getMessage());
+            throw new BaseException(JSON_PARSING_ERROR);
         } catch (BaseException e){
-            log.error("Kafka 메시지 처리중 JSON 처리 오류 발생: {}", e.getMessage());
+            throw new BaseException(e.getExceptionType());
         }
         finally {
             // 예외 여부에 상관없이 메시지는 acknowledge 처리
@@ -150,21 +168,18 @@ public class ReservationKafkaConsumer {
         }
     }
 
-    public void sendReservationNotification(Reservation reservation) {
-        MemberResDto member = memberFeign.getMemberByEmail(reservation.getMemberEmail());
-        String content = String.format("환자 %s님이 %s에 %s의 예약을 했습니다.",
-                member.getName(),
-                reservation.getReservationDate().toString(),
-                reservation.getReservationTime().toString()
-        );
-//        알림 받는 사람 병원 admin Email로 변경해야함
-        NotificationReqDto notificationReqDto = NotificationReqDto.builder()
-                .memberEmail(reservation.getDoctorEmail())
-                .type("RESERVATION_NOTIFICATION")
-                .content(content)
-                .refId(reservation.getId())
-                .build();
+    private Map<String, Object> createMessageData(Reservation reservation) {
+        Map<String, Object> messageData = new HashMap<>();
+        messageData.put("memberEmail", reservation.getMemberEmail());
+        messageData.put("DoctorEmail", reservation.getDoctorEmail());
+        messageData.put("reservationType", reservation.getReservationType());
+        messageData.put("reservationDate", reservation.getReservationDate());
+        messageData.put("medicalItem", reservation.getMedicalItem());
+        messageData.put("childId", reservation.getChildId());
 
-        memberFeign.sendReservationNotification(notificationReqDto);
+        if(reservation.getReservationTime() != null){
+            messageData.put("reservationTime", reservation.getReservationTime());
+        }
+        return messageData;
     }
 }
