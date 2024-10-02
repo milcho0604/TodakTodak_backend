@@ -176,6 +176,9 @@ public class Member extends BaseTimeEntity {
         this.password = password;
     }
 
+    public void incressNoShowCount(){
+        this.noShowCount++;
+    }
 
     // 신고 카운트 증가시키는 메서드
     public int reportCountUp() {
@@ -185,5 +188,4 @@ public class Member extends BaseTimeEntity {
     public void updatePhoneNumber(String phone) {
         this.phoneNumber = phone;
     }
-
 }
