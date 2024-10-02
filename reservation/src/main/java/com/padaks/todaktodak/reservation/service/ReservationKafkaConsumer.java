@@ -143,7 +143,7 @@ public class ReservationKafkaConsumer {
                     Hospital hospital = hospitalRepository.findById(dto.getHospitalId())
                             .orElseThrow(() -> new BaseException(HOSPITAL_NOT_FOUND));
                     Reservation reservation = dtoMapper.toReservation(dto, hospital);
-                    Reservation savedReservation = reservationRepository.save(reservation);
+                    reservationRepository.save(reservation);
 
                     Map<String, Object> messageData = createMessageData(reservation);
                     String notificationMessage = objectMapper.writeValueAsString(messageData);
