@@ -425,7 +425,7 @@ public class MemberService {
     }
 
 //    Noshow 카운트 증가
-    @Scheduled(cron = "0 0,40 9-12,13-22 * * *")
+    @Scheduled(cron = "0 0,30 9-12,13-22 * * *")
     public void updateNoShowCount(){
         log.info("노쇼 카운트 스케줄 시작");
         String token = jwtTokenprovider.createToken("todka@test.com", Role.TodakAdmin.name(), 0L);
