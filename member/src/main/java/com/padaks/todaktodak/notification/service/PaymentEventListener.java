@@ -31,14 +31,14 @@ public class PaymentEventListener {
             String memberEmail = (String) messageData.get("memberEmail");
             Integer fee = (Integer) messageData.get("fee");
             String name = (String) messageData.get("name");
+            String adminEmail = (String) messageData.get("adminEmail");
 
-            System.out.println("Email: " + memberEmail + ", Fee: " + fee + ", Name: " + name);
+            System.out.println("Email: " + memberEmail + ", Fee: " + fee + ", Name: " + name + ", adminEmail: " + adminEmail);
 
             PaymentSuccessDto paymentSuccessDto = objectMapper.readValue(message, PaymentSuccessDto.class);
             System.out.println("Received Payment Success DTO: " + paymentSuccessDto);
 
             // 메시지 처리 후 수동 오프셋 커밋
-
             acknowledgment.acknowledge();
         } catch (Exception e) {
             System.err.println("Error processing payment success message: " + e.getMessage());

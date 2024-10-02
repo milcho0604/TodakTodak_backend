@@ -179,4 +179,13 @@ public class Member extends BaseTimeEntity {
     public void incressNoShowCount(){
         this.noShowCount++;
     }
+
+    // 신고 카운트 증가시키는 메서드
+    public int reportCountUp() {
+        return this.reportCount++;
+    }
+
+    public void updatePhoneNumber(String phone) {
+        this.phoneNumber = phone;
+    }
 }
