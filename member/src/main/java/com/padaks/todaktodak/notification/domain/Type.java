@@ -12,5 +12,7 @@ public enum Type {
 //    댓글에 대한 답글이 달렸을 경우 기존 댓글 작성자에게 가는 알림
     COMMENT,
 //    결제 알림
-    PAYMENT
+    PAYMENT,
+//    채팅 알림
+    CHAT
 }
