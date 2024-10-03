@@ -1,7 +1,9 @@
 package com.padaks.todaktodak.untact.domain;
 
-import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.Objects;
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class WebSocketMessage {
     private String from;
     private String type;

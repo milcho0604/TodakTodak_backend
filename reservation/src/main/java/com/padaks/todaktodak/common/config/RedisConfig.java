@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.padaks.todaktodak.untact.socket.SignalHandler;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +13,9 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
@@ -71,5 +75,39 @@ public class RedisConfig {
         redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper()));
         redisTemplate.setConnectionFactory(redisConnectionFactory);
         return redisTemplate;
+    }
+    @Bean(name = "untactConnectionFactory")
+    public RedisConnectionFactory untactConnectionFactory(){
+        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
+        configuration.setHostName(host);
+        configuration.setPort(port);
+        configuration.setDatabase(6);
+        return new LettuceConnectionFactory(configuration);
+    }
+    @Bean(name = "untactRedisTemplate")
+    public RedisTemplate<String, Object> untactRedisTemplate(@Qualifier("untactConnectionFactory") RedisConnectionFactory untactConnectionFactory) {
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(untactConnectionFactory);
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        return template;
+    }
+    @Bean
+    public ChannelTopic topic() {
+        return new ChannelTopic("chatroom");
+    }
+    @Bean
+    public RedisMessageListenerContainer redisContainer(@Qualifier("untactConnectionFactory") RedisConnectionFactory untactConnectionFactory,
+                                                        MessageListenerAdapter listenerAdapter,
+                                                        ChannelTopic topic) {
+        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+        container.setConnectionFactory(untactConnectionFactory);
+        container.addMessageListener(listenerAdapter, topic);
+        return container;
+    }
+
+    @Bean
+    public MessageListenerAdapter listenerAdapter(SignalHandler redisSubscriber) {
+        return new MessageListenerAdapter(redisSubscriber);
     }
 }

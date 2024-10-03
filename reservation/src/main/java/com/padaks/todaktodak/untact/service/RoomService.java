@@ -3,12 +3,14 @@ package com.padaks.todaktodak.untact.service;
 
 import com.padaks.todaktodak.untact.domain.Room;
 import com.padaks.todaktodak.untact.util.Parser;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.util.*;
 
+@Slf4j
 @Service
 public class RoomService {    
     private final Parser parser;
@@ -24,6 +26,10 @@ public class RoomService {
         List<Room> defensiveCopy = new ArrayList<>(rooms);
         defensiveCopy.sort(Comparator.comparing(Room::getId));
         return Collections.unmodifiableList(defensiveCopy);
+    }
+    // roomId로 Room을 찾아 반환하는 함수
+    public Optional<Room> findRoomById(final String roomId) {
+        return rooms.stream().filter(r -> r.getId().equals(roomId)).findAny();
     }
 
     public Boolean addRoom(final Room room) {
