@@ -43,17 +43,21 @@ public class NotificationKafkaConsumer {
 
         try {
             CommentSuccessDto dto = objectMapper.readValue(message, CommentSuccessDto.class);
-            Member member = memberRepository.findByMemberEmail(dto.getReceiverEmail()).orElseThrow(()->new EntityNotFoundException("존재하지 않는 회원입니다."));
+
+            // 처음에 dto에서 email로 멤버 객체를 찾아서 멤버 객체에서 memberId를 추출하여 fcmService로 멤버 id를 건내어
+            // findById로 member객체를 다시 조립하여 해당 멤버에게 메시지를 전송하는 로직을
+            // dto에 있던 email을 보내어 fcmService에서 멤버 객체를 조립하는 방식으로 수정
+//            Member member = memberRepository.findByMemberEmail(dto.getReceiverEmail()).orElseThrow(()->new EntityNotFoundException("존재하지 않는 회원입니다."));
 
             String category = "";
             if (dto.getType().equals(Type.POST)){
                 category = "질문 알림";
-                fcmService.sendMessage(member.getId(), category, dto.getTitle()+"에 대한 답변이 작성되었습니다.",  Type.POST);
+                fcmService.sendMessage(dto.getReceiverEmail(), category, dto.getTitle()+"에 대한 답변이 작성되었습니다.",  Type.POST);
 
             }else if (dto.getType().equals(Type.COMMENT)){
                 category = "답변 알림";
                 String comment = "에 작성한 답변";
-                fcmService.sendMessage(member.getId(), category, dto.getTitle()+comment+"에 대한 답변이 작성되었습니다.",  Type.COMMENT);
+                fcmService.sendMessage(dto.getReceiverEmail(), category, dto.getTitle()+comment+"에 대한 답변이 작성되었습니다.",  Type.COMMENT);
 
             }
 

@@ -113,7 +113,7 @@ public class PaymentService {
                 throw new Exception("결제 요청 실패: " + paymentResponse.getMessage());
             }
 
-            // 결제 금액 및 기타 검증 로직 (여기서는 금액 100원으로 고정)
+            // 결제 금액 및 기타 검증 로직
             if (paymentResponse.getResponse().getAmount().intValue() != fee) {
                 throw new Exception("결제 금액 불일치");
             }
