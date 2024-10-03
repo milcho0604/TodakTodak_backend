@@ -1,5 +1,6 @@
 package com.padaks.todaktodak.hospitaloperatinghours.service;
 
+import com.padaks.todaktodak.common.enumdir.DayOfHoliday;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.hospital.domain.Hospital;
 import com.padaks.todaktodak.hospital.repository.HospitalRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.padaks.todaktodak.common.exception.exceptionType.HospitalOperatingHoursExceptionType.MISMATCHED_HOSPITAL;
@@ -29,11 +31,31 @@ public class HospitalOperatingHoursService {
     public void addOperatingHours(Long hospitalId,
                                   List<HospitalOperatingHoursReqDto> operatingHoursDtos){
 
+//        Hospital hospital = hospitalRepository.findByIdOrThrow(hospitalId);
+//        for(HospitalOperatingHoursReqDto dto : operatingHoursDtos){
+//            HospitalOperatingHours operatingHours = HospitalOperatingHoursReqDto.toEntity(hospital, dto);
+//            hospitalOperatingHoursRepository.save(operatingHours);
+//        }
+
         Hospital hospital = hospitalRepository.findByIdOrThrow(hospitalId);
-        for(HospitalOperatingHoursReqDto dto : operatingHoursDtos){
-            HospitalOperatingHours operatingHours = HospitalOperatingHoursReqDto.toEntity(hospital, dto);
-            hospitalOperatingHoursRepository.save(operatingHours);
+
+        // 해당 병원의 영업시간을 모두 불러옴
+        List<HospitalOperatingHours> existingOperatingHours = hospitalOperatingHoursRepository.findAllByHospital(hospital);
+
+        // 요일별로 영업시간이 존재하는지 미리 체크
+        Set<DayOfHoliday> existingDays = existingOperatingHours.stream()
+                .map(HospitalOperatingHours::getDayOfWeek)
+                .collect(Collectors.toSet());
+
+        for (HospitalOperatingHoursReqDto dto : operatingHoursDtos) {
+            if (existingDays.contains(dto.getDayOfWeek())) {
+                throw new IllegalArgumentException(dto.getDayOfWeek() + "에 대한 영업시간이 이미 존재합니다.");
+            } else {
+                HospitalOperatingHours operatingHours = HospitalOperatingHoursReqDto.toEntity(hospital, dto);
+                hospitalOperatingHoursRepository.save(operatingHours);
+            }
         }
+
     }
 
     // 특정병원의 모든 영업시간 리스트 조회
