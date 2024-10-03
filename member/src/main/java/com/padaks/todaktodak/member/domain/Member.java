@@ -152,6 +152,11 @@ public class Member extends BaseTimeEntity {
         this.setDeletedTimeAt(LocalDateTime.now());  // 현재 시간을 삭제 시간으로 설정
     }
 
+//    노쇼 카운트 초기화
+    public void clearNoShowCount(){
+        this.noShowCount = 0;
+    }
+
     // 유저 목록 조회
     public MemberListResDto listFromEntity(){
         return MemberListResDto.builder()
