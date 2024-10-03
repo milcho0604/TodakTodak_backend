@@ -24,6 +24,7 @@ import javax.persistence.EntityNotFoundException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -121,11 +122,18 @@ public class CommentService {
     public void updateComment(Long id, CommentUpdateReqDto dto){
         MemberFeignDto member = getMemberInfo(); //현재 로그인 되어있는 사용자
         Comment comment = commentRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("존재하지 않는 comment입니다."));
+        int reportCount = member.getReportCount();
+        // 신고 횟수가 5 이상일 경우 예외 처리
+        if (reportCount >= 5) {
+            throw new IllegalArgumentException("신고 횟수가 5회 이상인 회원은 댓글을 수정할 수 없습니다.");
+        }
 
         String type = "COMMENT";
         Map<String, Object> messageData = new HashMap<>();
         //현재 로그인 되어있는 사용자가 comment의 작성자인 경우
-        if (member.getMemberEmail() == comment.getDoctorEmail()){
+        if (!Objects.equals(member.getMemberEmail(), comment.getDoctorEmail())){
+            throw new IllegalArgumentException("작성자 이외에는 수정할 수 없습니다.");
+        }
             comment.update(dto);
             commentRepository.save(comment);
             //fcm 메세지 데이터 객체 생성
@@ -141,10 +149,6 @@ public class CommentService {
                 log.error("JSON 변환 오류: {}", e.getMessage());
                 kafkaTemplate.send("community-fail", "JSON 변환 오류가 발생했습니다.");
             }
-        }else {
-            throw new IllegalArgumentException("작성자 이외에는 수정할 수 없습니다.");
-        }
-
 
     }
 
