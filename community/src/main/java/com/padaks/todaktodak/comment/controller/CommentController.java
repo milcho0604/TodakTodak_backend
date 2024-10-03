@@ -63,6 +63,10 @@ public class CommentController {
             e.printStackTrace();
             CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.NOT_FOUND, e.getMessage());
             return new ResponseEntity<>(commonErrorDto, HttpStatus.NOT_FOUND);
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
+            CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.BAD_REQUEST, e.getMessage());
+            return new ResponseEntity<>(commonErrorDto, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -76,6 +80,10 @@ public class CommentController {
             e.printStackTrace();
             CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.BAD_REQUEST, e.getMessage());
             return new ResponseEntity(commonErrorDto, HttpStatus.BAD_REQUEST);
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
+            CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.BAD_REQUEST, e.getMessage());
+            return new ResponseEntity<>(commonErrorDto, HttpStatus.BAD_REQUEST);
         }
     }
 }

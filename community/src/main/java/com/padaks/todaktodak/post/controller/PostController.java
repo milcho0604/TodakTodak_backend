@@ -27,6 +27,10 @@ public class PostController {
             postService.create(dto);
             CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "post 등록 성공", null);
             return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
+            CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.BAD_REQUEST, e.getMessage());
+            return new ResponseEntity<>(commonErrorDto, HttpStatus.BAD_REQUEST);
         }catch (Exception e){
             e.printStackTrace();
             CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.BAD_REQUEST, "post 등록 실패" + e.getMessage());
@@ -63,6 +67,10 @@ public class PostController {
         }catch (EntityNotFoundException e){
             CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.NOT_FOUND, e.getMessage());
             return new ResponseEntity<>(commonErrorDto, HttpStatus.NOT_FOUND);
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
+            CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.BAD_REQUEST, e.getMessage());
+            return new ResponseEntity<>(commonErrorDto, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -75,6 +83,10 @@ public class PostController {
         }catch (EntityNotFoundException e){
             CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.NOT_FOUND, e.getMessage());
             return new ResponseEntity<>(commonErrorDto, HttpStatus.NOT_FOUND);
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
+            CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.BAD_REQUEST, e.getMessage());
+            return new ResponseEntity<>(commonErrorDto, HttpStatus.BAD_REQUEST);
         }
     }
 

@@ -45,10 +45,15 @@ public class PostService {
         MultipartFile postImage = dto.getPostImage();
         MemberFeignDto member = getMemberInfo();
         String memberEmail = member.getMemberEmail();
+        int reportCount = member.getReportCount();
 
+        // 신고 횟수가 5 이상일 경우 예외 처리
+        if (reportCount >= 5) {
+            throw new IllegalArgumentException("신고 횟수가 5회 이상인 회원은 포스트를 작성할 수 없습니다.");
+        }
 
+        // 포스트 작성 로직
         String imageUrl = s3ClientFileUpload.upload(postImage);
-
         Post post = dto.toEntity(imageUrl, memberEmail);
         postRepository.save(post);
     }
@@ -75,6 +80,14 @@ public class PostService {
     @Transactional
     public void updatePost(Long id, PostUpdateReqDto dto){
         Post post = postRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("존재하지 않는 Post입니다."));
+        MemberFeignDto member = getMemberInfo();
+        int reportCount = member.getReportCount();
+
+        // 신고 횟수가 5 이상일 경우 예외 처리
+        if (reportCount >= 5) {
+            throw new IllegalArgumentException("신고 횟수가 5회 이상인 회원은 포스트를 수정할 수 없습니다.");
+        }
+
         MultipartFile image = dto.getPostImg();
         if (image != null && !image.isEmpty()){
             String imageUrl = s3ClientFileUpload.upload(image);
@@ -86,6 +99,11 @@ public class PostService {
 
     public void deletePost(Long id){
         Post post = postRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 post입니다."));
+        MemberFeignDto member = getMemberInfo();
+        int reportCount = member.getReportCount();
+        if (reportCount >= 5) {
+            throw new IllegalArgumentException("신고 횟수가 5회 이상인 회원은 포스트를 삭제할 수 없습니다.");
+        }
         post.updateDeleteAt();
     }
 
