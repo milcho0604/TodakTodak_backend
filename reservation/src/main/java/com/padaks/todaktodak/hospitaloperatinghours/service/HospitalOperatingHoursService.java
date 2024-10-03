@@ -31,12 +31,6 @@ public class HospitalOperatingHoursService {
     public void addOperatingHours(Long hospitalId,
                                   List<HospitalOperatingHoursReqDto> operatingHoursDtos){
 
-//        Hospital hospital = hospitalRepository.findByIdOrThrow(hospitalId);
-//        for(HospitalOperatingHoursReqDto dto : operatingHoursDtos){
-//            HospitalOperatingHours operatingHours = HospitalOperatingHoursReqDto.toEntity(hospital, dto);
-//            hospitalOperatingHoursRepository.save(operatingHours);
-//        }
-
         Hospital hospital = hospitalRepository.findByIdOrThrow(hospitalId);
 
         // 해당 병원의 영업시간을 모두 불러옴
