@@ -41,16 +41,28 @@ public class FcmController {
         }
     }
 
-    @PostMapping("/send")
-    public ResponseEntity<?> sendNotification(@RequestBody Long myId, @RequestBody String title, String body, Type type){
-        try {
-            fcmService.sendMessage(myId, title, body, type);
-            CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "fcm 메세지 전송 성공", type);
-            return new ResponseEntity<>(commonResDto, HttpStatus.OK);
-        }catch (Exception e){
-            e.printStackTrace();
-            CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.INTERNAL_SERVER_ERROR, "알림 전송 중 오류 발생: "+e.getMessage());
-            return new ResponseEntity<>(commonErrorDto, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+//    @PostMapping("/send")
+//    public ResponseEntity<?> sendNotification(@RequestBody Long myId, @RequestBody String title, String body, Type type){
+//        try {
+//            fcmService.sendMessage(myId, title, body, type);
+//            CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "fcm 메세지 전송 성공", type);
+//            return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+//        }catch (Exception e){
+//            e.printStackTrace();
+//            CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.INTERNAL_SERVER_ERROR, "알림 전송 중 오류 발생: "+e.getMessage());
+//            return new ResponseEntity<>(commonErrorDto, HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
+@PostMapping("/send")
+public ResponseEntity<?> sendNotification(@RequestBody String memberEmail, @RequestBody String title, String body, Type type){
+    try {
+        fcmService.sendMessage(memberEmail, title, body, type);
+        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "fcm 메세지 전송 성공", type);
+        return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+    }catch (Exception e){
+        e.printStackTrace();
+        CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.INTERNAL_SERVER_ERROR, "알림 전송 중 오류 발생: "+e.getMessage());
+        return new ResponseEntity<>(commonErrorDto, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+}
 }

@@ -365,11 +365,13 @@ public class PaymentService {
             BigDecimal fee = pay.getAmount();
 //            String name = pay.getName();
             String impUid2 = pay.getImpUid();
+            String adminEmail = "todak@test.com";
             // 메시지 데이터 객체 생성
             Map<String, Object> messageData = new HashMap<>();
             messageData.put("memberEmail", memberEmail);
             messageData.put("fee", fee);
             messageData.put("impUid", impUid2);
+            messageData.put("adminEmail", adminEmail);
 
             // 객체를 JSON 문자열로 변환
             String message = objectMapper.writeValueAsString(messageData);
@@ -431,12 +433,14 @@ public class PaymentService {
                         String memberEmail = pay.getMemberEmail();
                         BigDecimal fee = pay.getAmount();
                         String name = pay.getName();
+                        String adminEmail = "todak@test.com";
 
                         // 메시지 데이터 객체 생성
                         Map<String, Object> messageData = new HashMap<>();
                         messageData.put("memberEmail", memberEmail);
                         messageData.put("fee", fee);
                         messageData.put("name", name);
+                        messageData.put("adminEmail", adminEmail);
 
                         // 객체를 JSON 문자열로 변환
                         String message = objectMapper.writeValueAsString(messageData);
@@ -494,12 +498,15 @@ public class PaymentService {
             String memberEmail = pay.getMemberEmail();
             BigDecimal fee = pay.getAmount();
             String name = pay.getName();
+            String adminEmail = "todak@test.com";
 
             // 메시지 데이터 객체 생성
             Map<String, Object> messageData = new HashMap<>();
             messageData.put("memberEmail", memberEmail);
             messageData.put("fee", fee);
             messageData.put("name", name);
+            messageData.put("adminEmail", adminEmail);
+
 
 
 
@@ -515,6 +522,7 @@ public class PaymentService {
             String memberEmail = pay.getMemberEmail();
             BigDecimal fee = pay.getAmount();
             String name = pay.getName();
+            String adminEmail = "todak@test.com";
 
             String impUid2 = pay.getImpUid();
             // 메시지 데이터 객체 생성
@@ -522,6 +530,7 @@ public class PaymentService {
             messageData.put("memberEmail", memberEmail);
             messageData.put("fee", fee);
             messageData.put("impUid", impUid2);
+            messageData.put("adminEmail", adminEmail);
 
             // 객체를 JSON 문자열로 변환
             String message = objectMapper.writeValueAsString(messageData);
