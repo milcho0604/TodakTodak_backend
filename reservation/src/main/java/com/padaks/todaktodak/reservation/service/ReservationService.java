@@ -15,6 +15,7 @@ import com.padaks.todaktodak.reservation.domain.Status;
 import com.padaks.todaktodak.reservation.repository.ReservationHistoryRepository;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -112,14 +113,24 @@ public class ReservationService {
                 Map<String, Object> messageData = createMessageData(reservation);
                 String notificationMessage = objectMapper.writeValueAsString(messageData);
 
-                kafkaTemplate.send("scheduled-notification", notificationMessage);
+                kafkaTemplate.send("scheduled-reservation-success-notify", notificationMessage);
             } catch (JsonProcessingException e) {
+                Map<String, String> errorData = createErrorData(email);
+                kafkaTemplate.send("scheduled-reservation-error-notify", errorData);
                 throw new BaseException(JSON_PARSING_ERROR);
+            } catch (BaseException e){
+                Map<String, String> errorData = createErrorData(email);
+                errorData.put("ErrorMessage", e.getMessage());
+                kafkaTemplate.send("scheduled-reservation-error-notify", errorData);
+                throw new BaseException(RESERVATION_DUPLICATE);
             } finally {
                 redisScheduleTemplate.delete(lockKey);
                 log.info("ReservationConsumer[consumerReservation] : 락 해제 완료");
             }
         }else{
+            Map<String, String> errorData = createErrorData(email);
+            errorData.put("ErrorMessage", new BaseException(LOCK_OCCUPANCY).getMessage());
+            kafkaTemplate.send("scheduled-reservation-error-notify", errorData);
             log.info("ReservationConsumer[consumerReservation] : 락을 얻지 못함, 예약 처리 실패");
             throw new BaseException(LOCK_OCCUPANCY);
         }
@@ -157,13 +168,17 @@ public class ReservationService {
 
             Map<String, Object> messageData = createMessageData(reservation);
             String notificationMessage = objectMapper.writeValueAsString(messageData);
-            kafkaTemplate.send("immediate-notification", notificationMessage);
-
+            kafkaTemplate.send("immediate-reservation-success-notify", notificationMessage);
             log.info("KafkaListener[handleReservation] : 예약 대기열 처리 완료");
         } catch (JsonProcessingException e) {
+            Map<String, String> errorData = createErrorData(email);
+            kafkaTemplate.send("immediate-reservation-error-notify", errorData);
             throw new BaseException(JSON_PARSING_ERROR);
+        } catch (Exception e){
+            Map<String, String> errorData = createErrorData(email);
+            errorData.put("ErrorMessage", e.getMessage());
+            kafkaTemplate.send("immediate-reservation-error-notify", errorData);
         }
-
         log.info("ReservationService[immediateReservation] : 완료");
     }
 
@@ -256,5 +271,13 @@ public class ReservationService {
             messageData.put("reservationTime", reservation.getReservationTime());
         }
         return messageData;
+    }
+
+    private Map<String, String> createErrorData(String email){
+        Map<String, String> errorData = new HashMap<>();
+        errorData.put("memberEmail", email);
+        errorData.put("message", "예약 실패");
+
+        return errorData;
     }
 }
