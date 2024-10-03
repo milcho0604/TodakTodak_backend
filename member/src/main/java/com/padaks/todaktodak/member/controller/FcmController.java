@@ -21,9 +21,9 @@ public class FcmController {
     private final FcmService fcmService;
 
     @PostMapping("/token")
-    public ResponseEntity<?> saveFcmToken(@RequestHeader Long memberId, @RequestBody @Valid FcmTokenSaveRequest dto){
+    public ResponseEntity<?> saveFcmToken(@RequestHeader String memberEmail, @RequestBody @Valid FcmTokenSaveRequest dto){
         try {
-            fcmService.saveFcmToken(memberId, dto);
+            fcmService.saveFcmToken(memberEmail, dto);
             CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "token이 저장되었습니다.", null);
             return new ResponseEntity<>(commonResDto, HttpStatus.OK);
         }catch (IllegalArgumentException e){
