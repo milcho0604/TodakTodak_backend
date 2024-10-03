@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -241,6 +242,27 @@ public class ReservationService {
         }
         log.info("예약 노쇼 스케줄 종료");
         return member;
+    }
+
+    @Scheduled(cron = "0 0,30 9-12,13-22 * * *")
+    public void notifyBeforeReservation(){
+        LocalDate targetDate = LocalDate.now();
+
+        LocalTime currentTime = LocalTime.now();
+        LocalTime targetTime = currentTime.plusMinutes(30);
+
+        List<Reservation> reservations = reservationRepository.findReservationByAtSpecificTimeAndSpecificDate(targetTime,targetDate);
+        for(Reservation res : reservations){
+            Map<String, String> messageDate = new HashMap<>();
+            messageDate.put("memberEmail", res.getMemberEmail());
+            messageDate.put("reservationDate", res.getReservationDate().toString());
+            messageDate.put("reservationTime", res.getReservationTime().toString());
+            messageDate.put("hospitalName", res.getHospital().getName());
+            messageDate.put("doctorName", res.getDoctorName());
+            messageDate.put("message", "예약 30분 전입니다");
+            log.info(res.getId().toString());
+            kafkaTemplate.send("reservation-before-notify", messageDate);
+        }
     }
 
     private Map<String, Object> createMessageData(Reservation reservation) {
