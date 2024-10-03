@@ -429,8 +429,17 @@ public class MemberService {
             Member member = memberRepository.findByMemberEmail(email)
                     .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
             member.incressNoShowCount();
+            overNoShow(member);
         }
-        log.info("노쇼 카운트 스케줄 종료");
+        log.info("노쇼 카운트 스케줄 완료");
+    }
+
+    private void overNoShow(Member member){
+        log.info("멤버 탈퇴 처리 요청 시작");
+        if(member.getNoShowCount() >= 5){
+            member.deleteAccount();
+        }
+        log.info("멤버 탈퇴 처리 요청 완료");
     }
     // 신고 카운트 증가시키는 메서드
     public int reportCountUp(String email) {
