@@ -50,6 +50,13 @@ public class CommentService {
 
         if (dto.getPostId() != null){
             Post post = postRepository.findById(dto.getPostId()).orElseThrow(()-> new EntityNotFoundException("존재하지 않는 post입니다."));
+
+            //댓글 작성 제한 (post 작성자 / Role.Doctor 인 사용자)
+
+            if (!post.getMemberEmail().equals(member.getMemberEmail()) && !"Doctor".equals(member.getRole())){
+                throw  new IllegalArgumentException("댓글을 작성할 수 있는 권한이 없습니다.");
+            }
+
             receiver = post.getMemberEmail(); //댓글이 없는 질문일 경운 알림 수신자 = 게시글 작성자
             String title = post.getTitle();
             String type = "COMMENT";
@@ -90,6 +97,7 @@ public class CommentService {
     public List<CommentDetailDto> getCommentByPostId(Long postId){
         List<Comment> comments = commentRepository.findByPostId(postId);
         return comments.stream()
+                .filter(comment -> comment.getDeletedTimeAt() == null)
                 .map(comment -> CommentDetailDto.builder()
                         .id(comment.getId())
                         .content(comment.getContent())
@@ -100,7 +108,7 @@ public class CommentService {
     }
 
     public Page<CommentDetailDto> CommentListByDoctorId(String doctorEmail, Pageable pageable){
-        Page<Comment> comments = commentRepository.findByDoctorEmail(doctorEmail, pageable);
+        Page<Comment> comments = commentRepository.findByDoctorEmailAndDeletedTimeAtIsNull(doctorEmail, pageable);
         return comments.map(a->a.listFromEntity());
     }
 
@@ -137,12 +145,13 @@ public class CommentService {
     public void deleteComment(Long id){
         MemberFeignDto member = getMemberInfo();
         Comment comment = commentRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("존재하지 않는 comment입니다."));
-        if (member.getMemberEmail() == comment.getDoctorEmail()){
+        System.out.println(member.getMemberEmail());
+        System.out.println(comment.getDoctorEmail());
+        if (member.getMemberEmail().equals(comment.getDoctorEmail())){
             comment.updateDeleteAt();
         }else {
             throw  new IllegalArgumentException("작성자 이외에는 삭제할 수 없습니다.");
         }
-
     }
 
 }

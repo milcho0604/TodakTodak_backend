@@ -11,5 +11,5 @@ import java.util.List;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findByPostId(Long postId);
-    Page<Comment> findByDoctorEmail(String doctorEmail, Pageable pageable);
+    Page<Comment> findByDoctorEmailAndDeletedTimeAtIsNull(String doctorEmail, Pageable pageable);
 }
