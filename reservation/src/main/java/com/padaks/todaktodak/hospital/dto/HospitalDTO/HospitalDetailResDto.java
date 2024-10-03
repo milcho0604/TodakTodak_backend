@@ -125,25 +125,25 @@ public class HospitalDetailResDto {
 
             // 각 요일별 영업시간 설정
             switch (dayOfWeek) {
-                case "Monday":
+                case "MONDAY":
                     mondaySchedule = "월요일 " + hours.getOpenTime() + " ~ " + hours.getCloseTime();
                     break;
-                case "Tuesday":
+                case "TUESDAY":
                     tuesdaySchedule = "화요일 " + hours.getOpenTime() + " ~ " + hours.getCloseTime();
                     break;
-                case "Wednesday":
+                case "WEDNESDAY":
                     wednesdaySchedule = "수요일 " + hours.getOpenTime() + " ~ " + hours.getCloseTime();
                     break;
-                case "Thursday":
+                case "THURSDAY":
                     thursdaySchedule = "목요일 " + hours.getOpenTime() + " ~ " + hours.getCloseTime();
                     break;
-                case "Friday":
+                case "FRIDAY":
                     fridaySchedule = "금요일 " + hours.getOpenTime() + " ~ " + hours.getCloseTime();
                     break;
-                case "Saturday":
+                case "SATURDAY":
                     saturdaySchedule = "토요일 " + hours.getOpenTime() + " ~ " + hours.getCloseTime();
                     break;
-                case "Sunday":
+                case "SUNDAY":
                     sundaySchedule = "일요일 " + hours.getOpenTime() + " ~ " + hours.getCloseTime();
                     break;
             }
