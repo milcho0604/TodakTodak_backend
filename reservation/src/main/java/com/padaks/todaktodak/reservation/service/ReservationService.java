@@ -260,8 +260,7 @@ public class ReservationService {
             messageDate.put("hospitalName", res.getHospital().getName());
             messageDate.put("doctorName", res.getDoctorName());
             messageDate.put("message", "예약 30분 전입니다");
-            log.info(res.getId().toString());
-            kafkaTemplate.send("reservation-before-notify", messageDate);
+            kafkaTemplate.send("scheduled-reservation-before-notify", messageDate);
         }
     }
 
