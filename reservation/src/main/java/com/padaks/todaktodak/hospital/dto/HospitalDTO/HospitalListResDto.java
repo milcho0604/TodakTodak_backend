@@ -39,9 +39,16 @@ public class HospitalListResDto {
 
     private String todaySchedule; // 오늘 영업시간 (최종)
 
+    private Double averageRating; // 병원 평균 평점
+
+    private Long reviewCount; // 병원 리뷰 개수
+
+
     public static HospitalListResDto fromEntity(Hospital hospital,
                                                 Long standby,
-                                                String distance
+                                                String distance,
+                                                Double averageRating,
+                                                Long reviewCount
                                                 ){
 
         HospitalOperatingHours todayOperatingHours = null; // 오늘 병원영업시간
@@ -61,7 +68,7 @@ public class HospitalListResDto {
 
         if (todayOperatingHours != null) {
             // ex : 월요일 9:00 ~ 18:00
-            todaySchedule = todayOperatingHours.getDayOfWeek().getString()
+            todaySchedule = todayOperatingHours.getDayOfWeek().getValue()
                     + " "
                     + todayOperatingHours.getOpenTime()
                     + " ~ "
@@ -69,6 +76,11 @@ public class HospitalListResDto {
         } else {
             // 영업시간이 없는 경우 휴무 처리
             todaySchedule = "휴무";
+        }
+
+        // 소수점 첫째 자리까지 반올림 처리
+        if (averageRating != null) {
+            averageRating = Math.round(averageRating * 10) / 10.0;
         }
 
         return HospitalListResDto.builder()
@@ -83,6 +95,8 @@ public class HospitalListResDto {
                 .openTime(todayOperatingHours != null ? todayOperatingHours.getOpenTime() : null)
                 .closeTime(todayOperatingHours != null ? todayOperatingHours.getCloseTime() : null)
                 .todaySchedule(todaySchedule)
+                .averageRating(averageRating) // 평균평점
+                .reviewCount(reviewCount) // 총 리뷰개수
                 .build();
     }
 }

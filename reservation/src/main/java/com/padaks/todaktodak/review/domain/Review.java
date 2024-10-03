@@ -18,9 +18,11 @@ public class Review extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "review_id")
     private Long id;
+
     @Column(nullable = false)
     @Check(constraints = "value BETWEEN 1 AND 5")
     private int rating;
+
     @Column
     private String contents;
 
