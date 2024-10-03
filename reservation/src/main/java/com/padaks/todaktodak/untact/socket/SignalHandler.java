@@ -5,10 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.padaks.todaktodak.untact.domain.Room;
 import com.padaks.todaktodak.untact.domain.WebSocketMessage;
+import com.padaks.todaktodak.untact.service.RedisPublisher;
 import com.padaks.todaktodak.untact.service.RoomService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.Message;
+import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -16,15 +19,18 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
 @Component
-public class SignalHandler extends TextWebSocketHandler {
+public class SignalHandler extends TextWebSocketHandler implements MessageListener {
     @Autowired
     private RoomService roomService;
+    @Autowired
+    private RedisPublisher redisPublisher;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -79,7 +85,9 @@ public class SignalHandler extends TextWebSocketHandler {
                             candidate != null
                                     ? candidate.toString().substring(0, 64)
                                     : sdp.toString().substring(0, 64));
-
+                    // Redis로 메시지 publish
+                    redisPublisher.publish(message);
+                    /** 멀티 전 코드
                     Room rm = sessionIdToRoomMap.get(session.getId());
                     if (rm != null) {
                         Map<String, WebSocketSession> clients = roomService.getClients(rm);
@@ -96,7 +104,7 @@ public class SignalHandler extends TextWebSocketHandler {
                                                 sdp));
                             }
                         }
-                    }
+                    }**/
                     break;
 
                 // 사용자가 화상채팅에 들어왔을 때
@@ -122,7 +130,11 @@ public class SignalHandler extends TextWebSocketHandler {
                     client.ifPresent(c -> {
                         // 해당 멤버 삭제
                         roomService.removeClientByName(room, c);
-
+                        // Redis를 통해 메시지 브로드캐스트
+                        redisPublisher.publish(new WebSocketMessage(
+                                userName, MSG_TYPE_LEAVE, null, null, null
+                        ));
+                        /**
                         // 방에 있는 다른 사용자에게 해당 사용자가 나갔음을 알림
                         roomService.getClients(room).forEach((clientName, clientSession) -> {
                             if (!clientName.equals(userName)) {  // Don't send to the leaving client
@@ -137,6 +149,7 @@ public class SignalHandler extends TextWebSocketHandler {
                                 ));
                             }
                         });
+                         **/
                     });
                     break;
 
@@ -156,6 +169,30 @@ public class SignalHandler extends TextWebSocketHandler {
             session.sendMessage(new TextMessage(json));
         } catch (IOException e) {
             logger.debug("An error occured: {}", e.getMessage());
+        }
+    }
+
+    // Redis 메시지를 수신하는 메서드
+    @Override
+    public void onMessage(Message message, byte[] pattern) {
+        try {// 바이트 배열을 String으로 변환
+            String jsonMessage = new String(message.getBody(), StandardCharsets.UTF_8);
+
+            // JSON 메시지를 WebSocketMessage 객체로 역직렬화
+            WebSocketMessage webSocketMessage = objectMapper.readValue(jsonMessage, WebSocketMessage.class);
+            logger.info("Received message: " + webSocketMessage);
+            Room room = roomService.findRoomById(webSocketMessage.getData()).orElseThrow(()->new RuntimeException("방을 찾을 수 없음"));
+            if (room != null) {
+                logger.info("메시지 전달할게");
+                Map<String, WebSocketSession> clients = roomService.getClients(room);
+                for (Map.Entry<String, WebSocketSession> client : clients.entrySet()) {
+                    if (!client.getKey().equals(webSocketMessage.getFrom())) {  // Don't send to the leaving client
+                        sendMessage(client.getValue(), webSocketMessage);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("An error occurred while processing the message: {}", e.getMessage());
         }
     }
 }
