@@ -22,18 +22,22 @@ public class FcmService {
 
     @Transactional
 //    public void saveFcmToken(Long memberId, FcmTokenSaveRequest dto){
-    public void saveFcmToken(Long memberId, FcmTokenSaveRequest dto){
-        Member member = memberRepository.findByIdOrThrow(memberId);
+    public void saveFcmToken(String memberEmail, FcmTokenSaveRequest dto){
+        Member member = memberRepository.findByMemberEmail(memberEmail)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 사용자입니다."));
         member.updateFcmToken(dto.getFcmToken());
+        System.out.println(member);
     }
 
-    public void sendMessage(Long memberId, String title, String body, Type type){
-        Member member = memberRepository.findByIdOrThrow(memberId);
+    public void sendMessage(String memberEmail, String title, String body, Type type){
+        Member member = memberRepository.findByMemberEmail(memberEmail)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
+
 
         String token = member.getFcmToken();
 
         if (token == null || token.isEmpty()) {
-            throw new EntityNotFoundException("FCM token not found for memberId: " + memberId);
+            throw new EntityNotFoundException("FCM token not found for memberId: " + memberEmail);
         }
 
 
