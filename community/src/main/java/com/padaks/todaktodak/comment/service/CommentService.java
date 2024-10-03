@@ -155,13 +155,17 @@ public class CommentService {
     public void deleteComment(Long id){
         MemberFeignDto member = getMemberInfo();
         Comment comment = commentRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("존재하지 않는 comment입니다."));
-        System.out.println(member.getMemberEmail());
-        System.out.println(comment.getDoctorEmail());
-        if (member.getMemberEmail().equals(comment.getDoctorEmail())){
-            comment.updateDeleteAt();
-        }else {
-            throw  new IllegalArgumentException("작성자 이외에는 삭제할 수 없습니다.");
+        int reportCount = member.getReportCount();
+        // 신고 횟수가 5 이상일 경우 예외 처리
+
+        if (!member.getMemberEmail().equals(comment.getDoctorEmail())){
+            throw new IllegalArgumentException("작성자 이외에는 삭제할 수 없습니다.");
         }
+        if (reportCount >= 5) {
+            throw new IllegalArgumentException("신고 횟수가 5회 이상인 회원은 댓글을 삭제할 수 없습니다.");
+        }
+        comment.updateDeleteAt();
+
     }
 
 }
