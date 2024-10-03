@@ -47,6 +47,7 @@ public class CommentService {
         MemberFeignDto member = getMemberInfo(); //현재 로그인한 사용자 정보
         String receiver; //comment 작성자 email; //fcm 받는 대상
         Comment savedComment;
+        int reportCount = member.getReportCount();
 
         if (dto.getPostId() != null){
             Post post = postRepository.findById(dto.getPostId()).orElseThrow(()-> new EntityNotFoundException("존재하지 않는 post입니다."));
@@ -55,6 +56,11 @@ public class CommentService {
 
             if (!post.getMemberEmail().equals(member.getMemberEmail()) && !"Doctor".equals(member.getRole())){
                 throw  new IllegalArgumentException("댓글을 작성할 수 있는 권한이 없습니다.");
+            }
+
+            // 신고 횟수가 5 이상일 경우 예외 처리
+            if (reportCount >= 5) {
+                throw new IllegalArgumentException("신고 횟수가 5회 이상인 회원은 댓글을 작성할 수 없습니다.");
             }
 
             receiver = post.getMemberEmail(); //댓글이 없는 질문일 경운 알림 수신자 = 게시글 작성자
