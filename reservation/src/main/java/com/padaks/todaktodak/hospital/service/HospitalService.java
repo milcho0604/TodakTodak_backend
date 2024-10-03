@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -89,9 +90,9 @@ public class HospitalService {
         // TODO : 이후 레디스에서 실시간 대기자수 값 가져오기
         Long standby = 0L; // 병원 실시간 대기자 수
 
-        // 병원별 리뷰 평균평점과 리뷰 개수 조회
-        Double averageRating = reviewRepository.findAverageRatingByHospitalId(hospital.getId());
-        Long reviewCount = reviewRepository.countByHospitalId(hospital.getId());
+        // 병원별 리뷰 평균평점과 리뷰 개수 조회 (null 체크 후 0으로 세팅)
+        Double averageRating = Optional.ofNullable(reviewRepository.findAverageRatingByHospitalId(hospital.getId())).orElse(0.0);
+        Long reviewCount = Optional.ofNullable(reviewRepository.countByHospitalId(hospital.getId())).orElse(0L);
 
         return HospitalDetailResDto.fromEntity(hospital, standby, distance, averageRating, reviewCount);
     }
@@ -142,9 +143,9 @@ public class HospitalService {
             // 병원과 사용자 간의 직선 거리 계산
             distance = distanceCalculator.calculateDistance(hospital.getLatitude(), hospital.getLongitude(), latitude, longitude);
 
-            // 병원별 리뷰 평균평점과 리뷰 개수 조회
-            averageRating = reviewRepository.findAverageRatingByHospitalId(hospital.getId());
-            reviewCount = reviewRepository.countByHospitalId(hospital.getId());
+            // 병원별 리뷰 평균평점과 리뷰 개수 조회 (null 체크 후 0으로 세팅)
+            averageRating = Optional.ofNullable(reviewRepository.findAverageRatingByHospitalId(hospital.getId())).orElse(0.0);
+            reviewCount = Optional.ofNullable(reviewRepository.countByHospitalId(hospital.getId())).orElse(0L);
 
             HospitalListResDto dto = HospitalListResDto.fromEntity(hospital, standby, distance, averageRating, reviewCount);
             dtoList.add(dto);
