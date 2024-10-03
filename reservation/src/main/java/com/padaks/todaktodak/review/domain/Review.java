@@ -27,6 +27,7 @@ public class Review extends BaseTimeEntity {
 //    @Column(nullable = false)
 //    @Check(constraints = "value BETWEEN 1 AND 5")
     private int rating;
+
     @Column
     private String contents;
 

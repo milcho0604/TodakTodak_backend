@@ -9,6 +9,7 @@ import com.padaks.todaktodak.common.feign.MemberFeignClient;
 import com.padaks.todaktodak.hospital.domain.Hospital;
 import com.padaks.todaktodak.hospital.dto.HospitalDTO.*;
 import com.padaks.todaktodak.hospital.repository.HospitalRepository;
+import com.padaks.todaktodak.review.repository.ReviewRepository;
 import com.padaks.todaktodak.util.DistanceCalculator;
 import com.padaks.todaktodak.util.S3ClientFileUpload;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -32,6 +34,7 @@ public class HospitalService {
     private final DistanceCalculator distanceCalculator;
     private final MemberFeign memberFeign;
     private final MemberFeignClient memberFeignClient;
+    private final ReviewRepository reviewRepository;
 
     public MemberFeignDto getMemberInfo() {
         MemberFeignDto member = memberFeignClient.getMemberEmail();  // Feign Client에 토큰 추가
@@ -86,7 +89,12 @@ public class HospitalService {
 
         // TODO : 이후 레디스에서 실시간 대기자수 값 가져오기
         Long standby = 0L; // 병원 실시간 대기자 수
-        return HospitalDetailResDto.fromEntity(hospital, standby, distance);
+
+        // 병원별 리뷰 평균평점과 리뷰 개수 조회 (null 체크 후 0으로 세팅)
+        Double averageRating = Optional.ofNullable(reviewRepository.findAverageRatingByHospitalId(hospital.getId())).orElse(0.0);
+        Long reviewCount = Optional.ofNullable(reviewRepository.countByHospitalId(hospital.getId())).orElse(0L);
+
+        return HospitalDetailResDto.fromEntity(hospital, standby, distance, averageRating, reviewCount);
     }
 
     // 병원 수정
@@ -127,12 +135,19 @@ public class HospitalService {
         List<Hospital> hospitalList = hospitalRepository.findByDongAndDeletedAtIsNullAndIsAcceptIsTrue(dong);
         List<HospitalListResDto> dtoList = new ArrayList<>();
         String distance = null;
-        Long standby = null; // 실시간 대기자 수 : 이후 redis 붙일예정
+        Long standby = null; // TODO : 실시간 대기자 수 이후 redis 붙일예정
+        Double averageRating = null;
+        Long reviewCount = null;
 
         for(Hospital hospital : hospitalList){
             // 병원과 사용자 간의 직선 거리 계산
             distance = distanceCalculator.calculateDistance(hospital.getLatitude(), hospital.getLongitude(), latitude, longitude);
-            HospitalListResDto dto = HospitalListResDto.fromEntity(hospital, standby, distance);
+
+            // 병원별 리뷰 평균평점과 리뷰 개수 조회 (null 체크 후 0으로 세팅)
+            averageRating = Optional.ofNullable(reviewRepository.findAverageRatingByHospitalId(hospital.getId())).orElse(0.0);
+            reviewCount = Optional.ofNullable(reviewRepository.countByHospitalId(hospital.getId())).orElse(0L);
+
+            HospitalListResDto dto = HospitalListResDto.fromEntity(hospital, standby, distance, averageRating, reviewCount);
             dtoList.add(dto);
         }
         return dtoList;

@@ -15,5 +15,5 @@ public enum DayOfHoliday {
     Sunday("SUNDAY","일요일");
 
     private final String key;
-    private final String string;
+    private final String value;
 }
