@@ -54,7 +54,7 @@ public class PostService {
     }
 
     public Page<PostListDto> postList(Pageable pageable){
-        Page<Post> posts = postRepository.findAll(pageable);
+        Page<Post> posts = postRepository.findByDeletedTimeAtIsNull(pageable);
         return posts.map(a->a.listFromEntity());
     }
 
