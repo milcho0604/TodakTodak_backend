@@ -1,5 +1,6 @@
 package com.padaks.todaktodak.doctoroperatinghours.service;
 
+import com.padaks.todaktodak.common.enumdir.DayOfHoliday;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.doctoroperatinghours.domain.DoctorOperatingHours;
 import com.padaks.todaktodak.doctoroperatinghours.dto.DoctorOperatingHoursReqDto;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,7 +29,20 @@ public class DoctorOperatingHoursService {
 
     public void addOperatingHours(Long doctorId, List<DoctorOperatingHoursReqDto> dtos){
         Member doctor = memberRepository.findByIdOrThrow(doctorId);
+
+        //의사의 모든 영업시간 불러옴
+        List<DoctorOperatingHours> existingOperatingHours = doctorOperatingHoursRepository.findAllByMember(doctor);
+
+        //기존 의사 영업시간 요일 저장
+        Set<DayOfHoliday> existingDays = existingOperatingHours.stream()
+                .map(DoctorOperatingHours::getDayOfWeek)
+                .collect(Collectors.toSet());
+
         for (DoctorOperatingHoursReqDto dto : dtos){
+            //중복 저장 방지
+            if (existingDays.contains(dto.getDayOfWeek())){
+                throw new IllegalArgumentException("근무시간 중복 저장 불가 : "+dto.getDayOfWeek() +"요일에 영업시간이 이미 등록 되어 있습니다.");
+            }
             DoctorOperatingHours operatingHours = DoctorOperatingHoursReqDto.toEntity(doctor, dto);
             doctorOperatingHoursRepository.save(operatingHours);
         }
