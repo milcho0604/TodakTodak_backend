@@ -1,6 +1,7 @@
 package com.padaks.todaktodak.childparentsrelationship.domain;
 
 import com.padaks.todaktodak.child.domain.Child;
+import com.padaks.todaktodak.common.domain.BaseTimeEntity;
 import com.padaks.todaktodak.member.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +15,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Builder
 @Getter
-public class ChildParentsRelationship {
+public class ChildParentsRelationship extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "relationship_id")
