@@ -24,6 +24,7 @@ import javax.persistence.EntityNotFoundException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,9 +48,22 @@ public class CommentService {
         MemberFeignDto member = getMemberInfo(); //현재 로그인한 사용자 정보
         String receiver; //comment 작성자 email; //fcm 받는 대상
         Comment savedComment;
+        int reportCount = member.getReportCount();
 
         if (dto.getPostId() != null){
             Post post = postRepository.findById(dto.getPostId()).orElseThrow(()-> new EntityNotFoundException("존재하지 않는 post입니다."));
+
+            //댓글 작성 제한 (post 작성자 / Role.Doctor 인 사용자)
+
+            if (!post.getMemberEmail().equals(member.getMemberEmail()) && !"Doctor".equals(member.getRole())){
+                throw  new IllegalArgumentException("댓글을 작성할 수 있는 권한이 없습니다.");
+            }
+
+            // 신고 횟수가 5 이상일 경우 예외 처리
+            if (reportCount >= 5) {
+                throw new IllegalArgumentException("신고 횟수가 5회 이상인 회원은 댓글을 작성할 수 없습니다.");
+            }
+
             receiver = post.getMemberEmail(); //댓글이 없는 질문일 경운 알림 수신자 = 게시글 작성자
             String title = post.getTitle();
             String type = "COMMENT";
@@ -90,6 +104,7 @@ public class CommentService {
     public List<CommentDetailDto> getCommentByPostId(Long postId){
         List<Comment> comments = commentRepository.findByPostId(postId);
         return comments.stream()
+                .filter(comment -> comment.getDeletedTimeAt() == null)
                 .map(comment -> CommentDetailDto.builder()
                         .id(comment.getId())
                         .content(comment.getContent())
@@ -100,18 +115,25 @@ public class CommentService {
     }
 
     public Page<CommentDetailDto> CommentListByDoctorId(String doctorEmail, Pageable pageable){
-        Page<Comment> comments = commentRepository.findByDoctorEmail(doctorEmail, pageable);
+        Page<Comment> comments = commentRepository.findByDoctorEmailAndDeletedTimeAtIsNull(doctorEmail, pageable);
         return comments.map(a->a.listFromEntity());
     }
 
     public void updateComment(Long id, CommentUpdateReqDto dto){
         MemberFeignDto member = getMemberInfo(); //현재 로그인 되어있는 사용자
         Comment comment = commentRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("존재하지 않는 comment입니다."));
+        int reportCount = member.getReportCount();
+        // 신고 횟수가 5 이상일 경우 예외 처리
+        if (reportCount >= 5) {
+            throw new IllegalArgumentException("신고 횟수가 5회 이상인 회원은 댓글을 수정할 수 없습니다.");
+        }
 
         String type = "COMMENT";
         Map<String, Object> messageData = new HashMap<>();
         //현재 로그인 되어있는 사용자가 comment의 작성자인 경우
-        if (member.getMemberEmail() == comment.getDoctorEmail()){
+        if (!Objects.equals(member.getMemberEmail(), comment.getDoctorEmail())){
+            throw new IllegalArgumentException("작성자 이외에는 수정할 수 없습니다.");
+        }
             comment.update(dto);
             commentRepository.save(comment);
             //fcm 메세지 데이터 객체 생성
@@ -127,21 +149,22 @@ public class CommentService {
                 log.error("JSON 변환 오류: {}", e.getMessage());
                 kafkaTemplate.send("community-fail", "JSON 변환 오류가 발생했습니다.");
             }
-        }else {
-            throw new IllegalArgumentException("작성자 이외에는 수정할 수 없습니다.");
-        }
-
 
     }
 
     public void deleteComment(Long id){
         MemberFeignDto member = getMemberInfo();
         Comment comment = commentRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("존재하지 않는 comment입니다."));
-        if (member.getMemberEmail() == comment.getDoctorEmail()){
-            comment.updateDeleteAt();
-        }else {
-            throw  new IllegalArgumentException("작성자 이외에는 삭제할 수 없습니다.");
+        int reportCount = member.getReportCount();
+        // 신고 횟수가 5 이상일 경우 예외 처리
+
+        if (!member.getMemberEmail().equals(comment.getDoctorEmail())){
+            throw new IllegalArgumentException("작성자 이외에는 삭제할 수 없습니다.");
         }
+        if (reportCount >= 5) {
+            throw new IllegalArgumentException("신고 횟수가 5회 이상인 회원은 댓글을 삭제할 수 없습니다.");
+        }
+        comment.updateDeleteAt();
 
     }
 

@@ -40,4 +40,19 @@
 [토닥토닥 요구사항정의 - 시트1.pdf](https://github.com/user-attachments/files/16960875/-.1.pdf)🐶
 [토닥토닥 요구사항정의 링크](https://docs.google.com/spreadsheets/d/1cADwkU7hRr3ORXeoPF6agGtAuPji-jDmKSRgDJrVxoQ/edit?usp=sharing)
 
+## ERD
+### 전체 ERD
+<img width="1115" alt="image" src="https://github.com/user-attachments/assets/e5ed1919-ef04-4536-ae35-34a265becc0a">
 
+### Member-Service
+<img width="1026" alt="image" src="https://github.com/user-attachments/assets/018d20a4-0364-4771-a4ac-ac49c4aec05e">
+
+### Reservation-Service
+<img width="1031" alt="image" src="https://github.com/user-attachments/assets/8e8f4c82-0489-4d4a-b05c-7c26a4a8fcba">
+
+### Community-Service
+<img width="1119" alt="image" src="https://github.com/user-attachments/assets/6f12faf1-974f-4170-9586-dbe2433bfb7b">
+
+
+## 화면 설계서
+[화면설계서 Figma](https://www.figma.com/design/LygEmOzP9B5OG2LeJaovWu/%ED%8C%8C%EB%8B%A5-%ED%86%A0%EB%8B%A5?m=auto&t=D2AX8VoOhmvfXPpt-1)

@@ -9,6 +9,7 @@ import com.padaks.todaktodak.child.dto.ChildShareReqDto;
 import com.padaks.todaktodak.child.dto.ChildUpdateReqDto;
 import com.padaks.todaktodak.child.repository.ChildRepository;
 import com.padaks.todaktodak.childparentsrelationship.domain.ChildParentsRelationship;
+import com.padaks.todaktodak.childparentsrelationship.repository.ChildParentsRelationshipRepository;
 import com.padaks.todaktodak.childparentsrelationship.service.ChildParentsRelationshipService;
 import com.padaks.todaktodak.common.dto.DtoMapper;
 import com.padaks.todaktodak.common.exception.BaseException;
@@ -27,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.crypto.SecretKey;
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.padaks.todaktodak.common.exception.exceptionType.MemberExceptionType.*;
@@ -44,6 +46,7 @@ public class ChildService {
     private final S3ClientFileUpload s3ClientFileUpload;
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final ObjectMapper objectMapper;
+    private final ChildParentsRelationshipRepository childParentsRelationshipRepository;
     // 환경 변수에서 암호화 키를 가져옴
     @Value("${encryption.secret-key}")
     private String secretKeyString;
@@ -102,7 +105,7 @@ public class ChildService {
         Member member = memberRepository.findByMemberEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다"));
 
-        List<ChildParentsRelationship> childParentsRelationships = member.getChildParentsRelationshipList();
+        List<ChildParentsRelationship> childParentsRelationships = childParentsRelationshipRepository.findByMemberAndDeletedAtIsNull(member);
         List<ChildResDto> childList = new ArrayList<>();
         SecretKey secretKey;
         try {
@@ -122,15 +125,21 @@ public class ChildService {
                 throw new RuntimeException("주민등록번호 복호화에 실패했습니다.");
             }
             ChildResDto childResDto = new ChildResDto().fromEntity(child, decryptedSsn);
-            childList.add(childResDto);
+            if (childParentsRelationship.getDeletedAt() == null) {
+                childList.add(childResDto);
+            }
         }
         return childList;
 
     }
 
     public void deleteChild(Long id) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Member member = memberRepository.findByMemberEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다"));
         Child child = childRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 자녀입니다"));
-        child.delete();
+        ChildParentsRelationship childParentsRelationship = childParentsRelationshipRepository.findByChildAndMemberAndDeletedAtIsNull(child, member).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 관계입니다."));
+        childParentsRelationship.setDeletedTimeAt(LocalDateTime.now());
     }
 
     // 자녀 공유 기능

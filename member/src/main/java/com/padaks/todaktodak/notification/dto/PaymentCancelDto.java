@@ -9,4 +9,6 @@ public class PaymentCancelDto {
     private BigDecimal fee;
     private String name;
     private String memberEmail;
+    private String adminEmail;
+
 }
