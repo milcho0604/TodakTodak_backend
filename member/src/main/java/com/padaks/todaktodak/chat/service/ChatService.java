@@ -10,12 +10,15 @@ import com.padaks.todaktodak.chat.cs.repository.CsRepository;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.repository.MemberRepository;
+import com.padaks.todaktodak.member.service.FcmService;
+import com.padaks.todaktodak.notification.domain.Type;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +37,7 @@ public class ChatService {
     private final ChatRoomRepository chatRoomRepository;
     private final MemberRepository memberRepository;
     private final CsRepository csRepository;
+    private final FcmService fcmService;
 
     private static final Long ADMIN_ID = 1L; // Admin 고정 ID
 
@@ -47,6 +51,10 @@ public class ChatService {
                 .member(member)
                 .recentChatTime(LocalDateTime.now()) // 채팅방 생성과 함께 최근채팅시간 update (null로 두지 않기 위해서)
                 .build();
+
+        //새로운 채팅방 생성시 admin에게 알림
+        Member admin = memberRepository.findById(ADMIN_ID).orElseThrow(()-> new EntityNotFoundException("존재하지 않는 관리자입니다."));
+        fcmService.sendMessage(admin.getMemberEmail(), member.getName(),"새로운 문의 채팅방이 생성되었습니다.", Type.CHAT);
 
         return chatRoomRepository.save(chatRoom);
     }
