@@ -84,12 +84,39 @@ public class NotificationKafkaConsumer {
                     "\n예약시간\t: " + dto.getReservationTime() +
                     "\n의사\t\t: " + dto.getDoctorName() +
                     "\n예약자\t\t: " + dto.getMemberName() +
-                    "\n진료타입\t" + dto.getReservationType() +
-                    "\n자녀이름\t: " + child.getName() +
-                    "\n진료\t" + dto.getMedicalItem();
+                    "\n자녀이름\t: " + child.getName();
 
             fcmService.sendMessage(dto.getAdminEmail(),
-                    "# " + dto.getHospitalName() + "예약 안내 #",
+                    "# " + dto.getReservationType()+"/" + dto.getMedicalItem() + "예약 안내 #",
+                    body,
+                    Type.RESERVATION_NOTIFICATION);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @KafkaListener(topics = "immediate-reservation-success-notify", containerFactory = "reservationKafkaContainerFactory")
+    public void immediateNotification(String message){
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        if (message.startsWith("\"") && message.endsWith("\"")) {
+            message = message.substring(1, message.length() -1).replace("\"", "\"");
+            message = message.replace("\\", "");
+        }
+
+        try {
+            ReservationSuccessResDto dto =
+                    objectMapper.readValue(message, ReservationSuccessResDto.class);
+
+            Child child = childRepository.findById(Long.parseLong(dto.getChildId()))
+                    .orElseThrow(() -> new BaseException(CHILD_NOT_FOUND));
+
+            String body = "예약일자\t: " + dto.getReservationDate() +
+                    "\n 의사\t\t: " + dto.getDoctorName() +
+                    "\n 예약자\t\t: " + dto.getMemberName() +
+                    "\n 자녀이름\t: " + child.getName();
+            fcmService.sendMessage(dto.getAdminEmail(),
+                    "# " + dto.getReservationType()+"/" + dto.getMedicalItem() + "예약 안내 #",
                     body,
                     Type.RESERVATION_NOTIFICATION);
         } catch (JsonProcessingException e) {
