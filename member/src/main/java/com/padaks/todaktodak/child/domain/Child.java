@@ -38,4 +38,9 @@ public class Child extends BaseTimeEntity {
     public void delete() {
         this.setDeletedTimeAt(LocalDateTime.now());
     }
+
+    public void update(String name, String image) {
+        this.name = name;
+        this.profileImgUrl = image;
+    }
 }
