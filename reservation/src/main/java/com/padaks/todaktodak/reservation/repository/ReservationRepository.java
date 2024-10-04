@@ -3,9 +3,11 @@ package com.padaks.todaktodak.reservation.repository;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.domain.ReserveType;
 import com.padaks.todaktodak.reservation.domain.Status;
+import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.*;
@@ -33,4 +35,9 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
 
     List<Reservation> findAllByReservationDateAndReservationTime(LocalDate localDate, LocalTime localTime);
+
+//    JQPL 을 이용한 당일의 해당 시간 스케줄예약 찾는 로직
+    @Query("SELECT res FROM Reservation res WHERE res.reservationTime = :targetTime AND res.reservationDate = :targetDate")
+    List<Reservation> findReservationByAtSpecificTimeAndSpecificDate(@Param("targetTime") LocalTime targetTime,
+                                                      @Param("targetDate") LocalDate targetDate);
 }

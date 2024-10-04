@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -258,6 +259,31 @@ public class ReservationService {
         return member;
     }
 
+//    예약 30분 전에 알림 보내는 스케줄 로직
+    @Scheduled(cron = "0 0,30 8-12,13-22 * * *")
+    public void notifyBeforeReservation(){
+//        오늘 날짜
+        LocalDate targetDate = LocalDate.now();
+//        현재 시간 스케줄로 인해 9시~12시, 13시~22시 0분,30분 고정
+        LocalTime currentTime = LocalTime.now();
+//        현재 시간으로 부터 30분 이후 ex) 09:00 -> 09:30, 10:30 -> 11:00
+        LocalTime targetTime = currentTime.plusMinutes(30);
+//        오늘 날짜와 현재 시간을 기준으로 예약을 찾아오는 로직 (JQPL 사용함)
+        List<Reservation> reservations = reservationRepository.findReservationByAtSpecificTimeAndSpecificDate(targetTime,targetDate);
+
+        for(Reservation res : reservations){
+//            카프카로 전송해줄 메시지 생성
+            Map<String, String> messageDate = new HashMap<>();
+            messageDate.put("memberEmail", res.getMemberEmail());
+            messageDate.put("reservationDate", res.getReservationDate().toString());
+            messageDate.put("reservationTime", res.getReservationTime().toString());
+            messageDate.put("hospitalName", res.getHospital().getName());
+            messageDate.put("doctorName", res.getDoctorName());
+            messageDate.put("message", "예약 30분 전입니다");
+//            카프카로 메시지 전송.
+            kafkaTemplate.send("scheduled-reservation-before-notify", messageDate);
+        }
+    }
     private Map<String, Object> createMessageData(Reservation reservation, String memberName) {
         Map<String, Object> messageData = new HashMap<>();
         messageData.put("adminEmail", reservation.getHospital().getAdminEmail());
