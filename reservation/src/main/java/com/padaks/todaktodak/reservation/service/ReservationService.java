@@ -110,7 +110,7 @@ public class ReservationService {
                 Reservation reservation = dtoMapper.toReservation(dto, hospital);
                 reservationRepository.save(reservation);
 
-                Map<String, Object> messageData = createMessageData(reservation);
+                Map<String, Object> messageData = createMessageData(reservation, getMemberInfo().getName());
                 String notificationMessage = objectMapper.writeValueAsString(messageData);
 
                 kafkaTemplate.send("scheduled-reservation-success-notify", notificationMessage);
@@ -166,7 +166,7 @@ public class ReservationService {
 
             redisTemplate.opsForZSet().add(key, redisDto, sequence);
 
-            Map<String, Object> messageData = createMessageData(reservation);
+            Map<String, Object> messageData = createMessageData(reservation, getMemberInfo().getName());
             String notificationMessage = objectMapper.writeValueAsString(messageData);
             kafkaTemplate.send("immediate-reservation-success-notify", notificationMessage);
             log.info("KafkaListener[handleReservation] : 예약 대기열 처리 완료");
@@ -258,10 +258,12 @@ public class ReservationService {
         return member;
     }
 
-    private Map<String, Object> createMessageData(Reservation reservation) {
+    private Map<String, Object> createMessageData(Reservation reservation, String memberName) {
         Map<String, Object> messageData = new HashMap<>();
-        messageData.put("memberEmail", reservation.getMemberEmail());
-        messageData.put("DoctorEmail", reservation.getDoctorEmail());
+        messageData.put("adminEmail", reservation.getHospital().getAdminEmail());
+        messageData.put("doctorName", reservation.getDoctorName());
+        messageData.put("memberName", memberName);
+        messageData.put("hospitalName", reservation.getHospital().getName());
         messageData.put("reservationType", reservation.getReservationType());
         messageData.put("reservationDate", reservation.getReservationDate());
         messageData.put("medicalItem", reservation.getMedicalItem());
