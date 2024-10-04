@@ -11,6 +11,7 @@ import com.padaks.todaktodak.member.service.FcmService;
 import com.padaks.todaktodak.notification.domain.Notification;
 import com.padaks.todaktodak.notification.domain.Type;
 import com.padaks.todaktodak.notification.dto.CommentSuccessDto;
+import com.padaks.todaktodak.notification.dto.ReserveBeforeNotifyResDto;
 import com.padaks.todaktodak.notification.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -63,5 +64,31 @@ public class NotificationKafkaConsumer {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @KafkaListener(topics = "reservation-before-notify")
+    public void reserveBeforeNotify(String message){
+        ObjectMapper objectMapper = new ObjectMapper();
+        if (message.startsWith("\"") && message.endsWith("\"")) {
+            message = message.substring(1, message.length() -1).replace("\"", "\"");
+            message = message.replace("\\", "");
+        }
+
+        try {
+            ReserveBeforeNotifyResDto dto =
+                    objectMapper.readValue(message, ReserveBeforeNotifyResDto.class);
+
+            String body = "병원\t\t: " + dto.getHospitalName() +
+                    "\n 의사명\t\t: " + dto.getDoctorName() +
+                    "\n 예약시간\t: " + dto.getReservationTime();
+
+            fcmService.sendMessage(dto.getMemberEmail() ,
+                    "# 금일 " + dto.getMessage() + " #",
+                    body,
+                    Type.RESERVATION_NOTIFICATION);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }
