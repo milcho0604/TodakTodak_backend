@@ -45,7 +45,6 @@ public class ReservationService {
     private final RedisTemplate<String, Object> redisScheduleTemplate;
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final HospitalRepository hospitalRepository;
-
     private final MemberFeign memberFeign;
     private final MemberFeignClient memberFeignClient;
     private final ObjectMapper objectMapper;
