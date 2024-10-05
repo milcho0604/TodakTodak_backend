@@ -26,8 +26,8 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI openAPI(){
         var info = new Info();
-        info.title("토닥파닥 API - community");
-        info.description("토닥파닥의 community API 다!!");
+        info.title("토닥파닥 API - member");
+        info.description("토닥파닥의 member API 다!!");
 
         return new OpenAPI()
                 .components(new Components()
