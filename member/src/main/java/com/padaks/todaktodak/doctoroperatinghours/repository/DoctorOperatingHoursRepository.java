@@ -1,10 +1,8 @@
 package com.padaks.todaktodak.doctoroperatinghours.repository;
 
-import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.doctoroperatinghours.domain.DoctorOperatingHours;
 import com.padaks.todaktodak.member.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityNotFoundException;

@@ -3,7 +3,6 @@ package com.padaks.todaktodak.member.domain;
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
 import com.padaks.todaktodak.member.dto.DoctorListResDto;
 import com.padaks.todaktodak.member.dto.MemberListResDto;
-import com.padaks.todaktodak.member.dto.MemberUpdateReqDto;
 import lombok.*;
 import com.padaks.todaktodak.childparentsrelationship.domain.ChildParentsRelationship;
 import org.hibernate.annotations.ColumnDefault;
@@ -98,15 +97,6 @@ public class Member extends BaseTimeEntity {
         this.fcmToken = fcmToken;
         return this;
     }
-
-    // member update 사용
-//    public Member updateToEntity(Address address, String name, String phone) {
-//        return Member.builder()
-//                .address(address != null ? address : this.address) // null 체크
-//                .name(name != null ? name : this.name) // null 체크
-//                .phoneNumber(phone != null ? phone : this.phoneNumber) // null 체크
-//                .build();
-//    }
 
     // 프로필 이미지 URL 변경
     public void changeProfileImgUrl(String newUrl) {

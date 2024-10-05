@@ -1,8 +1,6 @@
 package com.padaks.todaktodak.doctoroperatinghours.dto;
 
 import com.padaks.todaktodak.common.enumdir.DayOfHoliday;
-import com.padaks.todaktodak.doctoroperatinghours.domain.DoctorOperatingHours;
-import com.padaks.todaktodak.member.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -16,7 +16,7 @@ import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.common.service.AESUtil;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.repository.MemberRepository;
-import com.padaks.todaktodak.util.S3ClientFileUpload;
+import com.padaks.todaktodak.common.util.S3ClientFileUpload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

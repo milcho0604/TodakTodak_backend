@@ -1,7 +1,6 @@
 package com.padaks.todaktodak.reservation.controller;
 
 import com.padaks.todaktodak.common.exception.BaseException;
-import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.dto.CheckListReservationResDto;
 import com.padaks.todaktodak.reservation.dto.ReservationSaveReqDto;
 import com.padaks.todaktodak.reservation.service.ReservationService;
@@ -52,12 +51,6 @@ public class ReservationController {
         List<?> dto = reservationService.checkListReservation(resDto, pageable);
 
         return new ResponseEntity<>(dto, HttpStatus.OK);
-    }
-
-    @GetMapping("/rank/{id}")
-    public ResponseEntity<?> rankReservationQueue(@PathVariable Long id){
-        Long res = reservationService.rankReservationQueue(id);
-        return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
     @GetMapping("/get/member")

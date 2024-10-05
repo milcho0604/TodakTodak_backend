@@ -3,7 +3,6 @@ package com.padaks.todaktodak.doctoroperatinghours.controller;
 import com.padaks.todaktodak.common.dto.CommonErrorDto;
 import com.padaks.todaktodak.common.dto.CommonResDto;
 import com.padaks.todaktodak.doctoroperatinghours.dto.DoctorOperatingHoursReqDto;
-import com.padaks.todaktodak.doctoroperatinghours.dto.DoctorOperatingHoursResDto;
 import com.padaks.todaktodak.doctoroperatinghours.dto.DoctorOperatingHoursSimpleResDto;
 import com.padaks.todaktodak.doctoroperatinghours.service.DoctorOperatingHoursService;
 import lombok.RequiredArgsConstructor;

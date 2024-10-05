@@ -1,7 +1,6 @@
 package com.padaks.todaktodak.chat.chatroom.repository;
 
 import com.padaks.todaktodak.chat.chatroom.domain.ChatRoom;
-import com.padaks.todaktodak.common.exception.BaseException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

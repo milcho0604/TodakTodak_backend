@@ -10,12 +10,10 @@ import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.padaks.todaktodak.common.exception.exceptionType.ReservationExceptionType.MEDICALCHART_NOT_FOUND;
-import static com.padaks.todaktodak.common.exception.exceptionType.ReservationExceptionType.RESERVATION_NOT_FOUND;
+import static com.padaks.todaktodak.common.exception.exceptionType.ReservationExceptionType.*;
 
 @Service
 @RequiredArgsConstructor

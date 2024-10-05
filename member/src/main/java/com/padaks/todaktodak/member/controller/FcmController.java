@@ -1,6 +1,5 @@
 package com.padaks.todaktodak.member.controller;
 
-
 import com.padaks.todaktodak.common.dto.CommonErrorDto;
 import com.padaks.todaktodak.common.dto.CommonResDto;
 import com.padaks.todaktodak.member.dto.FcmTokenSaveRequest;

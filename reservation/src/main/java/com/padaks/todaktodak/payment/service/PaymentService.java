@@ -86,14 +86,12 @@ public class PaymentService {
     // 단건 결제 로직 구현
     public PaymentReqDto processPayment(String impUid, PaymentMethod paymentMethod) throws Exception {
         MemberFeignDto member = getMemberInfo();  // 현재 로그인한 사용자 정보
-//        System.out.println(impUid);
 
         int fee = medicalChart.getFee();
 
         String adminEmail = medicalChart.getReservation().getHospital().getAdminEmail();
 
         String actualImpUid = extractImpUid(impUid);  // impUid 값 추출 함수 사용
-//        System.out.println("Extracted impUid: " + actualImpUid);
 
         // impUid를 통해 결제 정보 확인
         IamportResponse<Payment> paymentResponse = iamportClient.paymentByImpUid(actualImpUid);
@@ -201,10 +199,8 @@ public class PaymentService {
     // 정기 결제 로직
     public PaymentReqDto subPayment(String impUid, PaymentMethod paymentMethod) throws Exception {
         MemberFeignDto member = getMemberInfo();  // 현재 로그인한 사용자 정보
-//        System.out.println(impUid);
 
         String actualImpUid = extractImpUid(impUid);  // impUid 값 추출 함수 사용
-//        System.out.println("Extracted impUid: " + actualImpUid);
 
         // impUid를 통해 결제 정보 확인
         IamportResponse<Payment> paymentResponse = iamportClient.paymentByImpUid(actualImpUid);
@@ -363,7 +359,6 @@ public class PaymentService {
 
             String memberEmail = pay.getMemberEmail();
             BigDecimal fee = pay.getAmount();
-//            String name = pay.getName();
             String impUid2 = pay.getImpUid();
             String adminEmail = "todak@test.com";
             // 메시지 데이터 객체 생성
@@ -394,7 +389,6 @@ public class PaymentService {
     // 정기결제 상태 체크 및 다음 결제일 갱신
     public void processSubscriptions() {
         log.info("정기 결제 프로세스 시작");
-//        List<Pay> subscriptionPayments = paymentRepository.findByPaymentMethod(PaymentMethod.SUBSCRIPTION);
         List<Pay> subscriptionPayments = paymentRepository.findByPaymentMethodAndPaymentStatus(
                 PaymentMethod.SUBSCRIPTION, PaymentStatus.SUBSCRIBING);
 
