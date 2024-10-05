@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.padaks.todaktodak.comment.domain.Comment;
 import com.padaks.todaktodak.comment.dto.CommentDetailDto;
-import com.padaks.todaktodak.comment.dto.CommentReqDto;
 import com.padaks.todaktodak.comment.dto.CommentSaveDto;
 import com.padaks.todaktodak.comment.dto.CommentUpdateReqDto;
 import com.padaks.todaktodak.comment.repository.CommentRepository;

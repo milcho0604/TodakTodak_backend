@@ -1,4 +1,4 @@
-package com.padaks.todaktodak.config;
+package com.padaks.todaktodak.common.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;

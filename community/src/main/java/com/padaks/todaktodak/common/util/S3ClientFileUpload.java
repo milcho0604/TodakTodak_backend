@@ -1,4 +1,4 @@
-package com.padaks.todaktodak.util;
+package com.padaks.todaktodak.common.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
