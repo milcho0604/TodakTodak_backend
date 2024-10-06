@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class ReviewSaveReqDto {
     private String memberEmail;
     private String name;
+    private String doctorName;
     private int rating;
     private String contents;
     private Long reservationId;
@@ -22,6 +23,7 @@ public class ReviewSaveReqDto {
         return Review.builder()
                 .memberEmail(email)
                 .name(name)
+                .doctorName(doctorName)
                 .rating(this.rating)
                 .contents(this.contents)
                 .reservation(reservation)

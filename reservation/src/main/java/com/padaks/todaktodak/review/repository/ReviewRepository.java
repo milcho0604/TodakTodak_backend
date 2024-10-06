@@ -29,6 +29,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     boolean existsByReservationId(Long reservationId);
 
     // 나의 리뷰 목록
-    Page<Review> findByMemberEmail(String memberEmail, Pageable pageable);
+    Page<Review> findByMemberEmailAndDeletedAtIsNull(String memberEmail, Pageable pageable);
 
 }

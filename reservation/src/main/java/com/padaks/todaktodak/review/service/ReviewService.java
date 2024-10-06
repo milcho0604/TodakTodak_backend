@@ -126,7 +126,7 @@ public class ReviewService {
     public Page<ReviewMyListResDto> reviewMyListResDtos(Pageable pageable){
         MemberFeignDto memberFeignDto = memberFeignClient.getMemberEmail();
         String memberEmail = memberFeignDto.getMemberEmail();
-        Page<Review> reviews = reviewRepository.findByMemberEmail(memberEmail, pageable);
+        Page<Review> reviews = reviewRepository.findByMemberEmailAndDeletedAtIsNull(memberEmail, pageable);
         return reviews.map(review -> review.myListFromEntity());
     }
 }
