@@ -16,5 +16,4 @@ public class DoctorListResDto {
     private String name;
     private String profileImgUrl;
     private Role role;
-    private String bio;
 }

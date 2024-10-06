@@ -330,10 +330,6 @@ public class MemberService {
         return doctors.map(a->a.doctorListFromEntity());
     }
 
-    public Page<DoctorListResDto> doctorListByHospital(Long hospitalId, Pageable pageable){
-        Page<Member> doctors = memberRepository.findByRoleAndHospitalId(Role.Doctor, hospitalId, pageable);
-        return doctors.map(a->a.doctorListFromEntity());
-    }
 
 //    유저 회원가입은 소셜만 되어있기 때문에 TodakAdmin만 따로 initialDataLoader로 선언해 주었음.
     public void adminCreate(AdminSaveDto dto){
