@@ -1,6 +1,7 @@
 package com.padaks.todaktodak.member.domain;
 
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
+import com.padaks.todaktodak.doctoroperatinghours.dto.DoctorOperatingHoursSimpleResDto;
 import com.padaks.todaktodak.member.dto.DoctorListResDto;
 import com.padaks.todaktodak.member.dto.MemberListResDto;
 import lombok.*;
@@ -168,13 +169,14 @@ public class Member extends BaseTimeEntity {
                 .build();
     }
 
-    public DoctorListResDto doctorListFromEntity(){
+    public DoctorListResDto doctorListFromEntity(List<DoctorOperatingHoursSimpleResDto> operatingHours){
         return DoctorListResDto.builder()
                 .id(this.id)
                 .name(this.name)
                 .profileImgUrl(this.profileImgUrl)
                 .role(this.role)
                 .bio(this.bio)
+                .operatingHours(operatingHours)
                 .build();
     }
 
