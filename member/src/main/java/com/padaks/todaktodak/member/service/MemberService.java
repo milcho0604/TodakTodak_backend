@@ -4,6 +4,8 @@ import com.padaks.todaktodak.common.dto.DtoMapper;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.common.feign.ReservationFeignClient;
 import com.padaks.todaktodak.config.JwtTokenProvider;
+import com.padaks.todaktodak.doctoroperatinghours.dto.DoctorOperatingHoursSimpleResDto;
+import com.padaks.todaktodak.doctoroperatinghours.service.DoctorOperatingHoursService;
 import com.padaks.todaktodak.member.domain.Address;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.domain.Role;
@@ -42,6 +44,7 @@ public class MemberService {
     private final S3ClientFileUpload s3ClientFileUpload;
     private final ReservationFeignClient reservationFeignClient;
     private final FcmService fcmService;
+    private final DoctorOperatingHoursService doctorOperatingHoursService;
 
     // 간편하게 멤버 객체를 찾기 위한 findByMemberEmail
     public Member findByMemberEmail(String email) {
@@ -327,9 +330,19 @@ public class MemberService {
 
     public Page<DoctorListResDto> doctorList(Pageable pageable){
         Page<Member> doctors = memberRepository.findByRole(Role.Doctor, pageable);
-        return doctors.map(a->a.doctorListFromEntity());
+        return doctors.map(doctor ->{
+            List<DoctorOperatingHoursSimpleResDto> operatingHours = doctorOperatingHoursService.getOperatingHoursByDoctorId(doctor.getId());
+            return doctor.doctorListFromEntity(operatingHours);
+        });
     }
-
+  
+    public Page<DoctorListResDto> doctorListByHospital(Long hospitalId, Pageable pageable){
+        Page<Member> doctors = memberRepository.findByRoleAndHospitalId(Role.Doctor, hospitalId, pageable);
+        return doctors.map(doctor ->{
+            List<DoctorOperatingHoursSimpleResDto> operatingHours = doctorOperatingHoursService.getOperatingHoursByDoctorId(doctor.getId());
+            return doctor.doctorListFromEntity(operatingHours);
+        });
+    }
 
 //    유저 회원가입은 소셜만 되어있기 때문에 TodakAdmin만 따로 initialDataLoader로 선언해 주었음.
     public void adminCreate(AdminSaveDto dto){
