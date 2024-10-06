@@ -27,18 +27,10 @@ public class DoctorOperatingHours extends BaseTimeEntity {
     @OneToOne
     @JoinColumn(name = "member_id")
     private Member member;
-
     @Enumerated(EnumType.STRING)
-    @NotEmpty(message = "dayOfWeek is essential")
     private DayOfHoliday dayOfWeek;
-
-    @NotEmpty(message = "openTime is essential")
     private LocalTime openTime;
-
-    @NotEmpty(message = "closeTime is essential")
     private LocalTime closeTime;
-
-    @NotEmpty(message = "untactType is essential")
     private Boolean untact;
 
     public void updateOperatingHours(DoctorOperatingHoursReqDto dto){

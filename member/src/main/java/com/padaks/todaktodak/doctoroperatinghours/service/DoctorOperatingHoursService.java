@@ -7,6 +7,7 @@ import com.padaks.todaktodak.doctoroperatinghours.dto.DoctorOperatingHoursReqDto
 import com.padaks.todaktodak.doctoroperatinghours.dto.DoctorOperatingHoursSimpleResDto;
 import com.padaks.todaktodak.doctoroperatinghours.repository.DoctorOperatingHoursRepository;
 import com.padaks.todaktodak.member.domain.Member;
+import com.padaks.todaktodak.member.domain.Role;
 import com.padaks.todaktodak.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,9 +37,13 @@ public class DoctorOperatingHoursService {
         //controller에서 요청한 id로 해당의사 찾아야함
         Member doctor = memberRepository.findById(doctorId).orElseThrow(()-> new EntityNotFoundException("의사를 찾을 수 없습니다. ID : " + doctorId));
 
+
         // hospitalAdmin의 병원에 소속된 의사의 영업시간만 등록 가능
+        if (!hospitalAdmin.getRole().equals(Role.HospitalAdmin)){
+            throw new IllegalArgumentException("병원 admin만 근무시간을 등록 할 수 있습니다.");
+        }
         if (!hospitalAdmin.getHospitalId().equals(doctor.getHospitalId())){
-            throw new IllegalArgumentException("다른 병원의 의사의 근무시근은 등록할 수 없습니다.");
+            throw new IllegalArgumentException("다른 병원의 의사의 근무시간은 등록할 수 없습니다.");
         }
 
         //의사의 모든 영업시간 불러옴
@@ -76,28 +81,42 @@ public class DoctorOperatingHoursService {
                 ).collect(Collectors.toList());
     }
 
-    public void updateOperatingHours(Long doctorId, DoctorOperatingHoursReqDto dto){
+    public void updateOperatingHours(Long operatingHoursId, DoctorOperatingHoursReqDto dto){
         //ContextHolder로 memberEmail 찾기
         String memberEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         Member hospitalAdmin = memberRepository.findByMemberEmailOrThrow(memberEmail);
         //근무시간 변경하려는 의사
-        Member doctor = memberRepository.findById(doctorId).orElseThrow(()-> new EntityNotFoundException("의사를 찾을 수 없습니다. ID : " + doctorId));
-        DoctorOperatingHours hours = doctorOperatingHoursRepository.findByIdOrThrow(doctorId);
+        DoctorOperatingHours hours =doctorOperatingHoursRepository.findById(operatingHoursId).orElseThrow(()-> new EntityNotFoundException("존재하지 않는 근무시간 입니다."));
+        Member doctor = memberRepository.findById(hours.getMember().getId()).orElseThrow(()-> new EntityNotFoundException("의사를 찾을 수 없습니다. ID : " + hours.getMember().getId()));
 
         // hospitalAdmin의 병원에 소속된 의사의 영업시간만 등록 가능
-        if (!hospitalAdmin.getHospitalId().equals(doctor.getHospitalId())){
-            throw new IllegalArgumentException("다른 병원의 의사의 근무시근은 수정할 수 없습니다.");
+        if (!hospitalAdmin.getRole().equals(Role.HospitalAdmin)){
+            throw new IllegalArgumentException("병원 admin만 근무시간을 수정 할 수 있습니다.");
         }
-
+        if (!hospitalAdmin.getHospitalId().equals(doctor.getHospitalId())){
+            throw new IllegalArgumentException("다른 병원의 의사의 근무시간은 수정할 수 없습니다.");
+        }
         if (!hours.getMember().getId().equals(doctor.getId())){
-            throw new EntityNotFoundException("해당하는 의사와 동일 하지 않습니다.");
+            throw new EntityNotFoundException("수정하려는 의사와 동일 하지 않습니다.");
         }
 
         hours.updateOperatingHours(dto);
     }
 
     public void deleteOperatingHours(Long operatingHoursId){
-        DoctorOperatingHours hours = doctorOperatingHoursRepository.findByIdOrThrow(operatingHoursId);
+        //ContextHolder로 memberEmail 찾기
+        String memberEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Member hospitalAdmin = memberRepository.findByMemberEmailOrThrow(memberEmail);
+
+        DoctorOperatingHours hours =doctorOperatingHoursRepository.findById(operatingHoursId).orElseThrow(()-> new EntityNotFoundException("존재하지 않는 근무시간 입니다."));
+
+        if (!hospitalAdmin.getRole().equals(Role.HospitalAdmin)){
+            throw new IllegalArgumentException("병원 admin만 근무시간을 삭제 할 수 있습니다.");
+        }
+        if (!hospitalAdmin.getHospitalId().equals(hours.getMember().getHospitalId())){
+            throw new IllegalArgumentException("다른 병원의 의사의 근무시간은 삭제할 수 없습니다.");
+        }
+
         hours.setDeletedTimeAt(LocalDateTime.now());
     }
 }
