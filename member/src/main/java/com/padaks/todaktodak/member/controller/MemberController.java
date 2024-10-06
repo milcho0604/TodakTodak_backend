@@ -358,4 +358,17 @@ public class MemberController {
         memberService.updateNoShowCount();
     }
 
+    @GetMapping("/reportCount")
+    public ResponseEntity<?> memberReportCount(){
+        try {
+            int reportCount = memberService.memberReportCount();
+            CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "사용자의 현재 신고 횟수: " , reportCount);
+            return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+        }catch (EntityNotFoundException e){
+            e.printStackTrace();
+            CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.NOT_FOUND, e.getMessage());
+            return new ResponseEntity<>(commonErrorDto, HttpStatus.NOT_FOUND);
+        }
+    }
+
 }
