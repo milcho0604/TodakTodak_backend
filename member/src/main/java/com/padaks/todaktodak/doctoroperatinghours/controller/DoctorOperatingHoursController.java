@@ -41,9 +41,9 @@ public class DoctorOperatingHoursController {
     }
 
     @PostMapping("/update/{doctorId}/{operatingHoursId}")
-    public ResponseEntity<?> updateOperatingHours(@PathVariable Long doctorId, @PathVariable Long operatingHoursId, @RequestBody DoctorOperatingHoursReqDto dto){
-        doctorOperatingHoursService.updateOperatingHours(doctorId, operatingHoursId, dto);
-        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK,"의사 근무시간 수정 성공", doctorId);
+    public ResponseEntity<?> updateOperatingHours(@PathVariable Long doctorId, @RequestBody DoctorOperatingHoursReqDto dto){
+        doctorOperatingHoursService.updateOperatingHours(doctorId, dto);
+        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK,"의사 근무시간 수정 성공", null);
         return new ResponseEntity<>(commonResDto, HttpStatus.OK);
     }
 

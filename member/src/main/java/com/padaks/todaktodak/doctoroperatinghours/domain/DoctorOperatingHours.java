@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalTime;
 
 @Entity
@@ -26,17 +27,25 @@ public class DoctorOperatingHours extends BaseTimeEntity {
     @OneToOne
     @JoinColumn(name = "member_id")
     private Member member;
-    private DayOfHoliday dayOfWeek;
-    private LocalTime openTime;
-    private LocalTime closeTime;
+
     @Enumerated(EnumType.STRING)
-    private DayOfHoliday untack;
+    @NotEmpty(message = "dayOfWeek is essential")
+    private DayOfHoliday dayOfWeek;
+
+    @NotEmpty(message = "openTime is essential")
+    private LocalTime openTime;
+
+    @NotEmpty(message = "closeTime is essential")
+    private LocalTime closeTime;
+
+    @NotEmpty(message = "untactType is essential")
+    private Boolean untact;
 
     public void updateOperatingHours(DoctorOperatingHoursReqDto dto){
-        this.member = dto.getMember();
+        //this.member = dto.getMember();
         this.dayOfWeek = dto.getDayOfWeek();
         this.openTime = dto.getOpenTime();
         this.closeTime = dto.getCloseTime();
-        this.untack = dto.getUntack();
+        this.untact = dto.getUntact();
     }
 }
