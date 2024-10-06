@@ -3,7 +3,6 @@ package com.padaks.todaktodak.member.domain;
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
 import com.padaks.todaktodak.member.dto.DoctorListResDto;
 import com.padaks.todaktodak.member.dto.MemberListResDto;
-import com.padaks.todaktodak.member.dto.MemberUpdateReqDto;
 import lombok.*;
 import com.padaks.todaktodak.childparentsrelationship.domain.ChildParentsRelationship;
 import org.hibernate.annotations.ColumnDefault;
@@ -174,6 +173,8 @@ public class Member extends BaseTimeEntity {
                 .id(this.id)
                 .name(this.name)
                 .profileImgUrl(this.profileImgUrl)
+                .role(this.role)
+                .bio(this.bio)
                 .build();
     }
 
