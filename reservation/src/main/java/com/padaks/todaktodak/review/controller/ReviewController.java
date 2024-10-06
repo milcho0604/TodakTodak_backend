@@ -3,10 +3,7 @@ package com.padaks.todaktodak.review.controller;
 import com.padaks.todaktodak.common.dto.CommonErrorDto;
 import com.padaks.todaktodak.common.dto.CommonResDto;
 import com.padaks.todaktodak.review.domain.Review;
-import com.padaks.todaktodak.review.dto.ReviewDetailDto;
-import com.padaks.todaktodak.review.dto.ReviewListResDto;
-import com.padaks.todaktodak.review.dto.ReviewSaveReqDto;
-import com.padaks.todaktodak.review.dto.ReviewUpdateReqDto;
+import com.padaks.todaktodak.review.dto.*;
 import com.padaks.todaktodak.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -90,5 +87,13 @@ public class ReviewController {
             Pageable pageable) {
         ReviewDetailDto reviewDetailDto = reviewService.reviewDetail(hospitalId, pageable);
         return ResponseEntity.ok(reviewDetailDto);
+    }
+
+    // 사용자의 리뷰 리스트 조회
+    @GetMapping("/my/list")
+    public ResponseEntity<Page<ReviewMyListResDto>> getMyReviewList(
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<ReviewMyListResDto> reviewList = reviewService.reviewMyListResDtos(pageable);
+        return ResponseEntity.ok(reviewList);
     }
 }

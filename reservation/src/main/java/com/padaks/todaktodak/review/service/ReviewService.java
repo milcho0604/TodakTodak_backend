@@ -7,10 +7,7 @@ import com.padaks.todaktodak.hospital.repository.HospitalRepository;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import com.padaks.todaktodak.review.domain.Review;
-import com.padaks.todaktodak.review.dto.ReviewDetailDto;
-import com.padaks.todaktodak.review.dto.ReviewListResDto;
-import com.padaks.todaktodak.review.dto.ReviewSaveReqDto;
-import com.padaks.todaktodak.review.dto.ReviewUpdateReqDto;
+import com.padaks.todaktodak.review.dto.*;
 import com.padaks.todaktodak.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -123,5 +120,13 @@ public class ReviewService {
 
         // 결과를 DTO로 반환
         return new ReviewDetailDto(averageRating, count1Star, count2Stars, count3Stars, count4Stars, count5Stars);
+    }
+
+    // 나의 리뷰 리스트
+    public Page<ReviewMyListResDto> reviewMyListResDtos(Pageable pageable){
+        MemberFeignDto memberFeignDto = memberFeignClient.getMemberEmail();
+        String memberEmail = memberFeignDto.getMemberEmail();
+        Page<Review> reviews = reviewRepository.findByMemberEmail(memberEmail, pageable);
+        return reviews.map(review -> review.myListFromEntity());
     }
 }
