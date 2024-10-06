@@ -22,9 +22,10 @@ public class Review extends BaseTimeEntity {
     @Column(name = "review_id")
     private Long id;
 
-    String memberEmail;
-    String name; // memberName
+    private String memberEmail;
+    private String name; // memberName
 
+    private String doctorName;
 //    @Column(nullable = false)
 //    @Check(constraints = "value BETWEEN 1 AND 5")
     private int rating;
@@ -50,8 +51,10 @@ public class Review extends BaseTimeEntity {
 
     public ReviewMyListResDto myListFromEntity(){
         return ReviewMyListResDto.builder()
+                .id(this.id)
                 .hospitalName(this.reservation.getHospital().getName())
                 .doctorName(this.reservation.getDoctorName())
+                .name(this.name)
                 .rating(this.rating)
                 .contents(this.contents)
                 .createdAt(this.getCreatedAt())
