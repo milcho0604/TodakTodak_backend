@@ -274,14 +274,6 @@ public class MemberController {
         return new ResponseEntity<>(commonResDto, HttpStatus.OK);
     }
 
-    //병원 별 의사 목록
-    @GetMapping("/doctorList/{hospitalId}")
-    public ResponseEntity<Object> doctorList(@PathVariable Long hospitalId, Pageable pageable) {
-        Page<DoctorListResDto> dtos = memberService.doctorListByHospital(hospitalId, pageable);
-        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "병원별 의사목록을 조회합니다.", dtos);
-        return new ResponseEntity<>(commonResDto, HttpStatus.OK);
-    }
-
     @GetMapping("/detail/{email}")
     public Object memberDetail(@PathVariable String email) {
         return memberService.memberDetail(email);
