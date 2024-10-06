@@ -1,5 +1,6 @@
 package com.padaks.todaktodak.review.repository;
 
+import com.padaks.todaktodak.common.dto.MemberFeignDto;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.review.domain.Review;
 import org.springframework.data.domain.Page;
@@ -26,5 +27,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     Page<Review> findByReservationInAndDeletedAtIsNull(List<Reservation> reservations, Pageable pageable);
     boolean existsByReservationId(Long reservationId);
+
+    // 나의 리뷰 목록
+    Page<Review> findByMemberEmail(String memberEmail, Pageable pageable);
 
 }
