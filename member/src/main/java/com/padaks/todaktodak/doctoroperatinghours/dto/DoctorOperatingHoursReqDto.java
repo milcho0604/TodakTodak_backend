@@ -17,19 +17,21 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @Builder
 public class DoctorOperatingHoursReqDto {
-    private Member member;
+//    private Member member;
+//    private Long doctorId;
     private DayOfHoliday dayOfWeek;
     private LocalTime openTime;
     private LocalTime closeTime;
-    private DayOfHoliday untack;
+    private Boolean untact;
 
     public static DoctorOperatingHours toEntity(Member doctor, DoctorOperatingHoursReqDto dto){
         return DoctorOperatingHours.builder()
                 .member(doctor)
+//                .id(dto.getDoctorId())
                 .dayOfWeek(dto.getDayOfWeek())
                 .openTime(dto.getOpenTime())
                 .closeTime(dto.getCloseTime())
-                .untack(dto.getUntack())
+                .untact(dto.getUntact())
                 .build();
 
     }
