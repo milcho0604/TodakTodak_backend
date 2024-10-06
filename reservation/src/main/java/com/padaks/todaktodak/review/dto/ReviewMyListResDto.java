@@ -12,8 +12,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class ReviewMyListResDto {
+    private Long id;
     private String hospitalName;
     private String doctorName;
+    private String name;
     private int rating;
     private String contents;
     private LocalDateTime createdAt;

@@ -48,7 +48,6 @@ public class MemberService {
 
     // 간편하게 멤버 객체를 찾기 위한 findByMemberEmail
     public Member findByMemberEmail(String email) {
-
         System.out.println("이메일을 검증하는 부분:" + email);
         return memberRepository.findByMemberEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다.11"));
@@ -336,7 +335,7 @@ public class MemberService {
             return doctor.doctorListFromEntity(operatingHours);
         });
     }
-
+  
     public Page<DoctorListResDto> doctorListByHospital(Long hospitalId, Pageable pageable){
         Page<Member> doctors = memberRepository.findByRoleAndHospitalId(Role.Doctor, hospitalId, pageable);
         return doctors.map(doctor ->{
@@ -471,5 +470,11 @@ public class MemberService {
         Member member = memberRepository.findByMemberEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
         return member.reportCountUp();
+    }
+
+    public int memberReportCount(){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Member member = memberRepository.findByMemberEmail(email).orElseThrow(()-> new EntityNotFoundException("존재하지 않는 회원입니다."));
+        return member.getReportCount();
     }
 }

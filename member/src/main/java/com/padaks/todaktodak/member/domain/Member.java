@@ -4,6 +4,7 @@ import com.padaks.todaktodak.common.domain.BaseTimeEntity;
 import com.padaks.todaktodak.doctoroperatinghours.dto.DoctorOperatingHoursSimpleResDto;
 import com.padaks.todaktodak.member.dto.DoctorListResDto;
 import com.padaks.todaktodak.member.dto.MemberListResDto;
+import com.padaks.todaktodak.member.dto.MemberUpdateReqDto;
 import lombok.*;
 import com.padaks.todaktodak.childparentsrelationship.domain.ChildParentsRelationship;
 import org.hibernate.annotations.ColumnDefault;
