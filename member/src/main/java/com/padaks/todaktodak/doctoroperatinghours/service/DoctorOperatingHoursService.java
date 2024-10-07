@@ -1,7 +1,6 @@
 package com.padaks.todaktodak.doctoroperatinghours.service;
 
 import com.padaks.todaktodak.common.enumdir.DayOfHoliday;
-import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.doctoroperatinghours.domain.DoctorOperatingHours;
 import com.padaks.todaktodak.doctoroperatinghours.dto.DoctorOperatingHoursReqDto;
 import com.padaks.todaktodak.doctoroperatinghours.dto.DoctorOperatingHoursSimpleResDto;

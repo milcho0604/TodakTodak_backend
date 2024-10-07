@@ -1,15 +1,12 @@
 package com.padaks.todaktodak.payment.dto;
 
-import com.padaks.todaktodak.medicalchart.domain.MedicalChart;
 import com.padaks.todaktodak.payment.domain.PaymentMethod;
 import com.padaks.todaktodak.payment.domain.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 

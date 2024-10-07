@@ -1,17 +1,12 @@
 package com.padaks.todaktodak.comment.dto;
 
 import com.padaks.todaktodak.comment.domain.Comment;
-import com.padaks.todaktodak.post.domain.Post;
-import com.padaks.todaktodak.report.domain.Report;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @NoArgsConstructor

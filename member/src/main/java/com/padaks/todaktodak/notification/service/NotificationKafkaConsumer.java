@@ -12,7 +12,6 @@ import com.padaks.todaktodak.member.service.FcmService;
 import com.padaks.todaktodak.notification.domain.Type;
 import com.padaks.todaktodak.notification.dto.CommentSuccessDto;
 import com.padaks.todaktodak.notification.dto.ReserveBeforeNotifyResDto;
-import com.padaks.todaktodak.notification.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;

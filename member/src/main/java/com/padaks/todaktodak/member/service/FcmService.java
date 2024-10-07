@@ -21,7 +21,6 @@ public class FcmService {
     private final NotificationRepository notificationRepository;
 
     @Transactional
-//    public void saveFcmToken(Long memberId, FcmTokenSaveRequest dto){
     public void saveFcmToken(String memberEmail, FcmTokenSaveRequest dto){
         Member member = memberRepository.findByMemberEmail(memberEmail)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 사용자입니다."));

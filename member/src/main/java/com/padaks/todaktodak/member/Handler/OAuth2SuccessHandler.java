@@ -1,6 +1,6 @@
 package com.padaks.todaktodak.member.Handler;
 
-import com.padaks.todaktodak.config.JwtTokenProvider;
+import com.padaks.todaktodak.common.config.JwtTokenProvider;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -45,8 +45,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             }
         }
 
-//        System.out.println("핸들러입니다!!! 넘오올까요?");
-//        System.out.println(memberEmail);
         Member member = memberRepository.findByMemberEmail(memberEmail)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 카카오 회원입니다."));
 
@@ -57,11 +55,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         Long getMemberId = member.getId();
 
         String token = jwtTokenprovider.kakaoToken(memberEmail, getMemberId,"Member");
-
-//        System.out.println("토큰은!!!!" + token);
-//        System.out.println("========================");
-//        System.out.println(token);
-//        System.out.println("========================");
 
         // 리다이렉트 URL 설정 (아래 먼저는 로컬호스트 환경에서, 두번째는 프론트 환경에서)
         String targetUrl = null;

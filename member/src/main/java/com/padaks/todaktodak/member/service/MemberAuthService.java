@@ -1,6 +1,6 @@
 package com.padaks.todaktodak.member.service;
 
-import com.padaks.todaktodak.config.MailUtil;
+import com.padaks.todaktodak.common.config.MailUtil;
 import com.padaks.todaktodak.member.dto.*;
 import com.padaks.todaktodak.member.repository.EmailVerificationRepositoryRedis;
 import com.padaks.todaktodak.member.repository.MemberRepository;

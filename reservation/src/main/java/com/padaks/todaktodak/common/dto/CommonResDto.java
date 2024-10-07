@@ -11,7 +11,6 @@ import java.util.ArrayList;
 public class CommonResDto {
     private int status_code;
     private String status_message;
-    //    private Object result;
 //    List 가져와도 괜찮음
     private Object result = new ArrayList<>();
 

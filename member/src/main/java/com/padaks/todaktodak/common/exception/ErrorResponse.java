@@ -3,7 +3,6 @@ package com.padaks.todaktodak.common.exception;
 import com.padaks.todaktodak.common.exception.exceptionType.ExceptionType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import org.springframework.http.HttpStatus;
 
 @Builder
 @AllArgsConstructor

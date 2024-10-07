@@ -44,17 +44,7 @@ public interface DtoMapper {
     @Mapping(source = "hospitalId", target = "hospitalId")
     ReservationHistory toReservationHistory(Reservation reservation, Long hospitalId);
 
-    ReservationSaveResDto toReservationSaveResDto(Reservation reservation);
-
-
     CheckHospitalListReservationResDto toHospitalListReservation(Reservation reservation);
-
-//    Review 의 reservation 을 파라미터로 받음 reservation으로 매핑.
-//    @Mapping(source = "reservation", target = "reservation")
-//    ReviewSaveReqDto 에서 id 는 매핑 타겟에서 제외하겠다.
-//    제외 하지 않으면 ReviewSaveReqDto 에서 id 도 매핑하려고 했어 오류가 나거나 잘못된 값 매핑 가능성이 있음.
-//    @Mapping(target = "id", ignore = true)
-//    Review toReview(ReviewSaveReqDto createReviewReqDto, Reservation reservation);
 
     RedisDto toRedisDto(Reservation reservation);
 }

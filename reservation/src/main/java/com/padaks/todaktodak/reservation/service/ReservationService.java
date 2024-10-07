@@ -15,7 +15,6 @@ import com.padaks.todaktodak.reservation.domain.Status;
 import com.padaks.todaktodak.reservation.repository.ReservationHistoryRepository;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -81,7 +80,6 @@ public class ReservationService {
 //    진료 스케줄 예약 기능
     public void scheduleReservation(ReservationSaveReqDto dto){
         log.info("ReservationService[scheduleReservation] : 스케줄 예약 요청 처리 시작");
-//        List<LocalTime> timeSlots = ReservationTimeSlot.timeSlots();
 
         DoctorResDto doctorResDto = memberFeign.getDoctor(dto.getDoctorEmail());
 
@@ -116,22 +114,14 @@ public class ReservationService {
 
                 kafkaTemplate.send("scheduled-reservation-success-notify", notificationMessage);
             } catch (JsonProcessingException e) {
-                Map<String, String> errorData = createErrorData(email);
-                kafkaTemplate.send("scheduled-reservation-error-notify", errorData);
                 throw new BaseException(JSON_PARSING_ERROR);
             } catch (BaseException e){
-                Map<String, String> errorData = createErrorData(email);
-                errorData.put("ErrorMessage", e.getMessage());
-                kafkaTemplate.send("scheduled-reservation-error-notify", errorData);
                 throw new BaseException(RESERVATION_DUPLICATE);
             } finally {
                 redisScheduleTemplate.delete(lockKey);
                 log.info("ReservationConsumer[consumerReservation] : 락 해제 완료");
             }
         }else{
-            Map<String, String> errorData = createErrorData(email);
-            errorData.put("ErrorMessage", new BaseException(LOCK_OCCUPANCY).getMessage());
-            kafkaTemplate.send("scheduled-reservation-error-notify", errorData);
             log.info("ReservationConsumer[consumerReservation] : 락을 얻지 못함, 예약 처리 실패");
             throw new BaseException(LOCK_OCCUPANCY);
         }
@@ -172,13 +162,7 @@ public class ReservationService {
             kafkaTemplate.send("immediate-reservation-success-notify", notificationMessage);
             log.info("KafkaListener[handleReservation] : 예약 대기열 처리 완료");
         } catch (JsonProcessingException e) {
-            Map<String, String> errorData = createErrorData(email);
-            kafkaTemplate.send("immediate-reservation-error-notify", errorData);
             throw new BaseException(JSON_PARSING_ERROR);
-        } catch (Exception e){
-            Map<String, String> errorData = createErrorData(email);
-            errorData.put("ErrorMessage", e.getMessage());
-            kafkaTemplate.send("immediate-reservation-error-notify", errorData);
         }
         log.info("ReservationService[immediateReservation] : 완료");
     }
@@ -228,15 +212,6 @@ public class ReservationService {
                 .collect(Collectors.toList());
 
         return dto;
-    }
-
-//    대기열 순위 보기
-    public Long rankReservationQueue(Long id){
-        Reservation reservation = reservationRepository.findByIdAndStatus(id, Status.Confirmed)
-                .orElseThrow(() -> new BaseException(RESERVATION_NOT_FOUND));
-        RedisDto redisDto = dtoMapper.toRedisDto(reservation);
-        String key = reservation.getHospital().getId() + ":" + reservation.getDoctorEmail();
-        return redisTemplate.opsForZSet().rank(key, redisDto);
     }
 
 //    스케줄 예약 노쇼 스케줄 동작 구현
@@ -299,13 +274,5 @@ public class ReservationService {
             messageData.put("reservationTime", reservation.getReservationTime());
         }
         return messageData;
-    }
-
-    private Map<String, String> createErrorData(String email){
-        Map<String, String> errorData = new HashMap<>();
-        errorData.put("memberEmail", email);
-        errorData.put("message", "예약 실패");
-
-        return errorData;
     }
 }

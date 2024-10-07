@@ -1,9 +1,7 @@
 package com.padaks.todaktodak.review.service;
 
-import com.padaks.todaktodak.common.dto.DtoMapper;
 import com.padaks.todaktodak.common.dto.MemberFeignDto;
 import com.padaks.todaktodak.common.feign.MemberFeignClient;
-import com.padaks.todaktodak.hospital.repository.HospitalRepository;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import com.padaks.todaktodak.review.domain.Review;
