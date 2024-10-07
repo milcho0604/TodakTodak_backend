@@ -21,7 +21,7 @@ public class DoctorOperatingHoursReqDto {
     private DayOfHoliday dayOfWeek;
     private LocalTime openTime;
     private LocalTime closeTime;
-    private DayOfHoliday untact;
+    private DayOfHoliday untack;
 
     public static DoctorOperatingHours toEntity(Member doctor, DoctorOperatingHoursReqDto dto){
         return DoctorOperatingHours.builder()
@@ -29,7 +29,7 @@ public class DoctorOperatingHoursReqDto {
                 .dayOfWeek(dto.getDayOfWeek())
                 .openTime(dto.getOpenTime())
                 .closeTime(dto.getCloseTime())
-                .untact(dto.getUntact())
+                .untack(dto.getUntack())
                 .build();
 
     }

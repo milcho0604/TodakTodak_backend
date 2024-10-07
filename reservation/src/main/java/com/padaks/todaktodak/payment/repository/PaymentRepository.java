@@ -14,7 +14,6 @@ import java.util.List;
 public interface PaymentRepository extends JpaRepository<Pay, Long> {
     Pay findByImpUid(String impUid);
     Page<Pay> findAll(Pageable pageable);
-//    List<Pay> findByPaymentMethod(PaymentMethod paymentMethod);
-List<Pay> findByPaymentMethodAndPaymentStatus(PaymentMethod paymentMethod, PaymentStatus paymentStatus);
+    List<Pay> findByPaymentMethodAndPaymentStatus(PaymentMethod paymentMethod, PaymentStatus paymentStatus);
 
 }

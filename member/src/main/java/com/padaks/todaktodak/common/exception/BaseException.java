@@ -1,6 +1,5 @@
 package com.padaks.todaktodak.common.exception;
 
-import com.padaks.todaktodak.common.exception.exceptionType.ChatExceptionType;
 import com.padaks.todaktodak.common.exception.exceptionType.ExceptionType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

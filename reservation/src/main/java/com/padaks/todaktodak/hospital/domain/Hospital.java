@@ -1,7 +1,7 @@
 package com.padaks.todaktodak.hospital.domain;
 
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
-import com.padaks.todaktodak.hospital.dto.HospitalDTO.HospitalUpdateReqDto;
+import com.padaks.todaktodak.hospital.dto.HospitalUpdateReqDto;
 import com.padaks.todaktodak.hospitaloperatinghours.domain.HospitalOperatingHours;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import lombok.AllArgsConstructor;

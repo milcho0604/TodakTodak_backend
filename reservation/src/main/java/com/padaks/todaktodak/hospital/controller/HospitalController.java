@@ -3,14 +3,12 @@ package com.padaks.todaktodak.hospital.controller;
 import com.padaks.todaktodak.common.dto.CommonResDto;
 import com.padaks.todaktodak.common.dto.MemberFeignDto;
 import com.padaks.todaktodak.hospital.domain.Hospital;
-import com.padaks.todaktodak.hospital.dto.HospitalDTO.*;
+import com.padaks.todaktodak.hospital.dto.*;
 import com.padaks.todaktodak.hospital.repository.HospitalRepository;
 import com.padaks.todaktodak.hospital.service.HospitalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;

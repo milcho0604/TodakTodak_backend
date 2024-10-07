@@ -23,26 +23,20 @@ public class DoctorOperatingHours extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "doctor_operating_hours")
     private Long id;
-
     @OneToOne
     @JoinColumn(name = "member_id")
     private Member member;
-
-    @Enumerated(EnumType.STRING)
     private DayOfHoliday dayOfWeek;
-
     private LocalTime openTime;
-
     private LocalTime closeTime;
-
     @Enumerated(EnumType.STRING)
-    private DayOfHoliday untact;
+    private DayOfHoliday untack;
 
     public void updateOperatingHours(DoctorOperatingHoursReqDto dto){
         this.member = dto.getMember();
         this.dayOfWeek = dto.getDayOfWeek();
         this.openTime = dto.getOpenTime();
         this.closeTime = dto.getCloseTime();
-        this.untact = dto.getUntact();
+        this.untack = dto.getUntack();
     }
 }

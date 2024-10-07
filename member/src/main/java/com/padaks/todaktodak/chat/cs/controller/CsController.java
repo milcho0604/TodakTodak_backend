@@ -7,12 +7,10 @@ import com.padaks.todaktodak.chat.cs.dto.CsUpdateReqDto;
 import com.padaks.todaktodak.chat.cs.service.CsService;
 import com.padaks.todaktodak.common.dto.CommonResDto;
 import lombok.RequiredArgsConstructor;
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.Path;
 import java.util.List;
 
 @RestController

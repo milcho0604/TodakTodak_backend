@@ -34,8 +34,8 @@ public class ChildController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<CommonResDto> updateChild(@RequestBody ChildUpdateReqDto dto){
-        childService.updateChild(dto);
+    public ResponseEntity<CommonResDto> updateChild(ChildUpdateReqDto dto, @RequestPart MultipartFile image){
+        childService.updateChild(dto, image);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK,"자녀 수정 성공",null),HttpStatus.OK);
     }
 

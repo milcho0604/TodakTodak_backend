@@ -3,7 +3,6 @@ package com.padaks.todaktodak.chat.service;
 import com.padaks.todaktodak.chat.chatmessage.dto.ChatMessageReqDto;
 import com.padaks.todaktodak.chat.chatroom.domain.ChatRoom;
 import com.padaks.todaktodak.chat.chatroom.repository.ChatRoomRepository;
-import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.repository.MemberRepository;
 import com.padaks.todaktodak.member.service.FcmService;
 import com.padaks.todaktodak.notification.domain.Type;
@@ -39,11 +38,11 @@ public class ChatKafkaListener { // Kafka
         ChatRoom chatRoom = chatRoomRepository.findByIdOrThrow(chatRoomId);
         String userEmail = chatRoom.getMember().getMemberEmail();
 
-        if (!memberEmail.equals(adminEmail)){
-            fcmService.sendMessage(adminEmail, chatRoom.getMember().getName()+"님께서 문의 채팅에 내용을 남겼습니다.", chatMessageReqDto.getContents(), Type.CHAT);
-        }else {
-            fcmService.sendMessage(userEmail, "문의에 대한 답변이 도착했습니다.", chatMessageReqDto.getContents(), Type.CHAT);
-        }
+//        if (!memberEmail.equals(adminEmail)){
+//            fcmService.sendMessage(adminEmail, chatRoom.getMember().getName()+"님께서 문의 채팅에 내용을 남겼습니다.", chatMessageReqDto.getContents(), Type.CHAT, null);
+//        }else {
+//            fcmService.sendMessage(userEmail, "문의에 대한 답변이 도착했습니다.", chatMessageReqDto.getContents(), Type.CHAT, null);
+//        }
 
     }
 }

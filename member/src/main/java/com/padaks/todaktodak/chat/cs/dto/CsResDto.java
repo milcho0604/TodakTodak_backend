@@ -1,7 +1,6 @@
 package com.padaks.todaktodak.chat.cs.dto;
 
 import com.padaks.todaktodak.chat.cs.domain.Cs;
-import com.padaks.todaktodak.chat.cs.domain.CsStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

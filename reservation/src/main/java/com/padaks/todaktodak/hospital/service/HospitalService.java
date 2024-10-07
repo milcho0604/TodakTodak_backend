@@ -7,11 +7,11 @@ import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.common.exception.exceptionType.HospitalExceptionType;
 import com.padaks.todaktodak.common.feign.MemberFeignClient;
 import com.padaks.todaktodak.hospital.domain.Hospital;
-import com.padaks.todaktodak.hospital.dto.HospitalDTO.*;
+import com.padaks.todaktodak.hospital.dto.*;
 import com.padaks.todaktodak.hospital.repository.HospitalRepository;
 import com.padaks.todaktodak.review.repository.ReviewRepository;
-import com.padaks.todaktodak.util.DistanceCalculator;
-import com.padaks.todaktodak.util.S3ClientFileUpload;
+import com.padaks.todaktodak.common.util.DistanceCalculator;
+import com.padaks.todaktodak.common.util.S3ClientFileUpload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -38,7 +38,6 @@ public class HospitalService {
 
     public MemberFeignDto getMemberInfo() {
         MemberFeignDto member = memberFeignClient.getMemberEmail();  // Feign Client에 토큰 추가
-//        System.out.println("멤버 디버깅을 위한: " + member);
         return member;
     }
 

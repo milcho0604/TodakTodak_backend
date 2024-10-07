@@ -5,17 +5,12 @@ import com.padaks.todaktodak.comment.dto.CommentUpdateReqDto;
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
 
 import com.padaks.todaktodak.post.domain.Post;
-import com.padaks.todaktodak.post.dto.PostDetailDto;
-import com.padaks.todaktodak.report.domain.Report;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @NoArgsConstructor

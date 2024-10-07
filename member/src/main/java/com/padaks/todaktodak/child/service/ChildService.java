@@ -16,7 +16,7 @@ import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.common.service.AESUtil;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.repository.MemberRepository;
-import com.padaks.todaktodak.util.S3ClientFileUpload;
+import com.padaks.todaktodak.common.util.S3ClientFileUpload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -93,9 +93,10 @@ public class ChildService {
 
     }
 
-    public void updateChild(ChildUpdateReqDto dto) {
+    public void updateChild(ChildUpdateReqDto dto, MultipartFile image) {
         Child child = childRepository.findById(dto.getChildId()).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 자녀입니다"));
-        child.updateName(dto.getName());
+        String imageUrl = s3ClientFileUpload.upload(image);
+        child.update(dto.getName(),imageUrl);
     }
 
     // 자녀 정보 조회 (주민등록번호 복호화)

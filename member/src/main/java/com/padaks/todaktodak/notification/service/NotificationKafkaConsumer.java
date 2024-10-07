@@ -11,6 +11,7 @@ import com.padaks.todaktodak.member.repository.MemberRepository;
 import com.padaks.todaktodak.member.service.FcmService;
 import com.padaks.todaktodak.notification.domain.Type;
 import com.padaks.todaktodak.notification.dto.CommentSuccessDto;
+import com.padaks.todaktodak.notification.dto.ReserveBeforeNotifyResDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -47,12 +48,12 @@ public class NotificationKafkaConsumer {
             String category = "";
             if (dto.getType().equals(Type.POST)){
                 category = "질문 알림";
-                fcmService.sendMessage(dto.getReceiverEmail(), category, dto.getTitle()+"에 대한 답변이 작성되었습니다.",  Type.POST);
+                fcmService.sendMessage(dto.getReceiverEmail(), category, dto.getTitle()+"에 대한 답변이 작성되었습니다.",  Type.POST, dto.getPostId());
 
             }else if (dto.getType().equals(Type.COMMENT)){
                 category = "답변 알림";
                 String comment = "에 작성한 답변";
-                fcmService.sendMessage(dto.getReceiverEmail(), category, dto.getTitle()+comment+"에 대한 답변이 작성되었습니다.",  Type.COMMENT);
+                fcmService.sendMessage(dto.getReceiverEmail(), category, dto.getTitle()+comment+"에 대한 답변이 작성되었습니다.",  Type.COMMENT, dto.getPostId());
 
             }
 
@@ -87,9 +88,9 @@ public class NotificationKafkaConsumer {
                     "\n자녀이름\t: " + child.getName();
 
             fcmService.sendMessage(dto.getAdminEmail(),
-                    "# " + dto.getReservationType()+"/" + dto.getMedicalItem() + "예약 안내 #",
+                    "# " + dto.getReservationType()+"/" + dto.getMedicalItem() + " 예약 안내 #",
                     body,
-                    Type.RESERVATION_NOTIFICATION);
+                    Type.RESERVATION_NOTIFICATION, null);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -116,11 +117,37 @@ public class NotificationKafkaConsumer {
                     "\n 예약자\t\t: " + dto.getMemberName() +
                     "\n 자녀이름\t: " + child.getName();
             fcmService.sendMessage(dto.getAdminEmail(),
-                    "# " + dto.getReservationType()+"/" + dto.getMedicalItem() + "예약 안내 #",
+                    "# " + dto.getReservationType()+"/" + dto.getMedicalItem() + " 예약 안내 #",
                     body,
-                    Type.RESERVATION_NOTIFICATION);
+                    Type.RESERVATION_NOTIFICATION, null);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+  
+    @KafkaListener(topics = "reservation-before-notify", containerFactory = "reservationKafkaContainerFactory")
+    public void reserveBeforeNotify(String message){
+        ObjectMapper objectMapper = new ObjectMapper();
+        if (message.startsWith("\"") && message.endsWith("\"")) {
+            message = message.substring(1, message.length() -1).replace("\"", "\"");
+            message = message.replace("\\", "");
+        }
+
+        try {
+            ReserveBeforeNotifyResDto dto =
+                    objectMapper.readValue(message, ReserveBeforeNotifyResDto.class);
+
+            String body = "병원\t\t: " + dto.getHospitalName() +
+                    "\n 의사명\t\t: " + dto.getDoctorName() +
+                    "\n 예약시간\t: " + dto.getReservationTime();
+
+            fcmService.sendMessage(dto.getMemberEmail() ,
+                    "# 금일 " + dto.getMessage() + " #",
+                    body,
+                    Type.RESERVATION_NOTIFICATION, null);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

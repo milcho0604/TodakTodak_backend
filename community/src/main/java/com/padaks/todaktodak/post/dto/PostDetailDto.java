@@ -6,10 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.Comment;
 
-import javax.persistence.Column;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,6 +17,7 @@ import java.util.List;
 public class PostDetailDto {
     private Long id;
     private String memberEmail;
+    private String name;
     private String title;
     private String content;
     private String postImgUrl;
@@ -29,10 +27,11 @@ public class PostDetailDto {
     private LocalDateTime updatedTimeAt;
     private List<CommentDetailDto> comments;
 
-    public static PostDetailDto fromEntity(Post post, List<CommentDetailDto> comments, Long viewCount, Long likeCount ){
+    public static PostDetailDto fromEntity(Post post, List<CommentDetailDto> comments, Long viewCount, Long likeCount, String name){
         return PostDetailDto.builder()
                 .id(post.getId())
                 .memberEmail(post.getMemberEmail())
+                .name(name)
                 .title(post.getTitle())
                 .content(post.getContent())
                 .postImgUrl(post.getPostImgUrl())

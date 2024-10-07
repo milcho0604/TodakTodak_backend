@@ -18,8 +18,6 @@ public interface HospitalRepository extends JpaRepository<Hospital, Long> {
     // deleteAt이 null, isAccept가 true인 객체 찾음(삭제되지 않은 객체)
     Optional<Hospital> findByIdAndDeletedAtIsNullAndIsAcceptIsTrue(Long id);
 
-    Page<Hospital> findAllById(Long hospitalId, Pageable pageable);
-
     default Hospital findByIdOrThrow(Long id) {
         return findByIdAndDeletedAtIsNullAndIsAcceptIsTrue(id)
                 .orElseThrow(() -> new BaseException(HOSPITAL_NOT_FOUND));
@@ -31,9 +29,6 @@ public interface HospitalRepository extends JpaRepository<Hospital, Long> {
         return findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new BaseException(HOSPITAL_NOT_FOUND));
     }
-
-    // 삭제되지 않은 병원리스트 조회
-    List<Hospital> findByDeletedAtIsNull();
 
     // 삭제되지 않은 병원리스트 중 '~~동'으로 병원찾기
     List<Hospital> findByDongAndDeletedAtIsNullAndIsAcceptIsTrue(String dong);

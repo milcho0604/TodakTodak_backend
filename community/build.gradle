@@ -83,6 +83,8 @@ dependencies {
 
 	//feignclient 를 사용하기 위한 의존성 추가
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+//		스웨거 의존성 추가
+	implementation 'org.springdoc:springdoc-openapi-ui:1.6.15'
 }
 
 ext {

@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
 import java.time.LocalDateTime;
 
 @Data
@@ -14,6 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 public class CommentDetailDto {
     private Long id;
+    private String name;
     private String doctorEmail;
     private String content;
     private LocalDateTime createdTimeAt;

@@ -15,7 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -40,6 +39,15 @@ public class MemberController {
         Member member = memberService.findByMemberEmail(email);
         return new MemberPayDto(member.getMemberEmail(), member.getName(), member.getPhoneNumber(), member.getRole(), member.getReportCount(), member.getHospitalId());
     }
+
+//    @GetMapping("/get/{memberEmail}")
+//    public MemberFeignNameDto getMemberName(@PathVariable String memberEmail){
+//        Member member = memberService.findByMemberEmail(memberEmail);
+//        String name = member.getName();
+//        return MemberFeignNameDto.builder()
+//                .name(name)
+//                .build();
+//    }
 
     @GetMapping("/get/{email}")
     public MemberResDto getMemberByEmail(@PathVariable String email) {
@@ -280,6 +288,15 @@ public class MemberController {
         return new ResponseEntity<>(commonResDto, HttpStatus.OK);
     }
 
+    //병원 별 의사 목록
+    @GetMapping("/doctorList/{hospitalId}")
+    public ResponseEntity<Object> doctorListByHospital(@PathVariable Long hospitalId, Pageable pageable) {
+        Page<DoctorListResDto> dtos = memberService.doctorListByHospital(hospitalId, pageable);
+        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "병원별 의사목록을 조회합니다.", dtos);
+        return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+    }
+
+
     @GetMapping("/detail/{email}")
     public Object memberDetail(@PathVariable String email) {
         return memberService.memberDetail(email);
@@ -362,6 +379,19 @@ public class MemberController {
     @PostMapping("/member/test")
     public void updateNoShowCount(){
         memberService.updateNoShowCount();
+    }
+
+    @GetMapping("/reportCount")
+    public ResponseEntity<?> memberReportCount(){
+        try {
+            int reportCount = memberService.memberReportCount();
+            CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "사용자의 현재 신고 횟수: " , reportCount);
+            return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+        }catch (EntityNotFoundException e){
+            e.printStackTrace();
+            CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.NOT_FOUND, e.getMessage());
+            return new ResponseEntity<>(commonErrorDto, HttpStatus.NOT_FOUND);
+        }
     }
 
 }

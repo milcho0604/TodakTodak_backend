@@ -22,8 +22,6 @@ import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.padaks.todaktodak.common.exception.exceptionType.MemberExceptionType.TODAK_ADMIN_ONLY;
@@ -54,7 +52,7 @@ public class ChatService {
 
         //새로운 채팅방 생성시 admin에게 알림
         Member admin = memberRepository.findById(ADMIN_ID).orElseThrow(()-> new EntityNotFoundException("존재하지 않는 관리자입니다."));
-        fcmService.sendMessage(admin.getMemberEmail(), member.getName(),"새로운 문의 채팅방이 생성되었습니다.", Type.CHAT);
+        fcmService.sendMessage(admin.getMemberEmail(), member.getName(),"새로운 문의 채팅방이 생성되었습니다.", Type.CHAT, null);
 
         return chatRoomRepository.save(chatRoom);
     }

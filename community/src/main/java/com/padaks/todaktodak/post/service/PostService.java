@@ -2,15 +2,15 @@ package com.padaks.todaktodak.post.service;
 
 import com.padaks.todaktodak.comment.dto.CommentDetailDto;
 import com.padaks.todaktodak.comment.service.CommentService;
+import com.padaks.todaktodak.common.dto.MemberFeignNameDto;
 import com.padaks.todaktodak.common.feign.MemberFeignClient;
 import com.padaks.todaktodak.post.domain.Post;
 import com.padaks.todaktodak.post.dto.*;
 import com.padaks.todaktodak.post.repository.PostRepository;
 import com.padaks.todaktodak.common.dto.MemberFeignDto;
-import com.padaks.todaktodak.util.S3ClientFileUpload;
+import com.padaks.todaktodak.common.util.S3ClientFileUpload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-//import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,6 +40,11 @@ public class PostService {
         return member;
     }
 
+    public MemberFeignNameDto getMemberName(String memberEmail){
+        MemberFeignNameDto memberName = memberPostFeignClient.getMemberName(memberEmail);
+        return  memberName;
+    }
+
     public void create(PostsaveDto dto){
 
         MultipartFile postImage = dto.getPostImage();
@@ -64,8 +69,11 @@ public class PostService {
     }
 
     public PostDetailDto getPostDetail(Long id){
+
         Post post = postRepository.findById(id)
                 .orElseThrow(()-> new EntityNotFoundException("존재하지 않는 post입니다."));
+
+        String name = maskSecondCharacter(getMemberName(post.getMemberEmail()).getName());
 
         // 조회수 증가 로직 추가
         incrementPostViews(id);
@@ -73,7 +81,7 @@ public class PostService {
         Long likeCount = getPostLikesCount(id);
 
         List<CommentDetailDto> comments = commentService.getCommentByPostId(id);
-        PostDetailDto postDetailDto = PostDetailDto.fromEntity(post, comments, viewCount, likeCount);
+        PostDetailDto postDetailDto = PostDetailDto.fromEntity(post, comments, viewCount, likeCount, name);
         return postDetailDto;
     }
 
@@ -177,6 +185,15 @@ public class PostService {
         } else {
             return 0L;
         }
+    }
+
+    // 이름을 마스킹 처리해서 저장하는 메서드
+    public static String maskSecondCharacter(String name) {
+        // 이름이 2글자 이상일 경우 두 번째 글자 마스킹 처리
+        if (name.length() >= 1) {
+            return name.charAt(0) + "*" + name.substring(2);
+        }
+        return name;
     }
 }
 

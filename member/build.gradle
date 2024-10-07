@@ -97,6 +97,8 @@ dependencies {
 	//kafka
 	implementation 'org.springframework.kafka:spring-kafka'
 
+//	스웨거 의존성 추가
+	implementation 'org.springdoc:springdoc-openapi-ui:1.6.15'
 }
 
 ext {
