@@ -47,7 +47,7 @@ public class MemberController {
         return new MemberResDto().fromEntity(member);
     }
 
-    @GetMapping("/get/{memberId}")
+    @GetMapping("/id/{memberId}")
     public ResponseEntity<?> getMemberById(@PathVariable Long memberId){
         MemberDetailResDto memberDetailResDto = memberService.findByMemberId(memberId);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK,"회원정보 조회성공", memberDetailResDto), HttpStatus.OK);
