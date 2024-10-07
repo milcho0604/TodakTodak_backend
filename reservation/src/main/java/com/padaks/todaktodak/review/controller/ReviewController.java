@@ -97,30 +97,43 @@ public class ReviewController {
         return ResponseEntity.ok(reviewList);
     }
 
-    // 의사별 리뷰 목록
-    @GetMapping("doctor/list")
-    private ResponseEntity<Page<ReviewListResDto>> getReviewDoctorList(
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
-            String doctorEmail){
-        Page<ReviewListResDto> reviewListResDtos = reviewService.reviewDoctorList(pageable, doctorEmail);
-        return ResponseEntity.ok(reviewListResDtos);
+    // 의사별 전체 리뷰 조회
+    @GetMapping("/doctor/{doctorEmail}")
+    public ResponseEntity<Page<ReviewListResDto>> getDoctorReviews(
+            @PathVariable String doctorEmail,
+            Pageable pageable
+    ) {
+        Page<ReviewListResDto> reviews = reviewService.reviewDoctorList(pageable, doctorEmail);
+        return ResponseEntity.ok(reviews);
     }
 
-    // 대면 진료 의사 리뷰 목록
-    @GetMapping("doctor/untact/false")
-    private ResponseEntity<Page<ReviewListResDto>> getReviewDoctorUntactTrue(
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
-            String doctorEmail){
-        Page<ReviewListResDto> reviewListResDtos = reviewService.reviewDoctorListUntactFalse(pageable, doctorEmail);
-        return ResponseEntity.ok(reviewListResDtos);
+    // 의사의 대면 진료 리뷰 조회 (untact = false)
+    @GetMapping("/untact/false/{doctorEmail}")
+    public ResponseEntity<Page<ReviewListResDto>> getDoctorFaceToFaceReviews(
+            @PathVariable String doctorEmail,
+            Pageable pageable
+    ) {
+        Page<ReviewListResDto> reviews = reviewService.reviewDoctorListUntactFalse(pageable, doctorEmail);
+        return ResponseEntity.ok(reviews);
     }
 
-    // 비대면 진료 의사 리뷰 목록
-    @GetMapping("doctor/untact/true")
-    private ResponseEntity<Page<ReviewListResDto>> getReviewDoctorUntactFalse(
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
-            String doctorEmail){
-        Page<ReviewListResDto> reviewListResDtos = reviewService.reviewDoctorListUntactTrue(pageable, doctorEmail);
-        return ResponseEntity.ok(reviewListResDtos);
+    // 의사의 비대면 진료 리뷰 조회 (untact = true)
+    @GetMapping("/untact/true/{doctorEmail}")
+    public ResponseEntity<Page<ReviewListResDto>> getDoctorTelemedicineReviews(
+            @PathVariable String doctorEmail,
+            Pageable pageable
+    ) {
+        Page<ReviewListResDto> reviews = reviewService.reviewDoctorListUntactTrue(pageable, doctorEmail);
+        return ResponseEntity.ok(reviews);
     }
+
+    // 의사의 리뷰 통계 (평균 점수 및 평점별 개수) 조회
+    @GetMapping("doctor/detail/{doctorEmail}")
+    public ResponseEntity<ReviewDetailDto> getReviewDoctorDetail(
+            @PathVariable String doctorEmail,
+            Pageable pageable) {
+        ReviewDetailDto reviewDetailDto = reviewService.reviewDoctorDetail(doctorEmail, pageable);
+        return ResponseEntity.ok(reviewDetailDto);
+    }
+
 }

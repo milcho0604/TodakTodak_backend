@@ -31,13 +31,15 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     // 나의 리뷰 목록
     Page<Review> findByMemberEmailAndDeletedAtIsNull(String memberEmail, Pageable pageable);
 
-    // 의사의 리뷰 목록
-    Page<Review> findByDoctorEmail(String doctorEmail, Pageable pageable);
 
-    // 의사 리뷰 대면 진료 리뷰 조회 (untact = false)
-    Page<Review> findByDoctorEmailAndUntactFalse(String doctorEmail, Pageable pageable);
+    // 의사 이메일로 삭제되지 않은 모든 리뷰를 페이징 처리하여 조회
+    Page<Review> findByDoctorEmailAndDeletedAtIsNull(String doctorEmail, Pageable pageable);
 
-    // 의사 리뷰 비대면 진료 리뷰 조회 (untact = true)
-    Page<Review> findByDoctorEmailAndUntactTrue(String doctorEmail, Pageable pageable);
+    // 의사 이메일로 대면 진료 리뷰(untact가 false)를 페이징 처리하여 조회
+    Page<Review> findByDoctorEmailAndUntactFalseAndDeletedAtIsNull(String doctorEmail, Pageable pageable);
+
+    // 의사 이메일로 비대면 진료 리뷰(untact가 true)를 페이징 처리하여 조회
+    Page<Review> findByDoctorEmailAndUntactTrueAndDeletedAtIsNull(String doctorEmail, Pageable pageable);
+
 
 }
