@@ -9,6 +9,7 @@ import com.padaks.todaktodak.comment.dto.CommentSaveDto;
 import com.padaks.todaktodak.comment.dto.CommentUpdateReqDto;
 import com.padaks.todaktodak.comment.repository.CommentRepository;
 import com.padaks.todaktodak.common.dto.MemberFeignDto;
+import com.padaks.todaktodak.common.dto.MemberFeignNameDto;
 import com.padaks.todaktodak.common.feign.MemberFeignClient;
 import com.padaks.todaktodak.post.domain.Post;
 import com.padaks.todaktodak.post.repository.PostRepository;
@@ -42,6 +43,11 @@ public class CommentService {
     public MemberFeignDto getMemberInfo() {
         MemberFeignDto member = memberFeignClient.getMemberEmail();
         return member;
+    }
+
+    public MemberFeignNameDto getMemberName(String memberEmail){
+        MemberFeignNameDto memberName = memberFeignClient.getMemberName(memberEmail);
+        return  memberName;
     }
 
     public Comment createComment(CommentSaveDto dto){
@@ -103,12 +109,14 @@ public class CommentService {
 
     public List<CommentDetailDto> getCommentByPostId(Long postId){
         List<Comment> comments = commentRepository.findByPostId(postId);
+
         return comments.stream()
                 .filter(comment -> comment.getDeletedTimeAt() == null)
                 .map(comment -> CommentDetailDto.builder()
                         .id(comment.getId())
                         .content(comment.getContent())
                         .doctorEmail(comment.getDoctorEmail())
+                        .name(getMemberName(comment.getDoctorEmail()).getName())
                         .createdTimeAt(comment.getCreatedTimeAt())
                         .build())
                 .collect(Collectors.toList());
