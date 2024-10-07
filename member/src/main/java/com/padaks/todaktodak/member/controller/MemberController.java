@@ -171,6 +171,21 @@ public class MemberController {
         }
     }
 
+    // 프로필 이미지 업데이트
+    @PostMapping("/update/profileImage")
+    public ResponseEntity<String> updateProfileImage(@RequestParam("profileImage") MultipartFile profileImage) {
+        try {
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            Member member = memberService.findByMemberEmail(email);
+            memberService.updateProfileImage(member, profileImage);
+
+            return ResponseEntity.ok("프로필 이미지가 성공적으로 업데이트되었습니다.");
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("프로필 이미지 업데이트에 실패했습니다: " + e.getMessage());
+        }
+    }
+
     // 회원 정보 수정
     @PostMapping("/edit-info")
     public ResponseEntity<?> editMemberInfo(
@@ -211,7 +226,6 @@ public class MemberController {
                     .body(new CommonResDto(HttpStatus.BAD_REQUEST, "회원 정보 수정에 실패했습니다: " + e.getMessage(), null));
         }
     }
-
 
     // 의사 정보 수정
     @PostMapping("/edit-doctor")
