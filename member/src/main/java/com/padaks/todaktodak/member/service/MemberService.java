@@ -51,6 +51,11 @@ public class MemberService {
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다.11"));
     }
 
+    public MemberDetailResDto findByMemberId(Long memberId){
+        Member member = memberRepository.findByIdOrThrow(memberId);
+        return MemberDetailResDto.fromEntity(member);
+    }
+
     // 회원가입 및 검증
     public void create(MemberSaveReqDto saveReqDto, MultipartFile imageSsr) {
         validateRegistration(saveReqDto);
