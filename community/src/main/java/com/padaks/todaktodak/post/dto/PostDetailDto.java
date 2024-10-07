@@ -20,6 +20,7 @@ import java.util.List;
 public class PostDetailDto {
     private Long id;
     private String memberEmail;
+    private String memberName;
     private String title;
     private String content;
     private String postImgUrl;
@@ -29,10 +30,11 @@ public class PostDetailDto {
     private LocalDateTime updatedTimeAt;
     private List<CommentDetailDto> comments;
 
-    public static PostDetailDto fromEntity(Post post, List<CommentDetailDto> comments, Long viewCount, Long likeCount ){
+    public static PostDetailDto fromEntity(Post post, List<CommentDetailDto> comments, Long viewCount, Long likeCount, String memberName ){
         return PostDetailDto.builder()
                 .id(post.getId())
                 .memberEmail(post.getMemberEmail())
+                .memberName(memberName)
                 .title(post.getTitle())
                 .content(post.getContent())
                 .postImgUrl(post.getPostImgUrl())

@@ -64,6 +64,8 @@ public class PostService {
     }
 
     public PostDetailDto getPostDetail(Long id){
+
+        String memberName = getMemberInfo().getName();
         Post post = postRepository.findById(id)
                 .orElseThrow(()-> new EntityNotFoundException("존재하지 않는 post입니다."));
 
@@ -73,7 +75,7 @@ public class PostService {
         Long likeCount = getPostLikesCount(id);
 
         List<CommentDetailDto> comments = commentService.getCommentByPostId(id);
-        PostDetailDto postDetailDto = PostDetailDto.fromEntity(post, comments, viewCount, likeCount);
+        PostDetailDto postDetailDto = PostDetailDto.fromEntity(post, comments, viewCount, likeCount, memberName);
         return postDetailDto;
     }
 
