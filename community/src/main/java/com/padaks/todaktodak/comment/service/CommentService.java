@@ -59,7 +59,6 @@ public class CommentService {
             Post post = postRepository.findById(dto.getPostId()).orElseThrow(()-> new EntityNotFoundException("존재하지 않는 post입니다."));
 
             //댓글 작성 제한 (post 작성자 / Role.Doctor 인 사용자)
-
             if (!post.getMemberEmail().equals(member.getMemberEmail()) && !"Doctor".equals(member.getRole())){
                 throw  new IllegalArgumentException("댓글을 작성할 수 있는 권한이 없습니다.");
             }
@@ -73,6 +72,7 @@ public class CommentService {
             String title = post.getTitle();
             String type = "COMMENT";
             Map<String, Object> messageData = new HashMap<>();
+
             //부모 댓글이 있는 경우
             if (dto.getParentId() != null){
                 Comment parentComment = commentRepository.findById(dto.getParentId()).orElseThrow(()->new EntityNotFoundException("존재하지 않는 부모 댓글입니다."));
@@ -115,7 +115,7 @@ public class CommentService {
                         .id(comment.getId())
                         .content(comment.getContent())
                         .doctorEmail(comment.getDoctorEmail())
-                        .name(getMemberName(comment.getDoctorEmail()).getName())
+                        .name(maskSecondCharacter(getMemberName(comment.getDoctorEmail()).getName()))
                         .createdTimeAt(comment.getCreatedTimeAt())
                         .build())
                 .collect(Collectors.toList());
@@ -172,7 +172,15 @@ public class CommentService {
             throw new IllegalArgumentException("신고 횟수가 5회 이상인 회원은 댓글을 삭제할 수 없습니다.");
         }
         comment.updateDeleteAt();
+    }
 
+    // 이름을 마스킹 처리해서 저장하는 메서드
+    public static String maskSecondCharacter(String name) {
+        // 이름이 2글자 이상일 경우 두 번째 글자 마스킹 처리
+        if (name.length() >= 1) {
+            return name.charAt(0) + "*" + name.substring(2);
+        }
+        return name;
     }
 
 }
