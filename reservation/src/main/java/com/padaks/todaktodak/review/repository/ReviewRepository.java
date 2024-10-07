@@ -31,4 +31,13 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     // 나의 리뷰 목록
     Page<Review> findByMemberEmailAndDeletedAtIsNull(String memberEmail, Pageable pageable);
 
+    // 의사의 리뷰 목록
+    Page<Review> findByDoctorEmail(String doctorEmail, Pageable pageable);
+
+    // 의사 리뷰 대면 진료 리뷰 조회 (untact = false)
+    Page<Review> findByDoctorEmailAndUntactFalse(String doctorEmail, Pageable pageable);
+
+    // 의사 리뷰 비대면 진료 리뷰 조회 (untact = true)
+    Page<Review> findByDoctorEmailAndUntactTrue(String doctorEmail, Pageable pageable);
+
 }

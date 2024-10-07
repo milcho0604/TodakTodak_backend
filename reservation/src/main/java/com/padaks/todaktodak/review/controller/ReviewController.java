@@ -96,4 +96,31 @@ public class ReviewController {
         Page<ReviewMyListResDto> reviewList = reviewService.reviewMyListResDtos(pageable);
         return ResponseEntity.ok(reviewList);
     }
+
+    // 의사별 리뷰 목록
+    @GetMapping("doctor/list")
+    private ResponseEntity<Page<ReviewListResDto>> getReviewDoctorList(
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+            String doctorEmail){
+        Page<ReviewListResDto> reviewListResDtos = reviewService.reviewDoctorList(pageable, doctorEmail);
+        return ResponseEntity.ok(reviewListResDtos);
+    }
+
+    // 대면 진료 의사 리뷰 목록
+    @GetMapping("doctor/untact/false")
+    private ResponseEntity<Page<ReviewListResDto>> getReviewDoctorUntactTrue(
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+            String doctorEmail){
+        Page<ReviewListResDto> reviewListResDtos = reviewService.reviewDoctorListUntactFalse(pageable, doctorEmail);
+        return ResponseEntity.ok(reviewListResDtos);
+    }
+
+    // 비대면 진료 의사 리뷰 목록
+    @GetMapping("doctor/untact/true")
+    private ResponseEntity<Page<ReviewListResDto>> getReviewDoctorUntactFalse(
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+            String doctorEmail){
+        Page<ReviewListResDto> reviewListResDtos = reviewService.reviewDoctorListUntactTrue(pageable, doctorEmail);
+        return ResponseEntity.ok(reviewListResDtos);
+    }
 }

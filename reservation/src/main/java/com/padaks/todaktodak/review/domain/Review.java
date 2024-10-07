@@ -25,6 +25,7 @@ public class Review extends BaseTimeEntity {
     private String memberEmail;
     private String name; // memberName
 
+    private String doctorEmail;
     private String doctorName;
 //    @Column(nullable = false)
 //    @Check(constraints = "value BETWEEN 1 AND 5")
@@ -32,6 +33,9 @@ public class Review extends BaseTimeEntity {
 
     @Column
     private String contents;
+
+    private boolean untact;
+
 
     @OneToOne
     @JoinColumn(name = "reservation_id")
@@ -46,6 +50,7 @@ public class Review extends BaseTimeEntity {
                 .contents(this.contents)
                 .name(this.name)
                 .createdAt(this.getCreatedAt())
+                .untact(this.untact)
                 .build();
     }
 

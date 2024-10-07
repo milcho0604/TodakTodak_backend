@@ -56,7 +56,7 @@ public class ReviewService {
         }
 
         // 검증을 통과하면 리뷰 생성
-        return reviewRepository.save(dto.toEntity(email, reservation, name));
+        return reviewRepository.save(dto.toEntity(email, reservation, name, reservation.getDoctorEmail(), reservation.isUntact()));
     }
 
     // 리뷰 리스트 (병원 ID 기준)
@@ -129,4 +129,28 @@ public class ReviewService {
         Page<Review> reviews = reviewRepository.findByMemberEmailAndDeletedAtIsNull(memberEmail, pageable);
         return reviews.map(review -> review.myListFromEntity());
     }
+
+    // 의사별 리뷰 리스트(대면+비대면)
+    public Page<ReviewListResDto> reviewDoctorList(Pageable pageable, String doctorEmail){
+        Page<Review> reviews = reviewRepository.findByDoctorEmail(doctorEmail, pageable);
+        Page<ReviewListResDto> reviewDtos = reviews.map(review -> review.listFromEntity());
+        return reviewDtos;
+    }
+
+    // 의사 대면 진료 리뷰
+    public Page<ReviewListResDto> reviewDoctorListUntactFalse(Pageable pageable, String doctorEmail){
+        Page<Review> reviews = reviewRepository.findByDoctorEmailAndUntactFalse(doctorEmail, pageable);
+        Page<ReviewListResDto> reviewDtos = reviews.map(review -> review.listFromEntity());
+        return reviewDtos;
+    }
+
+    // 의사 비대면 진료 리뷰
+    public Page<ReviewListResDto> reviewDoctorListUntactTrue(Pageable pageable, String doctorEmail){
+        Page<Review> reviews = reviewRepository.findByDoctorEmailAndUntactTrue(doctorEmail, pageable);
+        Page<ReviewListResDto> reviewDtos = reviews.map(review -> review.listFromEntity());
+        return reviewDtos;
+    }
+
+
+
 }
