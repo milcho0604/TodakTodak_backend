@@ -2,6 +2,7 @@ package com.padaks.todaktodak.post.service;
 
 import com.padaks.todaktodak.comment.dto.CommentDetailDto;
 import com.padaks.todaktodak.comment.service.CommentService;
+import com.padaks.todaktodak.common.dto.MemberFeignNameDto;
 import com.padaks.todaktodak.common.feign.MemberFeignClient;
 import com.padaks.todaktodak.post.domain.Post;
 import com.padaks.todaktodak.post.dto.*;
@@ -40,6 +41,11 @@ public class PostService {
         return member;
     }
 
+    public MemberFeignNameDto getMemberName(String memberEmail){
+        MemberFeignNameDto memberName = memberPostFeignClient.getMemberName(memberEmail);
+        return  memberName;
+    }
+
     public void create(PostsaveDto dto){
 
         MultipartFile postImage = dto.getPostImage();
@@ -65,9 +71,11 @@ public class PostService {
 
     public PostDetailDto getPostDetail(Long id){
 
-        String memberName = getMemberInfo().getName();
         Post post = postRepository.findById(id)
                 .orElseThrow(()-> new EntityNotFoundException("존재하지 않는 post입니다."));
+
+        //memberPostFeignClient.getMemberName(post.getMemberEmail());
+        String name = getMemberName(post.getMemberEmail()).getName();
 
         // 조회수 증가 로직 추가
         incrementPostViews(id);
@@ -75,7 +83,7 @@ public class PostService {
         Long likeCount = getPostLikesCount(id);
 
         List<CommentDetailDto> comments = commentService.getCommentByPostId(id);
-        PostDetailDto postDetailDto = PostDetailDto.fromEntity(post, comments, viewCount, likeCount, memberName);
+        PostDetailDto postDetailDto = PostDetailDto.fromEntity(post, comments, viewCount, likeCount, name);
         return postDetailDto;
     }
 
