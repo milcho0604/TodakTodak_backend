@@ -39,7 +39,8 @@ public class ReviewService {
     public Review createReview(ReviewSaveReqDto dto) {
         MemberFeignDto memberFeignDto = getMemberInfo();
         String email = memberFeignDto.getMemberEmail();
-        String name = memberFeignDto.getName();
+        String maskedName = maskSecondCharacter(memberFeignDto.getName());
+
 
         // 예약 정보 조회
         Reservation reservation = reservationRepository.findById(dto.getReservationId())
@@ -56,7 +57,7 @@ public class ReviewService {
         }
 
         // 검증을 통과하면 리뷰 생성
-        return reviewRepository.save(dto.toEntity(email, reservation, name, reservation.getDoctorEmail(), reservation.isUntact()));
+        return reviewRepository.save(dto.toEntity(email, reservation, maskedName, reservation.getDoctorEmail(), reservation.isUntact()));
     }
 
     // 리뷰 리스트 (병원 ID 기준)
@@ -181,6 +182,14 @@ public class ReviewService {
         return new ReviewDetailDto(averageRating, count1Star, count2Stars, count3Stars, count4Stars, count5Stars);
     }
 
+    // 이름을 마스킹 처리해서 저장하는 메서드
+    public static String maskSecondCharacter(String name) {
+        // 이름이 2글자 이상일 경우 두 번째 글자 마스킹 처리
+        if (name.length() >= 1) {
+            return name.charAt(0) + "*" + name.substring(2);
+        }
+        return name;
+    }
 
 
 }
