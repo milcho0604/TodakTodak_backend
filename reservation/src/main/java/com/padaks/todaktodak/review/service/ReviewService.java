@@ -39,7 +39,8 @@ public class ReviewService {
     public Review createReview(ReviewSaveReqDto dto) {
         MemberFeignDto memberFeignDto = getMemberInfo();
         String email = memberFeignDto.getMemberEmail();
-        String name = memberFeignDto.getName();
+        String maskedName = maskSecondCharacter(memberFeignDto.getName());
+
 
         // 예약 정보 조회
         Reservation reservation = reservationRepository.findById(dto.getReservationId())
@@ -56,7 +57,7 @@ public class ReviewService {
         }
 
         // 검증을 통과하면 리뷰 생성
-        return reviewRepository.save(dto.toEntity(email, reservation, name));
+        return reviewRepository.save(dto.toEntity(email, reservation, maskedName, reservation.getDoctorEmail(), reservation.isUntact()));
     }
 
     // 리뷰 리스트 (병원 ID 기준)
@@ -129,4 +130,66 @@ public class ReviewService {
         Page<Review> reviews = reviewRepository.findByMemberEmailAndDeletedAtIsNull(memberEmail, pageable);
         return reviews.map(review -> review.myListFromEntity());
     }
+
+    // 의사별 리뷰 리스트(대면+비대면)
+    public Page<ReviewListResDto> reviewDoctorList(Pageable pageable, String doctorEmail){
+        Page<Review> reviews = reviewRepository.findByDoctorEmailAndDeletedAtIsNull(doctorEmail, pageable);
+        Page<ReviewListResDto> reviewDtos = reviews.map(review -> review.listFromEntity());
+        return reviewDtos;
+    }
+
+    // 의사 대면 진료 리뷰
+    public Page<ReviewListResDto> reviewDoctorListUntactFalse(Pageable pageable, String doctorEmail){
+        Page<Review> reviews = reviewRepository.findByDoctorEmailAndUntactFalseAndDeletedAtIsNull(doctorEmail, pageable);
+        Page<ReviewListResDto> reviewDtos = reviews.map(review -> review.listFromEntity());
+        return reviewDtos;
+    }
+
+    // 의사 비대면 진료 리뷰
+    public Page<ReviewListResDto> reviewDoctorListUntactTrue(Pageable pageable, String doctorEmail){
+        Page<Review> reviews = reviewRepository.findByDoctorEmailAndUntactTrueAndDeletedAtIsNull(doctorEmail, pageable);
+        Page<ReviewListResDto> reviewDtos = reviews.map(review -> review.listFromEntity());
+        return reviewDtos;
+    }
+
+    // 의사별 리뷰 점수 평균과 평점별 리뷰 개수를 계산
+    public ReviewDetailDto reviewDoctorDetail(String doctorEmail, Pageable pageable) {
+        // 의사 이메일로 리뷰를 페이징 처리하여 조회
+        Page<Review> reviewPage = reviewRepository.findByDoctorEmailAndDeletedAtIsNull(doctorEmail, pageable);
+
+        // 리뷰가 없으면 기본값 반환
+        if (reviewPage.isEmpty()) {
+            return new ReviewDetailDto(0.0, 0, 0, 0, 0, 0);
+        }
+
+        // 리뷰의 점수를 합산하고 평균을 계산 (소수점 첫째 자리까지 표시)
+        double averageRating = reviewPage.getContent().stream()
+                .mapToInt(Review::getRating)
+                .average()
+                .orElse(0.0);
+
+        // 소수점 첫째 자리까지만 유지
+        averageRating = Math.round(averageRating * 10.0) / 10.0;
+
+        // 평점별 리뷰 개수 계산 (1점부터 5점까지)
+        long count1Star = reviewPage.getContent().stream().filter(review -> review.getRating() == 1).count();
+        long count2Stars = reviewPage.getContent().stream().filter(review -> review.getRating() == 2).count();
+        long count3Stars = reviewPage.getContent().stream().filter(review -> review.getRating() == 3).count();
+        long count4Stars = reviewPage.getContent().stream().filter(review -> review.getRating() == 4).count();
+        long count5Stars = reviewPage.getContent().stream().filter(review -> review.getRating() == 5).count();
+
+        // 결과를 DTO로 반환
+        return new ReviewDetailDto(averageRating, count1Star, count2Stars, count3Stars, count4Stars, count5Stars);
+    }
+
+    // 이름을 마스킹 처리해서 저장하는 메서드
+    public static String maskSecondCharacter(String name) {
+        // 이름이 2글자 이상일 경우 두 번째 글자 마스킹 처리
+        if (name.length() >= 1) {
+            return name.charAt(0) + "*" + name.substring(2);
+        }
+        return name;
+    }
+
+
 }
