@@ -40,6 +40,15 @@ public class MemberController {
         return new MemberPayDto(member.getMemberEmail(), member.getName(), member.getPhoneNumber(), member.getRole(), member.getReportCount(), member.getHospitalId());
     }
 
+//    @GetMapping("/get/{memberEmail}")
+//    public MemberFeignNameDto getMemberName(@PathVariable String memberEmail){
+//        Member member = memberService.findByMemberEmail(memberEmail);
+//        String name = member.getName();
+//        return MemberFeignNameDto.builder()
+//                .name(name)
+//                .build();
+//    }
+
     @GetMapping("/get/{email}")
     public MemberResDto getMemberByEmail(@PathVariable String email) {
         Member member = memberService.findByMemberEmail(email);

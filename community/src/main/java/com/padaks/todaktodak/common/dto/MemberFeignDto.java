@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class MemberFeignDto {
     private String memberEmail;
-    private String name;
+//    private String name;
     private int reportCount;
     private String Role;
 }

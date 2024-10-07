@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 public class CommentDetailDto {
     private Long id;
+    private String name;
     private String doctorEmail;
     private String content;
     private LocalDateTime createdTimeAt;
