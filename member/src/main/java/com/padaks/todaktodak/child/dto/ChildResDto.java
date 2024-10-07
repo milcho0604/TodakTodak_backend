@@ -14,12 +14,14 @@ public class ChildResDto {
     private Long id;
     private String name;
     private String ssn;
+    private String imageUrl;
 
     public ChildResDto fromEntity(Child child, String ssn) {
         return ChildResDto.builder()
                 .id(child.getId())
                 .name(child.getName())
                 .ssn(ssn)
+                .imageUrl(child.getProfileImgUrl())
                 .build();
     }
 }

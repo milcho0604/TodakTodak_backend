@@ -18,4 +18,5 @@ public class DoctorOperatingHoursSimpleResDto {
     private DayOfHoliday dayOfWeek;
     private LocalTime openTime;
     private LocalTime closeTime;
+    private boolean untact;
 }
