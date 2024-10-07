@@ -55,6 +55,12 @@ public class MemberController {
         return new MemberResDto().fromEntity(member);
     }
 
+    @GetMapping("/id/{memberId}")
+    public ResponseEntity<?> getMemberById(@PathVariable Long memberId){
+        MemberDetailResDto memberDetailResDto = memberService.findByMemberId(memberId);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK,"회원정보 조회성공", memberDetailResDto), HttpStatus.OK);
+    }
+
     // 회원가입
     @PostMapping("/create")
     public ResponseEntity<?> register(MemberSaveReqDto saveReqDto,

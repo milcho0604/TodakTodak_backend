@@ -29,6 +29,8 @@ public class HospitalUpdateResDto {
 
     private String notice; // 병원공지
 
+    private String keywords; // 병원 keywords
+
     private BigDecimal latitude; // 위도
 
     private BigDecimal longitude; //경도
@@ -49,6 +51,7 @@ public class HospitalUpdateResDto {
                 .hospitalImageUrl(hospital.getHospitalImageUrl())
                 .description(hospital.getDescription())
                 .notice(hospital.getNotice())
+                .keywords(hospital.getKeywords())
                 .latitude(hospital.getLatitude())
                 .longitude(hospital.getLongitude())
                 .businessRegistrationInfo(hospital.getBusinessRegistrationInfo())

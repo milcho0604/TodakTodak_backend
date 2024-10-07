@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.time.LocalTime;
 
 @Data
@@ -15,7 +17,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @Builder
 public class DoctorOperatingHoursReqDto {
-//    private Member member;
+    //    private Member member;
 //    private Long doctorId;
     private DayOfHoliday dayOfWeek;
     private LocalTime openTime;
