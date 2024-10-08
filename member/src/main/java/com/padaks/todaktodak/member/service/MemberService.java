@@ -230,6 +230,24 @@ public class MemberService {
 
     }
 
+    // 프로필 이미지 변경
+    public void updateProfileImage(Member member, MultipartFile profileImage) throws Exception {
+        // 프로필 이미지가 있는지 확인
+        if (profileImage != null && !profileImage.isEmpty()) {
+            // S3에 파일 업로드 및 이미지 URL 업데이트
+            String imageUrl = s3ClientFileUpload.upload(profileImage);
+            member.changeProfileImgUrl(imageUrl);
+
+            // 변경된 회원 정보 저장
+            memberRepository.save(member);
+            System.out.println("프로필 이미지가 변경되었습니다: " + imageUrl);
+        } else {
+            System.out.println("프로필 이미지가 제공되지 않았습니다.");
+            throw new Exception("프로필 이미지를 제공해주세요.");
+        }
+    }
+
+    // 회원 정보 수정
     public void updateMember(Member member, MemberUpdateReqDto editReqDto) throws Exception {
         boolean isUpdated = false; // 업데이트 여부를 체크할 변수
 
