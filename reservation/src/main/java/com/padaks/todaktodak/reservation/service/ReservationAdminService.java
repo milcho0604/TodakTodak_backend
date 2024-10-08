@@ -9,6 +9,7 @@ import com.padaks.todaktodak.reservation.dto.UpdateStatusReservation;
 import com.padaks.todaktodak.reservation.realtime.RealTimeService;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -26,6 +27,7 @@ import static com.padaks.todaktodak.common.exception.exceptionType.ReservationEx
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class ReservationAdminService {
 
     private final ReservationRepository reservationRepository;
@@ -82,5 +84,6 @@ public class ReservationAdminService {
     @Scheduled(cron = "0 0 0 * * *")
     public void flushDb(){
         redisTemplate.getConnectionFactory().getConnection().flushDb();
+        log.info("금일 redis 초기화 완료");
     }
 }
