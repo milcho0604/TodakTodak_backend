@@ -17,7 +17,6 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @Builder
 public class ReservationSaveReqDto {
-    private String memberEmail;
     private Long childId;
     private Long hospitalId;
     private String doctorName;

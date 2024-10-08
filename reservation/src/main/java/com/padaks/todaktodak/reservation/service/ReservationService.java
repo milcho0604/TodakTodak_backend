@@ -81,10 +81,9 @@ public class ReservationService {
         log.info("ReservationService[scheduleReservation] : 스케줄 예약 요청 처리 시작");
 
         DoctorResDto doctorResDto = memberFeign.getDoctor(dto.getDoctorEmail());
-
-        String email = getMemberInfo().getMemberEmail();
-        dto.setMemberEmail(email);
         dto.setDoctorName(doctorResDto.getName());
+
+        MemberFeignDto member = getMemberInfo();
 
         String lockKey = dto.getDoctorEmail() + ":"+ dto.getReservationDate()+ ":" + dto.getReservationTime();
 
@@ -105,7 +104,7 @@ public class ReservationService {
                         });
                 Hospital hospital = hospitalRepository.findById(dto.getHospitalId())
                         .orElseThrow(() -> new BaseException(HOSPITAL_NOT_FOUND));
-                Reservation reservation = dtoMapper.toReservation(dto, hospital);
+                Reservation reservation = dtoMapper.toReservation(dto, member, hospital);
                 reservationRepository.save(reservation);
 
                 Map<String, Object> messageData = createMessageData(reservation, getMemberInfo().getName());
@@ -131,8 +130,8 @@ public class ReservationService {
         log.info("ReservationService[immediateReservation] : 예약 요청 처리 시작");
 
         DoctorResDto doctorResDto = memberFeign.getDoctor(dto.getDoctorEmail());
-        String email = getMemberInfo().getMemberEmail();
-        dto.setMemberEmail(email);
+        MemberFeignDto member = getMemberInfo();
+
         dto.setDoctorName(doctorResDto.getName());
         dto.setReservationDate(LocalDate.now());
 
@@ -150,7 +149,7 @@ public class ReservationService {
             Hospital hospital = hospitalRepository.findById(dto.getHospitalId())
                     .orElseThrow(() -> new BaseException(HOSPITAL_NOT_FOUND));
 
-            Reservation reservation = dtoMapper.toReservation(dto, hospital);
+            Reservation reservation = dtoMapper.toReservation(dto, member, hospital);
             reservationRepository.save(reservation);
             RedisDto redisDto = dtoMapper.toRedisDto(reservation);
 

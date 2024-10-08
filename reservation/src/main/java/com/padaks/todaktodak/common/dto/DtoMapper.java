@@ -12,6 +12,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import java.lang.reflect.Member;
+
 // Mapper 어노테이션을 붙이면 MapStruct 가 자동으로 DtoMapper 구현체를 생성해준다.
 @Mapper(componentModel = "spring", builder = @Builder(disableBuilder = false))
 public interface DtoMapper {
@@ -21,7 +23,7 @@ public interface DtoMapper {
 
     @Mapping(target = "hospital", source = "hospital")
     @Mapping(target = "id", ignore = true)
-    Reservation toReservation(ReservationSaveReqDto reservationSaveReqDto, Hospital hospital);
+    Reservation toReservation(ReservationSaveReqDto reservationSaveReqDto, MemberFeignDto member, Hospital hospital);
 
     CheckListReservationReqDto toListReservation(Reservation reservation);
 
