@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -56,5 +57,10 @@ public class ReservationController {
     @GetMapping("/get/member")
     public List<String> getMember(){
         return reservationService.reservationNoShowSchedule();
+    }
+
+    @GetMapping("/get/time/{email}")
+    public List<LocalTime> getTime(@PathVariable String email){
+        return reservationService.reservationTimes(email);
     }
 }
