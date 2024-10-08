@@ -117,6 +117,9 @@ public class CommentService {
                         .doctorEmail(comment.getDoctorEmail())
                         .name(maskSecondCharacter(getMemberName(comment.getDoctorEmail()).getName()))
                         .createdTimeAt(comment.getCreatedTimeAt())
+                        .parentId(comment.getParent() != null ? comment.getParent().getId() : null)
+                        .createdTimeAt(comment.getCreatedTimeAt())
+                        .updatedTimeAt(comment.getUpdatedTimeAt())
                         .build())
                 .collect(Collectors.toList());
     }
