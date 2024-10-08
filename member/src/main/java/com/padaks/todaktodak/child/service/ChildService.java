@@ -74,7 +74,12 @@ public class ChildService {
                     .parents(parentName)
                     .build();
         }
-        String imageUrl = s3ClientFileUpload.upload(image);
+        String imageUrl = null;
+        if (image == null || image.isEmpty()) {
+            imageUrl = "https://todak-file.s3.amazonaws.com/0611a5e6-b5e4-4cd7-81c3-ce7d64ef58b7_스크린샷 2024-10-08 오후 2.08.28.png";
+        } else {
+            imageUrl = s3ClientFileUpload.upload(image);
+        }
 
         Child child = Child.builder()
                 .name(name)
@@ -95,8 +100,13 @@ public class ChildService {
 
     public void updateChild(ChildUpdateReqDto dto, MultipartFile image) {
         Child child = childRepository.findById(dto.getChildId()).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 자녀입니다"));
-        String imageUrl = s3ClientFileUpload.upload(image);
-        child.update(dto.getName(),imageUrl);
+        // 이미지가 null이 아닌 경우에만 업데이트
+        String imageUrl = null;
+        if (image != null && !image.isEmpty()) {
+            // 이미지 업데이트 처리 로직
+            imageUrl = s3ClientFileUpload.upload(image);
+            child.update(dto.getName(),imageUrl);
+        }else child.updateName(dto.getName());
     }
 
     // 자녀 정보 조회 (주민등록번호 복호화)
