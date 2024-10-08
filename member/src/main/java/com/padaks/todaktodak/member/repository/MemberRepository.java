@@ -2,9 +2,11 @@ package com.padaks.todaktodak.member.repository;
 
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.domain.Role;
+import feign.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityNotFoundException;
@@ -36,4 +38,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     }
 
     List<Member> findAllByNoShowCountGreaterThanEqualAndDeletedAtIsNull(int noShowCount);
+
+    @Query("SELECT m FROM Member m WHERE (LOWER(m.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(m.memberEmail) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND m.role = 'Member'")
+    List<Member> searchMembers(@Param("keyword") String keyword);
 }
