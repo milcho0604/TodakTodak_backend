@@ -12,6 +12,7 @@ import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.dto.*;
 import com.padaks.todaktodak.reservation.domain.ReservationHistory;
 import com.padaks.todaktodak.reservation.domain.Status;
+import com.padaks.todaktodak.reservation.realtime.RealTimeService;
 import com.padaks.todaktodak.reservation.repository.ReservationHistoryRepository;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +49,7 @@ public class ReservationService {
     private final MemberFeign memberFeign;
     private final MemberFeignClient memberFeignClient;
     private final ObjectMapper objectMapper;
+    private final RealTimeService realTimeService;
 
     public ReservationService(ReservationRepository reservationRepository,
                               ReservationHistoryRepository reservationHistoryRepository,
@@ -57,7 +59,7 @@ public class ReservationService {
                               KafkaTemplate<String, Object> kafkaTemplate,
                               HospitalRepository hospitalRepository,
                               MemberFeign memberFeign,
-                              MemberFeignClient memberFeignClient, ObjectMapper objectMapper) {
+                              MemberFeignClient memberFeignClient, ObjectMapper objectMapper, RealTimeService realTimeService) {
         this.reservationRepository = reservationRepository;
         this.reservationHistoryRepository = reservationHistoryRepository;
         this.dtoMapper = dtoMapper;
@@ -68,6 +70,7 @@ public class ReservationService {
         this.memberFeign = memberFeign;
         this.memberFeignClient = memberFeignClient;
         this.objectMapper = objectMapper;
+        this.realTimeService = realTimeService;
     }
 
     // member 객체 리턴, 토큰 포함
@@ -154,6 +157,7 @@ public class ReservationService {
             RedisDto redisDto = dtoMapper.toRedisDto(reservation);
 
             redisTemplate.opsForZSet().add(key, redisDto, sequence);
+            realTimeService.update(reservation.getId().toString(),sequence.toString());
 
             Map<String, Object> messageData = createMessageData(reservation, getMemberInfo().getName());
             String notificationMessage = objectMapper.writeValueAsString(messageData);
@@ -184,6 +188,7 @@ public class ReservationService {
         RedisDto redisDto = dtoMapper.toRedisDto(reservation);
 //        list 에서 해당 예약을 삭제
         redisTemplate.opsForZSet().remove(key, redisDto);
+        realTimeService.delete(redisDto.getId().toString());
     }
     
 //    예약 조회 기능
