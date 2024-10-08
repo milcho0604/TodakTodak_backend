@@ -2,6 +2,7 @@ package com.padaks.todaktodak.reservation.controller;
 
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.reservation.dto.CheckListReservationResDto;
+import com.padaks.todaktodak.reservation.dto.DoctorTimeRequestDto;
 import com.padaks.todaktodak.reservation.dto.ReservationSaveReqDto;
 import com.padaks.todaktodak.reservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
@@ -59,8 +60,8 @@ public class ReservationController {
         return reservationService.reservationNoShowSchedule();
     }
 
-    @GetMapping("/get/time/{email}")
-    public List<LocalTime> getTime(@PathVariable String email){
-        return reservationService.reservationTimes(email);
+    @PostMapping("/get/time")
+    public List<LocalTime> getTime(@RequestBody DoctorTimeRequestDto dto){
+        return reservationService.reservationTimes(dto);
     }
 }

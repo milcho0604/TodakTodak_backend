@@ -43,7 +43,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     @Query("SELECT r.reservationTime FROM Reservation r " +
             "WHERE r.doctorEmail = :doctorEmail " +
-            "AND r.reservationDate = CURRENT_DATE " +
+            "AND r.reservationDate = :date " +
             "AND r.reservationType = 'Scheduled'")
-    List<LocalTime> findTodayScheduledReservationTimesByDoctor(@Param("doctorEmail") String doctorEmail);
+    List<LocalTime> findScheduledReservationTimesByDoctor(@Param("doctorEmail") String doctorEmail,
+                                                                @Param("reservationDate") LocalDate date);
 }

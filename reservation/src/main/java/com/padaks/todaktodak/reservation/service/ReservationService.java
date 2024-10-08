@@ -279,8 +279,9 @@ public class ReservationService {
         return messageData;
     }
 
-    public List<LocalTime> reservationTimes(String email){
+    public List<LocalTime> reservationTimes(DoctorTimeRequestDto dto){
 
-        return reservationRepository.findTodayScheduledReservationTimesByDoctor(email);
+        return reservationRepository.
+                findScheduledReservationTimesByDoctor(dto.getDoctorEmail(), dto.getDate());
     }
 }

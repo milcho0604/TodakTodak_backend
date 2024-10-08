@@ -164,6 +164,7 @@ public class Member extends BaseTimeEntity {
         return DoctorListResDto.builder()
                 .id(this.id)
                 .name(this.name)
+                .doctorEmail(this.memberEmail)
                 .profileImgUrl(this.profileImgUrl)
                 .role(this.role)
                 .bio(this.bio)

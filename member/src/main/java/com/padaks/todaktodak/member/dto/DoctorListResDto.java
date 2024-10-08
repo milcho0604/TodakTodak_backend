@@ -18,6 +18,7 @@ public class DoctorListResDto {
     private Long id;
     private String name;
     private String profileImgUrl;
+    private String doctorEmail;
     private Role role;
     private String bio;
     private List<DoctorOperatingHoursSimpleResDto> operatingHours; //근무시간 리스트
