@@ -12,6 +12,7 @@ import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.dto.*;
 import com.padaks.todaktodak.reservation.domain.ReservationHistory;
 import com.padaks.todaktodak.reservation.domain.Status;
+import com.padaks.todaktodak.reservation.realtime.RealTimeService;
 import com.padaks.todaktodak.reservation.repository.ReservationHistoryRepository;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +49,7 @@ public class ReservationService {
     private final MemberFeign memberFeign;
     private final MemberFeignClient memberFeignClient;
     private final ObjectMapper objectMapper;
+    private final RealTimeService realTimeService;
 
     public ReservationService(ReservationRepository reservationRepository,
                               ReservationHistoryRepository reservationHistoryRepository,
@@ -57,7 +59,7 @@ public class ReservationService {
                               KafkaTemplate<String, Object> kafkaTemplate,
                               HospitalRepository hospitalRepository,
                               MemberFeign memberFeign,
-                              MemberFeignClient memberFeignClient, ObjectMapper objectMapper) {
+                              MemberFeignClient memberFeignClient, ObjectMapper objectMapper, RealTimeService realTimeService) {
         this.reservationRepository = reservationRepository;
         this.reservationHistoryRepository = reservationHistoryRepository;
         this.dtoMapper = dtoMapper;
@@ -68,6 +70,7 @@ public class ReservationService {
         this.memberFeign = memberFeign;
         this.memberFeignClient = memberFeignClient;
         this.objectMapper = objectMapper;
+        this.realTimeService = realTimeService;
     }
 
     // member 객체 리턴, 토큰 포함
@@ -81,10 +84,9 @@ public class ReservationService {
         log.info("ReservationService[scheduleReservation] : 스케줄 예약 요청 처리 시작");
 
         DoctorResDto doctorResDto = memberFeign.getDoctor(dto.getDoctorEmail());
-
-        String email = getMemberInfo().getMemberEmail();
-        dto.setMemberEmail(email);
         dto.setDoctorName(doctorResDto.getName());
+
+        MemberFeignDto member = getMemberInfo();
 
         String lockKey = dto.getDoctorEmail() + ":"+ dto.getReservationDate()+ ":" + dto.getReservationTime();
 
@@ -105,7 +107,7 @@ public class ReservationService {
                         });
                 Hospital hospital = hospitalRepository.findById(dto.getHospitalId())
                         .orElseThrow(() -> new BaseException(HOSPITAL_NOT_FOUND));
-                Reservation reservation = dtoMapper.toReservation(dto, hospital);
+                Reservation reservation = dtoMapper.toReservation(dto, member, hospital);
                 reservationRepository.save(reservation);
 
                 Map<String, Object> messageData = createMessageData(reservation, getMemberInfo().getName());
@@ -131,8 +133,8 @@ public class ReservationService {
         log.info("ReservationService[immediateReservation] : 예약 요청 처리 시작");
 
         DoctorResDto doctorResDto = memberFeign.getDoctor(dto.getDoctorEmail());
-        String email = getMemberInfo().getMemberEmail();
-        dto.setMemberEmail(email);
+        MemberFeignDto member = getMemberInfo();
+
         dto.setDoctorName(doctorResDto.getName());
         dto.setReservationDate(LocalDate.now());
 
@@ -150,11 +152,12 @@ public class ReservationService {
             Hospital hospital = hospitalRepository.findById(dto.getHospitalId())
                     .orElseThrow(() -> new BaseException(HOSPITAL_NOT_FOUND));
 
-            Reservation reservation = dtoMapper.toReservation(dto, hospital);
+            Reservation reservation = dtoMapper.toReservation(dto, member, hospital);
             reservationRepository.save(reservation);
             RedisDto redisDto = dtoMapper.toRedisDto(reservation);
 
             redisTemplate.opsForZSet().add(key, redisDto, sequence);
+            realTimeService.update(reservation.getId().toString(),sequence.toString());
 
             Map<String, Object> messageData = createMessageData(reservation, getMemberInfo().getName());
             String notificationMessage = objectMapper.writeValueAsString(messageData);
@@ -185,6 +188,7 @@ public class ReservationService {
         RedisDto redisDto = dtoMapper.toRedisDto(reservation);
 //        list 에서 해당 예약을 삭제
         redisTemplate.opsForZSet().remove(key, redisDto);
+        realTimeService.delete(redisDto.getId().toString());
     }
     
 //    예약 조회 기능
@@ -273,5 +277,10 @@ public class ReservationService {
             messageData.put("reservationTime", reservation.getReservationTime());
         }
         return messageData;
+    }
+
+    public List<LocalTime> reservationTimes(String email){
+
+        return reservationRepository.findTodayScheduledReservationTimesByDoctor(email);
     }
 }

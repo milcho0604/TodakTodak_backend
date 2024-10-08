@@ -64,6 +64,18 @@ public class RealTimeService {
             }
         });
     }
+//  실시간 DB에서 삭제하는 로직
+    public void delete(String reservationId){
+        DatabaseReference userRef = databaseReference.child(reservationId);
+
+        userRef.removeValue((error, ref) -> {
+            if(error != null){
+                System.out.println("Failed to delete data: " + error.getMessage());
+            }else{
+                System.out.println("User data deleted successfully");
+            }
+        });
+    }
 
     // 데이터를 한 번 읽어오는 메서드
     public void readDataOnce(String id) {
