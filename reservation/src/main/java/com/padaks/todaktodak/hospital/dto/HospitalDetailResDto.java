@@ -125,7 +125,7 @@ public class HospitalDetailResDto {
                 // ex : 월요일 9:00 ~ 18:00
                 todaySchedule = hours.getDayOfWeek().getValue() + " " + hours.getOpenTime() + " ~ " + hours.getCloseTime();
                 // ex : 12:00 ~ 13:00
-                breakTime =  hours.getBreakStart() + " " + hours.getBreakEnd();
+                breakTime =  hours.getBreakStart() + " ~ " + hours.getBreakEnd();
             }
 
             // 각 요일별 영업시간 설정
