@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -406,6 +407,12 @@ public class MemberController {
             CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.NOT_FOUND, e.getMessage());
             return new ResponseEntity<>(commonErrorDto, HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("/search/{keyword}")
+    public ResponseEntity<CommonResDto> search(@PathVariable String keyword) {
+        List<MemberDetailResDto> members = memberService.searchMembers(keyword);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK,"검색 성공",members), HttpStatus.OK);
     }
 
 }

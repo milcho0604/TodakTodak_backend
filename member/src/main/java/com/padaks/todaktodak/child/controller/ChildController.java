@@ -19,7 +19,7 @@ import java.util.List;
 public class ChildController {
     private final ChildService childService;
     @PostMapping("/create")
-    public ResponseEntity<CommonResDto> registerChild(ChildRegisterReqDto dto, @RequestPart MultipartFile image){
+    public ResponseEntity<CommonResDto> registerChild(ChildRegisterReqDto dto, @RequestPart(required = false) MultipartFile image){
         ChildRegisterResDto childRegisterResDto = childService.createChild(dto.getName(), dto.getSsn(),image);
         if (childRegisterResDto.getParents() != null) {
             return new ResponseEntity<>(new CommonResDto(HttpStatus.BAD_REQUEST,"이미 등록된 자녀입니다.",childRegisterResDto),HttpStatus.BAD_REQUEST);
@@ -34,7 +34,7 @@ public class ChildController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<CommonResDto> updateChild(ChildUpdateReqDto dto, @RequestPart MultipartFile image){
+    public ResponseEntity<CommonResDto> updateChild(ChildUpdateReqDto dto, @RequestPart(required = false) MultipartFile image){
         childService.updateChild(dto, image);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK,"자녀 수정 성공",null),HttpStatus.OK);
     }

@@ -27,6 +27,7 @@ import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import static com.padaks.todaktodak.common.exception.exceptionType.MemberExceptionType.MEMBER_NOT_FOUND;
 
@@ -499,5 +500,11 @@ public class MemberService {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Member member = memberRepository.findByMemberEmail(email).orElseThrow(()-> new EntityNotFoundException("존재하지 않는 회원입니다."));
         return member.getReportCount();
+    }
+
+    public List<MemberDetailResDto> searchMembers(String keyword) {
+        log.info(keyword);
+        List<Member> members = memberRepository.searchMembers(keyword);
+        return members.stream().map(MemberDetailResDto::fromEntity).collect(Collectors.toList());
     }
 }

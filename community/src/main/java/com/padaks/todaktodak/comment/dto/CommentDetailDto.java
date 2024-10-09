@@ -1,5 +1,6 @@
 package com.padaks.todaktodak.comment.dto;
 
+import com.padaks.todaktodak.comment.domain.Comment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,4 +20,5 @@ public class CommentDetailDto {
     private LocalDateTime createdTimeAt;
     private LocalDateTime updatedTimeAt;
     private Long PostId;
+    private Long parentId;
 }

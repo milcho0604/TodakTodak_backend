@@ -2,6 +2,7 @@ package com.padaks.todaktodak.reservation.controller;
 
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.reservation.dto.CheckListReservationResDto;
+import com.padaks.todaktodak.reservation.dto.DoctorTimeRequestDto;
 import com.padaks.todaktodak.reservation.dto.ReservationSaveReqDto;
 import com.padaks.todaktodak.reservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -56,5 +58,10 @@ public class ReservationController {
     @GetMapping("/get/member")
     public List<String> getMember(){
         return reservationService.reservationNoShowSchedule();
+    }
+
+    @PostMapping("/get/time")
+    public List<LocalTime> getTime(@RequestBody DoctorTimeRequestDto dto){
+        return reservationService.reservationTimes(dto);
     }
 }

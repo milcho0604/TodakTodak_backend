@@ -6,15 +6,20 @@ import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.dto.CheckHospitalListReservationReqDto;
 import com.padaks.todaktodak.reservation.dto.RedisDto;
 import com.padaks.todaktodak.reservation.dto.UpdateStatusReservation;
+import com.padaks.todaktodak.reservation.realtime.RealTimeService;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.padaks.todaktodak.common.exception.exceptionType.ReservationExceptionType.RESERVATION_NOT_FOUND;
@@ -22,12 +27,14 @@ import static com.padaks.todaktodak.common.exception.exceptionType.ReservationEx
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class ReservationAdminService {
 
     private final ReservationRepository reservationRepository;
     private final DtoMapper dtoMapper;
 
     private final RedisTemplate<String, Object> redisTemplate;
+    private final RealTimeService realTimeService;
 
     private static final String RESERVATION_LIST_KEY = "doctor_list";
 
@@ -64,5 +71,19 @@ public class ReservationAdminService {
         RedisDto redisDto = dtoMapper.toRedisDto(reservation);
 //        list 에서 해당 예약을 삭제
         redisTemplate.opsForZSet().remove(key, redisDto);
+        realTimeService.delete(redisDto.getId().toString());
+
+        Set<Object> sets = redisTemplate.opsForZSet().range(key, 0, -1);
+        for(Object obj : sets){
+            Map<String , Object> map = (Map<String, Object>) obj;
+            Long lank = redisTemplate.opsForZSet().rank(key, obj);
+            realTimeService.update(map.get("id").toString(), lank.toString());
+        }
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    public void flushDb(){
+        redisTemplate.getConnectionFactory().getConnection().flushDb();
+        log.info("금일 redis 초기화 완료");
     }
 }
