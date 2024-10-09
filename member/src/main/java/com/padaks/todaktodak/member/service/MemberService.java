@@ -428,10 +428,10 @@ public class MemberService {
     public void sendPasswordResetLink(MemberFindPasswordDto dto) {
         Member member = memberRepository.findByMemberEmail(dto.getMemberEmail())
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
-        // userId를 추가 인자로 전달하여 토큰 생성
+        // memberId를 추가 인자로 전달하여 토큰 생성
         String resetToken = jwtTokenprovider.createToken(member.getMemberEmail(), member.getRole().name(), member.getId());
 
-        // Redis에 저장 (필요한 경우)
+        // Redis에 저장
         redisService.saveVerificationCode(dto.getMemberEmail(), resetToken);
 
         // 이메일 전송
