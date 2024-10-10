@@ -3,6 +3,7 @@ package com.padaks.todaktodak.notification.controller;
 import com.padaks.todaktodak.common.dto.CommonErrorDto;
 import com.padaks.todaktodak.common.dto.CommonResDto;
 import com.padaks.todaktodak.member.dto.FcmTokenSaveRequest;
+import com.padaks.todaktodak.notification.domain.FcmNotification;
 import com.padaks.todaktodak.notification.dto.NotificationResDto;
 import com.padaks.todaktodak.notification.service.FcmService;
 import com.padaks.todaktodak.notification.domain.Type;
@@ -64,7 +65,7 @@ public class FcmController {
 
     @GetMapping("/read/{id}")
     public ResponseEntity<CommonResDto> read(@PathVariable Long id) {
-        NotificationResDto notificationResDto = fcmService.read(id);
-        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK,"알림 읽음 처리 성공",notificationResDto),HttpStatus.OK);
+        FcmNotification fcmNotification = fcmService.read(id);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK,"알림 읽음 처리 성공",fcmNotification),HttpStatus.OK);
     }
 }

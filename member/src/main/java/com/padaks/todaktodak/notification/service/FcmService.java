@@ -71,6 +71,7 @@ public class FcmService {
                                 .build())
                         .build())
                 .putData("url", url) //이동할 url 추가
+                .putData("notificationId", String.valueOf(fcmNotification.getId())) //이동할 url 추가
                 .setToken(token)
                 .build();
 
@@ -102,9 +103,11 @@ public class FcmService {
         return notifications.map(fcmNotification -> new NotificationResDto().fromEntity(fcmNotification));
     }
 
-    public NotificationResDto read(Long id) {
+    public FcmNotification read(Long id) {
         FcmNotification fcmNotification = notificationRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("알림이 존재하지 않습니다."));
         fcmNotification.read();
-        return null;
+        notificationRepository.save(fcmNotification);
+        System.out.println("read 검증:"+ fcmNotification.isRead());
+        return fcmNotification;
     }
 }
