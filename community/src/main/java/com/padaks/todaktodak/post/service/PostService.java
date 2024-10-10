@@ -65,7 +65,11 @@ public class PostService {
 
     public Page<PostListDto> postList(Pageable pageable){
         Page<Post> posts = postRepository.findByDeletedTimeAtIsNull(pageable);
-        return posts.map(a->a.listFromEntity());
+        return posts.map(post -> {
+            Long viewCount = getPostViews(post.getId());   // Redis에서 조회수 가져오기
+            Long likeCount = getPostLikesCount(post.getId());   // Redis에서 좋아요 수 가져오기
+            return post.listFromEntity(viewCount, likeCount);   // 조회수와 좋아요 수를 포함한 DTO로 변환
+        });
     }
 
     public PostDetailDto getPostDetail(Long id){
