@@ -76,7 +76,7 @@ public class KafkaConsumerConfig {
         factory.setConsumerFactory(payKafkaConsumerFactory());
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
 
-        System.out.println("payKafkaListenerContainerFactory Bean has been created!");
+        System.out.println("payKafkaListenerCo ntainerFactory Bean has been created!");
 
         return factory;
     }
