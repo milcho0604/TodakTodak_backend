@@ -8,7 +8,6 @@ import com.padaks.todaktodak.child.repository.ChildRepository;
 import com.padaks.todaktodak.notification.dto.ReservationSuccessResDto;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.member.repository.MemberRepository;
-import com.padaks.todaktodak.member.service.FcmService;
 import com.padaks.todaktodak.notification.domain.Type;
 import com.padaks.todaktodak.notification.dto.CommentSuccessDto;
 import com.padaks.todaktodak.notification.dto.ReserveBeforeNotifyResDto;

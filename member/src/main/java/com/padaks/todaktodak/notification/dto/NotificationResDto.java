@@ -1,6 +1,6 @@
 package com.padaks.todaktodak.notification.dto;
 
-import com.padaks.todaktodak.notification.domain.Notification;
+import com.padaks.todaktodak.notification.domain.FcmNotification;
 import com.padaks.todaktodak.notification.domain.Type;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,7 +19,7 @@ public class NotificationResDto {
     private Type type;
     private Long refId;
 
-    public NotificationResDto fromEntity(Notification save) {
+    public NotificationResDto fromEntity(FcmNotification save) {
         this.id = save.getId();
         this.memberEmail = save.getMember().getMemberEmail();
         this.content = save.getContent();

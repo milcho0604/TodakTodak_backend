@@ -1,7 +1,7 @@
 package com.padaks.todaktodak.notification.dto;
 
 import com.padaks.todaktodak.member.domain.Member;
-import com.padaks.todaktodak.notification.domain.Notification;
+import com.padaks.todaktodak.notification.domain.FcmNotification;
 import com.padaks.todaktodak.notification.domain.Type;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,8 +16,8 @@ public class NotificationReqDto {
     private Type type;
     private Long refId;
 
-    public Notification toEntity(Member member) {
-        return Notification.builder()
+    public FcmNotification toEntity(Member member) {
+        return FcmNotification.builder()
                 .member(member)
                 .content(this.content)
                 .type(this.type)

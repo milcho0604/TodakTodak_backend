@@ -2,19 +2,15 @@ package com.padaks.todaktodak.notification.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.padaks.todaktodak.member.service.FcmService;
 import com.padaks.todaktodak.notification.domain.Type;
 import com.padaks.todaktodak.notification.dto.PaymentCancelDto;
 import com.padaks.todaktodak.notification.dto.PaymentCancelFailDto;
 import com.padaks.todaktodak.notification.dto.PaymentFailDto;
 import com.padaks.todaktodak.notification.dto.PaymentSuccessDto;
 import lombok.RequiredArgsConstructor;
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
