@@ -54,6 +54,7 @@ public class Post extends BaseTimeEntity {
                 .content(this.content)
                 .likeCount(this.likeCount)
                 .viewCount(this.viewCount)
+                .postImgUrl(this.postImgUrl)
                 .createdTimeAt(this.getCreatedTimeAt())
                 .build();
     }
