@@ -14,5 +14,7 @@ public enum Type {
 //    결제 알림
     PAYMENT,
 //    채팅 알림
-    CHAT
+    CHAT,
+//    자녀 알림
+    CHILD
 }

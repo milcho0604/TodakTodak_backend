@@ -10,7 +10,7 @@ import com.padaks.todaktodak.chat.cs.repository.CsRepository;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.repository.MemberRepository;
-import com.padaks.todaktodak.member.service.FcmService;
+import com.padaks.todaktodak.notification.service.FcmService;
 import com.padaks.todaktodak.notification.domain.Type;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
