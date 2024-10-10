@@ -19,4 +19,5 @@ public class PostListDto {
     private Long likeCount;
     private Long viewCount;
     private LocalDateTime createdTimeAt;
+    private String postImgUrl;
 }
