@@ -34,9 +34,9 @@ public class Post extends BaseTimeEntity {
     @Column
     private String postImgUrl;
 
-    private Long likeCount;
+    private Long likeCount = 0L;
 
-    private Long viewCount;
+    private Long viewCount = 0L;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     @Builder.Default
@@ -46,14 +46,15 @@ public class Post extends BaseTimeEntity {
     @Builder.Default
     private List<Report> reportList = new ArrayList<>();
 
-    public PostListDto listFromEntity(){
+    public PostListDto listFromEntity(Long viewCount, Long likeCount){
         return PostListDto.builder()
                 .id(this.id)
                 .title(this.title)
                 .memberEmail(this.memberEmail)
                 .content(this.content)
-                .likeCount(this.likeCount)
-                .viewCount(this.viewCount)
+                .likeCount(likeCount != null ? likeCount : 0)
+                .viewCount(viewCount != null ? viewCount : 0)
+                .postImgUrl(this.postImgUrl != null ? this.postImgUrl : null)
                 .postImgUrl(this.postImgUrl)
                 .createdTimeAt(this.getCreatedTimeAt())
                 .build();
@@ -67,6 +68,17 @@ public class Post extends BaseTimeEntity {
         this.title = dto.getTitle();
         this.content = dto.getContent();
         return this;
+    }
+
+
+    // 조회수 업데이트 메서드
+    public void updateViewCount(Long viewCount) {
+        this.viewCount = (viewCount != null) ? viewCount : 0L; // null이면 0L로 처리
+    }
+
+    // 좋아요 수 업데이트 메서드
+    public void updateLikeCount(Long likeCount) {
+        this.likeCount = (likeCount != null) ? likeCount : 0L; // null이면 0L로 처리
     }
 
 }
