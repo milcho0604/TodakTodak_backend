@@ -63,8 +63,20 @@ public class PostService {
         postRepository.save(post);
     }
 
+    // 게시글 리스트
     public Page<PostListDto> postList(Pageable pageable){
         Page<Post> posts = postRepository.findByDeletedTimeAtIsNull(pageable);
+        return posts.map(post -> {
+            Long viewCount = getPostViews(post.getId());   // Redis에서 조회수 가져오기
+            Long likeCount = getPostLikesCount(post.getId());   // Redis에서 좋아요 수 가져오기
+            return post.listFromEntity(viewCount, likeCount);   // 조회수와 좋아요 수를 포함한 DTO로 변환
+        });
+    }
+
+    // my post list !
+    public Page<PostListDto> myPostList(Pageable pageable){
+        String memberEmail = memberPostFeignClient.getMemberEmail().getMemberEmail();
+        Page<Post> posts = postRepository.findByMemberEmailAndDeletedTimeAtIsNull(memberEmail, pageable);
         return posts.map(post -> {
             Long viewCount = getPostViews(post.getId());   // Redis에서 조회수 가져오기
             Long likeCount = getPostLikesCount(post.getId());   // Redis에서 좋아요 수 가져오기
@@ -199,5 +211,7 @@ public class PostService {
         }
         return name;
     }
+
+
 }
 

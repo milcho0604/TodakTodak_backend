@@ -9,4 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findByDeletedTimeAtIsNull(Pageable pageable);
+
+    // 사용자의 이메일을 기준으로 삭제되지 않은 게시글 목록 조회
+    Page<Post> findByMemberEmailAndDeletedTimeAtIsNull(String memberEmail, Pageable pageable);
 }

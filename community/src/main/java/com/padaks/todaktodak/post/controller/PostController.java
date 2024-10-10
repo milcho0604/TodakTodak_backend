@@ -45,6 +45,13 @@ public class PostController {
         return new ResponseEntity<>(commonResDto, HttpStatus.OK);
     }
 
+    @GetMapping("/my/list")
+    public ResponseEntity<?> myPostList(Pageable pageable){
+        Page<PostListDto> postListDtos = postService.myPostList(pageable);
+        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "post 목록을 조회합니다.", postListDtos);
+        return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+    }
+
     @GetMapping("/detail/{id}")
     public ResponseEntity<?> getPostDetail(@PathVariable Long id){
         try {
