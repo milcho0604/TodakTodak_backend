@@ -22,6 +22,5 @@ public class RedisPublisher {
 
     public void publish(WebSocketMessage message) {
         redisTemplate.convertAndSend(topic.getTopic(), message);
-        log.info("Message published: " + message);
     }
 }
