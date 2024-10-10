@@ -93,7 +93,7 @@ public class PaymentController {
         return ResponseEntity.ok("정기 결제 테스트 완료");
     }
 
-    @GetMapping("/subCancle")
+    @GetMapping("/subCancel")
     public ResponseEntity<?> cancleSub(@RequestBody String impUid){
         try {
             IamportResponse<Payment> cancleResponse = paymentService.cancelSubscription(impUid);
@@ -118,4 +118,15 @@ public class PaymentController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
+
+    @GetMapping("/get/reservation/{id}")
+    public ResponseEntity<?> getReservationId(@PathVariable Long id){
+        try {
+            int fee = paymentService.medicalChart(id).getFee();
+            return ResponseEntity.ok(fee);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
 }

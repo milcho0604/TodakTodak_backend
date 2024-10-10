@@ -26,29 +26,21 @@ public class PaymentEventListener {
     @KafkaListener(topics = "payment-success", groupId = "payment-group", containerFactory = "payKafkaListenerContainerFactory")
     public void listenPaymentSuccess(String message, Acknowledgment acknowledgment) throws JsonProcessingException {
         try {
-            // JSON 문자열을 Map으로 변환
-            Map<String, Object> messageData = objectMapper.readValue(message, new TypeReference<Map<String, Object>>() {
-            });
-            System.out.println("Received Payment Success message: " + messageData);
+            // 이스케이프된 문자열을 한번 더 파싱
+            String parsedMessage = message.replaceAll("\\\\", "");  // 백슬래시를 제거
+            parsedMessage = parsedMessage.substring(1, parsedMessage.length() - 1);  // 양쪽의 큰 따옴표 제거
 
-            // 수신한 데이터를 처리하는 로직 추가
-            String memberEmail = (String) messageData.get("memberEmail");
-            Integer fee = (Integer) messageData.get("fee");
-            String name = (String) messageData.get("name");
-            String adminEmail = (String) messageData.get("adminEmail");
-
-            System.out.println("Email: " + memberEmail + ", Fee: " + fee + ", Name: " + name + ", adminEmail: " + adminEmail);
-
-            PaymentSuccessDto paymentSuccessDto = objectMapper.readValue(message, PaymentSuccessDto.class);
+            // 파싱된 메시지를 DTO로 변환
+            PaymentSuccessDto paymentSuccessDto = objectMapper.readValue(parsedMessage, PaymentSuccessDto.class);
             System.out.println("Received Payment Success DTO: " + paymentSuccessDto);
 
-            // 회원 알림
-            fcmService.sendMessage(paymentSuccessDto.getMemberEmail(), paymentSuccessDto.getName() + "결제 알림",
+            // 회원 알림 처리
+            fcmService.sendMessage(paymentSuccessDto.getMemberEmail(), paymentSuccessDto.getName() + " 결제 알림",
                     paymentSuccessDto.getFee() + "원 결제가 완료되었습니다.", Type.PAYMENT, null);
 
-            // 관리자 알림
-            fcmService.sendMessage(paymentSuccessDto.getAdminEmail(), paymentSuccessDto.getName() + "결제 알림",
-                    paymentSuccessDto.getMemberEmail() + "님" + paymentSuccessDto.getFee() + "원 결제 완료", Type.PAYMENT, null);
+            // 관리자 알림 처리
+            fcmService.sendMessage(paymentSuccessDto.getAdminEmail(), paymentSuccessDto.getName() + " 결제 알림",
+                    paymentSuccessDto.getMemberEmail() + "님 " + paymentSuccessDto.getFee() + "원 결제 완료", Type.PAYMENT, null);
 
             // 메시지 처리 후 수동 오프셋 커밋
             acknowledgment.acknowledge();

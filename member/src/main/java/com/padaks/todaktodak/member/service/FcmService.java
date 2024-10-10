@@ -54,6 +54,7 @@ public class FcmService {
         if (type.equals(Type.POST) || type.equals(Type.COMMENT)){urlType = "post";} //url 이동을 위해 변환
         if (type.equals(Type.RESERVATION_NOTIFICATION) || type.equals(Type.RESERVATION_WAITING)) {urlType = "reservation";}
         if (type.equals(Type.PAYMENT)){ urlType = String.valueOf(type);}
+
         String url = "http://localhost:8081/" + urlType + id ;
         Message message = Message.builder()
                 .setWebpushConfig(WebpushConfig.builder()
@@ -78,6 +79,5 @@ public class FcmService {
         } catch (Exception e) {
             throw new RuntimeException("Unexpected error during FCM message sending: " + e.getMessage(), e);
         }
-
     }
 }
