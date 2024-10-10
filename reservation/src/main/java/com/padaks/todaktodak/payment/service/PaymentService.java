@@ -11,6 +11,8 @@ import com.padaks.todaktodak.payment.dto.PaymentListResDto;
 import com.padaks.todaktodak.payment.dto.PaymentReqDto;
 import com.padaks.todaktodak.payment.domain.PaymentStatus;
 import com.padaks.todaktodak.payment.repository.PaymentRepository;
+import com.padaks.todaktodak.reservation.domain.Reservation;
+import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.request.AgainPaymentData;
 import com.siot.IamportRestClient.request.CancelData;
@@ -43,6 +45,7 @@ public class PaymentService {
     private final IamportClient iamportClient;
     private final PaymentRepository paymentRepository;
     private final MedicalChartRepository medicalChartRepository;
+    private final ReservationRepository reservationRepository;
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final ObjectMapper objectMapper;
     public static MedicalChart medicalChart;
@@ -54,12 +57,23 @@ public class PaymentService {
         return member;
     }
 
-    // 진료 내역 객체 리턴
+    // 진료 내역 객체 리턴 -> medichart 생성시
     public MedicalChart getMediChartId(Long id){
         medicalChart = medicalChartRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 진료내역입니다."));
+        return null;
+    }
+
+
+    // 진료 내역 객체 리턴 -> 프론트에서 id 넘겨주는 방식
+    public MedicalChart medicalChart(Long id){
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 예약내역입니다."));
+        medicalChart = medicalChartRepository.findById(reservation.getMedicalChart().getId())
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 진료내역입니다."));
         return medicalChart;
     }
+
 
     // 단건 결제 처리
     public PaymentReqDto processSinglePayment(String impUid) throws Exception {
@@ -258,6 +272,8 @@ public class PaymentService {
             messageData.put("memberEmail", memberEmail);
             messageData.put("fee", fee);
             messageData.put("name", name);
+            messageData.put("adminEmail", "todak@test.com");
+
 
             // 객체를 JSON 문자열로 변환
             String message = objectMapper.writeValueAsString(messageData);
@@ -291,6 +307,8 @@ public class PaymentService {
             messageData.put("memberEmail", memberEmail);
             messageData.put("fee", amount);
             messageData.put("impUid", impUid);
+            messageData.put("adminEmail", "todak.test.com");
+
 
             // 객체를 JSON 문자열로 변환
             String message = objectMapper.writeValueAsString(messageData);

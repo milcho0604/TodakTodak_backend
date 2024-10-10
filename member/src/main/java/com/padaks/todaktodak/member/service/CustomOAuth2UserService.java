@@ -41,9 +41,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         OAuthAttributes attributes = OAuthAttributes.of(registrationId,
                 userNameAttributeName, oAuth2User.getAttributes());
 
-//        System.out.println("서비스입니다!!!!!!!!!!! 왓나요!!!!!!!!!!1");
-//        System.out.println(attributes);
-
         Member member = null;
         member = saveOrUpdate(attributes);
 
@@ -64,9 +61,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             String phone = "핸드폰 번호를 입력해주세요";
             member.updatePhoneNumber(phone);
         }
-//        if (member.isVerified() == false) {
-//            member.updateVerified();
-//        }
+
         memberRepository.save(member);
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority(member.getRoleKey())),
