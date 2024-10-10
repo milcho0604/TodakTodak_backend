@@ -307,7 +307,7 @@ public class PaymentService {
             messageData.put("memberEmail", memberEmail);
             messageData.put("fee", amount);
             messageData.put("impUid", impUid);
-            messageData.put("adminEmail", "todak.test.com");
+            messageData.put("adminEmail", "todak@test.com");
 
 
             // 객체를 JSON 문자열로 변환
@@ -364,6 +364,7 @@ public class PaymentService {
             messageData.put("memberEmail", memberEmail);
             messageData.put("fee", fee);
             messageData.put("name", name);
+            messageData.put("adminEmail", "todak@test.com");
 
             // 객체를 JSON 문자열로 변환
             String message = objectMapper.writeValueAsString(messageData);

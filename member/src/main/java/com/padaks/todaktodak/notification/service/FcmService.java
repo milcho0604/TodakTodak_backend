@@ -34,6 +34,7 @@ public class FcmService {
     }
 
     public void sendMessage(String memberEmail, String title, String body, Type type, Long id){
+        System.out.println(memberEmail);
         Member member = memberRepository.findByMemberEmail(memberEmail)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
 
@@ -81,11 +82,9 @@ public class FcmService {
             System.out.println("Successfully send message: " + response);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // 스레드 상태 복원
-            System.out.println("여기서 부터는 알림 오류입니다.");
             e.printStackTrace();
             throw new RuntimeException("Thread was interrupted during FCM message sending: " + e.getMessage(), e);
         } catch (ExecutionException e) {
-            System.out.println("여기서 부터는 알림 로직 오류입니다.");
             e.printStackTrace();
             throw new RuntimeException("FCM 메시지 전송 중 오류 발생: " + e.getCause().getMessage(), e.getCause());
         } catch (Exception e) {
