@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.concurrent.ExecutionException;
@@ -26,14 +27,14 @@ public class FcmService {
     private final NotificationRepository notificationRepository;
 
     @Transactional
-    public void saveFcmToken(String memberEmail, FcmTokenSaveRequest dto){
+    public void saveFcmToken(String memberEmail, FcmTokenSaveRequest dto) {
         Member member = memberRepository.findByMemberEmail(memberEmail)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 사용자입니다."));
         member.updateFcmToken(dto.getFcmToken());
         System.out.println(member);
     }
 
-    public void sendMessage(String memberEmail, String title, String body, Type type, Long id){
+    public void sendMessage(String memberEmail, String title, String body, Type type, Long id) {
         System.out.println(memberEmail);
         Member member = memberRepository.findByMemberEmail(memberEmail)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
@@ -48,7 +49,7 @@ public class FcmService {
 
         FcmNotification fcmNotification = FcmNotification.builder()
                 .member(member)
-                .content(title +"\n"+ body)  //알림 내용 저장
+                .content(title + "\n" + body)  //알림 내용 저장
                 .isRead(false)      //fcmNotification 생성될때 = false -> 사용자가 알림 누르는 순간 true로 바껴야함
                 .type(type)
                 .refId(id)        //등록된 post의 Id
@@ -59,11 +60,17 @@ public class FcmService {
         notificationRepository.save(fcmNotification);
 
         String urlType = null;
-        if (type.equals(Type.POST) || type.equals(Type.COMMENT)){urlType = "post";} //url 이동을 위해 변환
-        if (type.equals(Type.RESERVATION_NOTIFICATION) || type.equals(Type.RESERVATION_WAITING)) {urlType = "reservation";}
-        if (type.equals(Type.PAYMENT)){ urlType = String.valueOf(type);}
+        if (type.equals(Type.POST) || type.equals(Type.COMMENT)) {
+            urlType = "post";
+        } else if (type.equals(Type.RESERVATION_NOTIFICATION) || type.equals(Type.RESERVATION_WAITING)) {
+            urlType = "reservation";
+        } else if (type.equals(Type.PAYMENT)) {
+            urlType = String.valueOf(type);
+        } else {
+            urlType = "/"; // 추가 로직 설정 필요
+        }
 
-        String url = "http://localhost:8081/" + urlType + "/" + id ;
+        String url = "http://localhost:8081/" + urlType + "/" + id;
         Message message = Message.builder()
                 .setWebpushConfig(WebpushConfig.builder()
                         .setNotification(WebpushNotification.builder()
@@ -96,7 +103,7 @@ public class FcmService {
     public Page<NotificationResDto> myNotis(Pageable pageable) {
         String memberEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         Member member = memberRepository.findByMemberEmail(memberEmail)
-                .orElseThrow(()-> new EntityNotFoundException("회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("회원이 존재하지 않습니다."));
         LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
         Page<FcmNotification> notifications = notificationRepository.findByMemberAndCreatedAtAfter(member, sevenDaysAgo, pageable);
         return notifications.map(fcmNotification -> new NotificationResDto().fromEntity(fcmNotification));
@@ -106,7 +113,7 @@ public class FcmService {
         FcmNotification fcmNotification = notificationRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("알림이 존재하지 않습니다."));
         fcmNotification.read();
         notificationRepository.save(fcmNotification);
-        System.out.println("read 검증:"+ fcmNotification.isRead());
+        System.out.println("read 검증:" + fcmNotification.isRead());
         return fcmNotification;
     }
 }
