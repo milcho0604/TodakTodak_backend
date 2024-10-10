@@ -27,6 +27,10 @@ public class MedicalChartService {
     public MedicalChartResDto medicalChartCreate(MedicalChartSaveReqDto dto) {
         Reservation reservation = reservationRepository.findById(dto.getReservationId())
                 .orElseThrow(() -> new BaseException(RESERVATION_NOT_FOUND));
+        // medical chart가 이미 있으면 새로 생성 안함
+        if (reservation.getMedicalChart()!=null) {
+            return new MedicalChartResDto().fromEntity(reservation.getMedicalChart());
+        }
 //        의사 이메일을 통해 의사를 찾아온 뒤, 비대면 진료비를 요청
         int fee;
         if(reservation.getHospital()==null ||reservation.getHospital().getUntactFee()==null) {
