@@ -20,10 +20,10 @@ public class PostBatchService {
 
 
 
-    // 12시간마다 실행: 12시간(43200000ms) 간격으로 스케줄 실행
-//    @Scheduled(fixedRate = 43200000)
+//     12시간마다 실행: 12시간(43200000ms) 간격으로 스케줄 실행
+    @Scheduled(fixedRate = 43200000)
     // 1분마다 실행
-    @Scheduled(fixedRate = 60000)
+//    @Scheduled(fixedRate = 60000)
     @Transactional
     public void updatePostViewsAndLikesToDB() {
         Set<String> keys = redisTemplate.keys("post:*");
