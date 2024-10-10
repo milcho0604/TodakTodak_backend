@@ -76,7 +76,7 @@ public class KafkaConsumerConfig {
         factory.setConsumerFactory(payKafkaConsumerFactory());
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
 
-        System.out.println("payKafkaListenerCo ntainerFactory Bean has been created!");
+//        System.out.println("payKafkaListenerCo ntainerFactory Bean has been created!");
 
         return factory;
     }
@@ -103,4 +103,31 @@ public class KafkaConsumerConfig {
 
         return factory;
     }
+
+    //    ---------------------------- 밀초 ----------------------------------------------
+    @Bean
+    public ConsumerFactory<String, Object> childKafkaConsumerFactory() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "child-group");
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffset);
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class); // JSON Deserializer로 수정
+        props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
+        props.put(JsonDeserializer.REMOVE_TYPE_INFO_HEADERS, false);
+
+        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), new JsonDeserializer<>(Object.class));
+    }
+
+    @Bean(name = "childKafkaListenerContainerFactory")
+    public ConcurrentKafkaListenerContainerFactory<String, Object> childKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(childKafkaConsumerFactory()); // childKafkaConsumerFactory로 수정
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
+
+        System.out.println("childKafkaListenerContainerFactory Bean has been created!");
+
+        return factory;
+    }
+
 }

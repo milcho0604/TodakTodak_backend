@@ -5,16 +5,15 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.padaks.todaktodak.child.domain.Child;
 import com.padaks.todaktodak.child.repository.ChildRepository;
-import com.padaks.todaktodak.notification.dto.ReservationSuccessResDto;
+import com.padaks.todaktodak.notification.dto.*;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.member.repository.MemberRepository;
 import com.padaks.todaktodak.notification.domain.Type;
-import com.padaks.todaktodak.notification.dto.CommentSuccessDto;
-import com.padaks.todaktodak.notification.dto.ReserveBeforeNotifyResDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Service;
 
 import static com.padaks.todaktodak.common.exception.exceptionType.MemberExceptionType.CHILD_NOT_FOUND;
@@ -27,10 +26,11 @@ public class NotificationKafkaConsumer {
     private final MemberRepository memberRepository;
     private final FcmService fcmService;
     private final ChildRepository childRepository;
+    private final ObjectMapper objectMapper;
 
     @KafkaListener(topics = "community-success", groupId = "group_id", containerFactory = "kafkaListenerContainerFactory")
     public void consumerNotification(String message){
-        ObjectMapper objectMapper = new ObjectMapper();
+//        ObjectMapper objectMapper = new ObjectMapper();
         if (message.startsWith("\"") && message.endsWith("\"")) {
             message = message.substring(1, message.length() -1).replace("\"", "\"");
             message = message.replace("\\", "");
@@ -66,7 +66,7 @@ public class NotificationKafkaConsumer {
 
     @KafkaListener(topics = "scheduled-reservation-success-notify", containerFactory = "reservationKafkaContainerFactory")
     public void scheduledNotification(String message){
-        ObjectMapper objectMapper = new ObjectMapper();
+//        ObjectMapper objectMapper = new ObjectMapper();
 
         if (message.startsWith("\"") && message.endsWith("\"")) {
             message = message.substring(1, message.length() -1).replace("\"", "\"");
@@ -97,7 +97,7 @@ public class NotificationKafkaConsumer {
 
     @KafkaListener(topics = "immediate-reservation-success-notify", containerFactory = "reservationKafkaContainerFactory")
     public void immediateNotification(String message){
-        ObjectMapper objectMapper = new ObjectMapper();
+//        ObjectMapper objectMapper = new ObjectMapper();
 
         if (message.startsWith("\"") && message.endsWith("\"")) {
             message = message.substring(1, message.length() -1).replace("\"", "\"");
@@ -126,7 +126,7 @@ public class NotificationKafkaConsumer {
   
     @KafkaListener(topics = "reservation-before-notify", containerFactory = "reservationKafkaContainerFactory")
     public void reserveBeforeNotify(String message){
-        ObjectMapper objectMapper = new ObjectMapper();
+//        ObjectMapper objectMapper = new ObjectMapper();
         if (message.startsWith("\"") && message.endsWith("\"")) {
             message = message.substring(1, message.length() -1).replace("\"", "\"");
             message = message.replace("\\", "");
@@ -147,6 +147,23 @@ public class NotificationKafkaConsumer {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-
     }
+
+    // 자녀 공유 알림
+    @KafkaListener(topics = "child-share", groupId = "child-group", containerFactory = "childKafkaListenerContainerFactory")
+    public void listenPaymentSuccess(String message, Acknowledgment acknowledgment) throws JsonProcessingException {
+        try {
+            System.out.println(message);
+            ChildSuccessResDto childSuccessResDto = objectMapper.readValue(message, ChildSuccessResDto.class);
+            System.out.println("Received Child Success DTO: " + childSuccessResDto);
+
+            fcmService.sendMessage(childSuccessResDto.getMemberEmail(), childSuccessResDto.getChildName() + "자녀가 공유되었습니다.",
+                    childSuccessResDto.getSharer()+ "님이 " + childSuccessResDto.getChildName()+"님을 공유했습니다.", Type.CHILD, childSuccessResDto.getChildId());
+
+            acknowledgment.acknowledge();
+        } catch (Exception e) {
+            System.err.println("Error processing payment success message: " + e.getMessage());
+        }
+    }
+
 }
