@@ -180,10 +180,8 @@ public class SignalHandler extends TextWebSocketHandler implements MessageListen
 
             // JSON 메시지를 WebSocketMessage 객체로 역직렬화
             WebSocketMessage webSocketMessage = objectMapper.readValue(jsonMessage, WebSocketMessage.class);
-            logger.info("Received message: " + webSocketMessage);
             Room room = roomService.findRoomById(webSocketMessage.getData()).orElseThrow(()->new RuntimeException("방을 찾을 수 없음"));
             if (room != null) {
-                logger.info("메시지 전달할게");
                 Map<String, WebSocketSession> clients = roomService.getClients(room);
                 for (Map.Entry<String, WebSocketSession> client : clients.entrySet()) {
                     if (!client.getKey().equals(webSocketMessage.getFrom())) {  // Don't send to the leaving client
