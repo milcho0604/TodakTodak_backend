@@ -71,6 +71,8 @@ public class HospitalDetailResDto {
 
     private String todaySchedule; // 오늘 영업시간 (최종)
 
+    private String breakTime; // 휴게시간
+
     // === 일주일 영업정보 ===
 
     private String Monday; // 월요일 영업시간
@@ -105,6 +107,7 @@ public class HospitalDetailResDto {
 
         HospitalOperatingHours todayOperatingHours = null; // 오늘 병원영업시간
         String todaySchedule = "휴무"; // 오늘영업시간(최종), 영업시간이 없는 경우 휴무 처리
+        String breakTime = "휴게시간 없음"; // 휴게시간
 
         // 해당 병원의 영업시간 리스트
         List<HospitalOperatingHours> operatingHoursList = hospital.getHospitalOperatingHours();
@@ -121,30 +124,32 @@ public class HospitalDetailResDto {
                 todayOperatingHours = hours;
                 // ex : 월요일 9:00 ~ 18:00
                 todaySchedule = hours.getDayOfWeek().getValue() + " " + hours.getOpenTime() + " ~ " + hours.getCloseTime();
+                // ex : 12:00 ~ 13:00
+                breakTime =  hours.getBreakStart() + " ~ " + hours.getBreakEnd();
             }
 
             // 각 요일별 영업시간 설정
             switch (dayOfWeek) {
                 case "MONDAY":
-                    mondaySchedule = "월요일 " + hours.getOpenTime() + " ~ " + hours.getCloseTime();
+                    mondaySchedule = hours.getOpenTime() + " ~ " + hours.getCloseTime();
                     break;
                 case "TUESDAY":
-                    tuesdaySchedule = "화요일 " + hours.getOpenTime() + " ~ " + hours.getCloseTime();
+                    tuesdaySchedule = hours.getOpenTime() + " ~ " + hours.getCloseTime();
                     break;
                 case "WEDNESDAY":
-                    wednesdaySchedule = "수요일 " + hours.getOpenTime() + " ~ " + hours.getCloseTime();
+                    wednesdaySchedule = hours.getOpenTime() + " ~ " + hours.getCloseTime();
                     break;
                 case "THURSDAY":
-                    thursdaySchedule = "목요일 " + hours.getOpenTime() + " ~ " + hours.getCloseTime();
+                    thursdaySchedule = hours.getOpenTime() + " ~ " + hours.getCloseTime();
                     break;
                 case "FRIDAY":
-                    fridaySchedule = "금요일 " + hours.getOpenTime() + " ~ " + hours.getCloseTime();
+                    fridaySchedule = hours.getOpenTime() + " ~ " + hours.getCloseTime();
                     break;
                 case "SATURDAY":
-                    saturdaySchedule = "토요일 " + hours.getOpenTime() + " ~ " + hours.getCloseTime();
+                    saturdaySchedule = hours.getOpenTime() + " ~ " + hours.getCloseTime();
                     break;
                 case "SUNDAY":
-                    sundaySchedule = "일요일 " + hours.getOpenTime() + " ~ " + hours.getCloseTime();
+                    sundaySchedule = hours.getOpenTime() + " ~ " + hours.getCloseTime();
                     break;
             }
 
@@ -175,6 +180,7 @@ public class HospitalDetailResDto {
                 .openTime(todayOperatingHours != null ? todayOperatingHours.getOpenTime() : null)  // 오늘의 영업 시작 시간
                 .closeTime(todayOperatingHours != null ? todayOperatingHours.getCloseTime() : null)  // 오늘의 영업 종료 시간
                 .todaySchedule(todaySchedule)  // 오늘의 영업 시간
+                .breakTime(breakTime) // 점심시간 (휴게시간)
                 .Monday(mondaySchedule)  // 월요일 영업시간
                 .Tuesday(tuesdaySchedule)  // 화요일 영업시간
                 .Wednesday(wednesdaySchedule)  // 수요일 영업시간
