@@ -132,7 +132,7 @@ public class SignalHandler extends TextWebSocketHandler implements MessageListen
                         roomService.removeClientByName(room, c);
                         // Redis를 통해 메시지 브로드캐스트
                         redisPublisher.publish(new WebSocketMessage(
-                                userName, MSG_TYPE_LEAVE, null, null, null
+                                userName, MSG_TYPE_LEAVE, message.getData(), null, null
                         ));
                         /**
                         // 방에 있는 다른 사용자에게 해당 사용자가 나갔음을 알림
