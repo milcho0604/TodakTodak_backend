@@ -3,7 +3,9 @@ package com.padaks.todaktodak.reservation.controller;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.reservation.dto.CheckListReservationResDto;
 import com.padaks.todaktodak.reservation.dto.DoctorTimeRequestDto;
+import com.padaks.todaktodak.reservation.dto.ReservationFeignDto;
 import com.padaks.todaktodak.reservation.dto.ReservationSaveReqDto;
+import com.padaks.todaktodak.reservation.service.ReservationAdminService;
 import com.padaks.todaktodak.reservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +24,7 @@ import java.util.List;
 public class ReservationController {
 
     private final ReservationService reservationService;
+    private final ReservationAdminService reservationAdminService;
 
     @PostMapping("/scheduled")
     public ResponseEntity<?> treatScheduledReservation(@RequestBody ReservationSaveReqDto dto){
