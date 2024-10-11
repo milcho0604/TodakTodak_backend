@@ -14,4 +14,5 @@ public class ChildResDto {
     private Long id;
     private String name;
     private String ssn;
+    private String imageUrl;
 }
