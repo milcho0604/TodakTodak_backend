@@ -39,6 +39,9 @@ public class Report extends BaseTimeEntity {
     @JoinColumn(name = "comment_id")
     private Comment comment;
 
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
     public ReportListResDto listFromEntity(){
         return ReportListResDto.builder()
                 .id(this.id)
@@ -47,7 +50,12 @@ public class Report extends BaseTimeEntity {
                 .reason(this.reason)
                 .postId(this.post != null ? this.post.getId() : null)
                 .commentId(this.comment != null ? this.comment.getId() : null)
+                .status(this.status)
                 .createdTimeAt(this.getCreatedTimeAt())
                 .build();
+    }
+
+    public void updateStatus() {
+        this.status = Status.COMPLETED;
     }
 }
