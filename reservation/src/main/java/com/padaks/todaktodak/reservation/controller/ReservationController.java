@@ -3,6 +3,7 @@ package com.padaks.todaktodak.reservation.controller;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.reservation.dto.CheckListReservationResDto;
 import com.padaks.todaktodak.reservation.dto.DoctorTimeRequestDto;
+import com.padaks.todaktodak.reservation.dto.ResType;
 import com.padaks.todaktodak.reservation.dto.ReservationSaveReqDto;
 import com.padaks.todaktodak.reservation.service.ReservationAdminService;
 import com.padaks.todaktodak.reservation.service.ReservationService;
