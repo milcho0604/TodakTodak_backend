@@ -3,6 +3,7 @@ package com.padaks.todaktodak.report.dto;
 import com.padaks.todaktodak.comment.domain.Comment;
 import com.padaks.todaktodak.post.domain.Post;
 import com.padaks.todaktodak.report.domain.Report;
+import com.padaks.todaktodak.report.domain.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,6 +25,7 @@ public class ReportSaveReqDto {
                 .reason(this.reason)
                 .post(post)
                 .comment(comment)
+                .status(Status.PROGRESS)
                 .build();
     }
 }
