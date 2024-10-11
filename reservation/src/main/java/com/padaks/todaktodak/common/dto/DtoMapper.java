@@ -51,6 +51,7 @@ public interface DtoMapper {
     @Mapping(source = "childResDto.name", target = "childName")
     @Mapping(source = "reservation.hospital.name", target = "hospitalName")
     @Mapping(source = "childResDto.imageUrl", target = "profileImgUrl")
+    @Mapping(source = "reservation.id", target = "id")
     TodayReservationResDto toTodayReservationResDto(Reservation reservation, ChildResDto childResDto);
 
     @AfterMapping
