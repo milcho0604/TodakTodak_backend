@@ -68,7 +68,7 @@ public class PostService {
 
         // 포스트 작성 로직
         String imageUrl = s3ClientFileUpload.upload(postImage);
-        Post post = dto.toEntity(imageUrl, memberEmail);
+        post = dto.toEntity(imageUrl, memberEmail);
         postRepository.save(post);
     }
 
