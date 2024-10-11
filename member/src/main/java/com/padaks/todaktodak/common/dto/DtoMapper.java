@@ -8,6 +8,7 @@ import com.padaks.todaktodak.member.dto.DoctorResDto;
 import com.padaks.todaktodak.member.dto.MemberResDto;
 import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring", builder = @Builder(disableBuilder = false))
@@ -16,6 +17,7 @@ public interface DtoMapper {
 
     Member toMember(AdminSaveDto adminSaveDto);
 
+    @Mapping(source = "profileImgUrl", target = "imageUrl")
     ChildResDto toChildResDto(Child child);
 
     DoctorResDto toDoctorResDto(Member member);
