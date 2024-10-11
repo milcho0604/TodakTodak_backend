@@ -57,9 +57,18 @@ public class PostService {
             throw new IllegalArgumentException("신고 횟수가 5회 이상인 회원은 포스트를 작성할 수 없습니다.");
         }
 
+        Post post;
+        if(postImage != null){
+            String imageUrl = s3ClientFileUpload.upload(postImage);
+            post = dto.toEntity(imageUrl, memberEmail);
+        }else {
+            post = dto.toEntity(null, memberEmail);
+        }
+
+
         // 포스트 작성 로직
         String imageUrl = s3ClientFileUpload.upload(postImage);
-        Post post = dto.toEntity(imageUrl, memberEmail);
+        post = dto.toEntity(imageUrl, memberEmail);
         postRepository.save(post);
     }
 
