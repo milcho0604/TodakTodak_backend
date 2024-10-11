@@ -85,4 +85,19 @@ public class HospitalController {
         Hospital hospital = hospitalRepository.findByIdOrThrow(id);
         return new HospitalFeignDto(hospital.getId(), hospital.getName(), hospital.getPhoneNumber());
     }
+
+    @GetMapping("/get/info/{id}")
+    public HospitalInfoDto getHospitalinfo(@RequestParam Long id){
+        System.out.println("reservation-service는 왔나요");
+        Hospital hospital = hospitalRepository.findByIdOrThrow(id);
+        String name = hospital.getName();
+        String dong = hospital.getDong();
+
+        HospitalInfoDto dto = HospitalInfoDto.builder()
+                .name(name)
+                .dong(dong)
+                .build();
+
+        return dto;
+    }
 }

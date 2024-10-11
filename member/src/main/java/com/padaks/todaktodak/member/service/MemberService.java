@@ -1,6 +1,6 @@
 package com.padaks.todaktodak.member.service;
 
-import com.padaks.todaktodak.common.dto.DtoMapper;
+import com.padaks.todaktodak.common.dto.*;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.common.feign.ReservationFeignClient;
 import com.padaks.todaktodak.common.config.JwtTokenProvider;
@@ -15,6 +15,7 @@ import com.padaks.todaktodak.common.util.S3ClientFileUpload;
 import com.padaks.todaktodak.notification.service.FcmService;
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -412,6 +413,39 @@ public class MemberService {
     public HospitalFeignDto getHospital(){
         HospitalFeignDto hospitalFeignDto = reservationFeignClient.getHospitalInfo();
         return hospitalFeignDto;
+    }
+
+
+    //의사 정보
+    public DoctorInfoDto doctorInfo(String doctorEmail){
+        System.out.println("의사 이메일은? : " + doctorEmail);
+        Member doctor = memberRepository.findByMemberEmailOrThrow(doctorEmail);
+        Long hospitalId = doctor.getHospitalId();
+        System.out.println("의사의 병원 id는??? : " + hospitalId);
+
+        HospitalInfoDto hospitalInfoDto = reservationFeignClient.getHospitalinfoById(hospitalId);
+        String hospitalName = hospitalInfoDto.getName();
+        System.out.println("병원 이름은? : " + hospitalName);
+
+        CheckHospitalListReservationReqDto checkHospitalListReservationReqDto  = CheckHospitalListReservationReqDto.builder()
+                .doctorEmail(doctorEmail)
+                .build();
+        System.out.println("의사 이메일 잘 넣음?");
+        System.out.println(checkHospitalListReservationReqDto.getDoctorEmail());
+//        ReservationFeignDto reservationFeignDto = reservationFeignClient.getReservation(checkHospitalListReservationReqDto);
+//        System.out.println("예약리스트 가졍옴??");
+//        System.out.println(reservationFeignDto.getReservationList().toString());
+        System.out.println("지금부터 ㅅ작~!!");
+//        System.out.println(reservationFeignDto.toString());
+//        int reservationCount = reservationFeignDto.getReservationList().size();
+//        System.out.println(reservationCount);
+
+        ReviewDetailDto reviewFeignDto = reservationFeignClient.getReview(doctorEmail);
+        double reviewRate = reviewFeignDto.getAverageRating();
+        long totalCount = reviewFeignDto.getCount1Star() + reviewFeignDto.getCount2Stars() + reviewFeignDto.getCount3Stars() +reviewFeignDto.getCount4Stars() + reviewFeignDto.getCount5Stars();
+        System.out.println(reviewRate);
+        DoctorInfoDto doctorInfoDto = new DoctorInfoDto(doctorEmail, doctor.getName(), doctor.getId(), doctor.getProfileImgUrl(), hospitalName, hospitalId, totalCount,reviewRate);
+        return doctorInfoDto;
     }
 
     // email 찾기

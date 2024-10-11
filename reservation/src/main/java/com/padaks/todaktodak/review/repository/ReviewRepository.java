@@ -41,5 +41,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     // 의사 이메일로 비대면 진료 리뷰(untact가 true)를 페이징 처리하여 조회
     Page<Review> findByDoctorEmailAndUntactTrueAndDeletedAtIsNull(String doctorEmail, Pageable pageable);
 
+    Optional<Review> findByReservationId(Long id);
 
 }

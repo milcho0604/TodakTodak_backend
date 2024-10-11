@@ -5,6 +5,7 @@ import com.padaks.todaktodak.reservation.dto.CheckListReservationResDto;
 import com.padaks.todaktodak.reservation.dto.DoctorTimeRequestDto;
 import com.padaks.todaktodak.reservation.dto.ResType;
 import com.padaks.todaktodak.reservation.dto.ReservationSaveReqDto;
+import com.padaks.todaktodak.reservation.service.ReservationAdminService;
 import com.padaks.todaktodak.reservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,7 @@ import java.util.List;
 public class ReservationController {
 
     private final ReservationService reservationService;
+    private final ReservationAdminService reservationAdminService;
 
     @PostMapping("/scheduled")
     public ResponseEntity<?> treatScheduledReservation(@RequestBody ReservationSaveReqDto dto){
@@ -55,6 +57,20 @@ public class ReservationController {
         CheckListReservationResDto resDto = new CheckListReservationResDto(email, type);
         // 서비스 호출
         List<?> dto = reservationService.checkListReservation(resDto, pageable);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    @GetMapping("/list/today")
+    public ResponseEntity<?> todayListReservation(Pageable pageable){
+        List<?> dto = reservationService.todayListReservation(pageable);
+
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    @GetMapping("/list/yesterday")
+    public ResponseEntity<?> yesterdayListReservation(Pageable pageable){
+        List<?> dto = reservationService.yesterdayListReservation(pageable);
+
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 

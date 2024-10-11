@@ -19,7 +19,6 @@ public class ReservationAdminController {
 
     private final ReservationAdminService reservationAdminService;
 
-
     @GetMapping("/list")
     public ResponseEntity<?> adminListReservation(
             @RequestBody CheckHospitalListReservationReqDto reqDto,
