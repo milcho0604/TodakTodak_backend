@@ -52,11 +52,15 @@ public class ReservationController {
 //    rest 에서 조회할 때는 @PathVariable 로 email 로 조회하겠음
 //    추후에 email 로 해도 되고 id 로 해도 될 듯?
     @GetMapping("/list")
-    public ResponseEntity<?> listReservation(@RequestParam("email") String email, @RequestParam("type") ResType type, Pageable pageable){
-        // DTO 생성
-        CheckListReservationResDto resDto = new CheckListReservationResDto(email, type);
+    public ResponseEntity<?> listReservation(@RequestParam("type") ResType type, Pageable pageable){
         // 서비스 호출
-        List<?> dto = reservationService.checkListReservation(resDto, pageable);
+        List<?> dto = reservationService.checkListReservation(type, pageable);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    @GetMapping("/list/child/{id}")
+    public ResponseEntity<?> listChildReservation(@PathVariable Long id){
+        List<?> dto = reservationService.checkChildListReservation(id);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
