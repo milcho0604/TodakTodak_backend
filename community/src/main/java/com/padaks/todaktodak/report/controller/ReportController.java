@@ -69,4 +69,11 @@ public class ReportController {
         }
 
     }
+
+    @PostMapping("/update/{id}")
+    public ResponseEntity<?> updateReport(@PathVariable Long id) {
+        reportService.updateReport(id);
+        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "신고 처리가 완료되었습니다.", null);
+        return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+    }
 }

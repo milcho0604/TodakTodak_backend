@@ -75,4 +75,9 @@ public class ReportService {
 
         return reports.map(Report::listFromEntity);
     }
+
+    public void updateReport(Long id) {
+        Report report = reportRepository.findById(id).orElseThrow(()->new EntityNotFoundException("존재하지 않는 신고입니다."));
+        report.updateStatus();
+    }
 }

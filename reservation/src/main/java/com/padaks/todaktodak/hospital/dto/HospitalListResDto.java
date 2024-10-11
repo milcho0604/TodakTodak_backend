@@ -25,6 +25,8 @@ public class HospitalListResDto {
 
     private String name; // 병원이름
 
+    private String hospitalImageUrl; // 병원사진 url
+
     private String address; // 병원주소
 
     private String dong; // 병원주소(동)
@@ -88,6 +90,7 @@ public class HospitalListResDto {
                 .standby(standby)
                 .distance(distance)
                 .name(hospital.getName())
+                .hospitalImageUrl(hospital.getHospitalImageUrl())
                 .address(hospital.getAddress())
                 .dong(hospital.getDong())
                 .keywords(hospital.getKeywords())

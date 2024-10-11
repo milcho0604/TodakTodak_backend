@@ -1,5 +1,6 @@
 package com.padaks.todaktodak.report.dto;
 
+import com.padaks.todaktodak.report.domain.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,5 +19,6 @@ public class ReportListResDto {
     private String reason;
     private Long postId;
     private Long commentId;
+    private Status status;
     private LocalDateTime createdTimeAt;
 }
