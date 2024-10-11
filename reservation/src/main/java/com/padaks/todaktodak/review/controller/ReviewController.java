@@ -2,6 +2,7 @@ package com.padaks.todaktodak.review.controller;
 
 import com.padaks.todaktodak.common.dto.CommonErrorDto;
 import com.padaks.todaktodak.common.dto.CommonResDto;
+import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.review.domain.Review;
 import com.padaks.todaktodak.review.dto.*;
 import com.padaks.todaktodak.review.service.ReviewService;
@@ -128,7 +129,7 @@ public class ReviewController {
     }
 
     // 의사의 리뷰 통계 (평균 점수 및 평점별 개수) 조회
-    @GetMapping("doctor/detail/{doctorEmail}")
+    @GetMapping("/doctor/detail/{doctorEmail}")
     public ResponseEntity<ReviewDetailDto> getReviewDoctorDetail(
             @PathVariable String doctorEmail,
             Pageable pageable) {
@@ -136,4 +137,10 @@ public class ReviewController {
         return ResponseEntity.ok(reviewDetailDto);
     }
 
+//    해당 예약의 리뷰 조회
+    @GetMapping("/reserve/{id}")
+    public ResponseEntity<?> isReview(@PathVariable Long id){
+        boolean ret = reviewService.isReview(id);
+        return ResponseEntity.ok(ret);
+    }
 }

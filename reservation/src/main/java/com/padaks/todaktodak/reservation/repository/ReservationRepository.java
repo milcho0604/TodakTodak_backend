@@ -47,4 +47,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             "AND r.reservationType = 'Scheduled'")
     List<LocalTime> findScheduledReservationTimesByDoctor(@Param("doctorEmail") String doctorEmail,
                                                                 @Param("reservationDate") LocalDate date);
+
+    List<Reservation> findByMemberEmailAndReservationDate(String memberEmail, LocalDate localDate);
+
+    Page<Reservation> findByMemberEmailAndReservationDateBefore(String memberEmail, LocalDate localDate, Pageable pageable);
 }
