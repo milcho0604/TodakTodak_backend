@@ -33,7 +33,7 @@ public class Event extends BaseTimeEntity {
     private String content;
 
 //    @Column(nullable = false)
-    private String type;
+    private Type type;
 
 //    @Column(nullable = false)
     private LocalDateTime startTime;
@@ -92,8 +92,10 @@ public class Event extends BaseTimeEntity {
                 .build();
     }
 
-    // 삭제
-    public void deleteAccount() {
-        this.setDeletedTimeAt(LocalDateTime.now());  // 현재 시간을 삭제 시간으로 설정
+    // 고민중..
+    public Event updateType(Type type){
+        this.type = type;
+        return this;
     }
+
 }

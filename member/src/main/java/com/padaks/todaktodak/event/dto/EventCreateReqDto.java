@@ -1,6 +1,7 @@
 package com.padaks.todaktodak.event.dto;
 
 import com.padaks.todaktodak.event.domain.Event;
+import com.padaks.todaktodak.event.domain.Type;
 import com.padaks.todaktodak.member.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,7 +20,7 @@ public class EventCreateReqDto {
 
     private String content;
 
-    private String type;
+    private Type type;
 
     private LocalDateTime startTime;
 
