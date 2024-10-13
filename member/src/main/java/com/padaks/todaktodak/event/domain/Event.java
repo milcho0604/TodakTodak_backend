@@ -1,6 +1,13 @@
 package com.padaks.todaktodak.event.domain;
 
+import com.padaks.todaktodak.child.domain.Child;
+import com.padaks.todaktodak.common.domain.BaseTimeEntity;
+import com.padaks.todaktodak.event.dto.EventDetailResDto;
+import com.padaks.todaktodak.event.dto.EventListResDto;
+import com.padaks.todaktodak.event.dto.EventUpdateReqDto;
+import com.padaks.todaktodak.member.domain.Member;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,24 +19,79 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Event {
+@Builder
+public class Event extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private String type;
 
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private LocalDateTime startTime;
 
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private LocalDateTime endTime;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
+
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "child_id", nullable = false)
+//    private Child child;
+
+    // updateDto
+    public void toUpdate(EventUpdateReqDto dto){
+        if (dto.getTitle() != null) {
+            this.title = dto.getTitle();
+        }
+
+        if (dto.getContent() != null) {
+            this.content = dto.getContent();
+        }
+
+        if (dto.getStartTime() != null) {
+            this.startTime = dto.getStartTime();
+        }
+
+        if (dto.getEndTime() != null) {
+            this.endTime = dto.getEndTime();
+        }
+    }
+
+    // 리스트
+    public EventListResDto listFromEntity(){
+        return EventListResDto.builder()
+                .title(this.title)
+                .content(this.content)
+                .startTime(this.startTime)
+                .endTime(this.endTime)
+                .createdAt(this.getCreatedAt())
+                .build();
+    }
+
+    // 디테일
+    public EventDetailResDto detailFromEntity(){
+        return EventDetailResDto.builder()
+                .title(this.title)
+                .content(this.content)
+                .startTime(this.startTime)
+                .endTime(this.endTime)
+                .createdAt(this.getCreatedAt())
+                .build();
+    }
+
+    // 삭제
+    public void deleteAccount() {
+        this.setDeletedTimeAt(LocalDateTime.now());  // 현재 시간을 삭제 시간으로 설정
+    }
 }
