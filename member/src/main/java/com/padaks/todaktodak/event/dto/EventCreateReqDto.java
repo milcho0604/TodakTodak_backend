@@ -33,6 +33,7 @@ public class EventCreateReqDto {
                 .startTime(this.startTime)
                 .endTime(this.endTime)
                 .member(member)
+                .memberEmail(member.getMemberEmail())
                 .build();
     }
 }
