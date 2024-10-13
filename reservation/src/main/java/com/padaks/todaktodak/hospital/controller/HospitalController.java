@@ -97,7 +97,6 @@ public class HospitalController {
                 .name(name)
                 .dong(dong)
                 .build();
-
         return dto;
     }
 }

@@ -51,4 +51,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<Reservation> findByMemberEmailAndReservationDate(String memberEmail, LocalDate localDate);
 
     Page<Reservation> findByMemberEmailAndReservationDateBefore(String memberEmail, LocalDate localDate, Pageable pageable);
+
+    List<Reservation> findByChildId(Long id);
 }

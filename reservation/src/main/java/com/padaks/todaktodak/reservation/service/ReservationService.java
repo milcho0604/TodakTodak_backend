@@ -192,12 +192,12 @@ public class ReservationService {
         realTimeService.delete(redisDto.getId().toString());
     }
     
-//    예약 조회 기능
-    public List<?> checkListReservation(CheckListReservationResDto resDto, Pageable pageable){
+//    예약 조회 기능 ( 타입별 : All, Scheduled, Immediate)
+    public List<?> checkListReservation(ResType type, Pageable pageable){
 //        feign 으로 연결 되면 여기에 email 로 해당 user 찾는 로직이 들어갈 예정
-        MemberResDto member = memberFeign.getMember(resDto.getEmail());
-//        여기서 페이징 처리할 예정 -> 페이징 처리하면서 예약
+        MemberFeignDto member = getMemberInfo();
 //        여기서 미리 예약 , 당일 예약 분기처리도 해줄 예정
+        CheckListReservationResDto resDto = new CheckListReservationResDto(member.getMemberEmail(), type);
         Page<Reservation> reservationPage;
         if(resDto.getType().toString().equals("All")){
             reservationPage = reservationRepository.findByMemberEmail(pageable, resDto.getEmail());
@@ -210,14 +210,34 @@ public class ReservationService {
                             dtoMapper.resTypeToReserveType(resDto.getType()));
         }
 
+        List<CheckListReservationReqDto> dtos = new ArrayList<>();
+        for(Reservation res : reservationPage){
+            CheckListReservationReqDto resdto = dtoMapper.toListReservation(res);
+            dtoMapper.setReservationTime(resdto, res);
+            dtos.add(resdto);
+        }
 
-        List<CheckListReservationReqDto> dto = reservationPage.stream()
-                .map(dtoMapper::toListReservation)
-                .collect(Collectors.toList());
+        return dtos;
+    }
+
+//    자녀 별 예약 리스트 출력
+    public List<?> checkChildListReservation(Long childId){
+        MemberFeignDto member = getMemberInfo();
+
+        List<Reservation> reservationList = reservationRepository.findByChildId(childId);
+        List<CheckListChildReservationResDto> dto = new ArrayList<>();
+
+
+        for (Reservation reservation : reservationList) { // reservationList를 순회
+            DoctorResDto doctor = memberFeign.getDoctor(reservation.getDoctorEmail());
+            log.info(doctor.toString());
+            CheckListChildReservationResDto childDto = dtoMapper.toChildListReservation(reservation, member, doctor.getProfileImgUrl()); // DTO로 변환
+            dtoMapper.setReservationTime(childDto, reservation);
+            dto.add(childDto); // 변환된 DTO를 리스트에 추가
+        }
 
         return dto;
     }
-
 //    스케줄 예약 노쇼 스케줄 동작 구현
     public List<String> reservationNoShowSchedule(){
         log.info("예약 노쇼 스케줄 동작");

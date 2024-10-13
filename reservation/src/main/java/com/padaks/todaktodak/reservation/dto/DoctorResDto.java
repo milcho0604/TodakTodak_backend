@@ -15,4 +15,5 @@ public class DoctorResDto {
     private Long id;
     private String name;
     private String memberEmail;
+    private String profileImgUrl;
 }
