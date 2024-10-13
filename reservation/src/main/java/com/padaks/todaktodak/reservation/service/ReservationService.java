@@ -210,12 +210,14 @@ public class ReservationService {
                             dtoMapper.resTypeToReserveType(resDto.getType()));
         }
 
+        List<CheckListReservationReqDto> dtos = new ArrayList<>();
+        for(Reservation res : reservationPage){
+            CheckListReservationReqDto resdto = dtoMapper.toListReservation(res);
+            dtoMapper.setReservationTime(resdto, res);
+            dtos.add(resdto);
+        }
 
-        List<CheckListReservationReqDto> dto = reservationPage.stream()
-                .map(dtoMapper::toListReservation)
-                .collect(Collectors.toList());
-
-        return dto;
+        return dtos;
     }
 
 //    자녀 별 예약 리스트 출력

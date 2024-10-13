@@ -27,6 +27,13 @@ public interface DtoMapper {
     @Mapping(target = "hospitalName", source = "reservation.hospital.name")
     CheckListReservationReqDto toListReservation(Reservation reservation);
 
+    @AfterMapping
+    default void setReservationTime(@MappingTarget CheckListReservationReqDto dto, Reservation reservation){
+        if(dto.getReservationTime() == null){
+            dto.setReservationTime(reservation.getCreatedAt().toLocalTime().withSecond(0));
+        }
+    }
+
 //    default 를 통해 수동 매핑을 구현,
 //    MapStruct가 자동으로 매핑하지 못하거나, 복잡한 매핑 로직을 수행하고자 할 때 사용.
     default ReserveType resTypeToReserveType(ResType resType) {
