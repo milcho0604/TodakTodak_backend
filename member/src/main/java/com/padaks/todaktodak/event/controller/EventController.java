@@ -29,7 +29,7 @@ public class EventController {
     }
 
     // 캘린더 이벤트 업데이트
-    @PutMapping("/update/{id}")
+    @PostMapping("/update/{id}")
     public ResponseEntity<?> updateEvent(@PathVariable Long id, @RequestBody EventUpdateReqDto dto) {
         eventService.UpdateEvent(id, dto);
         return new ResponseEntity<>(dto, HttpStatus.OK);
@@ -50,9 +50,9 @@ public class EventController {
     }
 
     // 캘린더 이벤트 삭제 (soft delete)
-    @DeleteMapping("/delete/{id}")
+    @GetMapping("/delete/{id}")
     public ResponseEntity<?> deleteEvent(@PathVariable Long id) {
-        eventService.deletedEvent(id);\
+        eventService.deletedEvent(id);
         return new ResponseEntity<>(id, HttpStatus.OK);
     }
 }
