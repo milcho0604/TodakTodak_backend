@@ -73,6 +73,7 @@ public class Event extends BaseTimeEntity {
     // 리스트
     public EventListResDto listFromEntity(){
         return EventListResDto.builder()
+                .id(this.id)
                 .title(this.title)
                 .content(this.content)
                 .startTime(this.startTime)
@@ -84,6 +85,7 @@ public class Event extends BaseTimeEntity {
     // 디테일
     public EventDetailResDto detailFromEntity(){
         return EventDetailResDto.builder()
+                .id(this.id)
                 .title(this.title)
                 .content(this.content)
                 .startTime(this.startTime)

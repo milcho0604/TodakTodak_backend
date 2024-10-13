@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class EventListResDto {
+    private Long id;
+
     private String title;
 
     private String content;

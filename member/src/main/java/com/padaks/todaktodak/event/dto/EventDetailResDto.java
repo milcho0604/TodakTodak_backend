@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class EventDetailResDto {
+    private Long id;
+
     private String title;
 
     private String content;
