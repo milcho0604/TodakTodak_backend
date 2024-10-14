@@ -48,9 +48,10 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<LocalTime> findScheduledReservationTimesByDoctor(@Param("doctorEmail") String doctorEmail,
                                                                 @Param("reservationDate") LocalDate date);
 
-    List<Reservation> findByMemberEmailAndReservationDate(String memberEmail, LocalDate localDate);
+//    오늘 이후의 예약 중 status 가 아직 예약중인 상태인 예약리스트
+    List<Reservation> findByMemberEmailAndReservationDateGreaterThanEqualAndStatus(String memberEmail, LocalDate localDate, Status status);
 
-    Page<Reservation> findByMemberEmailAndReservationDateBefore(String memberEmail, LocalDate localDate, Pageable pageable);
+    Page<Reservation> findByMemberEmailAndReservationDateBeforeOrStatus(String memberEmail, LocalDate localDate, Status status, Pageable pageable);
 
     List<Reservation> findByChildId(Long id);
 }
