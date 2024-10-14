@@ -16,6 +16,7 @@ public interface DtoMapper {
     DtoMapper INSTANCE = Mappers.getMapper(DtoMapper.class);
 
     @Mapping(target = "hospital", source = "hospital")
+    @Mapping(target = "memberName", source = "member.name")
     @Mapping(target = "id", ignore = true)
     Reservation toReservation(ReservationSaveReqDto reservationSaveReqDto, MemberFeignDto member, Hospital hospital);
 
