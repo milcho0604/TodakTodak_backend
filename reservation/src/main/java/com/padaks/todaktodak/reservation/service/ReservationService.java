@@ -309,7 +309,8 @@ public class ReservationService {
         LocalDate today = LocalDate.now();
         MemberFeignDto member = getMemberInfo();
 
-        List<Reservation> reservationList = reservationRepository.findByMemberEmailAndReservationDateGreaterThanEqual(member.getMemberEmail(), today);
+        List<Reservation> reservationList =
+                reservationRepository.findByMemberEmailAndReservationDateGreaterThanEqualAndStatus(member.getMemberEmail(), today, Status.Confirmed);
         List<ReservationHistory> reservationHistoryList = reservationHistoryRepository.findByMemberEmailAndReservationDateGreaterThanEqual(member.getMemberEmail(), today);
 
         List<ComesReservationResDto> comesReservationResDtos = new ArrayList<>();
@@ -337,7 +338,7 @@ public class ReservationService {
         MemberFeignDto member = getMemberInfo();
 
         Page<Reservation> reservationList =
-                reservationRepository.findByMemberEmailAndReservationDateBefore(member.getMemberEmail(), today, pageable);
+                reservationRepository.findByMemberEmailAndReservationDateBeforeOrStatus(member.getMemberEmail(), today, Status.Completed ,pageable);
         List<ReservationHistory> reservationHistoryList =
                 reservationHistoryRepository.findByMemberEmailAndReservationDateBefore(member.getMemberEmail(), today);
 
