@@ -33,6 +33,8 @@ public class Event extends BaseTimeEntity {
     private String content;
 
 //    @Column(nullable = false)
+    @Column
+    @Enumerated(EnumType.STRING)
     private Type type;
 
 //    @Column(nullable = false)
