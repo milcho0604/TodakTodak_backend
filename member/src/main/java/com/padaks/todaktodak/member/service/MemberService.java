@@ -1,10 +1,12 @@
 package com.padaks.todaktodak.member.service;
 
 import com.padaks.todaktodak.common.dto.*;
+import com.padaks.todaktodak.common.enumdir.DayOfHoliday;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.common.feign.ReservationFeignClient;
 import com.padaks.todaktodak.common.config.JwtTokenProvider;
 import com.padaks.todaktodak.doctoroperatinghours.dto.DoctorOperatingHoursSimpleResDto;
+import com.padaks.todaktodak.doctoroperatinghours.repository.DoctorOperatingHoursRepository;
 import com.padaks.todaktodak.doctoroperatinghours.service.DoctorOperatingHoursService;
 import com.padaks.todaktodak.member.domain.Address;
 import com.padaks.todaktodak.member.domain.Member;
@@ -27,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -48,6 +51,7 @@ public class MemberService {
     private final ReservationFeignClient reservationFeignClient;
     private final FcmService fcmService;
     private final DoctorOperatingHoursService doctorOperatingHoursService;
+    private final DoctorOperatingHoursRepository doctorOperatingHoursRepository;
 
     // 간편하게 멤버 객체를 찾기 위한 findByMemberEmail
     public Member findByMemberEmail(String email) {
@@ -541,5 +545,33 @@ public class MemberService {
         log.info(keyword);
         List<Member> members = memberRepository.searchMembers(keyword);
         return members.stream().map(MemberDetailResDto::fromEntity).collect(Collectors.toList());
+    }
+
+    public List<DoctorInfoDto> untactDoctorList(String today) {
+
+        DayOfHoliday dayOfWeek = DayOfHoliday.valueOf(today);
+
+        // 오늘의 untact가 true인 의사들 가져오기
+        List<Member> doctors = doctorOperatingHoursRepository.findUntactMembersByDayOfWeekAndDeletedAtIsNull(dayOfWeek);
+        // DoctorInfoDto 리스트 생성
+        List<DoctorInfoDto> doctorInfoDtoList = new ArrayList<>();
+
+        // 의사 리스트 순회하며 각 의사의 병원 정보와 리뷰 정보 가져오기
+        for (Member doctor : doctors) {
+            Long hospitalId = doctor.getHospitalId();
+            HospitalInfoDto hospitalInfoDto = reservationFeignClient.getHospitalinfoById(hospitalId);
+            String hospitalName = hospitalInfoDto.getName();
+            // 리뷰 정보 가져오기
+            ReviewDetailDto reviewFeignDto = reservationFeignClient.getReview(doctor.getMemberEmail());
+            double reviewRate = reviewFeignDto.getAverageRating();
+            long totalCount = reviewFeignDto.getCount1Star() + reviewFeignDto.getCount2Stars() + reviewFeignDto.getCount3Stars() +
+                    reviewFeignDto.getCount4Stars() + reviewFeignDto.getCount5Stars();
+
+            // DoctorInfoDto 생성 및 리스트에 추가
+            doctorInfoDtoList.add(new DoctorInfoDto().fromEntity(doctor,hospitalName,totalCount,reviewRate));
+        }
+
+        // DoctorInfoDto 리스트 반환
+        return doctorInfoDtoList;
     }
 }

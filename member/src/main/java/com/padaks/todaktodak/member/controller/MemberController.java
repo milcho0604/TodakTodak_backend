@@ -319,6 +319,12 @@ public class MemberController {
         return new ResponseEntity<>(commonResDto, HttpStatus.OK);
     }
 
+    // 비대면 의사 리스트
+    @GetMapping("/untact/list/{today}")
+    public ResponseEntity<CommonResDto> untactList(@PathVariable String today) {
+        List<DoctorInfoDto> dtoList = memberService.untactDoctorList(today);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "의사리스트 조회 성공", dtoList), HttpStatus.OK);
+    }
 
     @GetMapping("/detail/{email}")
     public Object memberDetail(@PathVariable String email) {

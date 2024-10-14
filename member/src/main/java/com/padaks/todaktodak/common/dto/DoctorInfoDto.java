@@ -1,6 +1,7 @@
 package com.padaks.todaktodak.common.dto;
 
 
+import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.dto.ReviewListResDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,6 +35,18 @@ public class DoctorInfoDto {
 
     //리뷰 평범
     private double reviewPoint;
+
+    public DoctorInfoDto fromEntity(Member member, String hospitalName, long reviewCount, double reviewPoint) {
+        this.memberEmail = member.getMemberEmail();
+        this.doctorName = member.getName();
+        this.doctorId = member.getId();
+        this.profileImg = member.getProfileImgUrl();
+        this.hospitalName = hospitalName;
+        this.hospitalId = member.getHospitalId();
+        this.reviewCount = reviewCount;
+        this.reviewPoint = reviewPoint;
+        return this;
+    }
 }
 
 //의사 프로필 사진 이름 병원이름 평점 리뷰 개수 진료 개수 ResDto 만들어서
