@@ -16,7 +16,6 @@ import com.padaks.todaktodak.reservation.realtime.RealTimeService;
 import com.padaks.todaktodak.reservation.repository.ReservationHistoryRepository;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import lombok.extern.slf4j.Slf4j;
-import net.bytebuddy.asm.Advice;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -306,20 +305,31 @@ public class ReservationService {
                 findScheduledReservationTimesByDoctor(dto.getDoctorEmail(), dto.getDate());
     }
 
-    public List<?> todayListReservation(Pageable pageable){
+    public List<?> comesListReservation(Pageable pageable){
         LocalDate today = LocalDate.now();
         MemberFeignDto member = getMemberInfo();
 
-        List<Reservation> reservationList = reservationRepository.findByMemberEmailAndReservationDate(member.getMemberEmail(), today);
-        List<TodayReservationResDto> todayReservationResDtos = new ArrayList<>();
+        List<Reservation> reservationList = reservationRepository.findByMemberEmailAndReservationDateGreaterThanEqual(member.getMemberEmail(), today);
+        List<ReservationHistory> reservationHistoryList = reservationHistoryRepository.findByMemberEmailAndReservationDateGreaterThanEqual(member.getMemberEmail(), today);
+
+        List<ComesReservationResDto> comesReservationResDtos = new ArrayList<>();
 
         for(Reservation res : reservationList){
             ChildResDto childResDto = memberFeign.getMyChild(res.getChildId());
-            TodayReservationResDto dto = dtoMapper.toTodayReservationResDto(res, childResDto);
+            ComesReservationResDto dto = dtoMapper.toTodayReservationResDto(res, childResDto);
             dtoMapper.setReservationTime(dto, res);
-            todayReservationResDtos.add(dto);
+            comesReservationResDtos.add(dto);
         }
-        return todayReservationResDtos;
+
+        for(ReservationHistory res : reservationHistoryList){
+            ChildResDto childResDto = memberFeign.getMyChild(res.getChildId());
+            Hospital hospital = hospitalRepository.findById(res.getHospitalId())
+                    .orElseThrow(() -> new BaseException(HOSPITAL_NOT_FOUND));
+            ComesReservationResDto dto = dtoMapper.toTodayReservationResDto(res, childResDto, hospital.getName());
+            comesReservationResDtos.add(dto);
+        }
+
+        return comesReservationResDtos;
     }
 
     public List<?> yesterdayListReservation(Pageable pageable){
@@ -328,17 +338,26 @@ public class ReservationService {
 
         Page<Reservation> reservationList =
                 reservationRepository.findByMemberEmailAndReservationDateBefore(member.getMemberEmail(), today, pageable);
+        List<ReservationHistory> reservationHistoryList =
+                reservationHistoryRepository.findByMemberEmailAndReservationDateBefore(member.getMemberEmail(), today);
 
-        return reservationList.stream()
-                .map(res -> {
-                    ChildResDto childResDto = memberFeign.getMyChild(res.getChildId());
-                    // DTO 변환
-                    TodayReservationResDto dto = dtoMapper.toTodayReservationResDto(res, childResDto);
-                    // reservationTime 설정
-                    dtoMapper.setReservationTime(dto, res);
-                    // 변환된 DTO 반환
-                    return dto;
-                })
-                .collect(Collectors.toList()); // 리스트로 수집
+        List<ComesReservationResDto> comesReservationResDtos = new ArrayList<>();
+
+        for(Reservation res : reservationList){
+            ChildResDto childResDto = memberFeign.getMyChild(res.getChildId());
+            ComesReservationResDto dto = dtoMapper.toTodayReservationResDto(res, childResDto);
+            dtoMapper.setReservationTime(dto, res);
+            comesReservationResDtos.add(dto);
+        }
+
+        for(ReservationHistory res : reservationHistoryList){
+            ChildResDto childResDto = memberFeign.getMyChild(res.getChildId());
+            Hospital hospital = hospitalRepository.findById(res.getHospitalId())
+                    .orElseThrow(() -> new BaseException(HOSPITAL_NOT_FOUND));
+            ComesReservationResDto dto = dtoMapper.toTodayReservationResDto(res, childResDto, hospital.getName());
+            comesReservationResDtos.add(dto);
+        }
+
+        return comesReservationResDtos;
     }
 }

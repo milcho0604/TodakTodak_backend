@@ -5,12 +5,8 @@ import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.domain.ReserveType;
 import com.padaks.todaktodak.reservation.dto.*;
 import com.padaks.todaktodak.reservation.domain.ReservationHistory;
-import com.padaks.todaktodak.review.domain.Review;
-import com.padaks.todaktodak.review.dto.ReviewSaveReqDto;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
-
-import java.lang.reflect.Member;
 
 // Mapper 어노테이션을 붙이면 MapStruct 가 자동으로 DtoMapper 구현체를 생성해준다.
 @Mapper(componentModel = "spring", builder = @Builder(disableBuilder = false))
@@ -61,16 +57,22 @@ public interface DtoMapper {
     @Mapping(source = "reservation.hospital.name", target = "hospitalName")
     @Mapping(source = "childResDto.imageUrl", target = "profileImgUrl")
     @Mapping(source = "reservation.id", target = "id")
-    TodayReservationResDto toTodayReservationResDto(Reservation reservation, ChildResDto childResDto);
+    ComesReservationResDto toTodayReservationResDto(Reservation reservation, ChildResDto childResDto);
 
     @AfterMapping
-    default void setReservationTime(@MappingTarget TodayReservationResDto dto, Reservation reservation){
+    default void setReservationTime(@MappingTarget ComesReservationResDto dto, Reservation reservation){
         if(reservation.getReservationTime() != null){
             dto.setReservationTime(reservation.getReservationTime().withSecond(0));
         } else {
             dto.setReservationTime(reservation.getCreatedAt().toLocalTime().withSecond(0));
         }
     }
+
+    @Mapping(source = "childResDto.name", target = "childName")
+    @Mapping(source = "hospitalName", target = "hospitalName")
+    @Mapping(source = "childResDto.imageUrl", target = "profileImgUrl")
+    @Mapping(source = "reservationHistory.id", target = "id")
+    ComesReservationResDto toTodayReservationResDto(ReservationHistory reservationHistory, ChildResDto childResDto, String hospitalName);
 
     @Mapping(source = "reservation.hospital.name", target = "hospitalName")
     @Mapping(source = "member.name", target = "memberName")

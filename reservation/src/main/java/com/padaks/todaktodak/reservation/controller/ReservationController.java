@@ -64,9 +64,9 @@ public class ReservationController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
-    @GetMapping("/list/today")
+    @GetMapping("/list/comes")
     public ResponseEntity<?> todayListReservation(Pageable pageable){
-        List<?> dto = reservationService.todayListReservation(pageable);
+        List<?> dto = reservationService.comesListReservation(pageable);
 
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }

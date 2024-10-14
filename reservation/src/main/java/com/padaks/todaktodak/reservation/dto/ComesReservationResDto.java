@@ -15,7 +15,7 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @Builder
 @Data
-public class TodayReservationResDto {
+public class ComesReservationResDto {
     private Long id;
     private String childName;
     private String hospitalName;
