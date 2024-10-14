@@ -39,10 +39,13 @@ public class EventService {
     public void UpdateEvent(Long id, EventUpdateReqDto dto){
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 이벤트입니다."));
+        System.out.println(dto.toString());
+        System.out.println(dto.getType());
         if (event.getMember().getMemberEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName())) {
             event.toUpdate(dto);
             eventRepository.save(event);
         }
+        System.out.println(event);
     }
 
     // 자신의 캘린더 리스트

@@ -15,7 +15,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "events")
+@Table(name = "event")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -33,6 +33,8 @@ public class Event extends BaseTimeEntity {
     private String content;
 
 //    @Column(nullable = false)
+    @Column
+    @Enumerated(EnumType.STRING)
     private Type type;
 
 //    @Column(nullable = false)
@@ -68,6 +70,9 @@ public class Event extends BaseTimeEntity {
         if (dto.getEndTime() != null) {
             this.endTime = dto.getEndTime();
         }
+        if(dto.getTitle() != null){
+            this.type = dto.getType();
+        }
     }
 
     // 리스트
@@ -76,6 +81,7 @@ public class Event extends BaseTimeEntity {
                 .id(this.id)
                 .title(this.title)
                 .content(this.content)
+                .type(this.type)
                 .startTime(this.startTime)
                 .endTime(this.endTime)
                 .createdAt(this.getCreatedAt())
