@@ -1,10 +1,8 @@
 package com.padaks.todaktodak.reservation.controller;
 
+import com.padaks.todaktodak.common.dto.CommonResDto;
 import com.padaks.todaktodak.common.exception.BaseException;
-import com.padaks.todaktodak.reservation.dto.CheckListReservationResDto;
-import com.padaks.todaktodak.reservation.dto.DoctorTimeRequestDto;
-import com.padaks.todaktodak.reservation.dto.ResType;
-import com.padaks.todaktodak.reservation.dto.ReservationSaveReqDto;
+import com.padaks.todaktodak.reservation.dto.*;
 import com.padaks.todaktodak.reservation.service.ReservationAdminService;
 import com.padaks.todaktodak.reservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
@@ -86,5 +84,11 @@ public class ReservationController {
     @PostMapping("/get/time")
     public List<LocalTime> getTime(@RequestBody DoctorTimeRequestDto dto){
         return reservationService.reservationTimes(dto);
+    }
+
+    @GetMapping("/get/{id}")
+    public ResponseEntity<CommonResDto> getReservation(@PathVariable Long id){
+        ReservationSaveResDto dto = reservationService.getReservation(id);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK,"예약 조회 성공",dto), HttpStatus.OK);
     }
 }
