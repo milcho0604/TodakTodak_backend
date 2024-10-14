@@ -188,7 +188,21 @@ public class ChildService {
     public ChildResDto getMyChild(Long id){
         Child child = childRepository.findById(id)
                 .orElseThrow(() -> new BaseException(CHILD_NOT_FOUND));
-
-        return dtoMapper.toChildResDto(child);
+        SecretKey secretKey;
+        try {
+            secretKey = AESUtil.getSecretKeyFromString(secretKeyString); // 복호화 키 준비
+        } catch (Exception e) {
+            log.error("Error while create secret key: ", e);
+            throw new RuntimeException("복호화 키 준비에 실패했습니다.");
+        }
+        // 주민등록번호 복호화
+        String decryptedSsn;
+        try {
+            decryptedSsn = AESUtil.decrypt(child.getSsn(), secretKey);
+        } catch (Exception e) {
+            log.error("Error while decrypting SSN: ", e);
+            throw new RuntimeException("주민등록번호 복호화에 실패했습니다.");
+        }
+        return new ChildResDto().fromEntity(child, decryptedSsn);
     }
 }

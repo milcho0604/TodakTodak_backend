@@ -26,6 +26,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
@@ -340,5 +341,10 @@ public class ReservationService {
                     return dto;
                 })
                 .collect(Collectors.toList()); // 리스트로 수집
+    }
+
+    public ReservationSaveResDto getReservation(Long id) {
+        Reservation reservation = reservationRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("해당 예약이 존재하지 않습니다."));
+        return new ReservationSaveResDto().fromEntity(reservation);
     }
 }
