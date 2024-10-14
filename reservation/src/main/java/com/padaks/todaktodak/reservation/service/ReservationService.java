@@ -179,7 +179,7 @@ public class ReservationService {
 //        hard delete 로 DB 상에서 완전히 지워버림
         reservationRepository.delete(reservation);
 //        reservationHistory 테이블에 저장하기 위한 코드
-        ReservationHistory reservationHistory = dtoMapper.toReservationHistory(reservation, 1L);
+        ReservationHistory reservationHistory = dtoMapper.toReservationHistory(reservation);
         reservationHistory.setStatus(Status.Cancelled);
 //        reservationHistory 테이블에 저장.
         reservationHistoryRepository.save(reservationHistory);

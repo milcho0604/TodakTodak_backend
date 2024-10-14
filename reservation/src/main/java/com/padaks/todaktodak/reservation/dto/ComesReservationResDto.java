@@ -24,6 +24,7 @@ public class ComesReservationResDto {
     private LocalTime reservationTime;
     private Status status;
     private String ssn;
+    private boolean untact;
     private ReserveType reservationType;
     private MedicalItem medicalItem;
     private String field;

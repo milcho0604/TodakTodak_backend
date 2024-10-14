@@ -47,8 +47,8 @@ public interface DtoMapper {
         }
     }
 
-    @Mapping(source = "hospitalId", target = "hospitalId")
-    ReservationHistory toReservationHistory(Reservation reservation, Long hospitalId);
+    @Mapping(source = "reservation.hospital.id", target = "hospitalId")
+    ReservationHistory toReservationHistory(Reservation reservation);
 
     CheckHospitalListReservationResDto toHospitalListReservation(Reservation reservation);
 

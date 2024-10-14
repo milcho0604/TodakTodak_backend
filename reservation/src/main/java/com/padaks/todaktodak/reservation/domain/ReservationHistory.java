@@ -21,11 +21,15 @@ public class ReservationHistory {
     @Column(nullable = false)
     private String memberEmail;
     @Column(nullable = false)
+    private String memberName;
+    @Column(nullable = false)
     private Long childId;
     @Column(nullable = false)
     private Long hospitalId;
     @Column(nullable = false)
     private String doctorEmail;
+    @Column(nullable = false)
+    private String doctorName;
     @Enumerated(EnumType.STRING)
     private ReserveType reservationType;
     private LocalDate reservationDate;
