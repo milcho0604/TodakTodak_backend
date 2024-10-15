@@ -231,7 +231,7 @@ public class ReservationService {
         for (Reservation reservation : reservationList) { // reservationList를 순회
             DoctorResDto doctor = memberFeign.getDoctor(reservation.getDoctorEmail());
             log.info(doctor.toString());
-            CheckListChildReservationResDto childDto = dtoMapper.toChildListReservation(reservation, member, doctor.getProfileImgUrl()); // DTO로 변환
+            CheckListChildReservationResDto childDto = dtoMapper.toChildListReservation(reservation, reservation.getMemberName(), doctor.getProfileImgUrl()); // DTO로 변환
             dtoMapper.setReservationTime(childDto, reservation);
             dto.add(childDto); // 변환된 DTO를 리스트에 추가
         }
