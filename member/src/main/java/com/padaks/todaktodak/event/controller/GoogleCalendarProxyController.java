@@ -30,6 +30,7 @@
 
 package com.padaks.todaktodak.event.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,6 +47,9 @@ public class GoogleCalendarProxyController {
 
     private final WebClient webClient = WebClient.create();
 
+    @Value("${google.api.key}")
+    private String googleApiKey;
+
     // 클라이언트로부터 시작일과 종료일을 받아 처리
     @GetMapping("/api/google-calendar-holidays")
     public Mono<String> fetchHolidays(@RequestParam String start, @RequestParam String end) {
@@ -54,8 +58,8 @@ public class GoogleCalendarProxyController {
         String formattedEnd = ZonedDateTime.parse(end).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
         System.out.println("formattedStart: " + formattedStart + ", formattedEnd: " + formattedEnd);
         String fullUrl = String.format(
-                "https://www.googleapis.com/calendar/v3/calendars/ko.south_korea%%23holiday@group.v.calendar.google.com/events?timeMin=%s&timeMax=%s&key=AIzaSyBLS5qxSTQgJkCjNk42fw9ErYOkCqcShzo",
-                formattedStart, formattedEnd
+                "https://www.googleapis.com/calendar/v3/calendars/ko.south_korea%%23holiday@group.v.calendar.google.com/events?timeMin=%s&timeMax=%s&key=%s",
+                formattedStart, formattedEnd, googleApiKey
         );
 
         return webClient.get()
