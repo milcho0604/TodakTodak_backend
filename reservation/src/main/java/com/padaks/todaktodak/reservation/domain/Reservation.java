@@ -33,6 +33,8 @@ public class Reservation extends BaseTimeEntity {
     @Column(nullable = false)
     private String memberEmail;
 
+    private String memberName;
+
     @Column(nullable = false)
     private String memberName;
 

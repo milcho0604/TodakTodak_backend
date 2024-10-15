@@ -78,9 +78,8 @@ public interface DtoMapper {
     ComesReservationResDto toTodayReservationResDto(ReservationHistory reservationHistory, ChildResDto childResDto, String hospitalName);
 
     @Mapping(source = "reservation.hospital.name", target = "hospitalName")
-    @Mapping(source = "member.name", target = "memberName")
     @Mapping(source = "reservation.hospital.hospitalImageUrl", target = "hospitalImgUrl")
-    CheckListChildReservationResDto toChildListReservation(Reservation reservation, MemberFeignDto member, String doctorImgUrl);
+    CheckListChildReservationResDto toChildListReservation(Reservation reservation, String memberName, String doctorImgUrl);
 
     @AfterMapping
     default void setReservationTime(@MappingTarget CheckListChildReservationResDto dto, Reservation reservation){
