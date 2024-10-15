@@ -13,6 +13,7 @@ import com.padaks.todaktodak.reservation.dto.*;
 import com.padaks.todaktodak.reservation.domain.ReservationHistory;
 import com.padaks.todaktodak.reservation.domain.Status;
 import com.padaks.todaktodak.reservation.realtime.RealTimeService;
+import com.padaks.todaktodak.reservation.realtime.WaitingTurnDto;
 import com.padaks.todaktodak.reservation.repository.ReservationHistoryRepository;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -141,24 +142,25 @@ public class ReservationService {
 
         try {
             String key = dto.getHospitalId() + ":" + dto.getDoctorEmail();
+            String sequenceKey = "sequence" + dto.getHospitalId();
+            Long sequence = redisTemplate.opsForValue().increment(sequenceKey, 1);
+
+            Hospital hospital = hospitalRepository.findById(dto.getHospitalId())
+                    .orElseThrow(() -> new BaseException(HOSPITAL_NOT_FOUND));
+            Reservation reservation = dtoMapper.toReservation(dto, member, hospital);
+
             if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
                 Set<Object> set = redisTemplate.opsForZSet().range(key, 0, -1);
                 if (set.size() > 30) {
                     throw new BaseException(TOOMANY_RESERVATION);
                 }
             }
-            String sequenceKey = "sequence" + dto.getHospitalId();
-            Long sequence = redisTemplate.opsForValue().increment(sequenceKey, 1);
 
-            Hospital hospital = hospitalRepository.findById(dto.getHospitalId())
-                    .orElseThrow(() -> new BaseException(HOSPITAL_NOT_FOUND));
-
-            Reservation reservation = dtoMapper.toReservation(dto, member, hospital);
             reservationRepository.save(reservation);
             RedisDto redisDto = dtoMapper.toRedisDto(reservation);
-
             redisTemplate.opsForZSet().add(key, redisDto, sequence);
-            realTimeService.update(reservation.getId().toString(),sequence.toString());
+            WaitingTurnDto waitingTurnDto = dtoMapper.toWaitingTurnDto(reservation);
+            realTimeService.update(waitingTurnDto);
 
             Map<String, Object> messageData = createMessageData(reservation, getMemberInfo().getName());
             String notificationMessage = objectMapper.writeValueAsString(messageData);
@@ -176,6 +178,10 @@ public class ReservationService {
 //        예약의 id 로 찾고 만약 예약이 없을경우 RESERVATION_NOT_FOUND 예외를 발생 -> BaseException 에 정의
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new BaseException(RESERVATION_NOT_FOUND));
+
+        String hospitalName = reservation.getHospital().getName();
+        String doctorName = reservation.getDoctorName();
+
 //        hard delete 로 DB 상에서 완전히 지워버림
         reservationRepository.delete(reservation);
 //        reservationHistory 테이블에 저장하기 위한 코드
@@ -189,7 +195,7 @@ public class ReservationService {
         RedisDto redisDto = dtoMapper.toRedisDto(reservation);
 //        list 에서 해당 예약을 삭제
         redisTemplate.opsForZSet().remove(key, redisDto);
-        realTimeService.delete(redisDto.getId().toString());
+        realTimeService.delete(hospitalName, doctorName, redisDto.getId().toString());
     }
     
 //    예약 조회 기능 ( 타입별 : All, Scheduled, Immediate)

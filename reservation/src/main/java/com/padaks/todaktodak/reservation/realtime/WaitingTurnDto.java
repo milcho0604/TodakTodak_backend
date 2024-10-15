@@ -4,10 +4,10 @@ import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
+@Data
 @Builder
 public class WaitingTurnDto {
-    String reservationId;
-    String turnNumber;
+    private String hospitalName;
+    private String doctorName;
+    private String reservationId;
 }

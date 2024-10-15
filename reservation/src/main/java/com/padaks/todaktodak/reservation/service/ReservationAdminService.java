@@ -7,6 +7,7 @@ import com.padaks.todaktodak.reservation.dto.CheckHospitalListReservationReqDto;
 import com.padaks.todaktodak.reservation.dto.RedisDto;
 import com.padaks.todaktodak.reservation.dto.UpdateStatusReservation;
 import com.padaks.todaktodak.reservation.realtime.RealTimeService;
+import com.padaks.todaktodak.reservation.realtime.WaitingTurnDto;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -71,14 +72,17 @@ public class ReservationAdminService {
         RedisDto redisDto = dtoMapper.toRedisDto(reservation);
 //        list 에서 해당 예약을 삭제
         redisTemplate.opsForZSet().remove(key, redisDto);
-        realTimeService.delete(redisDto.getId().toString());
-
-        Set<Object> sets = redisTemplate.opsForZSet().range(key, 0, -1);
-        for(Object obj : sets){
-            Map<String , Object> map = (Map<String, Object>) obj;
-            Long lank = redisTemplate.opsForZSet().rank(key, obj);
-            realTimeService.update(map.get("id").toString(), lank.toString());
-        }
+        realTimeService.delete(reservation.getHospital().getName(), reservation.getDoctorName(), redisDto.getId().toString());
+//
+//        Set<Object> sets = redisTemplate.opsForZSet().range(key, 0, -1);
+//        for(Object obj : sets){
+//            Map<String , Object> map = (Map<String, Object>) obj;
+//            Long lank = redisTemplate.opsForZSet().rank(key, obj);
+//            WaitingTurnDto waitingTurnDto = dtoMapper.toWaitingTurnDto(reservation);
+//            waitingTurnDto.setReservationId(map.get("id").toString());
+//
+//            realTimeService.update(waitingTurnDto);
+//        }
     }
 
     @Scheduled(cron = "0 0 0 * * *")
