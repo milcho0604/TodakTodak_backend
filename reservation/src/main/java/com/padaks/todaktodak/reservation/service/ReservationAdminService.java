@@ -73,16 +73,6 @@ public class ReservationAdminService {
 //        list 에서 해당 예약을 삭제
         redisTemplate.opsForZSet().remove(key, redisDto);
         realTimeService.delete(reservation.getHospital().getName(), reservation.getDoctorName(), redisDto.getId().toString());
-//
-//        Set<Object> sets = redisTemplate.opsForZSet().range(key, 0, -1);
-//        for(Object obj : sets){
-//            Map<String , Object> map = (Map<String, Object>) obj;
-//            Long lank = redisTemplate.opsForZSet().rank(key, obj);
-//            WaitingTurnDto waitingTurnDto = dtoMapper.toWaitingTurnDto(reservation);
-//            waitingTurnDto.setReservationId(map.get("id").toString());
-//
-//            realTimeService.update(waitingTurnDto);
-//        }
     }
 
     @Scheduled(cron = "0 0 0 * * *")
