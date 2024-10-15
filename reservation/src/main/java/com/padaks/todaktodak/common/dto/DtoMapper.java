@@ -50,7 +50,9 @@ public interface DtoMapper {
     @Mapping(source = "hospitalId", target = "hospitalId")
     ReservationHistory toReservationHistory(Reservation reservation, Long hospitalId);
 
-    CheckHospitalListReservationResDto toHospitalListReservation(Reservation reservation);
+    @Mapping(source = "childName", target = "childName")
+    @Mapping(source = "childSsn", target = "childSsn")
+    CheckHospitalListReservationResDto toHospitalListReservation(Reservation reservation, String childName, String childSsn);
 
     RedisDto toRedisDto(Reservation reservation);
 

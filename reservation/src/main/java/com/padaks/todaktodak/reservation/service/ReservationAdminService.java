@@ -3,9 +3,7 @@ package com.padaks.todaktodak.reservation.service;
 import com.padaks.todaktodak.common.dto.DtoMapper;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.reservation.domain.Reservation;
-import com.padaks.todaktodak.reservation.dto.CheckHospitalListReservationReqDto;
-import com.padaks.todaktodak.reservation.dto.RedisDto;
-import com.padaks.todaktodak.reservation.dto.UpdateStatusReservation;
+import com.padaks.todaktodak.reservation.dto.*;
 import com.padaks.todaktodak.reservation.realtime.RealTimeService;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +15,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,6 +30,7 @@ import static com.padaks.todaktodak.common.exception.exceptionType.ReservationEx
 public class ReservationAdminService {
 
     private final ReservationRepository reservationRepository;
+    private final MemberFeign memberFeign;
     private final DtoMapper dtoMapper;
 
     private final RedisTemplate<String, Object> redisTemplate;
@@ -49,16 +49,23 @@ public class ReservationAdminService {
         }
 //        의사별
         else if (reqDto.getDoctorEmail() != null) {
-            reservationPage = reservationRepository.findByDoctorEmail(pageable, reqDto.getDoctorEmail());
+            reservationPage = reservationRepository.findByDoctorEmailAndReservationDateAndStatus(
+                    reqDto.getDoctorEmail(),
+                    reqDto.getDate(),
+                    reqDto.getStatus(),
+                    pageable);
         }
 //        예약 상태별
         else{
             reservationPage = reservationRepository.findByStatus(pageable, reqDto.getStatus());
         }
 
-        return reservationPage.stream()
-                .map(dtoMapper::toHospitalListReservation)
-                .collect(Collectors.toList());
+        List<CheckHospitalListReservationResDto> dtos = new ArrayList<>();
+        for(Reservation res : reservationPage){
+            ChildResDto childResDto = memberFeign.getMyChild(res.getChildId());
+            dtos.add(dtoMapper.toHospitalListReservation(res, childResDto.getName(), childResDto.getSsn()));
+        }
+        return dtos;
     }
 
     public void statusReservation(UpdateStatusReservation updateStatusReservation){
