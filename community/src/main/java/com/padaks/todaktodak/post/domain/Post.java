@@ -42,10 +42,6 @@ public class Post extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     @Builder.Default
-    private List<Comment> commentList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    @Builder.Default
     private List<Report> reportList = new ArrayList<>();
 
     public PostListDto listFromEntity(Long viewCount, Long likeCount){

@@ -25,9 +25,8 @@ public class PostDetailDto {
     private Long viewCount;
     private LocalDateTime createdTimeAt;
     private LocalDateTime updatedTimeAt;
-    private List<CommentDetailDto> comments;
 
-    public static PostDetailDto fromEntity(Post post, List<CommentDetailDto> comments, Long viewCount, Long likeCount, String name){
+    public static PostDetailDto fromEntity(Post post, Long viewCount, Long likeCount, String name){
         return PostDetailDto.builder()
                 .id(post.getId())
                 .memberEmail(post.getMemberEmail())
@@ -39,7 +38,6 @@ public class PostDetailDto {
                 .viewCount(viewCount != null ? viewCount : 0)
                 .createdTimeAt(post.getCreatedTimeAt())
                 .updatedTimeAt(post.getUpdatedTimeAt())
-                .comments(comments)
                 .build();
     }
 

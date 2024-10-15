@@ -100,8 +100,7 @@ public class PostService {
         Long viewCount = getPostViews(id);
         Long likeCount = getPostLikesCount(id);
 
-        List<CommentDetailDto> comments = commentService.getCommentByPostId(id);
-        PostDetailDto postDetailDto = PostDetailDto.fromEntity(post, comments, viewCount, likeCount, name);
+        PostDetailDto postDetailDto = PostDetailDto.fromEntity(post, viewCount, likeCount, name);
         return postDetailDto;
     }
 
