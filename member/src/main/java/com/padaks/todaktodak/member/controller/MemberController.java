@@ -3,6 +3,7 @@ package com.padaks.todaktodak.member.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.padaks.todaktodak.common.dto.CommonErrorDto;
 import com.padaks.todaktodak.common.dto.CommonResDto;
+import com.padaks.todaktodak.common.enumdir.DayOfHoliday;
 import com.padaks.todaktodak.member.dto.DoctorInfoDto;
 import com.padaks.todaktodak.member.domain.Address;
 import com.padaks.todaktodak.member.domain.Member;
@@ -322,7 +323,7 @@ public class MemberController {
 
     // 비대면 의사 리스트
     @GetMapping("/untact/list/{today}")
-    public ResponseEntity<CommonResDto> untactList(@PathVariable String today) {
+    public ResponseEntity<CommonResDto> untactList(@PathVariable DayOfHoliday today) {
         List<DoctorInfoDto> dtoList = memberService.untactDoctorList(today);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "의사리스트 조회 성공", dtoList), HttpStatus.OK);
     }
