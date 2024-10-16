@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class HospitalInfoDto {
+    private String profileImg;
+    private String address;
     private String name; //병원이름
     private String dong; //병원 동
 }

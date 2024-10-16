@@ -1,16 +1,11 @@
-package com.padaks.todaktodak.common.dto;
+package com.padaks.todaktodak.member.dto;
 
 
 import com.padaks.todaktodak.member.domain.Member;
-import com.padaks.todaktodak.member.dto.ReviewListResDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.java.Log;
-import org.springframework.data.domain.Page;
-
-import java.util.List;
 
 @Data
 @NoArgsConstructor

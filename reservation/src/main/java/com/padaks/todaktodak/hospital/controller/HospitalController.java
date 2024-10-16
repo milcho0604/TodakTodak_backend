@@ -90,12 +90,12 @@ public class HospitalController {
     public HospitalInfoDto getHospitalinfo(@RequestParam Long id){
         System.out.println("reservation-service는 왔나요");
         Hospital hospital = hospitalRepository.findByIdOrThrow(id);
-        String name = hospital.getName();
-        String dong = hospital.getDong();
 
         HospitalInfoDto dto = HospitalInfoDto.builder()
-                .name(name)
-                .dong(dong)
+                .address(hospital.getAddress())
+                .name(hospital.getName())
+                .dong(hospital.getDong())
+                .profileImg(hospital.getHospitalImageUrl())
                 .build();
         return dto;
     }

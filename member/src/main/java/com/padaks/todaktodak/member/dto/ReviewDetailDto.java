@@ -1,4 +1,4 @@
-package com.padaks.todaktodak.common.dto;
+package com.padaks.todaktodak.member.dto;
 
 
 import lombok.AllArgsConstructor;
