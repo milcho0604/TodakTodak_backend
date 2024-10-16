@@ -1,4 +1,4 @@
-package com.padaks.todaktodak.common.dto;
+package com.padaks.todaktodak.member.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class HospitalInfoDto {
+    private String profileImg;
+    private String address;
     private String name; //병원이름
     private String dong; //병원 동
 }

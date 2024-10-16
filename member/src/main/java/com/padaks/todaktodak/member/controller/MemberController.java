@@ -3,7 +3,7 @@ package com.padaks.todaktodak.member.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.padaks.todaktodak.common.dto.CommonErrorDto;
 import com.padaks.todaktodak.common.dto.CommonResDto;
-import com.padaks.todaktodak.common.dto.DoctorInfoDto;
+import com.padaks.todaktodak.member.dto.DoctorInfoDto;
 import com.padaks.todaktodak.member.domain.Address;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.dto.*;
@@ -429,4 +429,9 @@ public class MemberController {
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK,"검색 성공",members), HttpStatus.OK);
     }
 
+    @GetMapping("/doctor/detail/{email}")
+    public ResponseEntity<CommonResDto> doctorDetail(@PathVariable String email) {
+        DoctorDetailDto doctorResDto = memberService.doctorDetail(email);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK,"조회 성공",doctorResDto), HttpStatus.OK);
+    }
 }

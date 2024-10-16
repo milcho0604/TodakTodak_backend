@@ -17,7 +17,6 @@ import com.padaks.todaktodak.common.util.S3ClientFileUpload;
 import com.padaks.todaktodak.notification.service.FcmService;
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
-import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -573,5 +572,14 @@ public class MemberService {
 
         // DoctorInfoDto 리스트 반환
         return doctorInfoDtoList;
+    }
+    public DoctorDetailDto doctorDetail(String doctorEmail) {
+        Member doctor = memberRepository.findByMemberEmail(doctorEmail).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
+        HospitalInfoDto hospitalInfoDto = reservationFeignClient.getHospitalinfoById(doctor.getHospitalId());
+        List<DoctorOperatingHoursSimpleResDto> operatingHours = doctorOperatingHoursService.getOperatingHoursByDoctorId(doctor.getId());
+        ReviewDetailDto reviewFeignDto = reservationFeignClient.getReview(doctorEmail);
+        double reviewRate = reviewFeignDto.getAverageRating();
+        long totalCount = reviewFeignDto.getCount1Star() + reviewFeignDto.getCount2Stars() + reviewFeignDto.getCount3Stars() +reviewFeignDto.getCount4Stars() + reviewFeignDto.getCount5Stars();
+        return new DoctorDetailDto().fromEntity(doctor,hospitalInfoDto, reviewRate, totalCount, operatingHours);
     }
 }
