@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -298,7 +299,7 @@ public class MemberController {
     // member list
 //    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/list")
-    public ResponseEntity<Object> userList(Pageable pageable) {
+    public ResponseEntity<Object> memberList(@PageableDefault(size = 10)Pageable pageable) {
         Page<MemberListResDto> memberListResDtos = memberService.memberList(pageable);
         CommonResDto dto = new CommonResDto(HttpStatus.OK, "회원목록을 조회합니다.", memberListResDtos);
         return new ResponseEntity<>(dto, HttpStatus.OK);

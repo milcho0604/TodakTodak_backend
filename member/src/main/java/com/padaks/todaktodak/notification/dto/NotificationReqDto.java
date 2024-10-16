@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class NotificationReqDto {
     private String memberEmail;
+    private String title;
     private String content;
     private Type type;
     private Long refId;
@@ -19,6 +20,7 @@ public class NotificationReqDto {
     public FcmNotification toEntity(Member member) {
         return FcmNotification.builder()
                 .member(member)
+                .title(this.title)
                 .content(this.content)
                 .type(this.type)
                 .refId(this.refId)

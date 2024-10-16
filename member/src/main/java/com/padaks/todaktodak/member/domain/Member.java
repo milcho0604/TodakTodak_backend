@@ -153,6 +153,8 @@ public class Member extends BaseTimeEntity {
                 .phone(this.phoneNumber)
                 .address(this.address)
                 .memberEmail(this.memberEmail)
+                .profileImgUrl(this.profileImgUrl)
+                .verified(this.isVerified)
                 .role(this.role)
                 .build();
     }
