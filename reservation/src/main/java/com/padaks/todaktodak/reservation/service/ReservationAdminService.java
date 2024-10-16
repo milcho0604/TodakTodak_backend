@@ -2,9 +2,11 @@ package com.padaks.todaktodak.reservation.service;
 
 import com.padaks.todaktodak.common.dto.DtoMapper;
 import com.padaks.todaktodak.common.exception.BaseException;
+import com.padaks.todaktodak.common.feign.MemberFeignClient;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.dto.*;
 import com.padaks.todaktodak.reservation.realtime.RealTimeService;
+import com.padaks.todaktodak.reservation.realtime.WaitingTurnDto;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +34,7 @@ public class ReservationAdminService {
     private final ReservationRepository reservationRepository;
     private final MemberFeign memberFeign;
     private final DtoMapper dtoMapper;
+    private final MemberFeign memberFeign;
 
     private final RedisTemplate<String, Object> redisTemplate;
     private final RealTimeService realTimeService;
@@ -73,19 +76,14 @@ public class ReservationAdminService {
                 .orElseThrow(() -> new BaseException(RESERVATION_NOT_FOUND));
         reservation.updateStatus(updateStatusReservation.getStatus());
 
+        DoctorResDto doctorResDto = memberFeign.getDoctor(reservation.getDoctorEmail());
+
 //        Redis의 예약 찾기
         String key = reservation.getHospital().getId() + ":"+ reservation.getDoctorEmail();
         RedisDto redisDto = dtoMapper.toRedisDto(reservation);
 //        list 에서 해당 예약을 삭제
         redisTemplate.opsForZSet().remove(key, redisDto);
-        realTimeService.delete(redisDto.getId().toString());
-
-        Set<Object> sets = redisTemplate.opsForZSet().range(key, 0, -1);
-        for(Object obj : sets){
-            Map<String , Object> map = (Map<String, Object>) obj;
-            Long lank = redisTemplate.opsForZSet().rank(key, obj);
-            realTimeService.update(map.get("id").toString(), lank.toString());
-        }
+        realTimeService.delete(reservation.getHospital().getName(), doctorResDto.getId().toString(), redisDto.getId().toString());
     }
 
     @Scheduled(cron = "0 0 0 * * *")

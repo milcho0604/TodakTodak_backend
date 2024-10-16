@@ -5,6 +5,7 @@ import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.domain.ReserveType;
 import com.padaks.todaktodak.reservation.dto.*;
 import com.padaks.todaktodak.reservation.domain.ReservationHistory;
+import com.padaks.todaktodak.reservation.realtime.WaitingTurnDto;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -87,4 +88,9 @@ public interface DtoMapper {
             dto.setReservationTime(reservation.getCreatedAt().toLocalTime().withSecond(0));
         }
     }
+
+    @Mapping(source = "reservation.hospital.name", target = "hospitalName")
+    @Mapping(source = "reservation.id", target = "reservationId")
+    @Mapping(source = "doctorResDto.id", target="doctorId")
+    WaitingTurnDto toWaitingTurnDto(Reservation reservation, DoctorResDto doctorResDto);
 }
