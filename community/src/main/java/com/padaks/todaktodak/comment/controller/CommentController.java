@@ -6,6 +6,7 @@ import com.padaks.todaktodak.comment.dto.CommentUpdateReqDto;
 import com.padaks.todaktodak.comment.service.CommentService;
 import com.padaks.todaktodak.common.dto.CommonErrorDto;
 import com.padaks.todaktodak.common.dto.CommonResDto;
+import com.padaks.todaktodak.common.dto.MemberFeignDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,17 @@ import java.util.List;
 @RequestMapping("comment")
 public class CommentController {
     private final CommentService commentService;
+
+    @GetMapping("/get/member")
+    private ResponseEntity<?> getMemberTest(){
+        try {
+            MemberFeignDto memberDto = commentService.getMemberInfo();
+            return ResponseEntity.ok(memberDto);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+
+        }
+    }
 
     @PostMapping("/create")
     public ResponseEntity<?> register(@RequestBody CommentSaveDto dto){

@@ -1,8 +1,12 @@
 package com.padaks.todaktodak.post.service;
 
+import ch.qos.logback.core.joran.conditional.IfAction;
 import com.padaks.todaktodak.comment.dto.CommentDetailDto;
 import com.padaks.todaktodak.comment.service.CommentService;
+import com.padaks.todaktodak.common.dto.HospitalNameFeignDto;
 import com.padaks.todaktodak.common.dto.MemberFeignNameDto;
+import com.padaks.todaktodak.common.dto.MemberInfoDto;
+import com.padaks.todaktodak.common.feign.HospitalFeignClient;
 import com.padaks.todaktodak.common.feign.MemberFeignClient;
 import com.padaks.todaktodak.post.domain.Post;
 import com.padaks.todaktodak.post.dto.*;
@@ -40,16 +44,17 @@ public class PostService {
         return member;
     }
 
-    public MemberFeignNameDto getMemberName(String memberEmail){
-        MemberFeignNameDto memberName = memberPostFeignClient.getMemberName(memberEmail);
-        return  memberName;
+    public MemberInfoDto getMemberName(String memberEmail){
+        MemberInfoDto dto = memberPostFeignClient.getMemberByEmail(memberEmail);
+        return  dto;
     }
 
     public void create(PostsaveDto dto){
 
-        MultipartFile postImage = dto.getPostImage();
+        MultipartFile postImage = dto.getPostImage(); //게시글 사진
+
         MemberFeignDto member = getMemberInfo();
-        String memberEmail = member.getMemberEmail();
+
         int reportCount = member.getReportCount();
 
         // 신고 횟수가 5 이상일 경우 예외 처리
@@ -57,14 +62,37 @@ public class PostService {
             throw new IllegalArgumentException("신고 횟수가 5회 이상인 회원은 포스트를 작성할 수 없습니다.");
         }
 
+        String memberEmail = member.getMemberEmail();
+        MemberInfoDto info = getMemberName(member.getMemberEmail());
+
+        String profileImg = info.getProfileImgUrl(); //사용자 사진
+
+        String name;
+        if (!info.getRole().equals("Doctor")){
+            name = maskSecondCharacter(info.getName());
+        }else {
+            name = info.getName() + " 의사";
+        }
+
         Post post;
         if(postImage != null){
             String imageUrl = s3ClientFileUpload.upload(postImage);
-            post = dto.toEntity(imageUrl, memberEmail);
+            post = dto.toEntity(imageUrl, memberEmail, name, profileImg);
+            postRepository.save(post);
         }else {
-            post = dto.toEntity(null, memberEmail);
+            post = dto.toEntity(null, memberEmail, name, profileImg);
+            postRepository.save(post);
         }
-        postRepository.save(post);
+
+//        if(info.getHospitalId() !=  null){
+//            Long hospitalId = info.getHospitalId();
+//            HospitalNameFeignDto hospitalNameFeignDto = hospitalFeignClient.getHospitalName(hospitalId);
+//            String hospitalName = hospitalNameFeignDto.getHospitalName(); // 사용자 병원 이름
+//            postRepository.save(post, name, hospitalName, profileImg);
+//        }
+
+
+
     }
 
     // 게시글 리스트
@@ -93,14 +121,24 @@ public class PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(()-> new EntityNotFoundException("존재하지 않는 post입니다."));
 
-        String name = maskSecondCharacter(getMemberName(post.getMemberEmail()).getName());
+        getMemberName(post.getMemberEmail()).getHospitalId();
 
+
+        String name = null;
+
+        if (!getMemberName(post.getMemberEmail()).getRole().equals("Doctor")){
+            name = maskSecondCharacter(getMemberName(post.getMemberEmail()).getName());
+        }else {
+            name = getMemberName(post.getMemberEmail()).getName() + " 의사";
+        }
+
+        String profileImgUrl = getMemberName(post.getMemberEmail()).getProfileImgUrl();
         // 조회수 증가 로직 추가
         incrementPostViews(id);
         Long viewCount = getPostViews(id);
         Long likeCount = getPostLikesCount(id);
 
-        PostDetailDto postDetailDto = PostDetailDto.fromEntity(post, viewCount, likeCount, name);
+        PostDetailDto postDetailDto = PostDetailDto.fromEntity(post, viewCount, likeCount, name, profileImgUrl);
         return postDetailDto;
     }
 

@@ -1,6 +1,7 @@
 package com.padaks.todaktodak.hospital.controller;
 
 import com.padaks.todaktodak.common.dto.CommonResDto;
+import com.padaks.todaktodak.common.dto.HospitalNameFeignDto;
 import com.padaks.todaktodak.common.dto.MemberFeignDto;
 import com.padaks.todaktodak.hospital.domain.Hospital;
 import com.padaks.todaktodak.hospital.dto.*;
@@ -98,5 +99,10 @@ public class HospitalController {
                 .dong(dong)
                 .build();
         return dto;
+    }
+
+    @GetMapping("/get/hospitalName/{id}")
+    public HospitalNameFeignDto getHospital(@PathVariable Long id){
+         return hospitalService.getHospitalName(id);
     }
 }

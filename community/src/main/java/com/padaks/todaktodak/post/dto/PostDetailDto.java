@@ -20,13 +20,14 @@ public class PostDetailDto {
     private String name;
     private String title;
     private String content;
+    private String profileImgUrl;
     private String postImgUrl;
     private Long likeCount;
     private Long viewCount;
     private LocalDateTime createdTimeAt;
     private LocalDateTime updatedTimeAt;
 
-    public static PostDetailDto fromEntity(Post post, Long viewCount, Long likeCount, String name){
+    public static PostDetailDto fromEntity(Post post, Long viewCount, Long likeCount, String name, String profileImgUrl){
         return PostDetailDto.builder()
                 .id(post.getId())
                 .memberEmail(post.getMemberEmail())
@@ -34,6 +35,7 @@ public class PostDetailDto {
                 .title(post.getTitle())
                 .content(post.getContent())
                 .postImgUrl(post.getPostImgUrl())
+                .profileImgUrl(profileImgUrl)
                 .likeCount(likeCount != null ? likeCount : 0)
                 .viewCount(viewCount != null ? viewCount : 0)
                 .createdTimeAt(post.getCreatedTimeAt())
