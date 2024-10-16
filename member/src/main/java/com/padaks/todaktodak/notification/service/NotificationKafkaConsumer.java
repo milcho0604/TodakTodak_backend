@@ -29,13 +29,11 @@ public class NotificationKafkaConsumer {
     private final ObjectMapper objectMapper;
 
     @KafkaListener(topics = "community-success", groupId = "group_id", containerFactory = "kafkaListenerContainerFactory")
-    public void consumerNotification(String message){
-//        ObjectMapper objectMapper = new ObjectMapper();
+    public void consumerNotification(String message, Acknowledgment acknowledgment){
         if (message.startsWith("\"") && message.endsWith("\"")) {
             message = message.substring(1, message.length() -1).replace("\"", "\"");
             message = message.replace("\\", "");
         }
-
         try {
             CommentSuccessDto dto = objectMapper.readValue(message, CommentSuccessDto.class);
 
@@ -55,8 +53,7 @@ public class NotificationKafkaConsumer {
                 fcmService.sendMessage(dto.getReceiverEmail(), category, dto.getTitle()+comment+"에 대한 답변이 작성되었습니다.",  Type.COMMENT, dto.getPostId());
 
             }
-
-
+            acknowledgment.acknowledge();
         } catch (JsonMappingException e) {
             throw new RuntimeException(e);
         } catch (JsonProcessingException e) {
@@ -65,9 +62,7 @@ public class NotificationKafkaConsumer {
     }
 
     @KafkaListener(topics = "scheduled-reservation-success-notify", containerFactory = "reservationKafkaContainerFactory")
-    public void scheduledNotification(String message){
-//        ObjectMapper objectMapper = new ObjectMapper();
-
+    public void scheduledNotification(String message, Acknowledgment acknowledgment){
         if (message.startsWith("\"") && message.endsWith("\"")) {
             message = message.substring(1, message.length() -1).replace("\"", "\"");
             message = message.replace("\\", "");
@@ -90,14 +85,14 @@ public class NotificationKafkaConsumer {
                     "# " + dto.getReservationType()+"/" + dto.getMedicalItem() + " 예약 안내 #",
                     body,
                     Type.RESERVATION_NOTIFICATION, null);
+            acknowledgment.acknowledge();
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
 
     @KafkaListener(topics = "immediate-reservation-success-notify", containerFactory = "reservationKafkaContainerFactory")
-    public void immediateNotification(String message){
-//        ObjectMapper objectMapper = new ObjectMapper();
+    public void immediateNotification(String message, Acknowledgment acknowledgment){
 
         if (message.startsWith("\"") && message.endsWith("\"")) {
             message = message.substring(1, message.length() -1).replace("\"", "\"");
@@ -119,13 +114,14 @@ public class NotificationKafkaConsumer {
                     "# " + dto.getReservationType()+"/" + dto.getMedicalItem() + " 예약 안내 #",
                     body,
                     Type.RESERVATION_NOTIFICATION, null);
+            acknowledgment.acknowledge();
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
   
     @KafkaListener(topics = "reservation-before-notify", containerFactory = "reservationKafkaContainerFactory")
-    public void reserveBeforeNotify(String message){
+    public void reserveBeforeNotify(String message, Acknowledgment acknowledgment){
 //        ObjectMapper objectMapper = new ObjectMapper();
         if (message.startsWith("\"") && message.endsWith("\"")) {
             message = message.substring(1, message.length() -1).replace("\"", "\"");
@@ -144,6 +140,7 @@ public class NotificationKafkaConsumer {
                     "# 금일 " + dto.getMessage() + " #",
                     body,
                     Type.RESERVATION_NOTIFICATION, null);
+            acknowledgment.acknowledge();
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -158,7 +155,7 @@ public class NotificationKafkaConsumer {
             System.out.println("Received Child Success DTO: " + childSuccessResDto);
 
             fcmService.sendMessage(childSuccessResDto.getMemberEmail(), childSuccessResDto.getChildName() + "자녀가 공유되었습니다.",
-                    childSuccessResDto.getSharer()+ "님이 " + childSuccessResDto.getChildName()+"님을 공유했습니다.", Type.CHILD, childSuccessResDto.getChildId());
+                    childSuccessResDto.getSharer()+ "님이 " + childSuccessResDto.getChildName()+"님을 공유했습니다.", Type.CHILD, null);
 
             acknowledgment.acknowledge();
         } catch (Exception e) {

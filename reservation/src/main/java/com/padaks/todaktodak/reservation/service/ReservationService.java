@@ -210,6 +210,10 @@ public class ReservationService {
                             dtoMapper.resTypeToReserveType(resDto.getType()));
         }
 
+        if (resDto.getType().equals("Immediate")){
+            
+        }
+
         List<CheckListReservationReqDto> dtos = new ArrayList<>();
         for(Reservation res : reservationPage){
             CheckListReservationReqDto resdto = dtoMapper.toListReservation(res);

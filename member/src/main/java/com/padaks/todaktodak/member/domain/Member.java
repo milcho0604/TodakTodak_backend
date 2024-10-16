@@ -66,9 +66,6 @@ public class Member extends BaseTimeEntity {
     private boolean isVerified = false;
 
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<ChildParentsRelationship> childParentsRelationshipList;
-
     @Builder
     public Member(String name, String email, Role role) {
         this.name = name;
