@@ -40,6 +40,8 @@ public class Post extends BaseTimeEntity {
     private@Builder.Default
     Long viewCount = 0L;
 
+    @Column
+    private String profileImgUrl;
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Comment> commentList = new ArrayList<>();

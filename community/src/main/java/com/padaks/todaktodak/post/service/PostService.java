@@ -50,6 +50,7 @@ public class PostService {
         MultipartFile postImage = dto.getPostImage();
         MemberFeignDto member = getMemberInfo();
         String memberEmail = member.getMemberEmail();
+        String profileImgUrl = member.getProfileImgUrl();
         int reportCount = member.getReportCount();
 
         // 신고 횟수가 5 이상일 경우 예외 처리
@@ -60,9 +61,9 @@ public class PostService {
         Post post;
         if(postImage != null){
             String imageUrl = s3ClientFileUpload.upload(postImage);
-            post = dto.toEntity(imageUrl, memberEmail);
+            post = dto.toEntity(imageUrl, memberEmail, profileImgUrl);
         }else {
-            post = dto.toEntity(null, memberEmail);
+            post = dto.toEntity(null, memberEmail, profileImgUrl);
         }
         postRepository.save(post);
     }

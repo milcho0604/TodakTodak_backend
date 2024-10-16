@@ -19,6 +19,7 @@ public class PostDetailDto {
     private String memberEmail;
     private String name;
     private String title;
+    private String profileImgUrl;
     private String content;
     private String postImgUrl;
     private Long likeCount;
@@ -35,6 +36,7 @@ public class PostDetailDto {
                 .title(post.getTitle())
                 .content(post.getContent())
                 .postImgUrl(post.getPostImgUrl())
+                .profileImgUrl(post.getProfileImgUrl())
                 .likeCount(likeCount != null ? likeCount : 0)
                 .viewCount(viewCount != null ? viewCount : 0)
                 .createdTimeAt(post.getCreatedTimeAt())

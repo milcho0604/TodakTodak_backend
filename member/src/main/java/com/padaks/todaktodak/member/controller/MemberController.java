@@ -41,7 +41,7 @@ public class MemberController {
     public MemberPayDto getMember() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Member member = memberService.findByMemberEmail(email);
-        return new MemberPayDto(member.getMemberEmail(), member.getName(), member.getPhoneNumber(), member.getRole(), member.getReportCount(), member.getHospitalId());
+        return new MemberPayDto(member.getMemberEmail(), member.getName(), member.getPhoneNumber(), member.getRole(), member.getReportCount(), member.getHospitalId(), member.getProfileImgUrl());
     }
 
 //    @GetMapping("/get/{memberEmail}")
