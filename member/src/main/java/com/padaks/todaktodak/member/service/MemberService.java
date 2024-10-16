@@ -546,9 +546,9 @@ public class MemberService {
         return members.stream().map(MemberDetailResDto::fromEntity).collect(Collectors.toList());
     }
 
-    public List<DoctorInfoDto> untactDoctorList(String today) {
+    public List<DoctorInfoDto> untactDoctorList(DayOfHoliday today) {
 
-        DayOfHoliday dayOfWeek = DayOfHoliday.valueOf(today);
+        DayOfHoliday dayOfWeek = today;
 
         // 오늘의 untact가 true인 의사들 가져오기
         List<Member> doctors = doctorOperatingHoursRepository.findUntactMembersByDayOfWeekAndDeletedAtIsNull(dayOfWeek);
