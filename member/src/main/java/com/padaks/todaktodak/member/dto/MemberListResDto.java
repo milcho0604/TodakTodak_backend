@@ -18,6 +18,7 @@ public class MemberListResDto {
     private String phone;
     private Address address;
     private String memberEmail;
+    private String profileImgUrl;
     private Role role;
     private boolean verified;
 

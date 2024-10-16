@@ -32,7 +32,6 @@ public class FcmService {
         Member member = memberRepository.findByMemberEmail(memberEmail)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 사용자입니다."));
         member.updateFcmToken(dto.getFcmToken());
-        System.out.println(member);
     }
 
     public void sendMessage(String memberEmail, String title, String body, Type type, Long id) {
@@ -82,7 +81,8 @@ public class FcmService {
         // 조립
         FcmNotification fcmNotification = FcmNotification.builder()
                 .member(member)
-                .content(title + "\n" + body)  //알림 내용 저장
+                .title(title)
+                .content(body)  //알림 내용 저장
                 .isRead(false)      //fcmNotification 생성될때 = false -> 사용자가 알림 누르는 순간 true로 바껴야함
                 .type(type)
                 .refId(id)        //등록된 post의 Id

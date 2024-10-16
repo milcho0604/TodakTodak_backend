@@ -28,6 +28,8 @@ public class FcmNotification extends BaseTimeEntity {
 
     private String recipient;
 
+    private String title;
+
     private String content;
 
     private boolean isRead;
@@ -47,6 +49,7 @@ public class FcmNotification extends BaseTimeEntity {
         return NotificationResDto.builder()
                 .id(this.id)
                 .memberEmail(this.member.getMemberEmail())
+                .title(this.title)
                 .content(this.content)
                 .isRead(this.isRead)
                 .type(this.type)

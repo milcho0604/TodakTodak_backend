@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 public class NotificationResDto {
     private Long id;
     private String memberEmail;
+    private String title;
     private String content;
     private boolean isRead;
     private Type type;
