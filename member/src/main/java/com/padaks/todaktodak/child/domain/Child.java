@@ -28,9 +28,6 @@ public class Child extends BaseTimeEntity {
     private String ssn;
     private String profileImgUrl;
 
-    @OneToMany(mappedBy = "child", cascade = CascadeType.ALL)
-    private List<ChildParentsRelationship> childParentsRelationshipList;
-
     public void updateName(String name) {
         this.name = name;
     }

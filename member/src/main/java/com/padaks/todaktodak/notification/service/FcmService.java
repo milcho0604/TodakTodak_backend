@@ -2,6 +2,7 @@ package com.padaks.todaktodak.notification.service;
 
 import com.google.firebase.messaging.*;
 import com.padaks.todaktodak.member.domain.Member;
+import com.padaks.todaktodak.member.domain.Role;
 import com.padaks.todaktodak.member.dto.FcmTokenSaveRequest;
 import com.padaks.todaktodak.member.repository.MemberRepository;
 import com.padaks.todaktodak.notification.domain.FcmNotification;
@@ -35,10 +36,9 @@ public class FcmService {
     }
 
     public void sendMessage(String memberEmail, String title, String body, Type type, Long id) {
-        System.out.println(memberEmail);
+
         Member member = memberRepository.findByMemberEmail(memberEmail)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
-
 
         String token = member.getFcmToken();
 
@@ -46,7 +46,40 @@ public class FcmService {
             throw new EntityNotFoundException("FCM token not found for memberId: " + memberEmail);
         }
 
+        // 리다이렉트 url 셋팅
+        String urlType = null;
+        String url = null;
+        if (id == null){
+            if (type.equals(Type.PAYMENT)){
+                urlType = "member/mypage/reservation";
+                url = "http://localhost:8081/" + urlType;
+            } else if (type.equals(Type.CHILD)) {
+                urlType = "member/child";
+                url = "http://localhost:8081/" + urlType;
+            } else if (type.equals(Type.RESERVATION_NOTIFICATION) && member.getRole().equals(Role.Member)) {
+                urlType = "member/mypage/reservation";
+                url = "http://localhost:8081/" + urlType;
+            } else if (type.equals(Type.RESERVATION_NOTIFICATION) && member.getRole().equals(Role.HospitalAdmin)) {
+                // 수정 필요
+                urlType = "/";
+                url = "http://localhost:8081/" + urlType;
+            } else if (type.equals(Type.RESERVATION_WAITING)){
+                // 수정 필요
+                urlType = "member/mypage/reservation";
+                url = "http://localhost:8081/" + urlType;
+            } else {
+                url = "http://localhost:8081/";
+            }
+        } else {
+            if (type.equals(Type.POST) || type.equals(Type.COMMENT)){
+                urlType = "post";
+                url = "http://localhost:8081/" + urlType + "/" + id;
+            } else {
+                url = "http://localhost:8081/";
+            }
+        }
 
+        // 조립
         FcmNotification fcmNotification = FcmNotification.builder()
                 .member(member)
                 .content(title + "\n" + body)  //알림 내용 저장
@@ -54,23 +87,12 @@ public class FcmService {
                 .type(type)
                 .refId(id)        //등록된 post의 Id
                 .recipient(memberEmail)
+                .url(url)
                 .build();
 
-        //db에 FcmNotification 저장
+        // db에 FcmNotification 저장
         notificationRepository.save(fcmNotification);
 
-        String urlType = null;
-        if (type.equals(Type.POST) || type.equals(Type.COMMENT)) {
-            urlType = "post";
-        } else if (type.equals(Type.RESERVATION_NOTIFICATION) || type.equals(Type.RESERVATION_WAITING)) {
-            urlType = "reservation";
-        } else if (type.equals(Type.PAYMENT)) {
-            urlType = String.valueOf(type);
-        } else {
-            urlType = "/"; // 추가 로직 설정 필요
-        }
-
-        String url = "http://localhost:8081/" + urlType + "/" + id;
         Message message = Message.builder()
                 .setWebpushConfig(WebpushConfig.builder()
                         .setNotification(WebpushNotification.builder()
@@ -99,14 +121,14 @@ public class FcmService {
         }
     }
 
-
     public Page<NotificationResDto> myNotis(Pageable pageable) {
         String memberEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         Member member = memberRepository.findByMemberEmail(memberEmail)
                 .orElseThrow(() -> new EntityNotFoundException("회원이 존재하지 않습니다."));
+        Long memberId = member.getId();
         LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
-        Page<FcmNotification> notifications = notificationRepository.findByMemberAndCreatedAtAfter(member, sevenDaysAgo, pageable);
-        return notifications.map(fcmNotification -> new NotificationResDto().fromEntity(fcmNotification));
+        Page<FcmNotification> notifications = notificationRepository.findByMemberIdAndCreatedAtAfter(memberId, sevenDaysAgo, pageable);
+        return notifications.map(a -> a.listFromEntity());
     }
 
     public FcmNotification read(Long id) {

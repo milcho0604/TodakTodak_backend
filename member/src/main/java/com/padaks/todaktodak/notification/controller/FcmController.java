@@ -8,6 +8,8 @@ import com.padaks.todaktodak.notification.dto.NotificationResDto;
 import com.padaks.todaktodak.notification.service.FcmService;
 import com.padaks.todaktodak.notification.domain.Type;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -22,7 +24,7 @@ import javax.validation.Valid;
 @RequestMapping("/fcm")
 public class FcmController {
     private final FcmService fcmService;
-
+    private static final Logger logger = LoggerFactory.getLogger(FcmController.class);
     @PostMapping("/token")
     public ResponseEntity<?> saveFcmToken(@RequestHeader String memberEmail, @RequestBody @Valid FcmTokenSaveRequest dto){
         try {
@@ -63,9 +65,22 @@ public class FcmController {
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK,"알림 조회 성공",notificationResList),HttpStatus.OK);
     }
 
+//    @GetMapping("/read/{id}")
+//    public ResponseEntity<CommonResDto> read(@PathVariable Long id) {
+//        FcmNotification fcmNotification = fcmService.read(id);
+//        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK,"알림 읽음 처리 성공",fcmNotification),HttpStatus.OK);
+//    }
     @GetMapping("/read/{id}")
     public ResponseEntity<CommonResDto> read(@PathVariable Long id) {
-        FcmNotification fcmNotification = fcmService.read(id);
-        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK,"알림 읽음 처리 성공",fcmNotification),HttpStatus.OK);
+        logger.info("Received request to mark notification as read. Notification ID: {}", id);
+
+        try {
+            FcmNotification fcmNotification = fcmService.read(id);
+            logger.info("Notification successfully marked as read: {}", fcmNotification);
+            return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "알림 읽음 처리 성공", fcmNotification), HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error occurred while marking notification as read. Notification ID: {}, Error: {}", id, e.getMessage(), e);
+            return new ResponseEntity<>(new CommonResDto(HttpStatus.INTERNAL_SERVER_ERROR, "알림 읽음 처리 실패", null), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

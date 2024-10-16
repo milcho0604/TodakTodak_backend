@@ -2,6 +2,7 @@ package com.padaks.todaktodak.notification.domain;
 
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
 import com.padaks.todaktodak.member.domain.Member;
+import com.padaks.todaktodak.notification.dto.NotificationResDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,5 +39,20 @@ public class FcmNotification extends BaseTimeEntity {
 
     public void read() {
         this.isRead = true;
+    }
+
+    private String url;
+
+    public NotificationResDto listFromEntity() {
+        return NotificationResDto.builder()
+                .id(this.id)
+                .memberEmail(this.member.getMemberEmail())
+                .content(this.content)
+                .isRead(this.isRead)
+                .type(this.type)
+                .refId(this.refId)
+                .url(this.url)
+                .createdAt(this.getCreatedAt())
+                .build();
     }
 }

@@ -11,5 +11,7 @@ import java.time.LocalDateTime;
 
 @Repository
 public interface NotificationRepository extends JpaRepository<FcmNotification, Long> {
-    Page<FcmNotification> findByMemberAndCreatedAtAfter(Member member, LocalDateTime dateTime, Pageable pageable);
+//    Page<FcmNotification> findByMemberAndCreatedAtAfter(Member member, LocalDateTime dateTime, Pageable pageable);
+    Page<FcmNotification> findByMemberIdAndCreatedAtAfter(Long memberId, LocalDateTime dateTime, Pageable pageable);
+
 }

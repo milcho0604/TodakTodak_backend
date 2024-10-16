@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -18,14 +20,6 @@ public class NotificationResDto {
     private boolean isRead;
     private Type type;
     private Long refId;
-
-    public NotificationResDto fromEntity(FcmNotification save) {
-        this.id = save.getId();
-        this.memberEmail = save.getMember().getMemberEmail();
-        this.content = save.getContent();
-        this.isRead = save.isRead();
-        this.type = save.getType();
-        this.refId = save.getRefId();
-        return this;
-    }
+    private String url;
+    private LocalDateTime createdAt;
 }
