@@ -54,4 +54,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     Page<Reservation> findByMemberEmailAndReservationDateBeforeOrStatus(String memberEmail, LocalDate localDate, Status status, Pageable pageable);
 
     List<Reservation> findByChildId(Long id);
+
+    Page<Reservation> findByDoctorEmailAndReservationDateAndStatus(String doctorEmail, LocalDate reservationDate, Status status, Pageable pageable);
 }

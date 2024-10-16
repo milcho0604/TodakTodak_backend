@@ -51,7 +51,9 @@ public interface DtoMapper {
     @Mapping(source = "reservation.hospital.id", target = "hospitalId")
     ReservationHistory toReservationHistory(Reservation reservation);
 
-    CheckHospitalListReservationResDto toHospitalListReservation(Reservation reservation);
+    @Mapping(source = "childName", target = "childName")
+    @Mapping(source = "childSsn", target = "childSsn")
+    CheckHospitalListReservationResDto toHospitalListReservation(Reservation reservation, String childName, String childSsn);
 
     RedisDto toRedisDto(Reservation reservation);
 
@@ -77,9 +79,8 @@ public interface DtoMapper {
     ComesReservationResDto toTodayReservationResDto(ReservationHistory reservationHistory, ChildResDto childResDto, String hospitalName);
 
     @Mapping(source = "reservation.hospital.name", target = "hospitalName")
-    @Mapping(source = "member.name", target = "memberName")
     @Mapping(source = "reservation.hospital.hospitalImageUrl", target = "hospitalImgUrl")
-    CheckListChildReservationResDto toChildListReservation(Reservation reservation, MemberFeignDto member, String doctorImgUrl);
+    CheckListChildReservationResDto toChildListReservation(Reservation reservation, String memberName, String doctorImgUrl);
 
     @AfterMapping
     default void setReservationTime(@MappingTarget CheckListChildReservationResDto dto, Reservation reservation){
