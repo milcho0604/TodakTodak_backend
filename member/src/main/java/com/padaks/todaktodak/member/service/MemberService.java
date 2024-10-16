@@ -582,4 +582,10 @@ public class MemberService {
         long totalCount = reviewFeignDto.getCount1Star() + reviewFeignDto.getCount2Stars() + reviewFeignDto.getCount3Stars() +reviewFeignDto.getCount4Stars() + reviewFeignDto.getCount5Stars();
         return new DoctorDetailDto().fromEntity(doctor,hospitalInfoDto, reviewRate, totalCount, operatingHours);
     }
+
+    public HospitalInfoDto getHospitalName() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Member member = findByMemberEmail(email);
+        return reservationFeignClient.getHospitalinfoById(member.getHospitalId());
+    }
 }
