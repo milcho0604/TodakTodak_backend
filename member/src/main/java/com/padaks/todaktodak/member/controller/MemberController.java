@@ -435,4 +435,11 @@ public class MemberController {
         DoctorDetailDto doctorResDto = memberService.doctorDetail(email);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK,"조회 성공",doctorResDto), HttpStatus.OK);
     }
+
+    @GetMapping("/hospitalName")
+    public ResponseEntity<CommonResDto> hospitalName() {
+        HospitalInfoDto dto = memberService.getHospitalName();
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK,"조회 성공",dto), HttpStatus.OK);
+
+    }
 }
