@@ -90,5 +90,6 @@ public interface DtoMapper {
 
     @Mapping(source = "reservation.hospital.name", target = "hospitalName")
     @Mapping(source = "reservation.id", target = "reservationId")
-    WaitingTurnDto toWaitingTurnDto(Reservation reservation);
+    @Mapping(source = "doctorResDto.id", target="doctorId")
+    WaitingTurnDto toWaitingTurnDto(Reservation reservation, DoctorResDto doctorResDto);
 }

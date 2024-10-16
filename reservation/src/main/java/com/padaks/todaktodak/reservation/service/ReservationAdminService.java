@@ -2,8 +2,10 @@ package com.padaks.todaktodak.reservation.service;
 
 import com.padaks.todaktodak.common.dto.DtoMapper;
 import com.padaks.todaktodak.common.exception.BaseException;
+import com.padaks.todaktodak.common.feign.MemberFeignClient;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.dto.CheckHospitalListReservationReqDto;
+import com.padaks.todaktodak.reservation.dto.DoctorResDto;
 import com.padaks.todaktodak.reservation.dto.RedisDto;
 import com.padaks.todaktodak.reservation.dto.UpdateStatusReservation;
 import com.padaks.todaktodak.reservation.realtime.RealTimeService;
@@ -33,6 +35,7 @@ public class ReservationAdminService {
 
     private final ReservationRepository reservationRepository;
     private final DtoMapper dtoMapper;
+    private final MemberFeign memberFeign;
 
     private final RedisTemplate<String, Object> redisTemplate;
     private final RealTimeService realTimeService;
@@ -67,12 +70,14 @@ public class ReservationAdminService {
                 .orElseThrow(() -> new BaseException(RESERVATION_NOT_FOUND));
         reservation.updateStatus(updateStatusReservation.getStatus());
 
+        DoctorResDto doctorResDto = memberFeign.getDoctor(reservation.getDoctorEmail());
+
 //        Redis의 예약 찾기
         String key = reservation.getHospital().getId() + ":"+ reservation.getDoctorEmail();
         RedisDto redisDto = dtoMapper.toRedisDto(reservation);
 //        list 에서 해당 예약을 삭제
         redisTemplate.opsForZSet().remove(key, redisDto);
-        realTimeService.delete(reservation.getHospital().getName(), reservation.getDoctorName(), redisDto.getId().toString());
+        realTimeService.delete(reservation.getHospital().getName(), doctorResDto.getId().toString(), redisDto.getId().toString());
     }
 
     @Scheduled(cron = "0 0 0 * * *")

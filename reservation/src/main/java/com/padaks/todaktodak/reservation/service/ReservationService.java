@@ -159,7 +159,7 @@ public class ReservationService {
             reservationRepository.save(reservation);
             RedisDto redisDto = dtoMapper.toRedisDto(reservation);
             redisTemplate.opsForZSet().add(key, redisDto, sequence);
-            WaitingTurnDto waitingTurnDto = dtoMapper.toWaitingTurnDto(reservation);
+            WaitingTurnDto waitingTurnDto = dtoMapper.toWaitingTurnDto(reservation, doctorResDto);
             realTimeService.update(waitingTurnDto);
 
             Map<String, Object> messageData = createMessageData(reservation, getMemberInfo().getName());
@@ -180,7 +180,7 @@ public class ReservationService {
                 .orElseThrow(() -> new BaseException(RESERVATION_NOT_FOUND));
 
         String hospitalName = reservation.getHospital().getName();
-        String doctorName = reservation.getDoctorName();
+        DoctorResDto doctorResDto = memberFeign.getDoctor(reservation.getDoctorEmail());
 
 //        hard delete 로 DB 상에서 완전히 지워버림
         reservationRepository.delete(reservation);
@@ -195,7 +195,7 @@ public class ReservationService {
         RedisDto redisDto = dtoMapper.toRedisDto(reservation);
 //        list 에서 해당 예약을 삭제
         redisTemplate.opsForZSet().remove(key, redisDto);
-        realTimeService.delete(hospitalName, doctorName, redisDto.getId().toString());
+        realTimeService.delete(hospitalName, doctorResDto.getId().toString(), redisDto.getId().toString());
     }
     
 //    예약 조회 기능 ( 타입별 : All, Scheduled, Immediate)

@@ -28,7 +28,7 @@ public class RealTimeService {
         System.out.println(waitingTurnDto.toString());
         DatabaseReference doctorRef = databaseReference
                     .child(waitingTurnDto.getHospitalName())
-                    .child(waitingTurnDto.getDoctorName());
+                    .child(waitingTurnDto.getDoctorId());
 
         doctorRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -59,8 +59,8 @@ public class RealTimeService {
     }
 
 //  실시간 DB에서 삭제하는 로직
-    public void delete(String hospitalName, String doctorName, String id){
-        DatabaseReference doctorRef = databaseReference.child(hospitalName).child(doctorName);
+    public void delete(String hospitalName, String doctorId, String id){
+        DatabaseReference doctorRef = databaseReference.child(hospitalName).child(doctorId);
 
         // 삭제할 항목의 turn 값 찾기
         doctorRef.child(id).addListenerForSingleValueEvent(new ValueEventListener() {

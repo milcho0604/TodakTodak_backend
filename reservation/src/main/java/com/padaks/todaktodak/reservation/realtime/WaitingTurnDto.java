@@ -8,6 +8,6 @@ import lombok.*;
 @Builder
 public class WaitingTurnDto {
     private String hospitalName;
-    private String doctorName;
+    private String doctorId;
     private String reservationId;
 }
