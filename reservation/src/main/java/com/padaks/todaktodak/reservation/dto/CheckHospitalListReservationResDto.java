@@ -14,6 +14,7 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @Data
 public class CheckHospitalListReservationResDto {
+    private Long id;
     private String doctorName;
     private String doctorEmail;
     private String memberName;
