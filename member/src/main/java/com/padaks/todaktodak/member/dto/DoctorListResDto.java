@@ -21,5 +21,6 @@ public class DoctorListResDto {
     private String doctorEmail;
     private Role role;
     private String bio;
+    private boolean isVerified;
     private List<DoctorOperatingHoursSimpleResDto> operatingHours; //근무시간 리스트
 }
