@@ -24,7 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -86,13 +88,14 @@ public class PostService {
     }
 
     // 게시글 리스트
-    public Page<PostListDto> postList(Pageable pageable){
-        Page<Post> posts = postRepository.findByDeletedTimeAtIsNull(pageable);
-        return posts.map(post -> {
+    public List<PostListDto> postList(){
+        List<Post> posts = postRepository.findByDeletedTimeAtIsNull();
+        // Post -> PostListDto로 변환
+        return posts.stream().map(post -> {
             Long viewCount = getPostViews(post.getId());   // Redis에서 조회수 가져오기
             Long likeCount = getPostLikesCount(post.getId());   // Redis에서 좋아요 수 가져오기
             return post.listFromEntity(viewCount, likeCount);   // 조회수와 좋아요 수를 포함한 DTO로 변환
-        });
+        }).collect(Collectors.toList());   // 리스트로 변환
     }
 
     // my post list !
@@ -232,6 +235,21 @@ public class PostService {
         return name;
     }
 
+//   좋아요 많은 게시글
+    public List<PostListDto> famousPostList() {
+        List<Post> posts = postRepository.findByDeletedTimeAtIsNull();
+        // Post -> PostListDto로 변환
+        List<PostListDto> postListDtoList = posts.stream().map(post -> {
+            Long viewCount = getPostViews(post.getId());   // Redis에서 조회수 가져오기
+            Long likeCount = getPostLikesCount(post.getId());   // Redis에서 좋아요 수 가져오기
+            return post.listFromEntity(viewCount, likeCount);   // 조회수와 좋아요 수를 포함한 DTO로 변환
+        }).collect(Collectors.toList());// 리스트로 변환
 
+        postListDtoList.sort(Comparator.comparingDouble(PostListDto::getLikeCount).reversed());
+        if (postListDtoList.size() > 3) {
+            postListDtoList = postListDtoList.subList(0,3);
+        }
+        return postListDtoList;
+    }
 }
 
