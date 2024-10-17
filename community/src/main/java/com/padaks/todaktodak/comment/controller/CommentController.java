@@ -6,6 +6,7 @@ import com.padaks.todaktodak.comment.dto.CommentUpdateReqDto;
 import com.padaks.todaktodak.comment.service.CommentService;
 import com.padaks.todaktodak.common.dto.CommonErrorDto;
 import com.padaks.todaktodak.common.dto.CommonResDto;
+import com.padaks.todaktodak.common.dto.MemberFeignDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,6 +24,17 @@ import javax.persistence.EntityNotFoundException;
 @RequestMapping("comment")
 public class CommentController {
     private final CommentService commentService;
+
+    @GetMapping("/get/member")
+    private ResponseEntity<?> getMemberTest(){
+        try {
+            MemberFeignDto memberDto = commentService.getMemberInfo();
+            return ResponseEntity.ok(memberDto);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+
+        }
+    }
 
     @PostMapping("/create")
     public ResponseEntity<?> register(@RequestBody CommentSaveDto dto){
@@ -37,6 +50,19 @@ public class CommentController {
             e.printStackTrace();
             CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.BAD_REQUEST, e.getMessage());
             return new ResponseEntity<>(commonErrorDto, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/list/{id}")
+    public ResponseEntity<?> commentListByPost(@PathVariable Long id){
+        try {
+            List<CommentDetailDto> comments = commentService.getCommentByPostId(id);
+            CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "post별 comment 목록 조회 성공", comments);
+            return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+        }catch (EntityNotFoundException e){
+            e.printStackTrace();
+            CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.NOT_FOUND, e.getMessage());
+            return new ResponseEntity<>(commonErrorDto, HttpStatus.NOT_FOUND);
         }
     }
 

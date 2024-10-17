@@ -7,8 +7,11 @@ import com.padaks.todaktodak.comment.dto.CommentDetailDto;
 import com.padaks.todaktodak.comment.dto.CommentSaveDto;
 import com.padaks.todaktodak.comment.dto.CommentUpdateReqDto;
 import com.padaks.todaktodak.comment.repository.CommentRepository;
+import com.padaks.todaktodak.common.dto.HospitalNameFeignDto;
 import com.padaks.todaktodak.common.dto.MemberFeignDto;
 import com.padaks.todaktodak.common.dto.MemberFeignNameDto;
+import com.padaks.todaktodak.common.dto.MemberInfoDto;
+import com.padaks.todaktodak.common.feign.HospitalFeignClient;
 import com.padaks.todaktodak.common.feign.MemberFeignClient;
 import com.padaks.todaktodak.post.domain.Post;
 import com.padaks.todaktodak.post.repository.PostRepository;
@@ -17,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +41,7 @@ public class CommentService {
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final ObjectMapper objectMapper;
     private final MemberFeignClient memberFeignClient;
+    private final HospitalFeignClient hospitalFeignClient;
 
     //member 객체 리턴
     public MemberFeignDto getMemberInfo() {
@@ -44,16 +49,25 @@ public class CommentService {
         return member;
     }
 
-    public MemberFeignNameDto getMemberName(String memberEmail){
-        MemberFeignNameDto memberName = memberFeignClient.getMemberName(memberEmail);
-        return  memberName;
+    public MemberInfoDto getMemberName(String memberEmail){
+        MemberInfoDto dto = memberFeignClient.getMemberByEmail(memberEmail);
+        return  dto;
     }
 
     public Comment createComment(CommentSaveDto dto){
         MemberFeignDto member = getMemberInfo(); //현재 로그인한 사용자 정보
+
+        MemberInfoDto info = getMemberName(member.getMemberEmail());
         String receiver; //comment 작성자 email; //fcm 받는 대상
+
         Comment savedComment;
+//        Comment comment;
         int reportCount = member.getReportCount();
+
+        // 신고 횟수가 5 이상일 경우 예외 처리
+        if (reportCount >= 5) {
+            throw new IllegalArgumentException("신고 횟수가 5회 이상인 회원은 댓글을 작성할 수 없습니다.");
+        }
 
         if (dto.getPostId() != null){
             Post post = postRepository.findById(dto.getPostId()).orElseThrow(()-> new EntityNotFoundException("존재하지 않는 post입니다."));
@@ -63,26 +77,36 @@ public class CommentService {
                 throw  new IllegalArgumentException("댓글을 작성할 수 있는 권한이 없습니다.");
             }
 
-            // 신고 횟수가 5 이상일 경우 예외 처리
-            if (reportCount >= 5) {
-                throw new IllegalArgumentException("신고 횟수가 5회 이상인 회원은 댓글을 작성할 수 없습니다.");
+            String name;
+
+            if (!info.getRole().equals("Doctor")){
+                name = maskSecondCharacter(info.getName());
+                savedComment = dto.toEntity(post, null, member.getMemberEmail(), name, info.getProfileImgUrl());
+            }else {
+                name = info.getName() + "의사";
+                Long hospitalId = info.getHospitalId();
+                HospitalNameFeignDto hospitalNameFeignDto = hospitalFeignClient.getHospitalName(hospitalId);
+                String hospitalName = hospitalNameFeignDto.getHospitalName();
+                savedComment = dto.toEntity(post, null, member.getMemberEmail(), name, info.getProfileImgUrl());
             }
+
 
             receiver = post.getMemberEmail(); //댓글이 없는 질문일 경운 알림 수신자 = 게시글 작성자
             String title = post.getTitle();
             String type = "COMMENT";
             Map<String, Object> messageData = new HashMap<>();
-
+            commentRepository.save(savedComment);
+            type = "POST";
             //부모 댓글이 있는 경우
-            if (dto.getParentId() != null){
-                Comment parentComment = commentRepository.findById(dto.getParentId()).orElseThrow(()->new EntityNotFoundException("존재하지 않는 부모 댓글입니다."));
-                savedComment = commentRepository.save(dto.toEntity(post, parentComment, member.getMemberEmail()));
-                receiver = parentComment.getDoctorEmail(); //댓글(1)에 댓글(2)을 생성하는 경우 수신자 = 댓글(1) 작성자
-            }else {
+//            if (dto.getParentId() != null){
+//                Comment parentComment = commentRepository.findById(dto.getParentId()).orElseThrow(()->new EntityNotFoundException("존재하지 않는 부모 댓글입니다."));
+//                savedComment = commentRepository.save(dto.toEntity(post, parentComment, member.getMemberEmail()));
+//                receiver = parentComment.getDoctorEmail(); //댓글(1)에 댓글(2)을 생성하는 경우 수신자 = 댓글(1) 작성자
+//            }else {
                 //부모댓글 없는 경우 새로운 댓글 생성
-                savedComment = commentRepository.save(dto.toEntity(post, null, member.getMemberEmail()));
-                type = "POST";
-            }
+//                savedComment = commentRepository.save(dto.toEntity(post, null, member.getMemberEmail()));
+
+//            }
 
             //fcm 메세지 데이터 객체 생성
             messageData.put("receiverEmail", receiver);
