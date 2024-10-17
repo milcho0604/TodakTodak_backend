@@ -1,8 +1,10 @@
 package com.padaks.todaktodak.comment.controller;
 
+import com.padaks.todaktodak.comment.domain.Comment;
 import com.padaks.todaktodak.comment.dto.CommentDetailDto;
 import com.padaks.todaktodak.comment.dto.CommentSaveDto;
 import com.padaks.todaktodak.comment.dto.CommentUpdateReqDto;
+import com.padaks.todaktodak.comment.dto.ReplyCommentSaveDto;
 import com.padaks.todaktodak.comment.service.CommentService;
 import com.padaks.todaktodak.common.dto.CommonErrorDto;
 import com.padaks.todaktodak.common.dto.CommonResDto;
@@ -36,12 +38,30 @@ public class CommentController {
         }
     }
 
+//    댓글 작성 API
     @PostMapping("/create")
     public ResponseEntity<?> register(@RequestBody CommentSaveDto dto){
         try {
-            commentService.createComment(dto);
+            Comment comment = commentService.createComment(dto);
             if (dto.getPostId() != null){
-                CommonResDto commonResDto = new CommonResDto(HttpStatus.CREATED,"Comment 등록 성공", dto.getPostId());
+                CommonResDto commonResDto = new CommonResDto(HttpStatus.CREATED,"Comment 등록 성공", comment);
+                return new ResponseEntity<>(commonResDto, HttpStatus.CREATED);
+            }else {
+                throw new IllegalArgumentException("postId must be provided.");
+            }
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
+            CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.BAD_REQUEST, e.getMessage());
+            return new ResponseEntity<>(commonErrorDto, HttpStatus.BAD_REQUEST);
+        }
+    }
+    //    대댓글 작성 API
+    @PostMapping("/reply/create")
+    public ResponseEntity<?> register(@RequestBody ReplyCommentSaveDto dto){
+        try {
+            Comment comment = commentService.createReplyComment(dto);
+            if (dto.getPostId() != null){
+                CommonResDto commonResDto = new CommonResDto(HttpStatus.CREATED,"대댓글", comment);
                 return new ResponseEntity<>(commonResDto, HttpStatus.CREATED);
             }else {
                 throw new IllegalArgumentException("postId must be provided.");

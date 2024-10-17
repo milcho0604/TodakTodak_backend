@@ -51,7 +51,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 //    오늘 이후의 예약 중 status 가 아직 예약중인 상태인 예약리스트
     List<Reservation> findByMemberEmailAndReservationDateGreaterThanEqualAndStatus(String memberEmail, LocalDate localDate, Status status);
 
-    Page<Reservation> findByMemberEmailAndReservationDateBeforeOrStatus(String memberEmail, LocalDate localDate, Status status, Pageable pageable);
+    Page<Reservation> findByMemberEmailAndReservationDateBeforeOrStatusIsNot(String memberEmail, LocalDate localDate, Status status, Pageable pageable);
 
     List<Reservation> findByChildId(Long id);
 
