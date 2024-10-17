@@ -302,8 +302,9 @@ public class MemberController {
     public ResponseEntity<?> memberList(
             @RequestParam(required = false) Boolean verified, // true/false
             @RequestParam(required = false) Boolean deleted,  // true: 탈퇴, false: 정상
+            @RequestParam(required = false) String role,  // true: 탈퇴, false: 정상
             Pageable pageable) {
-        Page<MemberListResDto> memberListResDtos = memberService.memberList(verified, deleted, pageable);
+        Page<MemberListResDto> memberListResDtos = memberService.memberList(verified, deleted, role, pageable);
         CommonResDto dto = new CommonResDto(HttpStatus.OK, "회원목록을 조회합니다.", memberListResDtos);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }

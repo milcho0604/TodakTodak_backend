@@ -44,6 +44,10 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> searchMembers(@Param("keyword") String keyword);
 
     Page<Member> findByNameContainingOrMemberEmailContaining(String name, String memberEmail, Pageable pageable);
+    Page<Member> findByIsVerifiedAndDeletedAtIsNotNullAndRole(boolean isVerified, Role role, Pageable pageable);
+
+    Page<Member> findByIsVerifiedAndDeletedAtIsNullAndRole(boolean isVerified, Role role, Pageable pageable);
+
 
     // 정상 회원 중 인증 여부 필터링
     Page<Member> findByIsVerifiedAndDeletedAtIsNull(boolean isVerified, Pageable pageable);
