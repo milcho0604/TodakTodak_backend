@@ -188,9 +188,9 @@ public class HospitalService {
         // 별점 순으로 정렬
         dtoList.sort(Comparator.comparingDouble(HospitalListResDto::getAverageRating).reversed());
 
-        // 리스트의 크기를 8로 제한
-        if (dtoList.size() > 8) {
-            dtoList = dtoList.subList(0, 8);
+        // 리스트의 크기를 6으로 제한
+        if (dtoList.size() > 6) {
+            dtoList = dtoList.subList(0, 6);
         }
 
         return dtoList;
