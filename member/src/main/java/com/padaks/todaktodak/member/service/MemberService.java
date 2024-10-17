@@ -320,6 +320,23 @@ public class MemberService {
         memberRepository.save(member);
     }
 
+    //의사 삭제
+    public void deleteDoctor(String email) {
+        String adminEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Member hospitalAdmin = memberRepository.findByMemberEmailOrThrow(adminEmail);
+
+        Member member = memberRepository.findByMemberEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 사용자 정보입니다."+ email));
+
+        if (hospitalAdmin.getHospitalId().equals(member.getHospitalId())){
+            member.deleteAccount();
+            memberRepository.save(member);
+        }else {
+            throw new IllegalArgumentException("본인 병원에 소속된 의사외에는 삭제 할 수 없습니다.");
+        }
+
+    }
+
     // java 라이브러리 메일 서비스
     private String generateVerificationCode() {
         Random random = new Random();
@@ -371,6 +388,22 @@ public class MemberService {
             List<DoctorOperatingHoursSimpleResDto> operatingHours = doctorOperatingHoursService.getOperatingHoursByDoctorId(doctor.getId());
             return doctor.doctorListFromEntity(operatingHours);
         });
+    }
+
+
+    public Page<DoctorListResDto> doctorListByHospitalForAdmin(Pageable pageable){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Member member= memberRepository.findByMemberEmailOrThrow(email);
+        if (member.getRole().equals(Role.HospitalAdmin)){
+            Page<Member> doctors = memberRepository.findByRoleAndHospitalId(Role.Doctor, member.getHospitalId(), pageable);
+            return doctors.map(doctor ->{
+                List<DoctorOperatingHoursSimpleResDto> operatingHours = doctorOperatingHoursService.getOperatingHoursByDoctorId(doctor.getId());
+                return doctor.doctorListFromEntity(operatingHours);
+            });
+        }else {
+            throw new  IllegalArgumentException("병원 관리자 이외에는 조회가 불가능합니다.");
+        }
+
     }
 
 //    유저 회원가입은 소셜만 되어있기 때문에 TodakAdmin만 따로 initialDataLoader로 선언해 주었음.
