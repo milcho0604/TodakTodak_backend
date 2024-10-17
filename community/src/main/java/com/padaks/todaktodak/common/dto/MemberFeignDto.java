@@ -10,4 +10,6 @@ public class MemberFeignDto {
     private String role;
     private int reportCount;
     private Long hospitalId;
+    private String Role;
+    private String profileImgUrl;
 }

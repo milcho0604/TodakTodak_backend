@@ -66,7 +66,7 @@ public class PostController {
     }
 
     @PostMapping("/update/{id}")
-    public ResponseEntity<?> updatePost (@PathVariable Long id, @RequestBody PostUpdateReqDto dto){
+    public ResponseEntity<?> updatePost (@PathVariable Long id, @ModelAttribute PostUpdateReqDto dto){
         try{
             postService.updatePost(id, dto);
             CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "post가 성공적으로 업데이트 되었습니다.", id);
