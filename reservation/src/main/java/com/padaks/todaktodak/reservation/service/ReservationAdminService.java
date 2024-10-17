@@ -2,11 +2,9 @@ package com.padaks.todaktodak.reservation.service;
 
 import com.padaks.todaktodak.common.dto.DtoMapper;
 import com.padaks.todaktodak.common.exception.BaseException;
-import com.padaks.todaktodak.common.feign.MemberFeignClient;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.dto.*;
 import com.padaks.todaktodak.reservation.realtime.RealTimeService;
-import com.padaks.todaktodak.reservation.realtime.WaitingTurnDto;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.padaks.todaktodak.common.exception.exceptionType.ReservationExceptionType.RESERVATION_NOT_FOUND;
 
@@ -34,7 +29,6 @@ public class ReservationAdminService {
     private final ReservationRepository reservationRepository;
     private final MemberFeign memberFeign;
     private final DtoMapper dtoMapper;
-    private final MemberFeign memberFeign;
 
     private final RedisTemplate<String, Object> redisTemplate;
     private final RealTimeService realTimeService;
