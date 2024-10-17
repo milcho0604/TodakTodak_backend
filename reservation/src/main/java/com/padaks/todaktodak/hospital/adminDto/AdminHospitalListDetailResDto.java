@@ -23,7 +23,8 @@ public class AdminHospitalListDetailResDto {
     private String adminEmail;
     private Boolean isAccept;
 
-    public static AdminHospitalListDetailResDto fromEntity(Hospital hospital) {
+    // list
+    public static AdminHospitalListDetailResDto listFromEntity(Hospital hospital) {
         return AdminHospitalListDetailResDto.builder()
                 .id(hospital.getId())
                 .name(hospital.getName())
@@ -37,5 +38,20 @@ public class AdminHospitalListDetailResDto {
                 .build();  // 마지막에 build() 호출
     }
 
+    // detail
+    public static AdminHospitalListDetailResDto detailFromEntity(Hospital hospital) {
+        return AdminHospitalListDetailResDto.builder()
+                .id(hospital.getId())
+                .name(hospital.getName())
+                .address(hospital.getAddress())
+                .dong(hospital.getDong())
+                .phoneNumber(hospital.getPhoneNumber())
+                .businessRegistrationInfo(hospital.getBusinessRegistrationInfo())
+                .representativeName(hospital.getRepresentativeName())
+                .adminPhoneNumber(hospital.getPhoneNumber()) // 추가된 필드
+                .adminEmail(hospital.getAdminEmail())
+                .isAccept(hospital.getIsAccept())
+                .build();
+    }
 }
 

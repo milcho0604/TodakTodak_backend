@@ -199,20 +199,21 @@ public class HospitalService {
         return dtoList;
     }
 
-    public Page<AdminHospitalListDetailResDto> adminHospitalListDetailResDtos(Boolean isAccept, Pageable pageable) {
+    // admin hospital list
+    public Page<AdminHospitalListDetailResDto> adminHospitalListResDtos(Boolean isAccept, Pageable pageable) {
 
         if (isAccept == null) {
             return hospitalRepository.findAll(pageable)
-                    .map(AdminHospitalListDetailResDto::fromEntity);
+                    .map(AdminHospitalListDetailResDto::listFromEntity);
         }
 
         // isAccept 값에 따른 필터링
         if (isAccept) {
             return hospitalRepository.findByIsAccept(true, pageable)
-                    .map(AdminHospitalListDetailResDto::fromEntity);
+                    .map(AdminHospitalListDetailResDto::listFromEntity);
         } else {
             return hospitalRepository.findByIsAccept(false, pageable)
-                    .map(AdminHospitalListDetailResDto::fromEntity);
+                    .map(AdminHospitalListDetailResDto::listFromEntity);
         }
     }
 
@@ -226,11 +227,17 @@ public class HospitalService {
         System.out.println(query);
         System.out.println(hospitalRepository.findByRepresentativeNameContainingOrNameContainingOrAdminEmailContaining(
                         query, query, query, pageable)
-                .map(AdminHospitalListDetailResDto::fromEntity));
+                .map(AdminHospitalListDetailResDto::listFromEntity));
         // 검색어가 있는 경우 검색 처리
         return hospitalRepository.findByRepresentativeNameContainingOrNameContainingOrAdminEmailContaining(
                         query, query, query, pageable)
-                .map(AdminHospitalListDetailResDto::fromEntity);
+                .map(AdminHospitalListDetailResDto::listFromEntity);
     }
 
+    // admin hospital detail
+    public AdminHospitalListDetailResDto adminHospitalDetailResDto(Long id){
+        Hospital hospital = hospitalRepository.findByIdOrThrow(id);
+        // 조회된 Hospital 엔티티를 AdminHospitalListDetailResDto로 변환
+        return AdminHospitalListDetailResDto.detailFromEntity(hospital);
+    }
 }

@@ -118,6 +118,7 @@ public class HospitalController {
     }
 
     //    @PreAuthorize("hasRole('ADMIN')")
+    // admin hospital list
     @GetMapping("/admin/hospital/list")
     public ResponseEntity<?> adminHospitalList(
             @RequestParam(name = "accept", required = false) String isAccept, // true/false
@@ -132,13 +133,14 @@ public class HospitalController {
             }
         }
         System.out.println("isAccept 파라미터 값: " + acceptStatus);
-        Page<AdminHospitalListDetailResDto> hospitalListDetailResDtos = hospitalService.adminHospitalListDetailResDtos(acceptStatus, pageable);
+        Page<AdminHospitalListDetailResDto> hospitalListDetailResDtos = hospitalService.adminHospitalListResDtos(acceptStatus, pageable);
         CommonResDto dto = new CommonResDto(HttpStatus.OK, "병원 목록을 조회합니다 조회합니다.", hospitalListDetailResDtos);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
 
-    @GetMapping("/search")
+    // admin hospital list search
+    @GetMapping("admin/hospital/search")
     public ResponseEntity<?> searchHospitals(
             @RequestParam(name = "query", required = false) String query,
             Pageable pageable) {
@@ -149,4 +151,12 @@ public class HospitalController {
         CommonResDto dto = new CommonResDto(HttpStatus.OK, "병원 목록을 조회합니다 조회합니다.", result);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
+
+    @GetMapping("/admin/hospital/detail/{id}")
+    public ResponseEntity<?> adminHospitalDetail(@PathVariable Long id){
+        AdminHospitalListDetailResDto adminHospitalListDetailResDto = hospitalService.adminHospitalDetailResDto(id);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원정보 조회성공", adminHospitalListDetailResDto), HttpStatus.OK);
+    }
+
+
 }
