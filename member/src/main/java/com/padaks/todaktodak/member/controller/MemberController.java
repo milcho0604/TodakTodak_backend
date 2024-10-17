@@ -311,11 +311,27 @@ public class MemberController {
     // member list
 //    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/list")
-    public ResponseEntity<Object> memberList(@PageableDefault(size = 10)Pageable pageable) {
-        Page<MemberListResDto> memberListResDtos = memberService.memberList(pageable);
+    public ResponseEntity<?> memberList(
+            @RequestParam(required = false) Boolean verified, // true/false
+            @RequestParam(required = false) Boolean deleted,  // true: 탈퇴, false: 정상
+            @RequestParam(required = false) String role,  // true: 탈퇴, false: 정상
+            Pageable pageable) {
+        Page<MemberListResDto> memberListResDtos = memberService.memberList(verified, deleted, role, pageable);
         CommonResDto dto = new CommonResDto(HttpStatus.OK, "회원목록을 조회합니다.", memberListResDtos);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
+
+
+    // 관리자 멤버 검색
+    @GetMapping("/search")
+    public ResponseEntity<?> searchMembers(
+            @RequestParam String query,
+            Pageable pageable) {
+        Page<MemberListResDto> members = memberService.adminSearchMembers(query, pageable);
+        CommonResDto dto = new CommonResDto(HttpStatus.OK, "검색 결과", members);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
 
     @GetMapping("/doctorList")
     public ResponseEntity<Object> doctorList(Pageable pageable) {
@@ -351,6 +367,13 @@ public class MemberController {
     @GetMapping("/untact/list/{today}")
     public ResponseEntity<CommonResDto> untactList(@PathVariable DayOfHoliday today) {
         List<DoctorInfoDto> dtoList = memberService.untactDoctorList(today);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "의사리스트 조회 성공", dtoList), HttpStatus.OK);
+    }
+
+    // 인기 비대면 의사 리스트
+    @GetMapping("/untact/good/list/{today}")
+    public ResponseEntity<CommonResDto> famousUntactList(@PathVariable DayOfHoliday today) {
+        List<DoctorInfoDto> dtoList = memberService.famousUntactList(today);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "의사리스트 조회 성공", dtoList), HttpStatus.OK);
     }
 

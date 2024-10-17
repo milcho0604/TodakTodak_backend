@@ -29,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -361,17 +362,70 @@ public class MemberService {
     }
 
     // member list 조회
-    public Page<MemberListResDto> memberList(Pageable pageable){
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-//
-//        System.out.println(email);
-//        Member member = memberRepository.findByMemberEmail(email)
-//                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
-//        if (!member.getRole().toString().equals("TodakAdmin")){
-//            throw new SecurityException("관리자만 접근이 가능합니다.");
-//        }
-        Page<Member> members = memberRepository.findByRole(Role.Member, pageable);
-        return members.map(a -> a.listFromEntity());
+//    public Page<MemberListResDto> memberList(Pageable pageable){
+//        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+////
+////        System.out.println(email);
+////        Member member = memberRepository.findByMemberEmail(email)
+////                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
+////        if (!member.getRole().toString().equals("TodakAdmin")){
+////            throw new SecurityException("관리자만 접근이 가능합니다.");
+////        }
+//        Page<Member> members = memberRepository.findAll(pageable);
+//        return members.map(a -> a.listFromEntity());
+//    }
+
+    // 멤버 전체 목록 조회 -> 멤버 필터
+    public Page<MemberListResDto> memberList(boolean isVerified, boolean isDeleted, String roleString, Pageable pageable) {
+        Role role = null;
+        if (roleString != null && !roleString.isEmpty()) {
+            role = Role.valueOf(roleString); // 문자열을 Role enum으로 변환
+        }
+
+        if (isDeleted) {
+            // 탈퇴 회원 조회
+            if (isVerified) {
+                // 인증된 탈퇴 회원 조회 및 Role 필터링
+                if (role != null) {
+                    return memberRepository.findByIsVerifiedAndDeletedAtIsNotNullAndRole(true, role, pageable).map(MemberListResDto::fromEntity);
+                } else {
+                    return memberRepository.findByIsVerifiedAndDeletedAtIsNotNull(true, pageable).map(MemberListResDto::fromEntity);
+                }
+            } else {
+                // 미인증 탈퇴 회원 조회 및 Role 필터링
+                if (role != null) {
+                    return memberRepository.findByIsVerifiedAndDeletedAtIsNotNullAndRole(false, role, pageable).map(MemberListResDto::fromEntity);
+                } else {
+                    return memberRepository.findByIsVerifiedAndDeletedAtIsNotNull(false, pageable).map(MemberListResDto::fromEntity);
+                }
+            }
+        } else {
+            // 정상 회원 조회
+            if (isVerified) {
+                // 인증된 정상 회원 조회 및 Role 필터링
+                if (role != null) {
+                    return memberRepository.findByIsVerifiedAndDeletedAtIsNullAndRole(true, role, pageable).map(MemberListResDto::fromEntity);
+                } else {
+                    return memberRepository.findByIsVerifiedAndDeletedAtIsNull(true, pageable).map(MemberListResDto::fromEntity);
+                }
+            } else {
+                // 미인증 정상 회원 조회 및 Role 필터링
+                if (role != null) {
+                    return memberRepository.findByIsVerifiedAndDeletedAtIsNullAndRole(false, role, pageable).map(MemberListResDto::fromEntity);
+                } else {
+                    return memberRepository.findByIsVerifiedAndDeletedAtIsNull(false, pageable).map(MemberListResDto::fromEntity);
+                }
+            }
+        }
+    }
+
+
+
+    // adminSearchMembers 메서드 수정 관리자 멤버 검색
+    public Page<MemberListResDto> adminSearchMembers(String query, Pageable pageable) {
+        // 이름 또는 이메일을 기준으로 검색하고, 삭제 여부나 인증 여부와 상관없이 검색 결과 반환
+        return memberRepository.findByNameContainingOrMemberEmailContaining(query, query, pageable)
+                .map(MemberListResDto::fromEntity);
     }
 
     public Page<DoctorListResDto> doctorList(Pageable pageable){
@@ -603,6 +657,40 @@ public class MemberService {
             doctorInfoDtoList.add(new DoctorInfoDto().fromEntity(doctor,hospitalName,totalCount,reviewRate));
         }
 
+        // DoctorInfoDto 리스트 반환
+        return doctorInfoDtoList;
+    }
+    public List<DoctorInfoDto> famousUntactList(DayOfHoliday today) {
+
+        DayOfHoliday dayOfWeek = today;
+
+        // 오늘의 untact가 true인 의사들 가져오기
+        List<Member> doctors = doctorOperatingHoursRepository.findUntactMembersByDayOfWeekAndDeletedAtIsNull(dayOfWeek);
+        // DoctorInfoDto 리스트 생성
+        List<DoctorInfoDto> doctorInfoDtoList = new ArrayList<>();
+
+        // 의사 리스트 순회하며 각 의사의 병원 정보와 리뷰 정보 가져오기
+        for (Member doctor : doctors) {
+            Long hospitalId = doctor.getHospitalId();
+            HospitalInfoDto hospitalInfoDto = reservationFeignClient.getHospitalinfoById(hospitalId);
+            String hospitalName = hospitalInfoDto.getName();
+            // 리뷰 정보 가져오기
+            ReviewDetailDto reviewFeignDto = reservationFeignClient.getReview(doctor.getMemberEmail());
+            double reviewRate = reviewFeignDto.getAverageRating();
+            long totalCount = reviewFeignDto.getCount1Star() + reviewFeignDto.getCount2Stars() + reviewFeignDto.getCount3Stars() +
+                    reviewFeignDto.getCount4Stars() + reviewFeignDto.getCount5Stars();
+
+            // DoctorInfoDto 생성 및 리스트에 추가
+            doctorInfoDtoList.add(new DoctorInfoDto().fromEntity(doctor,hospitalName,totalCount,reviewRate));
+        }
+
+        // reviewRate 기준으로 DoctorInfoDto 리스트를 높은 순으로 정렬
+        doctorInfoDtoList.sort(Comparator.comparingDouble(DoctorInfoDto::getReviewPoint).reversed());
+
+        // 리스트의 크기를 8로 제한
+        if (doctorInfoDtoList.size() > 8) {
+            doctorInfoDtoList = doctorInfoDtoList.subList(0, 8);
+        }
         // DoctorInfoDto 리스트 반환
         return doctorInfoDtoList;
     }
