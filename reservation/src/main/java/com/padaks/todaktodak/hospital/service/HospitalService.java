@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -160,4 +161,38 @@ public class HospitalService {
                 .build();
     }
 
+    // 병원 리스트 조회 ('~~동' 주소기준) // 인기순 size=8
+    // TODO - 정렬조건 : 거리가까운 순, 대기자 적은 순
+    public List<HospitalListResDto> getFamousHospitalList(String dong,
+                                                    BigDecimal latitude,
+                                                    BigDecimal longitude){
+
+        List<Hospital> hospitalList = hospitalRepository.findByDongAndDeletedAtIsNullAndIsAcceptIsTrue(dong);
+        List<HospitalListResDto> dtoList = new ArrayList<>();
+        String distance = null;
+        Long standby = null; // TODO : 실시간 대기자 수 이후 redis 붙일예정
+        Double averageRating = null;
+        Long reviewCount = null;
+
+        for(Hospital hospital : hospitalList){
+            // 병원과 사용자 간의 직선 거리 계산
+            distance = distanceCalculator.calculateDistance(hospital.getLatitude(), hospital.getLongitude(), latitude, longitude);
+
+            // 병원별 리뷰 평균평점과 리뷰 개수 조회 (null 체크 후 0으로 세팅)
+            averageRating = Optional.ofNullable(reviewRepository.findAverageRatingByHospitalId(hospital.getId())).orElse(0.0);
+            reviewCount = Optional.ofNullable(reviewRepository.countByHospitalId(hospital.getId())).orElse(0L);
+
+            HospitalListResDto dto = HospitalListResDto.fromEntity(hospital, standby, distance, averageRating, reviewCount);
+            dtoList.add(dto);
+        }
+        // 별점 순으로 정렬
+        dtoList.sort(Comparator.comparingDouble(HospitalListResDto::getAverageRating).reversed());
+
+        // 리스트의 크기를 8로 제한
+        if (dtoList.size() > 8) {
+            dtoList = dtoList.subList(0, 8);
+        }
+
+        return dtoList;
+    }
 }

@@ -105,4 +105,12 @@ public class HospitalController {
     public HospitalNameFeignDto getHospital(@PathVariable Long id){
          return hospitalService.getHospitalName(id);
     }
+
+    @GetMapping("/good/list")
+    public ResponseEntity<Object> getFamousHospitalList(@RequestParam String dong,
+                                          @RequestParam BigDecimal latitude,
+                                          @RequestParam BigDecimal longitude){
+        List<HospitalListResDto> hospitalList = hospitalService.getFamousHospitalList(dong, latitude, longitude);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원 리스트 조회성공", hospitalList), HttpStatus.OK);
+    }
 }
