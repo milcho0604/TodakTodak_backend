@@ -357,29 +357,7 @@ public class MemberService {
 //        return members.map(a -> a.listFromEntity());
 //    }
 
-    // 전체 회원 목록 조회 (필터링 포함)
-    // memberList 메서드 수정
-//    public Page<MemberListResDto> memberList(boolean isVerified, boolean isDeleted, Pageable pageable) {
-//        if (isDeleted) {
-//            // 탈퇴 회원 조회
-//            if (isVerified) {
-//                // 인증된 탈퇴 회원 조회
-//                return memberRepository.findByIsVerifiedAndDeletedAtIsNotNull(true, pageable).map(MemberListResDto::fromEntity);
-//            } else {
-//                // 미인증 탈퇴 회원 조회
-//                return memberRepository.findByIsVerifiedAndDeletedAtIsNotNull(false, pageable).map(MemberListResDto::fromEntity);
-//            }
-//        } else {
-//            // 정상 회원 조회
-//            if (isVerified) {
-//                // 인증된 정상 회원 조회
-//                return memberRepository.findByIsVerifiedAndDeletedAtIsNull(true, pageable).map(MemberListResDto::fromEntity);
-//            } else {
-//                // 미인증 정상 회원 조회
-//                return memberRepository.findByIsVerifiedAndDeletedAtIsNull(false, pageable).map(MemberListResDto::fromEntity);
-//            }
-//        }
-//    }
+    // 멤버 전체 목록 조회 -> 멤버 필터
     public Page<MemberListResDto> memberList(boolean isVerified, boolean isDeleted, String roleString, Pageable pageable) {
         Role role = null;
         if (roleString != null && !roleString.isEmpty()) {
