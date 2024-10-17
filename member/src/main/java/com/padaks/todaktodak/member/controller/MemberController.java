@@ -3,6 +3,7 @@ package com.padaks.todaktodak.member.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.padaks.todaktodak.common.dto.CommonErrorDto;
 import com.padaks.todaktodak.common.dto.CommonResDto;
+import com.padaks.todaktodak.common.enumdir.DayOfHoliday;
 import com.padaks.todaktodak.member.dto.DoctorInfoDto;
 import com.padaks.todaktodak.member.domain.Address;
 import com.padaks.todaktodak.member.domain.Member;
@@ -40,24 +41,14 @@ public class MemberController {
     public MemberPayDto getMember() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Member member = memberService.findByMemberEmail(email);
-        return new MemberPayDto(member.getMemberEmail(), member.getName(), member.getPhoneNumber(), member.getRole(), member.getReportCount(), member.getHospitalId());
+        return new MemberPayDto(member.getMemberEmail(), member.getName(), member.getPhoneNumber(), member.getRole(), member.getReportCount(), member.getHospitalId(), member.getProfileImgUrl());
     }
-
-//    @GetMapping("/get/{memberEmail}")
-//    public MemberFeignNameDto getMemberName(@PathVariable String memberEmail){
-//        Member member = memberService.findByMemberEmail(memberEmail);
-//        String name = member.getName();
-//        return MemberFeignNameDto.builder()
-//                .name(name)
-//                .build();
-//    }
 
     @GetMapping("/get/{email}")
     public MemberResDto getMemberByEmail(@PathVariable String email) {
         Member member = memberService.findByMemberEmail(email);
         return new MemberResDto().fromEntity(member);
     }
-
 
     @GetMapping("/doctor/{email}")
     public ResponseEntity<CommonResDto> getDoctorInfo(@PathVariable String email){
@@ -338,7 +329,7 @@ public class MemberController {
 
     // 비대면 의사 리스트
     @GetMapping("/untact/list/{today}")
-    public ResponseEntity<CommonResDto> untactList(@PathVariable String today) {
+    public ResponseEntity<CommonResDto> untactList(@PathVariable DayOfHoliday today) {
         List<DoctorInfoDto> dtoList = memberService.untactDoctorList(today);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "의사리스트 조회 성공", dtoList), HttpStatus.OK);
     }
@@ -452,4 +443,10 @@ public class MemberController {
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK,"조회 성공",doctorResDto), HttpStatus.OK);
     }
 
+    @GetMapping("/hospitalName")
+    public ResponseEntity<CommonResDto> hospitalName() {
+        HospitalInfoDto dto = memberService.getHospitalName();
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK,"조회 성공",dto), HttpStatus.OK);
+
+    }
 }

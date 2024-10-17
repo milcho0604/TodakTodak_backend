@@ -61,7 +61,8 @@ public interface DtoMapper {
     @Mapping(source = "reservation.hospital.name", target = "hospitalName")
     @Mapping(source = "childResDto.imageUrl", target = "profileImgUrl")
     @Mapping(source = "reservation.id", target = "id")
-    ComesReservationResDto toTodayReservationResDto(Reservation reservation, ChildResDto childResDto);
+    @Mapping(source = "doctorId", target = "doctorId")
+    ComesReservationResDto toTodayReservationResDto(Reservation reservation, ChildResDto childResDto, Long doctorId);
 
     @AfterMapping
     default void setReservationTime(@MappingTarget ComesReservationResDto dto, Reservation reservation){

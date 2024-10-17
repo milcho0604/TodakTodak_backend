@@ -20,6 +20,7 @@ public class ComesReservationResDto {
     private String childName;
     private String hospitalName;
     private String doctorName;
+    private Long doctorId;
     private LocalDate reservationDate;
     private LocalTime reservationTime;
     private Status status;

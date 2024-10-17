@@ -5,7 +5,11 @@ import lombok.Data;
 @Data
 public class MemberFeignDto {
     private String memberEmail;
-//    private String name;
+    private String name;
+    private String phoneNumber;
+    private String role;
     private int reportCount;
+    private Long hospitalId;
     private String Role;
+    private String profileImgUrl;
 }

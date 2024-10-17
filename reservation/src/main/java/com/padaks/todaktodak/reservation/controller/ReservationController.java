@@ -36,8 +36,9 @@ public class ReservationController {
 
     @PostMapping("/immediate")
     public ResponseEntity<?> treatImmediateReservation(@RequestBody ReservationSaveReqDto dto){
-        reservationService.immediateReservation(dto);
-        return new ResponseEntity<>("예약 완료", HttpStatus.OK);
+        ReservationSaveResDto resDto = reservationService.immediateReservation(dto);
+        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "예약 완료", resDto);
+        return new ResponseEntity<>(commonResDto, HttpStatus.OK);
     }
 
     @DeleteMapping("/cancel/{id}")

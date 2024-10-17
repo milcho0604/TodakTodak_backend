@@ -599,9 +599,9 @@ public class MemberService {
         return members.stream().map(MemberDetailResDto::fromEntity).collect(Collectors.toList());
     }
 
-    public List<DoctorInfoDto> untactDoctorList(String today) {
+    public List<DoctorInfoDto> untactDoctorList(DayOfHoliday today) {
 
-        DayOfHoliday dayOfWeek = DayOfHoliday.valueOf(today);
+        DayOfHoliday dayOfWeek = today;
 
         // 오늘의 untact가 true인 의사들 가져오기
         List<Member> doctors = doctorOperatingHoursRepository.findUntactMembersByDayOfWeekAndDeletedAtIsNull(dayOfWeek);
@@ -634,5 +634,11 @@ public class MemberService {
         double reviewRate = reviewFeignDto.getAverageRating();
         long totalCount = reviewFeignDto.getCount1Star() + reviewFeignDto.getCount2Stars() + reviewFeignDto.getCount3Stars() +reviewFeignDto.getCount4Stars() + reviewFeignDto.getCount5Stars();
         return new DoctorDetailDto().fromEntity(doctor,hospitalInfoDto, reviewRate, totalCount, operatingHours);
+    }
+
+    public HospitalInfoDto getHospitalName() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Member member = findByMemberEmail(email);
+        return reservationFeignClient.getHospitalinfoById(member.getHospitalId());
     }
 }

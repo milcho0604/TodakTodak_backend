@@ -20,6 +20,7 @@ public class CheckListReservationReqDto {
     private String memberEmail;
     private Long childId;
     private Long hospitalId;
+    private String doctorEmail;
     private String hospitalName;
     private ReserveType reservationType;
     private Status status;
