@@ -24,16 +24,16 @@ public class MemberListResDto {
     private String profileImgUrl;
     private Role role;
     private LocalDateTime deletedAt;
-    private boolean verified;
+    private boolean isVerified;
 
     // 생성자
-    public MemberListResDto(Long id, String name, String memberEmail, String phone, Address address, Boolean verified, LocalDateTime deletedAt, Role role) {
+    public MemberListResDto(Long id, String name, String memberEmail, String phone, Address address, boolean isVerified, LocalDateTime deletedAt, Role role) {
         this.id = id;
         this.name = name;
         this.memberEmail = memberEmail;
         this.address = address;
         this.phone = phone;
-        this.verified = verified;
+        this.isVerified = isVerified;
         this.role = role;
         this.deletedAt = deletedAt;
     }
