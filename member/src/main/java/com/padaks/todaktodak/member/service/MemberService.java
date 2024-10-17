@@ -395,7 +395,7 @@ public class MemberService {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Member member= memberRepository.findByMemberEmailOrThrow(email);
         if (member.getRole().equals(Role.HospitalAdmin)){
-            Page<Member> doctors = memberRepository.findByRoleAndHospitalId(Role.Doctor, member.getHospitalId(), pageable);
+            Page<Member> doctors = memberRepository.findByRoleAndHospitalIdAndDeletedAtIsNull(Role.Doctor, member.getHospitalId(), pageable);
             return doctors.map(doctor ->{
                 List<DoctorOperatingHoursSimpleResDto> operatingHours = doctorOperatingHoursService.getOperatingHoursByDoctorId(doctor.getId());
                 return doctor.doctorListFromEntity(operatingHours);
