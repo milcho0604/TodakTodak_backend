@@ -2,6 +2,7 @@ package com.padaks.todaktodak.hospital.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.padaks.todaktodak.common.dto.CommonResDto;
+import com.padaks.todaktodak.common.dto.HospitalNameFeignDto;
 import com.padaks.todaktodak.common.dto.MemberFeignDto;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.common.exception.exceptionType.HospitalExceptionType;
@@ -152,6 +153,11 @@ public class HospitalService {
         return dtoList;
     }
 
-
+    public HospitalNameFeignDto getHospitalName(Long id){
+        Hospital hospital = hospitalRepository.findByIdOrThrow(id);
+        return HospitalNameFeignDto.builder()
+                .hospitalName(hospital.getName())
+                .build();
+    }
 
 }

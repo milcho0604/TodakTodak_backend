@@ -36,6 +36,9 @@ public class Comment extends BaseTimeEntity{
     @JoinColumn(name = "parent_id")
     private Comment parent;
 
+    private String name;
+    private String profileImg;
+
     public CommentDetailDto listFromEntity(){
         return CommentDetailDto.builder()
                 .id(this.id)
