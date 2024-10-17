@@ -299,7 +299,7 @@ public class MemberController {
     // member list
 //    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/list")
-    public ResponseEntity<Object> memberList(@PageableDefault(size = 10)Pageable pageable) {
+    public ResponseEntity<Object> memberList(Pageable pageable) {
         Page<MemberListResDto> memberListResDtos = memberService.memberList(pageable);
         CommonResDto dto = new CommonResDto(HttpStatus.OK, "회원목록을 조회합니다.", memberListResDtos);
         return new ResponseEntity<>(dto, HttpStatus.OK);
@@ -434,5 +434,14 @@ public class MemberController {
     public ResponseEntity<CommonResDto> doctorDetail(@PathVariable String email) {
         DoctorDetailDto doctorResDto = memberService.doctorDetail(email);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK,"조회 성공",doctorResDto), HttpStatus.OK);
+    }
+
+    // 관리자 멤버 검색
+    @GetMapping("/search")
+    public ResponseEntity<CommonResDto> searchMembers(
+            @RequestParam(required = false) String query,
+            Pageable pageable) {
+        Page<MemberListResDto> members = memberService.adminSearchMembers(query, pageable);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "회원 검색 결과", members), HttpStatus.OK);
     }
 }

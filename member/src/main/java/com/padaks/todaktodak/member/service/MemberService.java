@@ -353,7 +353,7 @@ public class MemberService {
 //        if (!member.getRole().toString().equals("TodakAdmin")){
 //            throw new SecurityException("관리자만 접근이 가능합니다.");
 //        }
-        Page<Member> members = memberRepository.findByRole(Role.Member, pageable);
+        Page<Member> members = memberRepository.findAll(pageable);
         return members.map(a -> a.listFromEntity());
     }
 
@@ -581,5 +581,14 @@ public class MemberService {
         double reviewRate = reviewFeignDto.getAverageRating();
         long totalCount = reviewFeignDto.getCount1Star() + reviewFeignDto.getCount2Stars() + reviewFeignDto.getCount3Stars() +reviewFeignDto.getCount4Stars() + reviewFeignDto.getCount5Stars();
         return new DoctorDetailDto().fromEntity(doctor,hospitalInfoDto, reviewRate, totalCount, operatingHours);
+    }
+
+    // 멤버 검색
+    public Page<MemberListResDto> adminSearchMembers(String query, Pageable pageable) {
+        if (query == null || query.isEmpty()) {
+            return memberRepository.findAll(pageable).map(MemberListResDto::fromEntity);
+        }
+        return memberRepository.findByNameContainingOrMemberEmailContaining(query, query, pageable)
+                .map(MemberListResDto::fromEntity);
     }
 }

@@ -155,6 +155,7 @@ public class Member extends BaseTimeEntity {
                 .memberEmail(this.memberEmail)
                 .profileImgUrl(this.profileImgUrl)
                 .verified(this.isVerified)
+                .deletedAt(this.getDeletedAt())
                 .role(this.role)
                 .build();
     }

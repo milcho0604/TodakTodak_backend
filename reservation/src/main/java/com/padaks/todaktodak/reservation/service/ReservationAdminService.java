@@ -34,7 +34,6 @@ public class ReservationAdminService {
     private final ReservationRepository reservationRepository;
     private final MemberFeign memberFeign;
     private final DtoMapper dtoMapper;
-    private final MemberFeign memberFeign;
 
     private final RedisTemplate<String, Object> redisTemplate;
     private final RealTimeService realTimeService;

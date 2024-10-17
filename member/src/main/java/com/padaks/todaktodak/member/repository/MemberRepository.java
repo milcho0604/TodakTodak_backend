@@ -17,6 +17,7 @@ import java.util.Optional;
 public interface MemberRepository extends JpaRepository<Member, Long> {
     boolean existsByMemberEmail(String memberEmail);
     Optional<Member> findByMemberEmail(String memberEmail);
+    Page<Member> findAll(Pageable pageable);
     Page<Member> findByRole(Role role, Pageable pageable);
     Page<Member>findByRoleAndHospitalId(Role role, Long hospitalId, Pageable pageable);
 
@@ -41,4 +42,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Query("SELECT m FROM Member m WHERE (LOWER(m.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(m.memberEmail) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND m.role = 'Member'")
     List<Member> searchMembers(@Param("keyword") String keyword);
+
+    Page<Member> findByNameContainingOrMemberEmailContaining(String name, String memberEmail, Pageable pageable);
 }
