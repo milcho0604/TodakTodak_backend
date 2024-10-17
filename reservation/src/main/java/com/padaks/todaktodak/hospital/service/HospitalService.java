@@ -7,6 +7,7 @@ import com.padaks.todaktodak.common.dto.MemberFeignDto;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.common.exception.exceptionType.HospitalExceptionType;
 import com.padaks.todaktodak.common.feign.MemberFeignClient;
+import com.padaks.todaktodak.hospital.adminDto.AdminHospitalListDetailResDto;
 import com.padaks.todaktodak.hospital.domain.Hospital;
 import com.padaks.todaktodak.hospital.dto.*;
 import com.padaks.todaktodak.hospital.repository.HospitalRepository;
@@ -15,6 +16,8 @@ import com.padaks.todaktodak.common.util.DistanceCalculator;
 import com.padaks.todaktodak.common.util.S3ClientFileUpload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -195,4 +198,39 @@ public class HospitalService {
 
         return dtoList;
     }
+
+    public Page<AdminHospitalListDetailResDto> adminHospitalListDetailResDtos(Boolean isAccept, Pageable pageable) {
+
+        if (isAccept == null) {
+            return hospitalRepository.findAll(pageable)
+                    .map(AdminHospitalListDetailResDto::fromEntity);
+        }
+
+        // isAccept 값에 따른 필터링
+        if (isAccept) {
+            return hospitalRepository.findByIsAccept(true, pageable)
+                    .map(AdminHospitalListDetailResDto::fromEntity);
+        } else {
+            return hospitalRepository.findByIsAccept(false, pageable)
+                    .map(AdminHospitalListDetailResDto::fromEntity);
+        }
+    }
+
+    // 관리자 멤버 검색
+    public Page<AdminHospitalListDetailResDto> adminSearchHospital(String query, Pageable pageable) {
+//        if (query == null || query.isEmpty()) {
+//            // 전체 병원 목록 반환
+//            return hospitalRepository.findAll(pageable)
+//                    .map(AdminHospitalListDetailResDto::fromEntity);
+//        }
+        System.out.println(query);
+        System.out.println(hospitalRepository.findByRepresentativeNameContainingOrNameContainingOrAdminEmailContaining(
+                        query, query, query, pageable)
+                .map(AdminHospitalListDetailResDto::fromEntity));
+        // 검색어가 있는 경우 검색 처리
+        return hospitalRepository.findByRepresentativeNameContainingOrNameContainingOrAdminEmailContaining(
+                        query, query, query, pageable)
+                .map(AdminHospitalListDetailResDto::fromEntity);
+    }
+
 }

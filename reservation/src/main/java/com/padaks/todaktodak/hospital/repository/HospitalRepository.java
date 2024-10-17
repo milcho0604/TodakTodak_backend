@@ -32,4 +32,9 @@ public interface HospitalRepository extends JpaRepository<Hospital, Long> {
 
     // 삭제되지 않은 병원리스트 중 '~~동'으로 병원찾기
     List<Hospital> findByDongAndDeletedAtIsNullAndIsAcceptIsTrue(String dong);
+
+    Page<Hospital> findByIsAccept(Boolean isAccept, Pageable pageable);
+
+    Page<Hospital> findByRepresentativeNameContainingOrNameContainingOrAdminEmailContaining(
+            String representativeName, String name, String adminEmail, Pageable pageable);
 }

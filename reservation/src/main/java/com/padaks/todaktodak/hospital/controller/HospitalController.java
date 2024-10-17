@@ -3,11 +3,14 @@ package com.padaks.todaktodak.hospital.controller;
 import com.padaks.todaktodak.common.dto.CommonResDto;
 import com.padaks.todaktodak.common.dto.HospitalNameFeignDto;
 import com.padaks.todaktodak.common.dto.MemberFeignDto;
+import com.padaks.todaktodak.hospital.adminDto.AdminHospitalListDetailResDto;
 import com.padaks.todaktodak.hospital.domain.Hospital;
 import com.padaks.todaktodak.hospital.dto.*;
 import com.padaks.todaktodak.hospital.repository.HospitalRepository;
 import com.padaks.todaktodak.hospital.service.HospitalService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -112,5 +115,38 @@ public class HospitalController {
                                           @RequestParam BigDecimal longitude){
         List<HospitalListResDto> hospitalList = hospitalService.getFamousHospitalList(dong, latitude, longitude);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원 리스트 조회성공", hospitalList), HttpStatus.OK);
+    }
+
+    //    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/admin/hospital/list")
+    public ResponseEntity<?> adminHospitalList(
+            @RequestParam(name = "accept", required = false) String isAccept, // true/false
+            Pageable pageable) {
+
+        Boolean acceptStatus = null;
+        if (isAccept != null) {
+            if (isAccept.equals("true")) {
+                acceptStatus = true;
+            } else if (isAccept.equals("false")) {
+                acceptStatus = false;
+            }
+        }
+        System.out.println("isAccept 파라미터 값: " + acceptStatus);
+        Page<AdminHospitalListDetailResDto> hospitalListDetailResDtos = hospitalService.adminHospitalListDetailResDtos(acceptStatus, pageable);
+        CommonResDto dto = new CommonResDto(HttpStatus.OK, "병원 목록을 조회합니다 조회합니다.", hospitalListDetailResDtos);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+
+    @GetMapping("/search")
+    public ResponseEntity<?> searchHospitals(
+            @RequestParam(name = "query", required = false) String query,
+            Pageable pageable) {
+        System.out.println("여기");
+        System.out.println(query);
+//        String trimmedQuery = query.trim();  // 검색어 앞뒤 공백 제거
+        Page<AdminHospitalListDetailResDto> result = hospitalService.adminSearchHospital(query, pageable);
+        CommonResDto dto = new CommonResDto(HttpStatus.OK, "병원 목록을 조회합니다 조회합니다.", result);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 }
