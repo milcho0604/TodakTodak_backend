@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -236,7 +237,10 @@ public class HospitalService {
 
     // admin hospital detail
     public AdminHospitalListDetailResDto adminHospitalDetailResDto(Long id){
-        Hospital hospital = hospitalRepository.findByIdOrThrow(id);
+        System.out.println();
+        Hospital hospital = hospitalRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 병원입니다."));
+//        Hospital hospital = hospitalRepository.findByIdOrThrow(id);
         // 조회된 Hospital 엔티티를 AdminHospitalListDetailResDto로 변환
         return AdminHospitalListDetailResDto.detailFromEntity(hospital);
     }
