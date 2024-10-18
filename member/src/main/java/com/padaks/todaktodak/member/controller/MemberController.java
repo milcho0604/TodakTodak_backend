@@ -365,8 +365,8 @@ public class MemberController {
 
     // 비대면 의사 리스트
     @GetMapping("/untact/list/{today}")
-    public ResponseEntity<CommonResDto> untactList(@PathVariable DayOfHoliday today) {
-        List<DoctorInfoDto> dtoList = memberService.untactDoctorList(today);
+    public ResponseEntity<CommonResDto> untactList(@PathVariable DayOfHoliday today, @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy) {
+        List<DoctorUntactListDto> dtoList = memberService.untactDoctorList(today, search, sortBy);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "의사리스트 조회 성공", dtoList), HttpStatus.OK);
     }
 
