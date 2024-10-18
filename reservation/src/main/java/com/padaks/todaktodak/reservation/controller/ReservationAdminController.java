@@ -1,7 +1,9 @@
 package com.padaks.todaktodak.reservation.controller;
 
+import com.padaks.todaktodak.reservation.domain.ReserveType;
 import com.padaks.todaktodak.reservation.domain.Status;
 import com.padaks.todaktodak.reservation.dto.CheckHospitalListReservationReqDto;
+import com.padaks.todaktodak.reservation.dto.HospitalReservationListReqDto;
 import com.padaks.todaktodak.reservation.dto.UpdateStatusReservation;
 import com.padaks.todaktodak.reservation.service.ReservationAdminService;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +23,7 @@ public class ReservationAdminController {
 
     private final ReservationAdminService reservationAdminService;
 
-    @GetMapping("/list")
+    @GetMapping("/list/untact")
     public ResponseEntity<?> adminListReservation(
             @RequestParam(required = false) String memberEmail,
             @RequestParam(required = false) String doctorEmail,
@@ -30,6 +32,18 @@ public class ReservationAdminController {
             Pageable pageable){
         CheckHospitalListReservationReqDto reqDto = new CheckHospitalListReservationReqDto(memberEmail, doctorEmail, status, date);
         List<?> dto = reservationAdminService.checkListReservation(reqDto, pageable);
+
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<?> adminImmediateReservationList(
+            @RequestParam(required = false) String hospitalName,
+            @RequestParam(required = false) ReserveType reserveType,
+            @RequestParam(required = false) Status status,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date){
+        HospitalReservationListReqDto reqDto = new HospitalReservationListReqDto(hospitalName, reserveType, status, date);
+        List<?> dto = reservationAdminService.checkImmediateReservationList(reqDto);
 
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }

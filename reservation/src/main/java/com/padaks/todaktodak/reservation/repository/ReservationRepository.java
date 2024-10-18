@@ -1,5 +1,6 @@
 package com.padaks.todaktodak.reservation.repository;
 
+import com.padaks.todaktodak.hospital.domain.Hospital;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.domain.ReserveType;
 import com.padaks.todaktodak.reservation.domain.Status;
@@ -56,4 +57,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<Reservation> findByChildId(Long id);
 
     Page<Reservation> findByDoctorEmailAndReservationDateAndStatus(String doctorEmail, LocalDate reservationDate, Status status, Pageable pageable);
+
+    List<Reservation> findByHospitalAndReservationTypeAndReservationDateAndStatus(Hospital hospital, ReserveType reserveType, LocalDate localDate, Status status);
+
+    List<Reservation> findByHospitalAndReservationDateAndStatus(Hospital hospital, LocalDate localDate, Status status);
 }
