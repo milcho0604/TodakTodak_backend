@@ -22,7 +22,7 @@ public class CheckHospitalListReservationResDto {
     private Long childId;
     private String childName;
     private String childSsn;
-    private ReserveType reserveType;
+    private ReserveType reservationType;
     private Status status;
     private MedicalItem medicalItem;
     private LocalDate reservationDate;

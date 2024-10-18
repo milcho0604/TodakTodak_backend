@@ -2,7 +2,10 @@ package com.padaks.todaktodak.reservation.service;
 
 import com.padaks.todaktodak.common.dto.DtoMapper;
 import com.padaks.todaktodak.common.exception.BaseException;
+import com.padaks.todaktodak.hospital.domain.Hospital;
+import com.padaks.todaktodak.hospital.repository.HospitalRepository;
 import com.padaks.todaktodak.reservation.domain.Reservation;
+import com.padaks.todaktodak.reservation.domain.ReserveType;
 import com.padaks.todaktodak.reservation.dto.*;
 import com.padaks.todaktodak.reservation.realtime.RealTimeService;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
@@ -15,6 +18,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +37,7 @@ public class ReservationAdminService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final RealTimeService realTimeService;
 
-    private static final String RESERVATION_LIST_KEY = "doctor_list";
+    private final HospitalRepository hospitalRepository;
 
     public List<?> checkListReservation(
             CheckHospitalListReservationReqDto reqDto,
@@ -65,6 +69,42 @@ public class ReservationAdminService {
         return dtos;
     }
 
+//    해당하는 병원의 당일 예약 리스트
+    public List<?> checkImmediateReservationList(HospitalReservationListReqDto dto){
+        Hospital hospital = hospitalRepository.findByName(dto.getHospitalName())
+                .orElseThrow(() -> new EntityNotFoundException("해당 하는 병원이 없습니다."));
+
+        List<Reservation> reservationList;
+
+        if(dto.getReserveType() != null) {
+            reservationList =
+                    reservationRepository.findByHospitalAndReservationTypeAndReservationDateAndStatus(
+                            hospital,
+                            dto.getReserveType(),
+                            dto.getDate(),
+                            dto.getStatus()
+                    );
+        }else{
+            reservationList =
+                    reservationRepository.findByHospitalAndReservationDateAndStatus(
+                            hospital,
+                            dto.getDate(),
+                            dto.getStatus()
+                    );
+        }
+        List<CheckHospitalListReservationResDto> dtos = new ArrayList<>();
+
+        for(Reservation res : reservationList){
+            ChildResDto childResDto = memberFeign.getMyChild(res.getChildId());
+            CheckHospitalListReservationResDto resDto = dtoMapper.toHospitalListReservation(res, childResDto.getName(), childResDto.getSsn());
+            dtoMapper.setReservationTime(resDto, res);
+            dtos.add(resDto);
+        }
+
+        return dtos;
+    }
+
+//    예약 상태 변경 메소드
     public void statusReservation(UpdateStatusReservation updateStatusReservation){
         Reservation reservation = reservationRepository.findById(updateStatusReservation.getId())
                 .orElseThrow(() -> new BaseException(RESERVATION_NOT_FOUND));
