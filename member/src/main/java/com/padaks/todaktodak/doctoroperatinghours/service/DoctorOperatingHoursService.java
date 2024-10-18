@@ -3,6 +3,7 @@ package com.padaks.todaktodak.doctoroperatinghours.service;
 import com.padaks.todaktodak.common.enumdir.DayOfHoliday;
 import com.padaks.todaktodak.doctoroperatinghours.domain.DoctorOperatingHours;
 import com.padaks.todaktodak.doctoroperatinghours.dto.DoctorOperatingHoursReqDto;
+import com.padaks.todaktodak.doctoroperatinghours.dto.DoctorOperatingHoursResDto;
 import com.padaks.todaktodak.doctoroperatinghours.dto.DoctorOperatingHoursSimpleResDto;
 import com.padaks.todaktodak.doctoroperatinghours.repository.DoctorOperatingHoursRepository;
 import com.padaks.todaktodak.member.domain.Member;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -117,5 +120,41 @@ public class DoctorOperatingHoursService {
         }
 
         hours.setDeletedTimeAt(LocalDateTime.now());
+    }
+
+    public DoctorOperatingHoursResDto getTodayOperatingHourByDoctorId(Long id) {
+        // 오늘의 요일 가져오기
+        DayOfHoliday today = getTodayAsDayOfHoliday();
+
+        // 요일과 의사 ID로 운영 시간 조회
+        DoctorOperatingHours operatingHours = doctorOperatingHoursRepository.findByMemberIdAndDayOfWeekAndDeletedAtIsNull(id, today).orElseThrow(()-> new EntityNotFoundException("해당 운영시간이 없습니다."));
+
+        return new DoctorOperatingHoursResDto().fromEntity(operatingHours);
+    }
+
+    private DayOfHoliday getTodayAsDayOfHoliday() {
+        // 오늘의 요일 가져오기
+        LocalDate today = LocalDate.now();
+        DayOfWeek dayOfWeek = today.getDayOfWeek();
+
+        // DayOfWeek -> DayOfHoliday로 변환
+        switch (dayOfWeek) {
+            case MONDAY:
+                return DayOfHoliday.Monday;
+            case TUESDAY:
+                return DayOfHoliday.Tuesday;
+            case WEDNESDAY:
+                return DayOfHoliday.Wednesday;
+            case THURSDAY:
+                return DayOfHoliday.Thursday;
+            case FRIDAY:
+                return DayOfHoliday.Friday;
+            case SATURDAY:
+                return DayOfHoliday.Saturday;
+            case SUNDAY:
+                return DayOfHoliday.Sunday;
+            default:
+                throw new IllegalStateException("Unexpected value: " + dayOfWeek);
+        }
     }
 }
