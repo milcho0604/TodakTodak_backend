@@ -2,6 +2,7 @@ package com.padaks.todaktodak.payment.controller;
 
 import com.padaks.todaktodak.common.dto.CommonResDto;
 import com.padaks.todaktodak.common.dto.MemberFeignDto;
+import com.padaks.todaktodak.payment.dto.PaymentMemberResDto;
 import com.padaks.todaktodak.payment.dto.PaymentListResDto;
 import com.padaks.todaktodak.payment.dto.PaymentReqDto;
 import com.padaks.todaktodak.payment.service.PaymentService;
@@ -24,14 +25,25 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentController {
     private final PaymentService paymentService;
 
+    // 단건 결제 멤버 요청
     @GetMapping("/get/member")
-    private ResponseEntity<?> getMemberTest(){
+    public ResponseEntity<?> getMemberTest(){
         try {
             MemberFeignDto memberDto = paymentService.getMemberInfo();
             return ResponseEntity.ok(memberDto);
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
 
+    // 정기 결제 멤버 요청
+    @GetMapping("/get/hospital")
+    public ResponseEntity<?> subHospital(){
+        try {
+            PaymentMemberResDto paymentMemberResDto = paymentService.paymentMemberResDto();
+            return ResponseEntity.ok(paymentMemberResDto);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
 
