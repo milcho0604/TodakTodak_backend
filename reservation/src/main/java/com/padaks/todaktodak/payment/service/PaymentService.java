@@ -3,9 +3,12 @@ package com.padaks.todaktodak.payment.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.padaks.todaktodak.common.dto.MemberFeignDto;
 import com.padaks.todaktodak.common.feign.MemberFeignClient;
+import com.padaks.todaktodak.hospital.domain.Hospital;
+import com.padaks.todaktodak.hospital.repository.HospitalRepository;
 import com.padaks.todaktodak.medicalchart.domain.MedicalChart;
 import com.padaks.todaktodak.medicalchart.repository.MedicalChartRepository;
 import com.padaks.todaktodak.payment.domain.Pay;
+import com.padaks.todaktodak.payment.dto.PaymentMemberResDto;
 import com.padaks.todaktodak.payment.domain.PaymentMethod;
 import com.padaks.todaktodak.payment.dto.PaymentListResDto;
 import com.padaks.todaktodak.payment.dto.PaymentReqDto;
@@ -23,7 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,12 +51,21 @@ public class PaymentService {
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final ObjectMapper objectMapper;
     public static MedicalChart medicalChart;
+    public final HospitalRepository hospitalRepository;
 
 
     // member 객체 리턴, 토큰 포함
     public MemberFeignDto getMemberInfo() {
         MemberFeignDto member = memberFeignClient.getMemberEmail();  // Feign Client에 토큰 추가
         return member;
+    }
+
+    // 정기 결제에 필요한 정보 리턴 Res
+    public PaymentMemberResDto paymentMemberResDto(){
+        MemberFeignDto member = memberFeignClient.getMemberEmail();
+        Hospital hospital = hospitalRepository.findById(member.getHospitalId())
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 대표 병원입니다."));
+        return PaymentMemberResDto.fromEntity(hospital, member);
     }
 
     // 진료 내역 객체 리턴 -> medichart 생성시
@@ -241,7 +252,8 @@ public class PaymentService {
             String customerUid = "customer_" + member.getMemberEmail();
             Pay pay = null;
 
-            String name = "정기 구독";
+            // DB에 정기 결제 저장을 정기 구독 + 병원명_사업자 번호로 저장
+            String name = "정기 구독_" + paymentMemberResDto().getHospitalName();
 
             // Pay 엔티티 생성 후 저장
             pay = Pay.builder()
@@ -255,6 +267,7 @@ public class PaymentService {
                     .merchantUid("order_no_" + new Date().getTime())
                     .paymentStatus(PaymentStatus.SUBSCRIBING)  // 결제 완료로 상태 업데이트
                     .paymentMethod(paymentMethod)
+                    .businessRegistrationInfo(paymentMemberResDto().getBusinessRegistrationInfo())
                     .requestTimeStamp(LocalDateTime.now())
                     .approvalTimeStamp(LocalDateTime.now())  // 결제 승인 시간
                     .subscriptionEndDate(LocalDateTime.now().plusMonths(1))
@@ -293,6 +306,7 @@ public class PaymentService {
                     .buyerName(pay.getBuyerName())
                     .name(pay.getName())
                     .buyerTel(pay.getBuyerTel())
+                    .businessRegistrationInfo(pay.getBusinessRegistrationInfo())
                     .paymentStatus(pay.getPaymentStatus().toString())
                     .paymentMethod(pay.getPaymentMethod().toString())
                     .requestTimeStamp(pay.getRequestTimeStamp())

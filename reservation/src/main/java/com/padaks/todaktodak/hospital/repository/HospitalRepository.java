@@ -34,4 +34,9 @@ public interface HospitalRepository extends JpaRepository<Hospital, Long> {
     List<Hospital> findByDongAndDeletedAtIsNullAndIsAcceptIsTrue(String dong);
 
     Optional<Hospital> findByName(String hospitalName);
+
+    Page<Hospital> findByIsAccept(Boolean isAccept, Pageable pageable);
+
+    Page<Hospital> findByRepresentativeNameContainingOrNameContainingOrAdminEmailContaining(
+            String representativeName, String name, String adminEmail, Pageable pageable);
 }

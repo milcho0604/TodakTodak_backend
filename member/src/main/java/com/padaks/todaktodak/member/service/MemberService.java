@@ -5,6 +5,7 @@ import com.padaks.todaktodak.common.enumdir.DayOfHoliday;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.common.feign.ReservationFeignClient;
 import com.padaks.todaktodak.common.config.JwtTokenProvider;
+import com.padaks.todaktodak.doctoroperatinghours.dto.DoctorOperatingHoursResDto;
 import com.padaks.todaktodak.doctoroperatinghours.dto.DoctorOperatingHoursSimpleResDto;
 import com.padaks.todaktodak.doctoroperatinghours.repository.DoctorOperatingHoursRepository;
 import com.padaks.todaktodak.doctoroperatinghours.service.DoctorOperatingHoursService;
@@ -321,6 +322,23 @@ public class MemberService {
         memberRepository.save(member);
     }
 
+    //의사 삭제
+    public void deleteDoctor(String email) {
+        String adminEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Member hospitalAdmin = memberRepository.findByMemberEmailOrThrow(adminEmail);
+
+        Member member = memberRepository.findByMemberEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 사용자 정보입니다."+ email));
+
+        if (hospitalAdmin.getHospitalId().equals(member.getHospitalId())){
+            member.deleteAccount();
+            memberRepository.save(member);
+        }else {
+            throw new IllegalArgumentException("본인 병원에 소속된 의사외에는 삭제 할 수 없습니다.");
+        }
+
+    }
+
     // java 라이브러리 메일 서비스
     private String generateVerificationCode() {
         Random random = new Random();
@@ -425,6 +443,22 @@ public class MemberService {
             List<DoctorOperatingHoursSimpleResDto> operatingHours = doctorOperatingHoursService.getOperatingHoursByDoctorId(doctor.getId());
             return doctor.doctorListFromEntity(operatingHours);
         });
+    }
+
+
+    public Page<DoctorListResDto> doctorListByHospitalForAdmin(Pageable pageable){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Member member= memberRepository.findByMemberEmailOrThrow(email);
+        if (member.getRole().equals(Role.HospitalAdmin)){
+            Page<Member> doctors = memberRepository.findByRoleAndHospitalIdAndDeletedAtIsNull(Role.Doctor, member.getHospitalId(), pageable);
+            return doctors.map(doctor ->{
+                List<DoctorOperatingHoursSimpleResDto> operatingHours = doctorOperatingHoursService.getOperatingHoursByDoctorId(doctor.getId());
+                return doctor.doctorListFromEntity(operatingHours);
+            });
+        }else {
+            throw new  IllegalArgumentException("병원 관리자 이외에는 조회가 불가능합니다.");
+        }
+
     }
 
 //    유저 회원가입은 소셜만 되어있기 때문에 TodakAdmin만 따로 initialDataLoader로 선언해 주었음.
@@ -600,14 +634,14 @@ public class MemberService {
         return members.stream().map(MemberDetailResDto::fromEntity).collect(Collectors.toList());
     }
 
-    public List<DoctorInfoDto> untactDoctorList(DayOfHoliday today) {
+    public List<DoctorUntactListDto> untactDoctorList(DayOfHoliday today, String search, String sortBy) {
 
         DayOfHoliday dayOfWeek = today;
 
         // 오늘의 untact가 true인 의사들 가져오기
         List<Member> doctors = doctorOperatingHoursRepository.findUntactMembersByDayOfWeekAndDeletedAtIsNull(dayOfWeek);
         // DoctorInfoDto 리스트 생성
-        List<DoctorInfoDto> doctorInfoDtoList = new ArrayList<>();
+        List<DoctorUntactListDto> doctorInfoDtoList = new ArrayList<>();
 
         // 의사 리스트 순회하며 각 의사의 병원 정보와 리뷰 정보 가져오기
         for (Member doctor : doctors) {
@@ -620,10 +654,32 @@ public class MemberService {
             long totalCount = reviewFeignDto.getCount1Star() + reviewFeignDto.getCount2Stars() + reviewFeignDto.getCount3Stars() +
                     reviewFeignDto.getCount4Stars() + reviewFeignDto.getCount5Stars();
 
-            // DoctorInfoDto 생성 및 리스트에 추가
-            doctorInfoDtoList.add(new DoctorInfoDto().fromEntity(doctor,hospitalName,totalCount,reviewRate));
-        }
+            DoctorOperatingHoursResDto operatingHoursResDto = doctorOperatingHoursService.getTodayOperatingHourByDoctorId(doctor.getId());
 
+            // DoctorInfoDto 생성 및 리스트에 추가
+            doctorInfoDtoList.add(new DoctorUntactListDto().fromEntity(doctor,hospitalName,totalCount,reviewRate,operatingHoursResDto));
+        }
+        // 검색 조건이 있을 경우 필터링
+        if (search != null && !search.isEmpty() && !search.equals("")) {
+            doctorInfoDtoList = doctorInfoDtoList.stream()
+                    .filter(dto -> dto.getDoctorName().contains(search) || dto.getHospitalName().contains(search))
+                    .collect(Collectors.toList());
+        }
+        // 정렬 기준에 따른 정렬 로직
+        if (sortBy != null) {
+            switch (sortBy) {
+                case "reviewRate":
+                    doctorInfoDtoList.sort(Comparator.comparingDouble(DoctorUntactListDto::getReviewPoint).reversed());
+                    break;
+                case "reviewCount":
+                    doctorInfoDtoList.sort(Comparator.comparingLong(DoctorUntactListDto::getReviewCount).reversed());
+                    break;
+                default:
+                    // 기본 정렬 로직 (예: 리뷰 점수 기준으로 정렬)
+                    doctorInfoDtoList.sort(Comparator.comparingDouble(DoctorUntactListDto::getReviewPoint).reversed());
+                    break;
+            }
+        }
         // DoctorInfoDto 리스트 반환
         return doctorInfoDtoList;
     }

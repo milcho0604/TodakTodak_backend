@@ -168,6 +168,7 @@ public class Member extends BaseTimeEntity {
                 .profileImgUrl(this.profileImgUrl)
                 .role(this.role)
                 .bio(this.bio)
+                .isVerified(this.isVerified)
                 .operatingHours(operatingHours)
                 .build();
     }

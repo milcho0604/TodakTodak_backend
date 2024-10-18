@@ -7,6 +7,7 @@ import com.padaks.todaktodak.common.dto.MemberFeignDto;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.common.exception.exceptionType.HospitalExceptionType;
 import com.padaks.todaktodak.common.feign.MemberFeignClient;
+import com.padaks.todaktodak.hospital.adminDto.AdminHospitalListDetailResDto;
 import com.padaks.todaktodak.hospital.domain.Hospital;
 import com.padaks.todaktodak.hospital.dto.*;
 import com.padaks.todaktodak.hospital.repository.HospitalRepository;
@@ -15,10 +16,13 @@ import com.padaks.todaktodak.common.util.DistanceCalculator;
 import com.padaks.todaktodak.common.util.S3ClientFileUpload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -188,11 +192,56 @@ public class HospitalService {
         // 별점 순으로 정렬
         dtoList.sort(Comparator.comparingDouble(HospitalListResDto::getAverageRating).reversed());
 
-        // 리스트의 크기를 8로 제한
-        if (dtoList.size() > 8) {
-            dtoList = dtoList.subList(0, 8);
+        // 리스트의 크기를 6으로 제한
+        if (dtoList.size() > 6) {
+            dtoList = dtoList.subList(0, 6);
         }
 
         return dtoList;
+    }
+
+    // admin hospital list
+    public Page<AdminHospitalListDetailResDto> adminHospitalListResDtos(Boolean isAccept, Pageable pageable) {
+
+        if (isAccept == null) {
+            return hospitalRepository.findAll(pageable)
+                    .map(AdminHospitalListDetailResDto::listFromEntity);
+        }
+
+        // isAccept 값에 따른 필터링
+        if (isAccept) {
+            return hospitalRepository.findByIsAccept(true, pageable)
+                    .map(AdminHospitalListDetailResDto::listFromEntity);
+        } else {
+            return hospitalRepository.findByIsAccept(false, pageable)
+                    .map(AdminHospitalListDetailResDto::listFromEntity);
+        }
+    }
+
+    // 관리자 멤버 검색
+    public Page<AdminHospitalListDetailResDto> adminSearchHospital(String query, Pageable pageable) {
+//        if (query == null || query.isEmpty()) {
+//            // 전체 병원 목록 반환
+//            return hospitalRepository.findAll(pageable)
+//                    .map(AdminHospitalListDetailResDto::fromEntity);
+//        }
+        System.out.println(query);
+        System.out.println(hospitalRepository.findByRepresentativeNameContainingOrNameContainingOrAdminEmailContaining(
+                        query, query, query, pageable)
+                .map(AdminHospitalListDetailResDto::listFromEntity));
+        // 검색어가 있는 경우 검색 처리
+        return hospitalRepository.findByRepresentativeNameContainingOrNameContainingOrAdminEmailContaining(
+                        query, query, query, pageable)
+                .map(AdminHospitalListDetailResDto::listFromEntity);
+    }
+
+    // admin hospital detail
+    public AdminHospitalListDetailResDto adminHospitalDetailResDto(Long id){
+        System.out.println();
+        Hospital hospital = hospitalRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 병원입니다."));
+//        Hospital hospital = hospitalRepository.findByIdOrThrow(id);
+        // 조회된 Hospital 엔티티를 AdminHospitalListDetailResDto로 변환
+        return AdminHospitalListDetailResDto.detailFromEntity(hospital);
     }
 }
