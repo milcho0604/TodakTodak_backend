@@ -600,7 +600,7 @@ public class MemberService {
         return members.stream().map(MemberDetailResDto::fromEntity).collect(Collectors.toList());
     }
 
-    public List<DoctorInfoDto> untactDoctorList(DayOfHoliday today) {
+    public List<DoctorInfoDto> untactDoctorList(DayOfHoliday today, String search, String sortBy) {
 
         DayOfHoliday dayOfWeek = today;
 
@@ -623,7 +623,27 @@ public class MemberService {
             // DoctorInfoDto 생성 및 리스트에 추가
             doctorInfoDtoList.add(new DoctorInfoDto().fromEntity(doctor,hospitalName,totalCount,reviewRate));
         }
-
+        // 검색 조건이 있을 경우 필터링
+        if (search != null && !search.isEmpty() && !search.equals("")) {
+            doctorInfoDtoList = doctorInfoDtoList.stream()
+                    .filter(dto -> dto.getDoctorName().contains(search) || dto.getHospitalName().contains(search))
+                    .collect(Collectors.toList());
+        }
+        // 정렬 기준에 따른 정렬 로직
+        if (sortBy != null) {
+            switch (sortBy) {
+                case "reviewRate":
+                    doctorInfoDtoList.sort(Comparator.comparingDouble(DoctorInfoDto::getReviewPoint).reversed());
+                    break;
+                case "reviewCount":
+                    doctorInfoDtoList.sort(Comparator.comparingLong(DoctorInfoDto::getReviewCount).reversed());
+                    break;
+                default:
+                    // 기본 정렬 로직 (예: 리뷰 점수 기준으로 정렬)
+                    doctorInfoDtoList.sort(Comparator.comparingDouble(DoctorInfoDto::getReviewPoint).reversed());
+                    break;
+            }
+        }
         // DoctorInfoDto 리스트 반환
         return doctorInfoDtoList;
     }
