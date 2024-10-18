@@ -67,7 +67,11 @@ public class Pay extends BaseTimeEntity {
     // 정기결제일
     private LocalDateTime subscriptionEndDate;
 
+    // 정기 결제 횟수
     private Integer count;
+
+    // 사업자 번호(병원 서비스 - 정기 결제인 경우)
+    private String businessRegistrationInfo;
 
     // 정기 결제 종료일 체크 및 결제 상태 업데이트 메소드
     public boolean isSubscriptionActive() {
