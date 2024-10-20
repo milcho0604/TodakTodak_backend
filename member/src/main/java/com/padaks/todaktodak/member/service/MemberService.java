@@ -111,7 +111,7 @@ public class MemberService {
         Member unAcceptHospitalAdmin = memberRepository.save(hospitalAdmin);
 
         // 개발자 admin이 회원가입 승인전까지는 deletedAt에 시간 넣어서 아직 없는 회원으로 간주
-        unAcceptHospitalAdmin.setDeletedTimeAt(LocalDateTime.now());
+//        unAcceptHospitalAdmin.setDeletedTimeAt(LocalDateTime.now());
 
         return unAcceptHospitalAdmin;
     }
