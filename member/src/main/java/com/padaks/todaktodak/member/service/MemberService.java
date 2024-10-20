@@ -144,6 +144,27 @@ public class MemberService {
         return jwtTokenprovider.createToken(member.getMemberEmail(), member.getRole().name(), member.getId());
     }
 
+    // 대표 원장님 로그인
+    public String hospitalLogin(MemberLoginDto loginDto) {
+        Member member = memberRepository.findByMemberEmail(loginDto.getMemberEmail())
+                .orElseThrow(() -> new RuntimeException("잘못된 이메일/비밀번호 입니다."));
+
+        // Role이 HospitalAdmin 또는 NonUser가 아닌 경우에만 예외를 던짐
+        if (!member.getRole().equals(Role.HospitalAdmin) && !member.getRole().equals(Role.NonUser)) {
+            throw new SecurityException("대표 원장님만 로그인이 가능합니다.");
+        }
+
+        if (!passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {
+            throw new RuntimeException("잘못된 이메일/비밀번호 입니다.");
+        }
+
+        if (member.getDeletedAt() != null){
+            throw new IllegalStateException("탈퇴한 회원입니다.");
+        }
+
+        return jwtTokenprovider.createToken(member.getMemberEmail(), member.getRole().name(), member.getId());
+    }
+
     // 회원가입 검증 로직
     private void validateRegistration(MemberSaveReqDto saveReqDto) {
         if (saveReqDto.getPassword().length() <= 7) {
@@ -709,4 +730,10 @@ public class MemberService {
         Member member = findByMemberEmail(email);
         return reservationFeignClient.getHospitalinfoById(member.getHospitalId());
     }
+
+//    public MemberResDetailDto getMemberById(Long memberId, String currentUserEmail) {
+//        Member member = memberRepository.findByIdAndMemberEmail(memberId, currentUserEmail)
+//                .orElseThrow(() -> new EntityNotFoundException("회원 정보를 찾을 수 없습니다."));
+//        return MemberResDetailDto.fromEntity(member);
+//    }
 }

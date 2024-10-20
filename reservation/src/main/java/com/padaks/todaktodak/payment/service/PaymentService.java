@@ -63,6 +63,7 @@ public class PaymentService {
     // 정기 결제에 필요한 정보 리턴 Res
     public PaymentMemberResDto paymentMemberResDto(){
         MemberFeignDto member = memberFeignClient.getMemberEmail();
+        log.info("Fetched Member Data: " + member);
         Hospital hospital = hospitalRepository.findById(member.getHospitalId())
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 대표 병원입니다."));
         return PaymentMemberResDto.fromEntity(hospital, member);

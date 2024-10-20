@@ -18,6 +18,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -41,6 +42,7 @@ public class MemberController {
     public MemberPayDto getMember() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Member member = memberService.findByMemberEmail(email);
+        log.info("Member data: {}", member);
         return new MemberPayDto(member.getMemberEmail(), member.getName(), member.getPhoneNumber(), member.getRole(), member.getReportCount(), member.getHospitalId(), member.getProfileImgUrl());
     }
 
@@ -110,6 +112,29 @@ public class MemberController {
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(new CommonErrorDto(HttpStatus.FORBIDDEN, "이메일 인증이 필요합니다."));
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            if (e.getMessage().contains("비활성화 상태")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new CommonErrorDto(HttpStatus.UNAUTHORIZED, e.getMessage()));
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new CommonErrorDto(HttpStatus.UNAUTHORIZED, "잘못된 이메일/비밀번호입니다."));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new CommonErrorDto(HttpStatus.UNAUTHORIZED, "로그인 중 오류가 발생했습니다."));
+        }
+    }
+    @PostMapping("/hospital/login")
+    public ResponseEntity<?> hospitalLogin(@RequestBody MemberLoginDto loginDto) {
+        try {
+            String token = memberService.hospitalLogin(loginDto);
+            System.out.println("Generated JWT Token: " + token);
+            return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "로그인 성공", token));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new CommonErrorDto(HttpStatus.FORBIDDEN, "인증되지 않았습니다."));
         } catch (RuntimeException e) {
             e.printStackTrace();
             if (e.getMessage().contains("비활성화 상태")) {
@@ -490,6 +515,20 @@ public class MemberController {
     public ResponseEntity<CommonResDto> hospitalName() {
         HospitalInfoDto dto = memberService.getHospitalName();
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK,"조회 성공",dto), HttpStatus.OK);
-
     }
+
+    // 특정 회원의 정보를 가져오는 API
+//    @GetMapping("/{memberId}")
+//    public ResponseEntity<?> getMemberById(
+//            @PathVariable Long memberId,
+//            Authentication authentication) {
+//
+//        // 토큰에서 사용자 정보 확인
+//        String currentUserEmail = authentication.getName();
+//
+//        // 회원 정보 조회
+//        MemberResDetailDto member = memberService.getMemberById(memberId,currentUserEmail);
+//
+//        return ResponseEntity.ok(member);
+//    }
 }

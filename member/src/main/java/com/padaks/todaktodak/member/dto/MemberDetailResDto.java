@@ -18,6 +18,7 @@ public class MemberDetailResDto {
     private String memberEmail;
     private String profileImgUrl;
     private Role role;
+    private boolean verified;
 
     public static MemberDetailResDto fromEntity(Member member){
         return MemberDetailResDto.builder()
@@ -26,6 +27,7 @@ public class MemberDetailResDto {
                 .memberEmail(member.getMemberEmail())
                 .profileImgUrl(member.getProfileImgUrl())
                 .role(member.getRole())
+                .verified(member.isVerified())
                 .build();
     }
 }

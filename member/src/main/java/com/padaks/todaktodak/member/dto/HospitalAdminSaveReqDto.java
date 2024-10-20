@@ -31,7 +31,7 @@ public class HospitalAdminSaveReqDto {
                 .password(encodedPassword) // 암호화된 비밀번호
                 .phoneNumber(dto.getAdminPhoneNumber())
                 .hospitalId(dto.getHospitalId())
-                .role(Role.HospitalAdmin)
+                .role(Role.NonUser)
                 .build();
     }
 }
