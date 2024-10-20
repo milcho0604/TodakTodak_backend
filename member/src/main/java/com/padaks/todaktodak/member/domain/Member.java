@@ -87,11 +87,13 @@ public class Member extends BaseTimeEntity {
         this.address = new Address(temp, temp, temp);
         return this;
     }
+
     public Member updateName(String name) {
         this.name = name;
         return this;
     }
-    public Member updateFcmToken(String fcmToken){
+
+    public Member updateFcmToken(String fcmToken) {
         this.fcmToken = fcmToken;
         return this;
     }
@@ -101,7 +103,7 @@ public class Member extends BaseTimeEntity {
         this.profileImgUrl = newUrl;
     }
 
-    public void updateVerified(){
+    public void updateVerified() {
         this.isVerified = true;
     }
 
@@ -126,10 +128,14 @@ public class Member extends BaseTimeEntity {
     }
 
     // 의사 약력 변경
-    public void changeBio(String newBio){this.bio = newBio;}
+    public void changeBio(String newBio) {
+        this.bio = newBio;
+    }
 
     //의사 소속된 병원 변경
-    public void changeHospitalId(Long hospitalId){this.hospitalId = hospitalId;}
+    public void changeHospitalId(Long hospitalId) {
+        this.hospitalId = hospitalId;
+    }
 
     public String getRoleKey() {
         return this.role.getKey();
@@ -140,13 +146,13 @@ public class Member extends BaseTimeEntity {
         this.setDeletedTimeAt(LocalDateTime.now());  // 현재 시간을 삭제 시간으로 설정
     }
 
-//    노쇼 카운트 초기화
-    public void clearNoShowCount(){
+    //    노쇼 카운트 초기화
+    public void clearNoShowCount() {
         this.noShowCount = 0;
     }
 
     // 유저 목록 조회
-    public MemberListResDto listFromEntity(){
+    public MemberListResDto listFromEntity() {
         return MemberListResDto.builder()
                 .id(this.id)
                 .name(this.name)
@@ -160,7 +166,7 @@ public class Member extends BaseTimeEntity {
                 .build();
     }
 
-    public DoctorListResDto doctorListFromEntity(List<DoctorOperatingHoursSimpleResDto> operatingHours){
+    public DoctorListResDto doctorListFromEntity(List<DoctorOperatingHoursSimpleResDto> operatingHours) {
         return DoctorListResDto.builder()
                 .id(this.id)
                 .name(this.name)
@@ -173,11 +179,11 @@ public class Member extends BaseTimeEntity {
                 .build();
     }
 
-    public void resetPassword(String password){
+    public void resetPassword(String password) {
         this.password = password;
     }
 
-    public void incressNoShowCount(){
+    public void incressNoShowCount() {
         this.noShowCount++;
     }
 
@@ -189,4 +195,9 @@ public class Member extends BaseTimeEntity {
     public void updatePhoneNumber(String phone) {
         this.phoneNumber = phone;
     }
+
+    public void updateRole(Role role) {
+        this.role = role;
+    }
+
 }

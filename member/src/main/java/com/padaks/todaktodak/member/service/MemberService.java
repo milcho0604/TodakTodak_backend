@@ -731,9 +731,18 @@ public class MemberService {
         return reservationFeignClient.getHospitalinfoById(member.getHospitalId());
     }
 
-//    public MemberResDetailDto getMemberById(Long memberId, String currentUserEmail) {
-//        Member member = memberRepository.findByIdAndMemberEmail(memberId, currentUserEmail)
-//                .orElseThrow(() -> new EntityNotFoundException("회원 정보를 찾을 수 없습니다."));
-//        return MemberResDetailDto.fromEntity(member);
-//    }
+    // 멤버 역할 업데이트 및 새로운 토큰 생성
+    public String updateMemberRoleAndGenerateNewToken(Long memberId) {
+        // 멤버 정보 조회
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("멤버를 찾을 수 없습니다."));
+
+        // 멤버 역할 변경 (결제 성공 후)
+        member.updateRole(Role.HospitalAdmin);
+        memberRepository.save(member);
+
+        // 새로운 JWT 토큰 생성
+        return jwtTokenprovider.createToken(member.getMemberEmail(), member.getRole().name(), member.getId());
+    }
+
 }

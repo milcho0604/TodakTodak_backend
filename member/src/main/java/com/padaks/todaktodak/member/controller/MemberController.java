@@ -517,18 +517,15 @@ public class MemberController {
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK,"조회 성공",dto), HttpStatus.OK);
     }
 
-    // 특정 회원의 정보를 가져오는 API
-//    @GetMapping("/{memberId}")
-//    public ResponseEntity<?> getMemberById(
-//            @PathVariable Long memberId,
-//            Authentication authentication) {
-//
-//        // 토큰에서 사용자 정보 확인
-//        String currentUserEmail = authentication.getName();
-//
-//        // 회원 정보 조회
-//        MemberResDetailDto member = memberService.getMemberById(memberId,currentUserEmail);
-//
-//        return ResponseEntity.ok(member);
-//    }
+    // 결제 성공 -> 멤버 role 업데이트 및 토큰 재발급 요청
+    @PostMapping("/success")
+    public ResponseEntity<?> updateRoleAndGenerateNewToken(@RequestBody PaymentSuccessDto paymentSuccessDto) {
+        try {
+            // 멤버 역할 업데이트 및 새로운 토큰 생성
+            String newToken = memberService.updateMemberRoleAndGenerateNewToken(paymentSuccessDto.getMemberId());
+            return ResponseEntity.ok(newToken);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("토큰 갱신 실패");
+        }
+    }
 }
