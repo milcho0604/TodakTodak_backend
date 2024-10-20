@@ -129,8 +129,13 @@ public class MemberService {
     public String login(MemberLoginDto loginDto) {
         Member member = memberRepository.findByMemberEmail(loginDto.getMemberEmail())
                 .orElseThrow(() -> new RuntimeException("잘못된 이메일/비밀번호 입니다."));
+
         if (member.isVerified() == false){
             throw new SecurityException("이메일 인증이 필요합니다.");
+        }
+
+        if (member.getRole().equals(Role.HospitalAdmin)){
+            throw new RuntimeException("대표원장님은 해당 링크로 로그인할 수 없습니다.");
         }
 
         if (!passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {

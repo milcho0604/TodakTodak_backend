@@ -22,6 +22,8 @@ public class HospitalAdminSaveReqDto {
     private String adminPhoneNumber; // 병원 admin 전화번호
 
     private Long hospitalId; // 저장된 병원 id
+    @Builder.Default
+    private boolean verified = true;
 
     public static Member toEntity(HospitalAdminSaveReqDto dto,
                                   String encodedPassword){
@@ -32,6 +34,7 @@ public class HospitalAdminSaveReqDto {
                 .phoneNumber(dto.getAdminPhoneNumber())
                 .hospitalId(dto.getHospitalId())
                 .role(Role.NonUser)
+                .isVerified(dto.verified)
                 .build();
     }
 }
