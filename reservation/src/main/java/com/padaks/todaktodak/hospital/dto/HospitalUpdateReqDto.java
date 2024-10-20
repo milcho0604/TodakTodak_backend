@@ -36,11 +36,11 @@ public class HospitalUpdateReqDto {
 
     private BigDecimal longitude; //경도
 
-    private String businessRegistrationInfo; // 사업자등록번호
-
-    private String representativeName; // 대표자 이름
-
-    private String representativePhoneNumber; // 대표자 핸드폰 번호
+//    private String businessRegistrationInfo; // 사업자등록번호
+//
+//    private String representativeName; // 대표자 이름
+//
+//    private String representativePhoneNumber; // 대표자 핸드폰 번호
 
     private Long untactFee; // 비대면진료비
 

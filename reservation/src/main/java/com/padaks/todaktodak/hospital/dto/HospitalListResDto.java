@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -51,7 +52,7 @@ public class HospitalListResDto {
                                                 String distance,
                                                 Double averageRating,
                                                 Long reviewCount
-                                                ){
+    ){
 
         HospitalOperatingHours todayOperatingHours = null; // 오늘 병원영업시간
         String todaySchedule = null;
