@@ -20,8 +20,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -126,7 +128,7 @@ public class HospitalService {
     }
 
     // 병원 리스트 조회 ('~~동' 주소기준)
-    // TODO - 정렬조건 : 거리가까운 순, 대기자 적은 순
+    // TODO - 정렬조건 : 거리가까운 순, 별점순, 리뷰 순
     public List<HospitalListResDto> getHospitalList(String dong,
                                                     BigDecimal latitude,
                                                     BigDecimal longitude){
@@ -152,6 +154,59 @@ public class HospitalService {
         return dtoList;
     }
 
+    // 문자열 거리값을 미터(m)로 변환하는 메소드
+    private Double convertDistanceToMeters(String distance) {
+        if (distance.endsWith("km")) {
+            // "km" 단위일 경우 km를 미터로 변환
+            return Double.parseDouble(distance.replace(" km", "")) * 1000;
+        } else if (distance.endsWith("m")) {
+            // "m" 단위일 경우 그대로 사용
+            return Double.parseDouble(distance.replace(" m", ""));
+        } else {
+            throw new NumberFormatException("Invalid distance format");
+        }
+    }
+
+    // 정렬리스트 테스트
+    public List<HospitalListResDto> getSortedHospitalList(String dong,
+                                                    BigDecimal latitude,
+                                                    BigDecimal longitude,
+                                                    String sort){
+
+        List<Hospital> hospitalList = hospitalRepository.findByDongAndDeletedAtIsNullAndIsAcceptIsTrue(dong);
+
+        // 병원 리스트 -> DTO 리스트로 변환하면서 정렬 조건 적용
+        return hospitalList.stream()
+                .map(hospital -> {
+                    // 병원과 사용자 간의 직선 거리 계산
+                    String distance = distanceCalculator.calculateDistance(hospital.getLatitude(), hospital.getLongitude(), latitude, longitude);
+
+                    // 병원별 리뷰 평균평점과 리뷰 개수 조회 (null 체크 후 0으로 세팅)
+                    Double averageRating = Optional.ofNullable(reviewRepository.findAverageRatingByHospitalId(hospital.getId())).orElse(0.0);
+                    Long reviewCount = Optional.ofNullable(reviewRepository.countByHospitalId(hospital.getId())).orElse(0L);
+
+                    // DTO 생성
+                    return HospitalListResDto.fromEntity(hospital, null, distance, averageRating, reviewCount);
+                })
+                .sorted((dto1, dto2) -> {
+                    // 정렬 조건에 따른 Comparator 설정
+                    switch (sort) {
+                        case "distance":
+                            try {
+                                return Double.compare(convertDistanceToMeters(dto1.getDistance()), convertDistanceToMeters(dto2.getDistance()));
+                            } catch (NumberFormatException e) {
+                                return 0; // 거리 변환 실패 시 정렬하지 않음
+                            }
+                        case "rating":
+                            return Double.compare(dto2.getAverageRating(), dto1.getAverageRating()); // 평점 내림차순
+                        case "review":
+                            return Long.compare(dto2.getReviewCount(), dto1.getReviewCount()); // 리뷰 개수 내림차순
+                        default:
+                            return 0; // 정렬 조건 없을 경우
+                    }
+                })
+                .collect(Collectors.toList()); // 정렬된 리스트를 수집
+    }
 
 
 }
