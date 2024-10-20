@@ -85,9 +85,9 @@ public class Hospital extends BaseTimeEntity {
         this.keywords = dto.getKeywords();
         this.latitude = dto.getLatitude();
         this.longitude = dto.getLongitude();
-        this.businessRegistrationInfo = dto.getBusinessRegistrationInfo();
-        this.representativeName = dto.getRepresentativeName();
-        this.representativePhoneNumber = dto.getRepresentativePhoneNumber();
+//        this.businessRegistrationInfo = dto.getBusinessRegistrationInfo();
+//        this.representativeName = dto.getRepresentativeName();
+//        this.representativePhoneNumber = dto.getRepresentativePhoneNumber();
         this.untactFee = dto.getUntactFee();
     }
 
