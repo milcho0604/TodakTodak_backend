@@ -41,24 +41,14 @@ public class MemberController {
     public MemberPayDto getMember() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Member member = memberService.findByMemberEmail(email);
-        return new MemberPayDto(member.getMemberEmail(), member.getName(), member.getPhoneNumber(), member.getRole(), member.getReportCount(), member.getHospitalId());
+        return new MemberPayDto(member.getMemberEmail(), member.getName(), member.getPhoneNumber(), member.getRole(), member.getReportCount(), member.getHospitalId(), member.getProfileImgUrl());
     }
-
-//    @GetMapping("/get/{memberEmail}")
-//    public MemberFeignNameDto getMemberName(@PathVariable String memberEmail){
-//        Member member = memberService.findByMemberEmail(memberEmail);
-//        String name = member.getName();
-//        return MemberFeignNameDto.builder()
-//                .name(name)
-//                .build();
-//    }
 
     @GetMapping("/get/{email}")
     public MemberResDto getMemberByEmail(@PathVariable String email) {
         Member member = memberService.findByMemberEmail(email);
         return new MemberResDto().fromEntity(member);
     }
-
 
     @GetMapping("/doctor/{email}")
     public ResponseEntity<CommonResDto> getDoctorInfo(@PathVariable String email){
@@ -272,6 +262,27 @@ public class MemberController {
         }
     }
 
+    //병원 관리자 의사 삭제
+    @PostMapping("/delete-doctor")
+    public ResponseEntity<?> deleteDoctor(@ModelAttribute DoctorDeleteDto dto) {
+        try {
+            if (!"의사 삭제 후 동일 이메일로 등록할 수 없음을 동의합니다".equals(dto.getConfirmation())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new CommonResDto(HttpStatus.BAD_REQUEST, "회원 탈퇴 문구가 올바르지 않습니다.", null));
+            }
+            memberService.deleteDoctor(dto.getDoctorEmail());
+            return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "의사 삭제에 성공하였습니다.",null));
+        }catch (EntityNotFoundException e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new CommonResDto(HttpStatus.NOT_FOUND, "선택한 의사를 찾을 수 없습니다", e.getMessage()));
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new CommonResDto(HttpStatus.BAD_REQUEST, "의사 삭제에 실패하였습니다", e.getMessage()));
+        }
+    }
+
     // java 라이브러리 메일 서비스 : 인증 코드 전송
     @PostMapping("/send-verification-code")
     public ResponseEntity<?> sendVerificationCode(@RequestBody EmailVerificationDto verificationDto) {
@@ -300,11 +311,27 @@ public class MemberController {
     // member list
 //    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/list")
-    public ResponseEntity<Object> memberList(@PageableDefault(size = 10)Pageable pageable) {
-        Page<MemberListResDto> memberListResDtos = memberService.memberList(pageable);
+    public ResponseEntity<?> memberList(
+            @RequestParam(required = false) Boolean verified, // true/false
+            @RequestParam(required = false) Boolean deleted,  // true: 탈퇴, false: 정상
+            @RequestParam(required = false) String role,  // true: 탈퇴, false: 정상
+            Pageable pageable) {
+        Page<MemberListResDto> memberListResDtos = memberService.memberList(verified, deleted, role, pageable);
         CommonResDto dto = new CommonResDto(HttpStatus.OK, "회원목록을 조회합니다.", memberListResDtos);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
+
+
+    // 관리자 멤버 검색
+    @GetMapping("/search")
+    public ResponseEntity<?> searchMembers(
+            @RequestParam String query,
+            Pageable pageable) {
+        Page<MemberListResDto> members = memberService.adminSearchMembers(query, pageable);
+        CommonResDto dto = new CommonResDto(HttpStatus.OK, "검색 결과", members);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
 
     @GetMapping("/doctorList")
     public ResponseEntity<Object> doctorList(Pageable pageable) {
@@ -321,10 +348,32 @@ public class MemberController {
         return new ResponseEntity<>(commonResDto, HttpStatus.OK);
     }
 
+    //병원 별 의사 목록
+    @GetMapping("/doctors")
+    public ResponseEntity<Object> doctorListByHospitalForAdmin(Pageable pageable) {
+        try{
+            Page<DoctorListResDto> dtos = memberService.doctorListByHospitalForAdmin(pageable);
+            CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "병원 관리자 용 병원별 의사목록을 조회합니다.", dtos);
+            return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
+            CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.BAD_REQUEST, e.getMessage());
+            return new ResponseEntity<>(commonErrorDto, HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
     // 비대면 의사 리스트
     @GetMapping("/untact/list/{today}")
-    public ResponseEntity<CommonResDto> untactList(@PathVariable DayOfHoliday today) {
-        List<DoctorInfoDto> dtoList = memberService.untactDoctorList(today);
+    public ResponseEntity<CommonResDto> untactList(@PathVariable DayOfHoliday today, @RequestParam(required = false) String search, @RequestParam(required = false) String sortBy) {
+        List<DoctorUntactListDto> dtoList = memberService.untactDoctorList(today, search, sortBy);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "의사리스트 조회 성공", dtoList), HttpStatus.OK);
+    }
+
+    // 인기 비대면 의사 리스트
+    @GetMapping("/untact/good/list/{today}")
+    public ResponseEntity<CommonResDto> famousUntactList(@PathVariable DayOfHoliday today) {
+        List<DoctorInfoDto> dtoList = memberService.famousUntactList(today);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "의사리스트 조회 성공", dtoList), HttpStatus.OK);
     }
 

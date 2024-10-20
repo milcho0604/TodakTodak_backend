@@ -15,4 +15,5 @@ public class MemberPayDto {
     private Role role;
     private int reportCount;
     private Long hospitalId;
+    private String profileImgUrl;
 }

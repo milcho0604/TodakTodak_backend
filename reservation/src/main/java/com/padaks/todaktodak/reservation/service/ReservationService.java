@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import javax.print.Doc;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
@@ -131,7 +132,7 @@ public class ReservationService {
     }
 
 //    당일 예약 기능
-    public void immediateReservation(ReservationSaveReqDto dto){
+    public ReservationSaveResDto immediateReservation(ReservationSaveReqDto dto){
         log.info("ReservationService[immediateReservation] : 예약 요청 처리 시작");
 
         DoctorResDto doctorResDto = memberFeign.getDoctor(dto.getDoctorEmail());
@@ -166,10 +167,10 @@ public class ReservationService {
             String notificationMessage = objectMapper.writeValueAsString(messageData);
             kafkaTemplate.send("immediate-reservation-success-notify", notificationMessage);
             log.info("KafkaListener[handleReservation] : 예약 대기열 처리 완료");
+            return new ReservationSaveResDto().fromEntity(reservation);
         } catch (JsonProcessingException e) {
             throw new BaseException(JSON_PARSING_ERROR);
         }
-        log.info("ReservationService[immediateReservation] : 완료");
     }
 
 //    예약 취소 기능
@@ -324,11 +325,13 @@ public class ReservationService {
                 reservationRepository.findByMemberEmailAndReservationDateGreaterThanEqualAndStatus(member.getMemberEmail(), today, Status.Confirmed);
         List<ReservationHistory> reservationHistoryList = reservationHistoryRepository.findByMemberEmailAndReservationDateGreaterThanEqual(member.getMemberEmail(), today);
 
+
         List<ComesReservationResDto> comesReservationResDtos = new ArrayList<>();
 
         for(Reservation res : reservationList){
             ChildResDto childResDto = memberFeign.getMyChild(res.getChildId());
-            ComesReservationResDto dto = dtoMapper.toTodayReservationResDto(res, childResDto);
+            DoctorResDto doctorResDto = memberFeign.getDoctor(res.getDoctorEmail());
+            ComesReservationResDto dto = dtoMapper.toTodayReservationResDto(res, childResDto, doctorResDto.getId());
             dtoMapper.setReservationTime(dto, res);
             comesReservationResDtos.add(dto);
         }
@@ -349,7 +352,7 @@ public class ReservationService {
         MemberFeignDto member = getMemberInfo();
 
         Page<Reservation> reservationList =
-                reservationRepository.findByMemberEmailAndReservationDateBeforeOrStatus(member.getMemberEmail(), today, Status.Completed ,pageable);
+                reservationRepository.findByMemberEmailAndReservationDateBeforeOrStatusIsNot(member.getMemberEmail(), today, Status.Confirmed ,pageable);
         List<ReservationHistory> reservationHistoryList =
                 reservationHistoryRepository.findByMemberEmailAndReservationDateBefore(member.getMemberEmail(), today);
 
@@ -357,7 +360,8 @@ public class ReservationService {
 
         for(Reservation res : reservationList){
             ChildResDto childResDto = memberFeign.getMyChild(res.getChildId());
-            ComesReservationResDto dto = dtoMapper.toTodayReservationResDto(res, childResDto);
+            DoctorResDto doctorResDto = memberFeign.getDoctor(res.getDoctorEmail());
+            ComesReservationResDto dto = dtoMapper.toTodayReservationResDto(res, childResDto, doctorResDto.getId());
             dtoMapper.setReservationTime(dto, res);
             comesReservationResDtos.add(dto);
         }

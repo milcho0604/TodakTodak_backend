@@ -25,4 +25,6 @@ public class PaymentReqDto {
     private LocalDateTime requestTimeStamp;
     private LocalDateTime approvalTimeStamp;
     private String responseDetails;
+    private String businessRegistrationInfo;
+
 }

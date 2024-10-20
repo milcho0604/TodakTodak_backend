@@ -154,7 +154,8 @@ public class Member extends BaseTimeEntity {
                 .address(this.address)
                 .memberEmail(this.memberEmail)
                 .profileImgUrl(this.profileImgUrl)
-                .verified(this.isVerified)
+                .isVerified(this.isVerified)
+                .deletedAt(this.getDeletedAt())
                 .role(this.role)
                 .build();
     }
@@ -167,6 +168,7 @@ public class Member extends BaseTimeEntity {
                 .profileImgUrl(this.profileImgUrl)
                 .role(this.role)
                 .bio(this.bio)
+                .isVerified(this.isVerified)
                 .operatingHours(operatingHours)
                 .build();
     }

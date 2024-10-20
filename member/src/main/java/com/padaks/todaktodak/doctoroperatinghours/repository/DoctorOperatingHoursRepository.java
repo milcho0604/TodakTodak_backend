@@ -26,4 +26,6 @@ public interface DoctorOperatingHoursRepository extends JpaRepository<DoctorOper
     // 오늘 요일과 untact 필터, 삭제되지 않은 운영 시간을 기준으로 멤버 찾기
     @Query("SELECT d.member FROM DoctorOperatingHours d WHERE d.dayOfWeek = :dayOfWeek AND d.untact = true AND d.deletedAt IS NULL")
     List<Member> findUntactMembersByDayOfWeekAndDeletedAtIsNull(DayOfHoliday dayOfWeek);
+
+    Optional<DoctorOperatingHours> findByMemberIdAndDayOfWeekAndDeletedAtIsNull(Long memberId, DayOfHoliday dayOfWeek);
 }

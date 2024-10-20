@@ -16,15 +16,13 @@ import java.time.LocalTime;
 @Builder
 public class DoctorOperatingHoursResDto {
     private Long id;
-    private Member member;
     private DayOfHoliday dayOfWeek;
     private LocalTime openTime;
     private LocalTime closeTime;
 
-    public static DoctorOperatingHoursResDto fromEntity(DoctorOperatingHours hours){
+    public DoctorOperatingHoursResDto fromEntity(DoctorOperatingHours hours){
         return DoctorOperatingHoursResDto.builder()
                 .id(hours.getId())
-                .member(hours.getMember())
                 .dayOfWeek(hours.getDayOfWeek())
                 .openTime(hours.getOpenTime())
                 .closeTime(hours.getCloseTime())

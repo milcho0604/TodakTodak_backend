@@ -1,8 +1,12 @@
 package com.padaks.todaktodak.post.service;
 
+import ch.qos.logback.core.joran.conditional.IfAction;
 import com.padaks.todaktodak.comment.dto.CommentDetailDto;
 import com.padaks.todaktodak.comment.service.CommentService;
+import com.padaks.todaktodak.common.dto.HospitalNameFeignDto;
 import com.padaks.todaktodak.common.dto.MemberFeignNameDto;
+import com.padaks.todaktodak.common.dto.MemberInfoDto;
+import com.padaks.todaktodak.common.feign.HospitalFeignClient;
 import com.padaks.todaktodak.common.feign.MemberFeignClient;
 import com.padaks.todaktodak.post.domain.Post;
 import com.padaks.todaktodak.post.dto.*;
@@ -20,7 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -40,16 +46,18 @@ public class PostService {
         return member;
     }
 
-    public MemberFeignNameDto getMemberName(String memberEmail){
-        MemberFeignNameDto memberName = memberPostFeignClient.getMemberName(memberEmail);
-        return  memberName;
+    public MemberInfoDto getMemberName(String memberEmail){
+        MemberInfoDto dto = memberPostFeignClient.getMemberByEmail(memberEmail);
+        return  dto;
     }
 
     public void create(PostsaveDto dto){
 
-        MultipartFile postImage = dto.getPostImage();
+        MultipartFile postImage = dto.getPostImage(); //게시글 사진
+
         MemberFeignDto member = getMemberInfo();
         String memberEmail = member.getMemberEmail();
+        String profileImgUrl = member.getProfileImgUrl();
         int reportCount = member.getReportCount();
 
         // 신고 횟수가 5 이상일 경우 예외 처리
@@ -57,24 +65,37 @@ public class PostService {
             throw new IllegalArgumentException("신고 횟수가 5회 이상인 회원은 포스트를 작성할 수 없습니다.");
         }
 
+
+
+        String name;
+        if (!member.getRole().equals("Doctor")){
+            name = maskSecondCharacter(member.getName());
+        }else {
+            name = member.getName() + " 의사";
+        }
+
         Post post;
         if(postImage != null){
             String imageUrl = s3ClientFileUpload.upload(postImage);
-            post = dto.toEntity(imageUrl, memberEmail);
+            post = dto.toEntity(imageUrl, memberEmail, name, profileImgUrl);
+            postRepository.save(post);
         }else {
-            post = dto.toEntity(null, memberEmail);
+            post = dto.toEntity(null, memberEmail, name, profileImgUrl);
+            postRepository.save(post);
         }
-        postRepository.save(post);
+
+
     }
 
     // 게시글 리스트
-    public Page<PostListDto> postList(Pageable pageable){
-        Page<Post> posts = postRepository.findByDeletedTimeAtIsNull(pageable);
-        return posts.map(post -> {
+    public List<PostListDto> postList(){
+        List<Post> posts = postRepository.findByDeletedTimeAtIsNull();
+        // Post -> PostListDto로 변환
+        return posts.stream().map(post -> {
             Long viewCount = getPostViews(post.getId());   // Redis에서 조회수 가져오기
             Long likeCount = getPostLikesCount(post.getId());   // Redis에서 좋아요 수 가져오기
             return post.listFromEntity(viewCount, likeCount);   // 조회수와 좋아요 수를 포함한 DTO로 변환
-        });
+        }).collect(Collectors.toList());   // 리스트로 변환
     }
 
     // my post list !
@@ -93,15 +114,13 @@ public class PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(()-> new EntityNotFoundException("존재하지 않는 post입니다."));
 
-        String name = maskSecondCharacter(getMemberName(post.getMemberEmail()).getName());
 
         // 조회수 증가 로직 추가
         incrementPostViews(id);
         Long viewCount = getPostViews(id);
         Long likeCount = getPostLikesCount(id);
 
-        List<CommentDetailDto> comments = commentService.getCommentByPostId(id);
-        PostDetailDto postDetailDto = PostDetailDto.fromEntity(post, comments, viewCount, likeCount, name);
+        PostDetailDto postDetailDto = PostDetailDto.fromEntity(post, viewCount, likeCount);
         return postDetailDto;
     }
 
@@ -216,6 +235,21 @@ public class PostService {
         return name;
     }
 
+//   좋아요 많은 게시글
+    public List<PostListDto> famousPostList() {
+        List<Post> posts = postRepository.findByDeletedTimeAtIsNull();
+        // Post -> PostListDto로 변환
+        List<PostListDto> postListDtoList = posts.stream().map(post -> {
+            Long viewCount = getPostViews(post.getId());   // Redis에서 조회수 가져오기
+            Long likeCount = getPostLikesCount(post.getId());   // Redis에서 좋아요 수 가져오기
+            return post.listFromEntity(viewCount, likeCount);   // 조회수와 좋아요 수를 포함한 DTO로 변환
+        }).collect(Collectors.toList());// 리스트로 변환
 
+        postListDtoList.sort(Comparator.comparingDouble(PostListDto::getLikeCount).reversed());
+        if (postListDtoList.size() > 3) {
+            postListDtoList = postListDtoList.subList(0,3);
+        }
+        return postListDtoList;
+    }
 }
 

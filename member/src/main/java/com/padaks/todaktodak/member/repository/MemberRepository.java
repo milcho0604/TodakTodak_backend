@@ -17,9 +17,11 @@ import java.util.Optional;
 public interface MemberRepository extends JpaRepository<Member, Long> {
     boolean existsByMemberEmail(String memberEmail);
     Optional<Member> findByMemberEmail(String memberEmail);
+    Page<Member> findAll(Pageable pageable);
     Page<Member> findByRole(Role role, Pageable pageable);
-    Page<Member>findByRoleAndHospitalId(Role role, Long hospitalId, Pageable pageable);
-
+    Page<Member> findByRoleAndHospitalId(Role role, Long hospitalId, Pageable pageable);
+    //병원별 삭제되지 않은 의사목록
+    Page<Member> findByRoleAndHospitalIdAndDeletedAtIsNull(Role role, Long hospitalId, Pageable pageable);
     Optional<Member> findByNameAndPhoneNumber(String name, String phoneNumber);
 
     Optional<Member> findByIdAndDeletedAtIsNull(Long id);
@@ -41,4 +43,17 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Query("SELECT m FROM Member m WHERE (LOWER(m.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(m.memberEmail) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND m.role = 'Member'")
     List<Member> searchMembers(@Param("keyword") String keyword);
+
+    Page<Member> findByNameContainingOrMemberEmailContaining(String name, String memberEmail, Pageable pageable);
+    Page<Member> findByIsVerifiedAndDeletedAtIsNotNullAndRole(boolean isVerified, Role role, Pageable pageable);
+
+    Page<Member> findByIsVerifiedAndDeletedAtIsNullAndRole(boolean isVerified, Role role, Pageable pageable);
+
+
+    // 정상 회원 중 인증 여부 필터링
+    Page<Member> findByIsVerifiedAndDeletedAtIsNull(boolean isVerified, Pageable pageable);
+
+    // 탈퇴 회원 중 인증 여부 필터링
+    Page<Member> findByIsVerifiedAndDeletedAtIsNotNull(boolean isVerified, Pageable pageable);
+
 }

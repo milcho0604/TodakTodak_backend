@@ -9,18 +9,13 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CommentSaveDto {
-    @NotEmpty(message = "postId is essential")
-//    게시글 ID
+@Data
+public class ReplyCommentSaveDto {
     private Long postId;
-    //    댓글작성한 의사 이메일
-    @NotEmpty(message = "doctor Email is essential")
-    private String doctorEmail;
-//    댓글 내용
+    private Long parentId;
     @NotEmpty(message = "content is essential")
     private String content;
 

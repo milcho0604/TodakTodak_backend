@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,8 +40,15 @@ public class PostController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<?> postList(Pageable pageable){
-        Page<PostListDto> postListDtos = postService.postList(pageable);
+    public ResponseEntity<?> postList(){
+        List<PostListDto> postListDtos = postService.postList();
+        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "post 목록을 조회합니다.", postListDtos);
+        return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+    }
+
+    @GetMapping("/good/list")
+    public ResponseEntity<?> famousPostList(){
+        List<PostListDto> postListDtos = postService.famousPostList();
         CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "post 목록을 조회합니다.", postListDtos);
         return new ResponseEntity<>(commonResDto, HttpStatus.OK);
     }
@@ -66,7 +74,7 @@ public class PostController {
     }
 
     @PostMapping("/update/{id}")
-    public ResponseEntity<?> updatePost (@PathVariable Long id, @RequestBody PostUpdateReqDto dto){
+    public ResponseEntity<?> updatePost (@PathVariable Long id, @ModelAttribute PostUpdateReqDto dto){
         try{
             postService.updatePost(id, dto);
             CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "post가 성공적으로 업데이트 되었습니다.", id);
