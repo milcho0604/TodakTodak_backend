@@ -148,7 +148,9 @@ public class ReservationAdminService {
 
         for(Reservation res : reservations){
             ChildResDto childResDto = memberFeign.getMyChild(res.getChildId());
-            dtos.add(dtoMapper.toHospitalListReservation(res, childResDto.getName(), childResDto.getSsn()));
+            CheckHospitalListReservationResDto hospitalListReservation = dtoMapper.toHospitalListReservation(res, childResDto.getName(), childResDto.getSsn());
+            dtoMapper.setReservationTime(hospitalListReservation, res);
+            dtos.add(hospitalListReservation);
         }
         return dtos;
     }
