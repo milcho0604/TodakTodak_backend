@@ -19,6 +19,7 @@ public class DoctorOperatingHoursResDto {
     private DayOfHoliday dayOfWeek;
     private LocalTime openTime;
     private LocalTime closeTime;
+    private boolean untact;
 
     public DoctorOperatingHoursResDto fromEntity(DoctorOperatingHours hours){
         return DoctorOperatingHoursResDto.builder()
@@ -26,6 +27,7 @@ public class DoctorOperatingHoursResDto {
                 .dayOfWeek(hours.getDayOfWeek())
                 .openTime(hours.getOpenTime())
                 .closeTime(hours.getCloseTime())
+                .untact(hours.getUntact())
                 .build();
 
     }
