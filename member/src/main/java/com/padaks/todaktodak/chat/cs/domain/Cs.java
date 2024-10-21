@@ -24,6 +24,7 @@ public class Cs extends BaseTimeEntity {
     @Column(name = "cs_id")
     private Long id;
 
+    @Column(length = 3000)
     private String csContents; // 상담내역
 
     @Enumerated(EnumType.STRING)

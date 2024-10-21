@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 public class ChatMessageResDto {
     private Long messageId;
     private String senderName;
+    private String senderProfileImgUrl;
     private String contents;
     private String createdAt;
 
@@ -22,6 +23,7 @@ public class ChatMessageResDto {
         return ChatMessageResDto.builder()
                 .messageId(message.getId())
                 .senderName(message.getSender().getName())
+                .senderProfileImgUrl(message.getSender().getProfileImgUrl())
                 .contents(message.getContents())
                 .createdAt(message.getCreatedAt().toString())
                 .build();
