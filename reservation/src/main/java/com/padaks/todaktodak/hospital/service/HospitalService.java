@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -176,7 +177,8 @@ public class HospitalService {
     public List<HospitalListResDto> getSortedHospitalList(String dong,
                                                     BigDecimal latitude,
                                                     BigDecimal longitude,
-                                                    String sort) {
+                                                    String sort,
+                                                    Boolean isOperating) {
 
         List<Hospital> hospitalList = hospitalRepository.findByDongAndDeletedAtIsNullAndIsAcceptIsTrue(dong);
         List<HospitalListResDto> dtoList = new ArrayList<>();
@@ -196,27 +198,36 @@ public class HospitalService {
             HospitalListResDto dto = HospitalListResDto.fromEntity(hospital, standby, distance, averageRating, reviewCount);
             dtoList.add(dto);
         }
-        System.out.println("정렬조건 (트림 후) :" + sort.trim());
-        System.out.println("line200 정렬전:" +dtoList);
+
+        System.out.println("정렬조건 (트림 후): " + sort.trim());
+        System.out.println("line203 정렬전: " + dtoList);
+
+        // isOperating에 따라 필터링
+        if (Boolean.TRUE.equals(isOperating)) { // isOperating이 true인 경우
+            dtoList = dtoList.stream()
+                    .filter(HospitalListResDto::isOperating) // 영업 중인 병원만 필터링
+                    .collect(Collectors.toList());
+            System.out.println("영업 중인 병원 리스트: " + dtoList);
+        }
 
         // 정렬 로직 추가 (공백 제거 후 비교)
         switch (sort.trim()) {
             case "distance":
                 // 거리 기준 오름차순 정렬 (거리를 미터 단위로 변환 후 비교)
                 dtoList.sort(Comparator.comparing(dto -> convertDistanceToMeters(dto.getDistance())));
-                System.out.println("line207 정렬 후: " + dtoList);
+                System.out.println("line218 정렬 후: " + dtoList);
                 break;
 
             case "rating":
                 // 평점 기준 내림차순 정렬
                 dtoList.sort(Comparator.comparingDouble(HospitalListResDto::getAverageRating).reversed());
-                System.out.println("line213 정렬 후: " + dtoList);
+                System.out.println("line224 정렬 후: " + dtoList);
                 break;
 
             case "review":
                 // 리뷰 개수 기준 내림차순 정렬
                 dtoList.sort(Comparator.comparingLong(HospitalListResDto::getReviewCount).reversed());
-                System.out.println("line219 정렬 후: " + dtoList);
+                System.out.println("line230 정렬 후: " + dtoList);
                 break;
 
             default:
@@ -224,7 +235,6 @@ public class HospitalService {
                 System.out.println("알 수 없는 정렬 기준입니다.");
                 break;
         }
-
 
         return dtoList;
     }

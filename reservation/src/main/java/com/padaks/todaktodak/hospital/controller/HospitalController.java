@@ -109,9 +109,9 @@ public class HospitalController {
     public ResponseEntity<Object> getSortedHospitalList(@RequestParam String dong,
                                           @RequestParam BigDecimal latitude,
                                           @RequestParam BigDecimal longitude,
-                                          @RequestParam String sort
-    ){
-        List<HospitalListResDto> hospitalList = hospitalService.getSortedHospitalList(dong, latitude, longitude, sort);
+                                          @RequestParam String sort,
+                                          @RequestParam Boolean isOperating){
+        List<HospitalListResDto> hospitalList = hospitalService.getSortedHospitalList(dong, latitude, longitude, sort, isOperating);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원 리스트 조회성공", hospitalList), HttpStatus.OK);
     }
 

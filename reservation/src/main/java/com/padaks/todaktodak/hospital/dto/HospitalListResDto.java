@@ -46,6 +46,8 @@ public class HospitalListResDto {
 
     private Long reviewCount; // 병원 리뷰 개수
 
+    private boolean isOperating; // 영업 중 여부
+
 
     public static HospitalListResDto fromEntity(Hospital hospital,
                                                 Long standby,
@@ -60,11 +62,16 @@ public class HospitalListResDto {
 
         // 오늘날짜 요일
         String todayDayOfWeek = LocalDateTime.now().getDayOfWeek().toString();
+        boolean isOperating = false; // 영업 중 여부 초기화
 
         // 오늘날짜 요일에 해당하는 병원영업시간 찾기
         for(HospitalOperatingHours hours : operatingHoursList){
             if(hours.getDayOfWeek().toString().equalsIgnoreCase(todayDayOfWeek)){
                 todayOperatingHours = hours;
+
+                // 현재 시간과 비교하여 영업 중인지 여부 설정
+                LocalTime now = LocalTime.now();
+                isOperating = (now.isAfter(hours.getOpenTime()) && now.isBefore(hours.getCloseTime()));
                 break;
             }
         }
@@ -101,6 +108,7 @@ public class HospitalListResDto {
                 .todaySchedule(todaySchedule)
                 .averageRating(averageRating) // 평균평점
                 .reviewCount(reviewCount) // 총 리뷰개수
+                .isOperating(isOperating) // 영업 중 여부
                 .build();
     }
 }
