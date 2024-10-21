@@ -121,7 +121,7 @@ public class PaymentController {
         return ResponseEntity.ok("정기 결제 테스트 완료");
     }
 
-    @GetMapping("/subCancel")
+    @PostMapping("/subCancel")
     public ResponseEntity<?> cancleSub(@RequestBody String impUid){
         try {
             IamportResponse<Payment> cancleResponse = paymentService.cancelSubscription(impUid);

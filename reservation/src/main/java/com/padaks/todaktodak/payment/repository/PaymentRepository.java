@@ -21,4 +21,5 @@ public interface PaymentRepository extends JpaRepository<Pay, Long> {
 
     // impUid 또는 memberEmail과 PaymentMethod로 검색
     Page<Pay> findByImpUidContainingOrMemberEmailContainingAndPaymentMethod(String impUid, String memberEmail, PaymentMethod paymentMethod, Pageable pageable);
+    Page<Pay> findByPaymentMethod(PaymentMethod paymentMethod, Pageable pageable);
 }

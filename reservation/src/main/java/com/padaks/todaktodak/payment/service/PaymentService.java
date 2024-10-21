@@ -421,22 +421,28 @@ public class PaymentService {
 
     // 결제 내역 리스트 조회 (impUid와 memberEmail로 검색, PaymentMethod 필터링)
     public Page<PaymentListResDto> paymentListSearch(String query, PaymentMethod paymentMethod, Pageable pageable) {
-
-        // query가 null일 경우 빈 문자열로 설정
-        if (query == null) {
-            query = "";
+        // query가 null이거나 빈 문자열일 경우 필터링 없이 paymentMethod로만 조회
+        if (query == null || query.isEmpty()) {
+            if (paymentMethod != null) {
+                return paymentRepository.findByPaymentMethod(paymentMethod, pageable)
+                        .map(Pay::listFromEntity);
+            } else {
+                return paymentRepository.findAll(pageable)
+                        .map(Pay::listFromEntity);
+            }
         }
 
-        // PaymentMethod가 null인 경우 (필터링 없이 조회)
+        // query와 paymentMethod가 모두 있는 경우 필터링
         if (paymentMethod == null) {
             return paymentRepository.findByImpUidContainingOrMemberEmailContaining(query, query, pageable)
                     .map(Pay::listFromEntity);
+        } else {
+            return paymentRepository.findByImpUidContainingOrMemberEmailContainingAndPaymentMethod(query, query, paymentMethod, pageable)
+                    .map(Pay::listFromEntity);
         }
-
-        // query와 PaymentMethod로 필터링하여 검색
-        return paymentRepository.findByImpUidContainingOrMemberEmailContainingAndPaymentMethod(query, query, paymentMethod, pageable)
-                .map(Pay::listFromEntity);
     }
+
+
 
 
     // 정기결제 상태 체크 및 다음 결제일 갱신
