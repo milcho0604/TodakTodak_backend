@@ -1,6 +1,5 @@
 package com.padaks.todaktodak.payment.controller;
 
-import com.padaks.todaktodak.common.config.JwtTokenProvider;
 import com.padaks.todaktodak.common.dto.CommonResDto;
 import com.padaks.todaktodak.common.dto.MemberFeignDto;
 import com.padaks.todaktodak.payment.dto.PaymentMemberResDto;
