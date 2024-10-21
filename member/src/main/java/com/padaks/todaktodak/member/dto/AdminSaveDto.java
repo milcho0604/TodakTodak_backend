@@ -15,6 +15,7 @@ public class AdminSaveDto {
     private String name;
     private String phoneNumber;
     private String password;
+    private String profileImgUrl;
     private Role role;
     private boolean isVerified;
 }
