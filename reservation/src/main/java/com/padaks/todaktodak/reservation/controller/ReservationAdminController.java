@@ -2,6 +2,7 @@ package com.padaks.todaktodak.reservation.controller;
 
 import com.padaks.todaktodak.reservation.domain.Status;
 import com.padaks.todaktodak.reservation.dto.CheckHospitalListReservationReqDto;
+import com.padaks.todaktodak.reservation.dto.CheckHospitalListReservationResDto;
 import com.padaks.todaktodak.reservation.dto.UpdateStatusReservation;
 import com.padaks.todaktodak.reservation.service.ReservationAdminService;
 import lombok.RequiredArgsConstructor;
@@ -40,5 +41,17 @@ public class ReservationAdminController {
         reservationAdminService.statusReservation(updateStatusReservation);
 
         return new ResponseEntity<>("수정 완료", HttpStatus.OK);
+    }
+
+    @GetMapping("/doctor/list")
+    public ResponseEntity<?> ListReservation(
+            @RequestParam(required = false) String doctorEmail,
+            @RequestParam(required = false) Status status,
+            @RequestParam(required = false) boolean untact,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+        ){
+        List<CheckHospitalListReservationResDto> dto = reservationAdminService.getDoctorReservation(doctorEmail, status, untact, date);
+
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 }

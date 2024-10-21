@@ -3,6 +3,7 @@ package com.padaks.todaktodak.reservation.service;
 import com.padaks.todaktodak.common.dto.DtoMapper;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.reservation.domain.Reservation;
+import com.padaks.todaktodak.reservation.domain.Status;
 import com.padaks.todaktodak.reservation.dto.*;
 import com.padaks.todaktodak.reservation.realtime.RealTimeService;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
@@ -15,8 +16,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.padaks.todaktodak.common.exception.exceptionType.ReservationExceptionType.RESERVATION_NOT_FOUND;
 
@@ -84,5 +87,24 @@ public class ReservationAdminService {
     public void flushDb(){
         redisTemplate.getConnectionFactory().getConnection().flushDb();
         log.info("금일 redis 초기화 완료");
+    }
+
+    public List<CheckHospitalListReservationResDto> getDoctorReservation(String doctorEmail, Status status, boolean untact, LocalDate date) {
+        List<Reservation> reservations = reservationRepository.findByDoctorEmailAndReservationDateAndUntact(doctorEmail, date, untact);
+
+        // 상태가 null이 아닌 경우 해당 상태로 필터링
+        if (status != null) {
+            reservations = reservations.stream()
+                    .filter(reservation -> reservation.getStatus().equals(status)) // 상태가 일치하는 예약만 필터링
+                    .collect(Collectors.toList());
+        }
+
+        List<CheckHospitalListReservationResDto> dtos = new ArrayList<>();
+
+        for(Reservation res : reservations){
+            ChildResDto childResDto = memberFeign.getMyChild(res.getChildId());
+            dtos.add(dtoMapper.toHospitalListReservation(res, childResDto.getName(), childResDto.getSsn()));
+        }
+        return dtos;
     }
 }
