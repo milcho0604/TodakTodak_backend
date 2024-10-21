@@ -58,7 +58,12 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     Page<Reservation> findByDoctorEmailAndReservationDateAndStatus(String doctorEmail, LocalDate reservationDate, Status status, Pageable pageable);
 
+
+    // 해당 날짜의 의사 예약을 모두 가져와
+    List<Reservation> findByDoctorEmailAndReservationDateAndUntact(String doctorEmail, LocalDate reservationDate, boolean untact);
+
     List<Reservation> findByHospitalAndReservationTypeAndReservationDateAndStatus(Hospital hospital, ReserveType reserveType, LocalDate localDate, Status status);
 
     List<Reservation> findByHospitalAndReservationDateAndStatus(Hospital hospital, LocalDate localDate, Status status);
+
 }
