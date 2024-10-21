@@ -1,6 +1,9 @@
 package com.padaks.todaktodak.chat.cs.repository;
 
 import com.padaks.todaktodak.chat.cs.domain.Cs;
+import com.padaks.todaktodak.chat.cs.domain.CsStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -31,4 +34,9 @@ public interface CsRepository extends JpaRepository<Cs, Long> {
         return findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException("CS가 존재하지 않습니다."));
     }
+    Page<Cs> findByChatRoom_Member_NameContainingOrChatRoom_Member_MemberEmailContainingAndCsStatus(String name, String email, CsStatus csStatus, Pageable pageable);
+
+    Page<Cs> findByChatRoom_Member_NameContainingOrChatRoom_Member_MemberEmailContaining(String memberName, String memberEmail, Pageable pageable);
+
+    Page<Cs> findByCsStatus(CsStatus csStatus, Pageable pageable);
 }

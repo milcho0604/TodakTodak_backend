@@ -1,6 +1,8 @@
 package com.padaks.todaktodak.chat.cs.domain;
 
 import com.padaks.todaktodak.chat.chatroom.domain.ChatRoom;
+import com.padaks.todaktodak.chat.cs.dto.CsListResDto;
+import com.padaks.todaktodak.chat.cs.dto.CsResDto;
 import com.padaks.todaktodak.chat.cs.dto.CsUpdateReqDto;
 import com.padaks.todaktodak.common.domain.BaseTimeEntity;
 import lombok.AllArgsConstructor;
@@ -36,5 +38,16 @@ public class Cs extends BaseTimeEntity {
         this.csContents = dto.getCsContents();
         this.csStatus = dto.getCsStatus();
         this.chatRoom = chatRoom;
+    }
+
+    public CsListResDto listFromEntity(){
+        return CsListResDto.builder()
+                .id(this.id)
+                .csContents(this.csContents)
+                .csStatus(this.csStatus.getValue())
+                .chatRoomId(this.chatRoom.getId())
+                .memberEmail(this.chatRoom.getMember().getMemberEmail())
+                .memberName(this.chatRoom.getMember().getName())
+                .build();
     }
 }

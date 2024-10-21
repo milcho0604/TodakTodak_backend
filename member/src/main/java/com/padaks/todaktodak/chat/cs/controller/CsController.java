@@ -1,12 +1,16 @@
 package com.padaks.todaktodak.chat.cs.controller;
 
 import com.padaks.todaktodak.chat.cs.domain.Cs;
+import com.padaks.todaktodak.chat.cs.domain.CsStatus;
 import com.padaks.todaktodak.chat.cs.dto.CsCreateReqDto;
+import com.padaks.todaktodak.chat.cs.dto.CsListResDto;
 import com.padaks.todaktodak.chat.cs.dto.CsResDto;
 import com.padaks.todaktodak.chat.cs.dto.CsUpdateReqDto;
 import com.padaks.todaktodak.chat.cs.service.CsService;
 import com.padaks.todaktodak.common.dto.CommonResDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -62,4 +66,17 @@ public class CsController {
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "CS 삭제 성공", null), HttpStatus.OK);
     }
 
+
+    // Cs 리스트 검색 및 필터링
+    @GetMapping("/list")
+    public ResponseEntity<Page<CsListResDto>> paymentListSearch(
+            @RequestParam(required = false) String query, // 검색어 (impUid나 memberEmail에 포함될 수 있음)
+            @RequestParam(required = false) CsStatus csStatus, // 필터링용 결제 방식 (정기, 단건)
+            Pageable pageable) {
+
+        // 결제 리스트를 검색어와 필터링으로 조회
+        Page<CsListResDto> csListSearch = csService.csListSearch(query, csStatus, pageable);
+
+        return ResponseEntity.ok(csListSearch);
+    }
 }
