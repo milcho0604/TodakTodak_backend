@@ -2,6 +2,7 @@ package com.padaks.todaktodak.payment.controller;
 
 import com.padaks.todaktodak.common.dto.CommonResDto;
 import com.padaks.todaktodak.common.dto.MemberFeignDto;
+import com.padaks.todaktodak.payment.domain.PaymentMethod;
 import com.padaks.todaktodak.payment.dto.PaymentMemberResDto;
 import com.padaks.todaktodak.payment.dto.PaymentListResDto;
 import com.padaks.todaktodak.payment.dto.PaymentReqDto;
@@ -82,6 +83,18 @@ public class PaymentController {
         Page<PaymentListResDto> paymentList = paymentService.paymentList(pageable);
         CommonResDto dto = new CommonResDto(HttpStatus.OK,"결제내역을 조회합니다..", paymentList);
         return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    @GetMapping("/detail/list")
+    public ResponseEntity<Page<PaymentListResDto>> paymentListSearch(
+            @RequestParam(required = false) String query, // 검색어 (impUid나 memberEmail에 포함될 수 있음)
+            @RequestParam(required = false) PaymentMethod paymentMethod, // 필터링용 결제 방식 (정기, 단건)
+            Pageable pageable) {
+
+        // 결제 리스트를 검색어와 필터링으로 조회
+        Page<PaymentListResDto> paymentList = paymentService.paymentListSearch(query, paymentMethod, pageable);
+
+        return ResponseEntity.ok(paymentList);
     }
 
     // 정기 결제 요청

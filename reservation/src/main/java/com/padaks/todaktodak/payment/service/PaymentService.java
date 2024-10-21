@@ -419,6 +419,25 @@ public class PaymentService {
         return pays.map(a -> a.listFromEntity());
     }
 
+    // 결제 내역 리스트 조회 (impUid와 memberEmail로 검색, PaymentMethod 필터링)
+    public Page<PaymentListResDto> paymentListSearch(String query, PaymentMethod paymentMethod, Pageable pageable) {
+
+        // query가 null일 경우 빈 문자열로 설정
+        if (query == null) {
+            query = "";
+        }
+
+        // PaymentMethod가 null인 경우 (필터링 없이 조회)
+        if (paymentMethod == null) {
+            return paymentRepository.findByImpUidContainingOrMemberEmailContaining(query, query, pageable)
+                    .map(Pay::listFromEntity);
+        }
+
+        // query와 PaymentMethod로 필터링하여 검색
+        return paymentRepository.findByImpUidContainingOrMemberEmailContainingAndPaymentMethod(query, query, paymentMethod, pageable)
+                .map(Pay::listFromEntity);
+    }
+
 
     // 정기결제 상태 체크 및 다음 결제일 갱신
     public void processSubscriptions() {

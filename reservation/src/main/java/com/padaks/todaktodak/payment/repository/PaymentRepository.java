@@ -15,5 +15,10 @@ public interface PaymentRepository extends JpaRepository<Pay, Long> {
     Pay findByImpUid(String impUid);
     Page<Pay> findAll(Pageable pageable);
     List<Pay> findByPaymentMethodAndPaymentStatus(PaymentMethod paymentMethod, PaymentStatus paymentStatus);
+    // impUid와 memberEmail로 검색하고, PaymentMethod로 필터링하는 쿼리 메서드
+    // impUid 또는 memberEmail로 검색
+    Page<Pay> findByImpUidContainingOrMemberEmailContaining(String impUid, String memberEmail, Pageable pageable);
 
+    // impUid 또는 memberEmail과 PaymentMethod로 검색
+    Page<Pay> findByImpUidContainingOrMemberEmailContainingAndPaymentMethod(String impUid, String memberEmail, PaymentMethod paymentMethod, Pageable pageable);
 }

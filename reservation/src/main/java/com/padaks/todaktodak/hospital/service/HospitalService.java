@@ -296,10 +296,7 @@ public class HospitalService {
 //            return hospitalRepository.findAll(pageable)
 //                    .map(AdminHospitalListDetailResDto::fromEntity);
 //        }
-        System.out.println(query);
-        System.out.println(hospitalRepository.findByRepresentativeNameContainingOrNameContainingOrAdminEmailContaining(
-                        query, query, query, pageable)
-                .map(AdminHospitalListDetailResDto::listFromEntity));
+//
         // 검색어가 있는 경우 검색 처리
         return hospitalRepository.findByRepresentativeNameContainingOrNameContainingOrAdminEmailContaining(
                         query, query, query, pageable)
