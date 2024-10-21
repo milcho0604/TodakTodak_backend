@@ -3,11 +3,15 @@ package com.padaks.todaktodak.chat.cs.service;
 import com.padaks.todaktodak.chat.chatroom.domain.ChatRoom;
 import com.padaks.todaktodak.chat.chatroom.repository.ChatRoomRepository;
 import com.padaks.todaktodak.chat.cs.domain.Cs;
+import com.padaks.todaktodak.chat.cs.domain.CsStatus;
 import com.padaks.todaktodak.chat.cs.dto.CsCreateReqDto;
+import com.padaks.todaktodak.chat.cs.dto.CsListResDto;
 import com.padaks.todaktodak.chat.cs.dto.CsResDto;
 import com.padaks.todaktodak.chat.cs.dto.CsUpdateReqDto;
 import com.padaks.todaktodak.chat.cs.repository.CsRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,6 +81,29 @@ public class CsService {
 
         cs.setDeletedTimeAt(LocalDateTime.now());
         csRepository.save(cs);
+    }
+
+    // CS 리스트 검색 및 필터링
+    public Page<CsListResDto> csListSearch(String query, CsStatus csStatus, Pageable pageable) {
+        // query가 null이거나 빈 문자열일 경우 필터링 없이 paymentMethod로만 조회
+        if (query == null || query.isEmpty()) {
+            if (csStatus != null) {
+                return csRepository.findByCsStatus(csStatus, pageable)
+                        .map(Cs::listFromEntity);
+            } else {
+                return csRepository.findAll(pageable)
+                        .map(Cs::listFromEntity);
+            }
+        }
+
+        // query와 paymentMethod가 모두 있는 경우 필터링
+        if (csStatus == null) {
+            return csRepository.findByChatRoom_Member_NameContainingOrChatRoom_Member_MemberEmailContaining(query, query, pageable)
+                    .map(Cs::listFromEntity);
+        } else {
+            return csRepository.findByChatRoom_Member_NameContainingOrChatRoom_Member_MemberEmailContainingAndCsStatus(query, query, csStatus, pageable)
+                    .map(Cs::listFromEntity);
+        }
     }
 
 }
