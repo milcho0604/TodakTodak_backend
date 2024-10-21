@@ -42,8 +42,10 @@ public class PaymentController {
         try {
             PaymentMemberResDto paymentMemberResDto = paymentService.paymentMemberResDto();
             return ResponseEntity.ok(paymentMemberResDto);
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        } catch (Exception e) {
+            // 예외 발생 시 로그 추가
+            log.error("Error fetching hospital data", e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 

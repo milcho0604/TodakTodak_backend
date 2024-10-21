@@ -112,7 +112,7 @@ public class MemberService {
         Member unAcceptHospitalAdmin = memberRepository.save(hospitalAdmin);
 
         // 개발자 admin이 회원가입 승인전까지는 deletedAt에 시간 넣어서 아직 없는 회원으로 간주
-        unAcceptHospitalAdmin.setDeletedTimeAt(LocalDateTime.now());
+//        unAcceptHospitalAdmin.setDeletedTimeAt(LocalDateTime.now());
 
         return unAcceptHospitalAdmin;
     }
@@ -130,8 +130,30 @@ public class MemberService {
     public String login(MemberLoginDto loginDto) {
         Member member = memberRepository.findByMemberEmail(loginDto.getMemberEmail())
                 .orElseThrow(() -> new RuntimeException("잘못된 이메일/비밀번호 입니다."));
+
         if (member.isVerified() == false){
             throw new SecurityException("이메일 인증이 필요합니다.");
+        }
+
+        if (!passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {
+            throw new RuntimeException("잘못된 이메일/비밀번호 입니다.");
+        }
+
+        if (member.getDeletedAt() != null){
+            throw new IllegalStateException("탈퇴한 회원입니다.");
+        }
+
+        return jwtTokenprovider.createToken(member.getMemberEmail(), member.getRole().name(), member.getId());
+    }
+
+    // 대표 원장님 로그인
+    public String hospitalLogin(MemberLoginDto loginDto) {
+        Member member = memberRepository.findByMemberEmail(loginDto.getMemberEmail())
+                .orElseThrow(() -> new RuntimeException("잘못된 이메일/비밀번호 입니다."));
+
+        // Role이 HospitalAdmin 또는 NonUser가 아닌 경우에만 예외를 던짐
+        if (!member.getRole().equals(Role.HospitalAdmin) && !member.getRole().equals(Role.NonUser)) {
+            throw new SecurityException("대표 원장님만 로그인이 가능합니다.");
         }
 
         if (!passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {
@@ -732,4 +754,19 @@ public class MemberService {
         Member member = findByMemberEmail(email);
         return reservationFeignClient.getHospitalinfoById(member.getHospitalId());
     }
+
+    // 멤버 역할 업데이트 및 새로운 토큰 생성
+    public String updateMemberRoleAndGenerateNewToken(Long memberId) {
+        // 멤버 정보 조회
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("멤버를 찾을 수 없습니다."));
+
+        // 멤버 역할 변경 (결제 성공 후)
+        member.updateRole(Role.HospitalAdmin);
+        memberRepository.save(member);
+
+        // 새로운 JWT 토큰 생성
+        return jwtTokenprovider.createToken(member.getMemberEmail(), member.getRole().name(), member.getId());
+    }
+
 }
