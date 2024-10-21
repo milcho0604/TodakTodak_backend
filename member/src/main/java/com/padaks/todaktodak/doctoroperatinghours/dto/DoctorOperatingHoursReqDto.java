@@ -8,31 +8,29 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import java.time.LocalTime;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class DoctorOperatingHoursReqDto {
-    //    private Member member;
-//    private Long doctorId;
     private DayOfHoliday dayOfWeek;
     private LocalTime openTime;
     private LocalTime closeTime;
     private Boolean untact;
+    private LocalTime breakStart;
+    private LocalTime breakEnd;
 
-    public static DoctorOperatingHours toEntity(Member doctor, DoctorOperatingHoursReqDto dto){
+    public static DoctorOperatingHours toEntity(Member doctor, DoctorOperatingHoursReqDto dto) {
         return DoctorOperatingHours.builder()
                 .member(doctor)
-//                .id(dto.getDoctorId())
                 .dayOfWeek(dto.getDayOfWeek())
                 .openTime(dto.getOpenTime())
                 .closeTime(dto.getCloseTime())
                 .untact(dto.getUntact())
+                .breakStart(dto.getBreakStart())
+                .breakEnd(dto.getBreakEnd())
                 .build();
-
     }
 }
+

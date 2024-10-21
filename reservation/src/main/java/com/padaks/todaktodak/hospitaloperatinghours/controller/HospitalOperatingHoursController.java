@@ -33,6 +33,13 @@ public class HospitalOperatingHoursController {
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원영업시간 조회 성공", operatingHoursList),HttpStatus.OK);
     }
 
+    // 병원 휴게시간 조회
+    @GetMapping("/getBreakTime/{hospitalId}")
+    public List<HospitalOperatingHoursResDto> getBreakTimes(@PathVariable Long hospitalId){
+        List<HospitalOperatingHoursResDto> breakTimes = hospitalOperatingHoursService.getOperatingHoursByHospitalId(hospitalId);
+        return breakTimes;
+    }
+
     // 병원 특정 영업시간 수정
     @PostMapping("/update/{hospitalId}/{operatingHoursId}")
     public ResponseEntity<Object> updateOperatingHours(@PathVariable Long hospitalId,
