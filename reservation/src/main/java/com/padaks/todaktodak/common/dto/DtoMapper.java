@@ -55,6 +55,13 @@ public interface DtoMapper {
     @Mapping(source = "childSsn", target = "childSsn")
     CheckHospitalListReservationResDto toHospitalListReservation(Reservation reservation, String childName, String childSsn);
 
+    @AfterMapping
+    default void setReservationTime(@MappingTarget CheckHospitalListReservationResDto dto, Reservation reservation){
+        if(dto.getReservationTime() == null){
+            dto.setReservationTime(reservation.getCreatedAt().toLocalTime().withSecond(0));
+        }
+    }
+
     RedisDto toRedisDto(Reservation reservation);
 
     @Mapping(source = "childResDto.name", target = "childName")

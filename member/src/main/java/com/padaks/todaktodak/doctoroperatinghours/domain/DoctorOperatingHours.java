@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
@@ -27,10 +28,12 @@ public class DoctorOperatingHours extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
     @Enumerated(EnumType.STRING)
-    private DayOfHoliday dayOfWeek;
-    private LocalTime openTime;
-    private LocalTime closeTime;
-    private Boolean untact;
+    private DayOfHoliday dayOfWeek; //요일
+    private LocalTime openTime; //영업시작 시간
+    private LocalTime closeTime; //영업종료 시간
+    private Boolean untact; // 비대면여부
+    private LocalTime breakStart; //휴게시작 시간
+    private LocalTime breakEnd; //휴게종료시간
 
     public void updateOperatingHours(DoctorOperatingHoursReqDto dto){
         //this.member = dto.getMember();
@@ -38,5 +41,7 @@ public class DoctorOperatingHours extends BaseTimeEntity {
         this.openTime = dto.getOpenTime();
         this.closeTime = dto.getCloseTime();
         this.untact = dto.getUntact();
+        this.breakStart= dto.getBreakStart();
+        this.breakEnd = dto.getBreakEnd();
     }
 }

@@ -1,6 +1,7 @@
 package com.padaks.todaktodak.doctoroperatinghours.service;
 
 import com.padaks.todaktodak.common.enumdir.DayOfHoliday;
+import com.padaks.todaktodak.common.feign.ReservationFeignClient;
 import com.padaks.todaktodak.doctoroperatinghours.domain.DoctorOperatingHours;
 import com.padaks.todaktodak.doctoroperatinghours.dto.DoctorOperatingHoursReqDto;
 import com.padaks.todaktodak.doctoroperatinghours.dto.DoctorOperatingHoursResDto;
@@ -8,6 +9,7 @@ import com.padaks.todaktodak.doctoroperatinghours.dto.DoctorOperatingHoursSimple
 import com.padaks.todaktodak.doctoroperatinghours.repository.DoctorOperatingHoursRepository;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.domain.Role;
+import com.padaks.todaktodak.member.dto.HospitalOperatingHoursResDto;
 import com.padaks.todaktodak.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,45 +32,66 @@ import java.util.stream.Collectors;
 public class DoctorOperatingHoursService {
     private final DoctorOperatingHoursRepository doctorOperatingHoursRepository;
     private final MemberRepository memberRepository;
+    private final ReservationFeignClient reservationFeignClient;
 
-    public void addOperatingHours(Long doctorId, List<DoctorOperatingHoursReqDto> dtos){
+    public void addOperatingHours(Long doctorId, List<DoctorOperatingHoursReqDto> dtos) {
         //ContextHolder로 memberEmail 찾기(hospital admin)
         String memberEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         Member hospitalAdmin = memberRepository.findByMemberEmailOrThrow(memberEmail);
+        List<HospitalOperatingHoursResDto> hospitalTime = reservationFeignClient.getHospitalTime(hospitalAdmin.getHospitalId()); //Feign으로 해당 병원의 영업시간 가져옴
 
-        //controller에서 요청한 id로 해당의사 찾아야함
-        Member doctor = memberRepository.findById(doctorId).orElseThrow(()-> new EntityNotFoundException("의사를 찾을 수 없습니다. ID : " + doctorId));
-
+        // controller에서 요청한 id로 해당의사 찾아야함
+        Member doctor = memberRepository.findById(doctorId).orElseThrow(() -> new EntityNotFoundException("의사를 찾을 수 없습니다. ID : " + doctorId));
 
         // hospitalAdmin의 병원에 소속된 의사의 영업시간만 등록 가능
-        if (!hospitalAdmin.getRole().equals(Role.HospitalAdmin)){
+        if (!hospitalAdmin.getRole().equals(Role.HospitalAdmin)) {
             throw new IllegalArgumentException("병원 admin만 근무시간을 등록 할 수 있습니다.");
         }
-        if (!hospitalAdmin.getHospitalId().equals(doctor.getHospitalId())){
+        if (!hospitalAdmin.getHospitalId().equals(doctor.getHospitalId())) {
             throw new IllegalArgumentException("다른 병원의 의사의 근무시간은 등록할 수 없습니다.");
         }
 
-        //의사의 모든 영업시간 불러옴
+        // 의사의 모든 영업시간 불러옴
         List<DoctorOperatingHours> existingOperatingHours = doctorOperatingHoursRepository.findAllByMember(doctor);
 
-        //기존 의사 영업시간 요일 저장
+        // 기존 의사 영업시간 요일 저장
         Set<DayOfHoliday> existingDays = existingOperatingHours.stream()
                 .map(DoctorOperatingHours::getDayOfWeek)
                 .collect(Collectors.toSet());
 
-        for (DoctorOperatingHoursReqDto dto : dtos){
-            //중복 저장 방지
-            if (existingDays.contains(dto.getDayOfWeek())){
-                throw new IllegalArgumentException("근무시간 중복 저장 불가 : "+dto.getDayOfWeek() +"요일에 영업시간이 이미 등록 되어 있습니다.");
+        for (DoctorOperatingHoursReqDto hoursReqDto : dtos) {
+            // 중복 저장 방지
+            if (existingDays.contains(hoursReqDto.getDayOfWeek())) {
+                throw new IllegalArgumentException("근무시간 중복 저장 불가 : " + hoursReqDto.getDayOfWeek() + "요일에 영업시간이 이미 등록 되어 있습니다.");
             }
             // openTime과 closeTime 유효성 검사
-            if (dto.getOpenTime() != null && dto.getCloseTime() != null && dto.getOpenTime().isAfter(dto.getCloseTime())) {
+            if (hoursReqDto.getOpenTime() != null && hoursReqDto.getCloseTime() != null && hoursReqDto.getOpenTime().isAfter(hoursReqDto.getCloseTime())) {
                 throw new IllegalArgumentException("영업 시작 시간이 종료 시간보다 늦을 수 없습니다.");
             }
-            DoctorOperatingHours operatingHours = DoctorOperatingHoursReqDto.toEntity(doctor, dto);
+
+            HospitalOperatingHoursResDto hospitalBreakTime = hospitalTime.stream()
+                    .filter(time -> time.getDayOfWeek().equals(hoursReqDto.getDayOfWeek()))
+                    .findFirst()
+                    .orElse(null);
+
+            DoctorOperatingHoursReqDto updatedHoursReqDto = hoursReqDto; // 새로운 변수
+
+            if (hospitalBreakTime != null) {
+                updatedHoursReqDto = DoctorOperatingHoursReqDto.builder()
+                        .dayOfWeek(hoursReqDto.getDayOfWeek())
+                        .openTime(hoursReqDto.getOpenTime())
+                        .closeTime(hoursReqDto.getCloseTime())
+                        .untact(hoursReqDto.getUntact())
+                        .breakStart(hospitalBreakTime.getBreakStart())
+                        .breakEnd(hospitalBreakTime.getBreakEnd())
+                        .build();
+            }
+
+            DoctorOperatingHours operatingHours = DoctorOperatingHoursReqDto.toEntity(doctor, updatedHoursReqDto);
             doctorOperatingHoursRepository.save(operatingHours);
         }
     }
+
 
     public List<DoctorOperatingHoursSimpleResDto> getOperatingHoursByDoctorId(Long doctorId){
         List<DoctorOperatingHours> operatingHoursList = doctorOperatingHoursRepository.findByMemberId(doctorId);

@@ -1,5 +1,6 @@
 package com.padaks.todaktodak.reservation.repository;
 
+import com.padaks.todaktodak.hospital.domain.Hospital;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.domain.ReserveType;
 import com.padaks.todaktodak.reservation.domain.Status;
@@ -51,12 +52,18 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 //    오늘 이후의 예약 중 status 가 아직 예약중인 상태인 예약리스트
     List<Reservation> findByMemberEmailAndReservationDateGreaterThanEqualAndStatus(String memberEmail, LocalDate localDate, Status status);
 
-    Page<Reservation> findByMemberEmailAndReservationDateBeforeOrStatus(String memberEmail, LocalDate localDate, Status status, Pageable pageable);
+    Page<Reservation> findByMemberEmailAndReservationDateBeforeOrStatusIsNot(String memberEmail, LocalDate localDate, Status status, Pageable pageable);
 
     List<Reservation> findByChildId(Long id);
 
     Page<Reservation> findByDoctorEmailAndReservationDateAndStatus(String doctorEmail, LocalDate reservationDate, Status status, Pageable pageable);
 
+
     // 해당 날짜의 의사 예약을 모두 가져와
     List<Reservation> findByDoctorEmailAndReservationDateAndUntact(String doctorEmail, LocalDate reservationDate, boolean untact);
+
+    List<Reservation> findByHospitalAndReservationTypeAndReservationDateAndStatus(Hospital hospital, ReserveType reserveType, LocalDate localDate, Status status);
+
+    List<Reservation> findByHospitalAndReservationDateAndStatus(Hospital hospital, LocalDate localDate, Status status);
+
 }

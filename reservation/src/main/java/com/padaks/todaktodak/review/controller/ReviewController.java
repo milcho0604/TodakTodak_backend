@@ -137,6 +137,15 @@ public class ReviewController {
         return ResponseEntity.ok(reviewDetailDto);
     }
 
+    // 의사의 비대면 리뷰 통계 (평균 점수 및 평점별 개수) 조회
+    @GetMapping("/doctor/detail/untact/{doctorEmail}")
+    public ResponseEntity<ReviewDetailDto> getUntactReviewDoctorDetail(
+            @PathVariable String doctorEmail,
+            Pageable pageable) {
+        ReviewDetailDto reviewDetailDto = reviewService.reviewDoctorDetail(doctorEmail, pageable);
+        return ResponseEntity.ok(reviewDetailDto);
+    }
+
 //    해당 예약의 리뷰 조회
     @GetMapping("/reserve/{id}")
     public ResponseEntity<?> isReview(@PathVariable Long id){

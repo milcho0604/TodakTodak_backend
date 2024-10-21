@@ -181,6 +181,35 @@ public class ReviewService {
         return new ReviewDetailDto(averageRating, count1Star, count2Stars, count3Stars, count4Stars, count5Stars);
     }
 
+    // 의사별 리뷰 점수 평균과 평점별 리뷰 개수를 계산
+    public ReviewDetailDto untactReviewDoctorDetail(String doctorEmail, Pageable pageable) {
+        // 의사 이메일로 리뷰를 페이징 처리하여 조회
+        Page<Review> reviewPage = reviewRepository.findByDoctorEmailAndUntactTrueAndDeletedAtIsNull(doctorEmail, pageable);
+        // 리뷰가 없으면 기본값 반환
+        if (reviewPage.isEmpty()) {
+            return new ReviewDetailDto(0.0, 0, 0, 0, 0, 0);
+        }
+
+        // 리뷰의 점수를 합산하고 평균을 계산 (소수점 첫째 자리까지 표시)
+        double averageRating = reviewPage.getContent().stream()
+                .mapToInt(Review::getRating)
+                .average()
+                .orElse(0.0);
+
+        // 소수점 첫째 자리까지만 유지
+        averageRating = Math.round(averageRating * 10.0) / 10.0;
+
+        // 평점별 리뷰 개수 계산 (1점부터 5점까지)
+        long count1Star = reviewPage.getContent().stream().filter(review -> review.getRating() == 1).count();
+        long count2Stars = reviewPage.getContent().stream().filter(review -> review.getRating() == 2).count();
+        long count3Stars = reviewPage.getContent().stream().filter(review -> review.getRating() == 3).count();
+        long count4Stars = reviewPage.getContent().stream().filter(review -> review.getRating() == 4).count();
+        long count5Stars = reviewPage.getContent().stream().filter(review -> review.getRating() == 5).count();
+
+        // 결과를 DTO로 반환
+        return new ReviewDetailDto(averageRating, count1Star, count2Stars, count3Stars, count4Stars, count5Stars);
+    }
+
     // 이름을 마스킹 처리해서 저장하는 메서드
     public static String maskSecondCharacter(String name) {
         // 이름이 2글자 이상일 경우 두 번째 글자 마스킹 처리
