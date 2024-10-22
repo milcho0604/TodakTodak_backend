@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -55,6 +56,17 @@ public class HospitalOperatingHoursService {
     // 특정병원의 모든 영업시간 리스트 조회
     public List<HospitalOperatingHoursResDto> getOperatingHoursByHospitalId(Long hospitalId) {
         List<HospitalOperatingHours> operatingHoursList = hospitalOperatingHoursRepository.findByHospitalId(hospitalId);
+
+        return operatingHoursList.stream()
+                .map(HospitalOperatingHoursResDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    public List<HospitalOperatingHoursResDto> adminOperatingHoursByHospitalId(String adminEmail) {
+        Hospital hospital = hospitalRepository.findByAdminEmail(adminEmail)
+                .orElseThrow(() -> new EntityNotFoundException("해당 병원의 관리자가 아닙니다."));
+
+        List<HospitalOperatingHours> operatingHoursList = hospitalOperatingHoursRepository.findByHospitalId(hospital.getId());
 
         return operatingHoursList.stream()
                 .map(HospitalOperatingHoursResDto::fromEntity)

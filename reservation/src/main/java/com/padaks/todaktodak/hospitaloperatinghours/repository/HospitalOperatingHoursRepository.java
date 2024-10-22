@@ -29,4 +29,6 @@ public interface HospitalOperatingHoursRepository extends JpaRepository<Hospital
     // 병원에 속한 모든 영업시간을 가져옴
     List<HospitalOperatingHours> findAllByHospital(Hospital hospital);
 
+
+
 }
