@@ -18,6 +18,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -104,10 +107,27 @@ public class HospitalService {
         return HospitalDetailResDto.fromEntity(hospital, standby, distance, averageRating, reviewCount);
     }
 
+    // 병원 admin detail 조회
+    public HospitalAdminDetailResDto hospitalAdminDetail(String adminEmail) {
+
+        Hospital hospital = hospitalRepository.findByAdminEmail(adminEmail)
+                .orElseThrow(() -> new EntityNotFoundException("해당 병원의 관리자가 아닙니다."));
+
+        // 병원별 리뷰 평균평점과 리뷰 개수 조회 (null 체크 후 0으로 세팅)
+        Double averageRating = Optional.ofNullable(reviewRepository.findAverageRatingByHospitalId(hospital.getId())).orElse(0.0);
+        Long reviewCount = Optional.ofNullable(reviewRepository.countByHospitalId(hospital.getId())).orElse(0L);
+
+        return HospitalAdminDetailResDto.fromEntity(hospital, averageRating, reviewCount);
+    }
+
     // 병원 수정
     public HospitalUpdateResDto updateHospital(HospitalUpdateReqDto dto){
         String imageUrl = null;
-        Hospital hospital = hospitalRepository.findByIdOrThrow(dto.getId());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String adminEmail = userDetails.getUsername();
+        Hospital hospital = hospitalRepository.findByAdminEmail(adminEmail)
+                .orElseThrow(() -> new EntityNotFoundException("해당 병원의 관리자가 아닙니다."));
 
         if(dto.getHospitalImage() != null && !dto.getHospitalImage().isEmpty()){
             imageUrl = s3ClientFileUpload.upload(dto.getHospitalImage()); // S3에 이미지 업로드

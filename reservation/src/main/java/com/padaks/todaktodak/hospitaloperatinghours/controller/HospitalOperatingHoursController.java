@@ -7,6 +7,9 @@ import com.padaks.todaktodak.hospitaloperatinghours.service.HospitalOperatingHou
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,6 +33,16 @@ public class HospitalOperatingHoursController {
     @GetMapping("/detail/{hospitalId}")
     public ResponseEntity<Object> getOperatingHours(@PathVariable Long hospitalId){
         List<HospitalOperatingHoursResDto> operatingHoursList = hospitalOperatingHoursService.getOperatingHoursByHospitalId(hospitalId);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원영업시간 조회 성공", operatingHoursList),HttpStatus.OK);
+    }
+
+    // 병원 영업시간 리스트 조회
+    @GetMapping("/admin/detail")
+    public ResponseEntity<Object> adminOperatingHours(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String adminEmail = userDetails.getUsername();
+        List<HospitalOperatingHoursResDto> operatingHoursList = hospitalOperatingHoursService.adminOperatingHoursByHospitalId(adminEmail);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원영업시간 조회 성공", operatingHoursList),HttpStatus.OK);
     }
 

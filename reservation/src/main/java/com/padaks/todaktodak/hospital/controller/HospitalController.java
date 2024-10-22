@@ -13,6 +13,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -55,6 +58,17 @@ public class HospitalController {
                                                     @RequestParam BigDecimal latitude,
                                                     @RequestParam BigDecimal longitude) {
         HospitalDetailResDto hospitalDetail = hospitalService.getHospitalDetail(id, latitude, longitude);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원정보 조회성공", hospitalDetail), HttpStatus.OK);
+    }
+
+    // 병원 어드민 detail 조회
+    @GetMapping("/admin/detail")
+    public ResponseEntity<Object> hospitalAdminDetail() {
+        // 인증된 authentication 객체에서 해당 member의 email을 추출해서 인가된 사용자만이 접근할 수 있도록
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String adminEmail = userDetails.getUsername();
+        HospitalAdminDetailResDto hospitalDetail = hospitalService.hospitalAdminDetail(adminEmail);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원정보 조회성공", hospitalDetail), HttpStatus.OK);
     }
 

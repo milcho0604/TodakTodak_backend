@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 @Builder
 public class HospitalUpdateReqDto {
 
-    private Long id; // 병원 id
+//    private Long id; // 병원 id
 
     private String name; // 병원이름
 

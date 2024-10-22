@@ -39,4 +39,7 @@ public interface HospitalRepository extends JpaRepository<Hospital, Long> {
 
     Page<Hospital> findByRepresentativeNameContainingOrNameContainingOrAdminEmailContaining(
             String representativeName, String name, String adminEmail, Pageable pageable);
+
+    Optional<Hospital> findByAdminEmail(String adminEmail);
+
 }
