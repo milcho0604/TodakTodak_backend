@@ -14,6 +14,8 @@ import com.padaks.todaktodak.notification.service.FcmService;
 import com.padaks.todaktodak.notification.domain.Type;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,56 +75,40 @@ public class ChatService {
     }
 
     // 해당 회원이 속한 채팅방 리스트 (회원입장 채팅방 리스트)
-    public List<ChatRoomListResDto> getMemberChatRoomList(){
+    public Page<ChatRoomListResDto> getMemberChatRoomList(Pageable pageable) {
         String memberEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        System.out.println("line 71 memberEmail : " + memberEmail);
         Member member = memberRepository.findByMemberEmailOrThrow(memberEmail);
 
-        // 해당 회원이 속한 모든 채팅방 조회
-        List<ChatRoom> chatRoomList = chatRoomRepository.findByMemberId(member.getId());
+        // 해당 회원이 속한 모든 채팅방을 recentChatTime 내림차순으로 페이징 처리하여 조회
+        Page<ChatRoom> chatRoomPage = chatRoomRepository.findByMemberIdOrderByRecentChatTimeDesc(member.getId(), pageable);
 
-        List<ChatRoomListResDto> chatRoomListResDtoList = new ArrayList<>();
-        ChatMessage lastMessage = null; // 채팅방 마지막 메시지
-
-        for(ChatRoom chatRoom : chatRoomList){
-
-            // 해당 채팅방에서 가장 마지막 채팅메시지 조회
-            lastMessage = chatMessageRepository.findFirstByChatRoomOrderByCreatedAtDesc(chatRoom)
-                    .orElse(null); // 메시지가 없으면 null 반환
-
-            chatRoomListResDtoList.add(ChatRoomListResDto.fromEntity(chatRoom, lastMessage));
-        }
-
-        return chatRoomListResDtoList;
+        // 각 채팅방의 마지막 메시지와 함께 DTO로 변환
+        return chatRoomPage.map(chatRoom -> {
+            ChatMessage lastMessage = chatMessageRepository.findFirstByChatRoomOrderByCreatedAtDesc(chatRoom).orElse(null);
+            return ChatRoomListResDto.fromEntity(chatRoom, lastMessage);
+        });
     }
+
 
 
     // 채팅방 리스트(admin입장 채팅방 리스트)
-    public List<ChatRoomListResDto> getAdminChatRoomList(){
+    public Page<ChatRoomListResDto> getAdminChatRoomList(Pageable pageable){
         String memberEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         if(!memberEmail.equals("todak@test.com")){
-            // todak admin만 접근가능
+            // todak admin만 접근 가능
             throw new BaseException(TODAK_ADMIN_ONLY);
         }
 
-        // 모든 채팅방 조회
-        List<ChatRoom> chatRoomList = chatRoomRepository.findAll();
+        // 모든 채팅방을 recentChatTime 기준 내림차순으로 페이징 처리하여 조회
+        Page<ChatRoom> chatRoomPage = chatRoomRepository.findAllByOrderByRecentChatTimeDesc(pageable);
 
-        List<ChatRoomListResDto> chatRoomListResDtoList = new ArrayList<>();
-        ChatMessage lastMessage = null; // 채팅방 마지막 메시지
-
-        for(ChatRoom chatRoom : chatRoomList){
-
-            // 해당 채팅방에서 가장 마지막 채팅메시지 조회
-            lastMessage = chatMessageRepository.findFirstByChatRoomOrderByCreatedAtDesc(chatRoom)
-                    .orElse(null); // 메시지가 없으면 null 반환
-
-            chatRoomListResDtoList.add(ChatRoomListResDto.fromEntity(chatRoom, lastMessage));
-        }
-
-        return chatRoomListResDtoList;
-
+        // 각 채팅방의 마지막 메시지와 함께 DTO로 변환
+        return chatRoomPage.map(chatRoom -> {
+            ChatMessage lastMessage = chatMessageRepository.findFirstByChatRoomOrderByCreatedAtDesc(chatRoom).orElse(null);
+            return ChatRoomListResDto.fromEntity(chatRoom, lastMessage);
+        });
     }
+
 
 
 }
