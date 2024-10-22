@@ -50,6 +50,11 @@ public class ReservationAdminController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
+    @GetMapping("/total/list")
+    public ResponseEntity<?> totalReservationList(){
+        return new ResponseEntity<>(reservationAdminService.totalReservationList(), HttpStatus.OK);
+    }
+
     @PostMapping("/update")
     public ResponseEntity<?> updateStatusReservation(
             @RequestBody UpdateStatusReservation updateStatusReservation){

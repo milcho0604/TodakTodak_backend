@@ -28,11 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.padaks.todaktodak.common.exception.exceptionType.MemberExceptionType.MEMBER_NOT_FOUND;
@@ -769,4 +767,12 @@ public class MemberService {
         return jwtTokenprovider.createToken(member.getMemberEmail(), member.getRole().name(), member.getId());
     }
 
+    public List<MontlyMemberCountDto> getMonthlyMemberCount() {
+        List<Role> roles = Arrays.asList(Role.Member, Role.HospitalAdmin, Role.Doctor);
+        return memberRepository.findMonthlyMemberCount(roles);
+    }
+
+    public Long getWaitingMemberCount(){
+        return memberRepository.countByRoleAndIsVerified(Role.HospitalAdmin, false);
+    }
 }

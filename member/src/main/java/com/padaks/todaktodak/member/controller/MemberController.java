@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -527,5 +528,16 @@ public class MemberController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("토큰 갱신 실패");
         }
+    }
+
+    @GetMapping("/growup")
+    public ResponseEntity<?> getMemberCountByMonth() {
+
+        return ResponseEntity.ok(memberService.getMonthlyMemberCount());
+    }
+
+    @GetMapping("/waiting/list")
+    public ResponseEntity<?> getWaitingMemberCount(){
+        return ResponseEntity.ok(memberService.getWaitingMemberCount());
     }
 }

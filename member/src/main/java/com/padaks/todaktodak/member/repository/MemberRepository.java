@@ -2,6 +2,7 @@ package com.padaks.todaktodak.member.repository;
 
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.domain.Role;
+import com.padaks.todaktodak.member.dto.MontlyMemberCountDto;
 import feign.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,4 +61,12 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     // 탈퇴 회원 중 인증 여부 필터링
     Page<Member> findByIsVerifiedAndDeletedAtIsNotNull(boolean isVerified, Pageable pageable);
 
+    @Query("SELECT new com.padaks.todaktodak.member.dto.MontlyMemberCountDto(YEAR(m.createdAt), MONTH(m.createdAt), COUNT(m), m.role) " +
+            "FROM Member m " +
+            "WHERE m.role IN (:roles)" +
+            "GROUP BY YEAR(m.createdAt), MONTH(m.createdAt), m.role " +
+            "ORDER BY YEAR(m.createdAt), MONTH(m.createdAt), m.role ")
+    List<MontlyMemberCountDto> findMonthlyMemberCount(@Param("roles") List<Role> roles);
+
+    Long countByRoleAndIsVerified(Role role, Boolean isVerified);
 }

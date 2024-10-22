@@ -154,4 +154,11 @@ public class ReservationAdminService {
         }
         return dtos;
     }
+
+//    예약 총 합 출력
+        public Long totalReservationList(){
+            Long count = reservationRepository.count();
+
+            return count;
+        }
 }
