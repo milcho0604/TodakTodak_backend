@@ -19,6 +19,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.ws.rs.core.Response;
+
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -157,4 +159,13 @@ public class PaymentController {
         }
     }
 
+    @GetMapping("/get/total")
+    public ResponseEntity<?> getTotalAmount(){
+        try{
+            Long amount = paymentService.getTotalAmount();
+            return ResponseEntity.ok(amount);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 }
