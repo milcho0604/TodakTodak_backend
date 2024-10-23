@@ -41,7 +41,7 @@ public class HospitalOperatingHoursService {
         Hospital hospital = hospitalRepository.findByAdminEmail(adminEmail)
                 .orElseThrow(() -> new EntityNotFoundException("해당 병원의 관리자가 아닙니다."));
         // 해당 병원의 영업시간을 모두 불러옴
-        List<HospitalOperatingHours> existingOperatingHours = hospitalOperatingHoursRepository.findAllByHospital(hospital);
+        List<HospitalOperatingHours> existingOperatingHours = hospitalOperatingHoursRepository.findAllByHospitalAndDeletedAtIsNull(hospital);
 
         // 요일별로 영업시간이 존재하는지 미리 체크
         Set<DayOfHoliday> existingDays = existingOperatingHours.stream()
@@ -73,7 +73,7 @@ public class HospitalOperatingHoursService {
         Hospital hospital = hospitalRepository.findByAdminEmail(adminEmail)
                 .orElseThrow(() -> new EntityNotFoundException("해당 병원의 관리자가 아닙니다."));
 
-        List<HospitalOperatingHours> operatingHoursList = hospitalOperatingHoursRepository.findByHospitalId(hospital.getId());
+        List<HospitalOperatingHours> operatingHoursList = hospitalOperatingHoursRepository.findByHospitalIdAndDeletedAtIsNull(hospital.getId());
 
         return operatingHoursList.stream()
                 .map(HospitalOperatingHoursResDto::fromEntity)
@@ -98,7 +98,7 @@ public class HospitalOperatingHoursService {
         }
 
         // 해당 병원의 모든 영업시간을 불러옴
-        List<HospitalOperatingHours> existingOperatingHours = hospitalOperatingHoursRepository.findAllByHospital(hospital);
+        List<HospitalOperatingHours> existingOperatingHours = hospitalOperatingHoursRepository.findAllByHospitalAndDeletedAtIsNull(hospital);
 
         // 기존 운영 시간의 요일을 Set으로 수집
         Set<DayOfHoliday> existingDays = existingOperatingHours.stream()

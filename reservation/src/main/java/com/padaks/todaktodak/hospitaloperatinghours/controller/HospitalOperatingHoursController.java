@@ -58,7 +58,7 @@ public class HospitalOperatingHoursController {
     }
 
     // 병원 특정 영업시간 수정
-    @PostMapping("/update/{hospitalId}/{operatingHoursId}")
+    @PostMapping("/update/{operatingHoursId}")
     public ResponseEntity<Object> updateOperatingHours(@PathVariable Long operatingHoursId,
                                                        @RequestBody HospitalOperatingHoursReqDto dto) {
         try{
