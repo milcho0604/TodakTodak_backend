@@ -1,6 +1,7 @@
 package com.padaks.todaktodak.hospitaloperatinghours.controller;
 
 import com.padaks.todaktodak.common.dto.CommonResDto;
+import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.hospitaloperatinghours.dto.HospitalOperatingHoursReqDto;
 import com.padaks.todaktodak.hospitaloperatinghours.dto.HospitalOperatingHoursResDto;
 import com.padaks.todaktodak.hospitaloperatinghours.service.HospitalOperatingHoursService;
@@ -25,8 +26,12 @@ public class HospitalOperatingHoursController {
     @PostMapping("/register/{hospitalId}")
     public ResponseEntity<Object> addOperatingHours(@PathVariable Long hospitalId,
                                                     @RequestBody List<HospitalOperatingHoursReqDto> operatingHoursDtos) {
-        hospitalOperatingHoursService.addOperatingHours(hospitalId, operatingHoursDtos);
-        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원영업시간 등록 성공", null), HttpStatus.OK);
+        try {
+            hospitalOperatingHoursService.addOperatingHours(hospitalId, operatingHoursDtos);
+            return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원영업시간 등록 성공", null), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(new CommonResDto(HttpStatus.BAD_REQUEST, e.getMessage(), null), HttpStatus.BAD_REQUEST);
+        }
     }
 
     // 병원 영업시간 리스트 조회
@@ -58,9 +63,15 @@ public class HospitalOperatingHoursController {
     public ResponseEntity<Object> updateOperatingHours(@PathVariable Long hospitalId,
                                                        @PathVariable Long operatingHoursId,
                                                        @RequestBody HospitalOperatingHoursReqDto dto) {
-
-        hospitalOperatingHoursService.updateOperatingHours(hospitalId, operatingHoursId, dto);
-        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원영업시간 수정 성공", hospitalId), HttpStatus.OK);
+        try {
+            hospitalOperatingHoursService.updateOperatingHours(hospitalId, operatingHoursId, dto);
+            return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원영업시간 수정 성공", hospitalId), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(new CommonResDto(HttpStatus.BAD_REQUEST, e.getMessage(), null), HttpStatus.BAD_REQUEST);
+        } catch (BaseException e) {
+            return new ResponseEntity<>(new CommonResDto(HttpStatus.CONFLICT, e.getMessage(), null), HttpStatus.CONFLICT);
+        }
+        // 다른 예외에 대한 처리도 필요하면 추가
     }
 
     // 병원 특정 영업시간 삭제

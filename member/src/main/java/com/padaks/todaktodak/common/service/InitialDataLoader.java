@@ -28,6 +28,7 @@ public class InitialDataLoader implements CommandLineRunner {
                             .password(passwordEncoder.encode("12341234"))
                             .phoneNumber("010-1111-2222")
                             .role(Role.TodakAdmin)
+                            .profileImgUrl("https://todak-file.s3.ap-northeast-2.amazonaws.com/default-images/admin_profile.png")
                             .isVerified(true)
                     .build());
         }
