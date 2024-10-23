@@ -595,4 +595,19 @@ public class PaymentService {
         }
         return cancelResponse;  // 취소 응답 반환
     }
+
+//    총 매출 구하는 메서드
+    public Long getTotalAmount(){
+        List<Pay> payList = paymentRepository.findAll();
+        Long amount = 0L;
+        for(Pay pay : payList){
+            Integer tempCount = pay.getCount();
+            BigDecimal tempAmount = pay.getAmount();
+            BigDecimal result = tempAmount.multiply(BigDecimal.valueOf(tempCount));
+
+            amount += result.longValue();
+        }
+
+        return amount;
+    }
 }
