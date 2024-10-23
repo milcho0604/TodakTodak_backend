@@ -22,10 +22,9 @@ public class HospitalOperatingHoursController {
 
     // 병원admin, 개발자admin만 가능
     // 병원 영업시간 등록
-    @PostMapping("/register/{hospitalId}")
-    public ResponseEntity<Object> addOperatingHours(@PathVariable Long hospitalId,
-                                                    @RequestBody List<HospitalOperatingHoursReqDto> operatingHoursDtos) {
-        hospitalOperatingHoursService.addOperatingHours(hospitalId, operatingHoursDtos);
+    @PostMapping("/register")
+    public ResponseEntity<Object> addOperatingHours(@RequestBody List<HospitalOperatingHoursReqDto> operatingHoursDtos) {
+        hospitalOperatingHoursService.addOperatingHours(operatingHoursDtos);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원영업시간 등록 성공", null), HttpStatus.OK);
     }
 
@@ -54,13 +53,13 @@ public class HospitalOperatingHoursController {
     }
 
     // 병원 특정 영업시간 수정
-    @PostMapping("/update/{hospitalId}/{operatingHoursId}")
-    public ResponseEntity<Object> updateOperatingHours(@PathVariable Long hospitalId,
+    @PostMapping("/update/{operatingHoursId}")
+    public ResponseEntity<Object> updateOperatingHours(
                                                        @PathVariable Long operatingHoursId,
                                                        @RequestBody HospitalOperatingHoursReqDto dto) {
 
-        hospitalOperatingHoursService.updateOperatingHours(hospitalId, operatingHoursId, dto);
-        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원영업시간 수정 성공", hospitalId), HttpStatus.OK);
+        hospitalOperatingHoursService.updateOperatingHours(operatingHoursId, dto);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원영업시간 수정 성공", operatingHoursId), HttpStatus.OK);
     }
 
     // 병원 특정 영업시간 삭제

@@ -10,6 +10,9 @@ import com.padaks.todaktodak.hospitaloperatinghours.dto.HospitalOperatingHoursRe
 import com.padaks.todaktodak.hospitaloperatinghours.repository.HospitalOperatingHoursRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,11 +32,14 @@ public class HospitalOperatingHoursService {
     private final HospitalRepository hospitalRepository;
 
     // 특정 병원에 영업시간 추가
-    public void addOperatingHours(Long hospitalId,
-                                  List<HospitalOperatingHoursReqDto> operatingHoursDtos){
+    public void addOperatingHours(List<HospitalOperatingHoursReqDto> operatingHoursDtos){
 
-        Hospital hospital = hospitalRepository.findByIdOrThrow(hospitalId);
-
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String adminEmail = userDetails.getUsername();
+        // 병원이 존재하는지 확인
+        Hospital hospital = hospitalRepository.findByAdminEmail(adminEmail)
+                .orElseThrow(() -> new EntityNotFoundException("해당 병원의 관리자가 아닙니다."));
         // 해당 병원의 영업시간을 모두 불러옴
         List<HospitalOperatingHours> existingOperatingHours = hospitalOperatingHoursRepository.findAllByHospital(hospital);
 
@@ -74,18 +80,22 @@ public class HospitalOperatingHoursService {
     }
 
     // 특정병원 특정영업시간 수정
-    public void updateOperatingHours(Long hospitalId,
-                                     Long operatingHoursId,
+    public void updateOperatingHours(Long operatingHoursId,
                                      HospitalOperatingHoursReqDto dto){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String adminEmail = userDetails.getUsername();
         // 병원이 존재하는지 확인
-        Hospital hospital = hospitalRepository.findByIdOrThrow(hospitalId);
+        Hospital hospital = hospitalRepository.findByAdminEmail(adminEmail)
+                .orElseThrow(() -> new EntityNotFoundException("해당 병원의 관리자가 아닙니다."));
         // 수정할 영업시간 찾기
         HospitalOperatingHours operatingHours = hospitalOperatingHoursRepository.findByIdOrThrow(operatingHoursId);
 
         // 병원이 일치하는지 확인
-        if (!operatingHours.getHospital().getId().equals(hospitalId)) {
+        if (!operatingHours.getHospital().getId().equals(hospital.getId())) {
             throw new BaseException(MISMATCHED_HOSPITAL);
         }
+
         operatingHours.updateOperatingHours(dto);
     }
 
