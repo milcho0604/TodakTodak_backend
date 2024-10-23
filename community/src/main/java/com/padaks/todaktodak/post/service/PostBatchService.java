@@ -34,11 +34,18 @@ public class PostBatchService {
                     Long postId = extractPostId(key);
                     Long views = getPostViewsFromRedis(postId);
                     if (views != null && views > 0) {
+//                        Post post = postRepository.findById(postId)
+//                                .orElseThrow(() -> new IllegalArgumentException("Post not found: " + postId));
                         Post post = postRepository.findById(postId)
-                                .orElseThrow(() -> new IllegalArgumentException("Post not found: " + postId));
-                        post.updateViewCount(views);  // Post 엔티티에 조회수 반영 메서드
-                        postRepository.save(post);   // DB에 저장
-//                        redisTemplate.delete(key);  // Redis에서 삭제 (초기화)
+                                .orElse(null);  // 게시글이 없을 때 null 반환
+                        if (post != null) {
+                            post.updateViewCount(views);
+                            postRepository.save(post);
+                        } else {
+                            // 게시글이 없는 경우 Redis에서 해당 키 삭제
+                            System.out.println("Post not found: " + postId + ". Deleting Redis key: " + key);
+                            redisTemplate.delete(key);
+                        }
                     }
                 }
 
@@ -47,10 +54,15 @@ public class PostBatchService {
                     Long likes = getPostLikesFromRedis(postId);
                     if (likes != null && likes > 0) {
                         Post post = postRepository.findById(postId)
-                                .orElseThrow(() -> new IllegalArgumentException("Post not found: " + postId));
-                        post.updateLikeCount(likes);  // Post 엔티티에 좋아요 수 반영 메서드
-                        postRepository.save(post);   // DB에 저장
-//                        redisTemplate.delete(key);  // Redis에서 삭제 (초기화)
+                                .orElse(null);  // 게시글이 없을 때 null 반환
+                        if (post != null) {
+                            post.updateLikeCount(likes);
+                            postRepository.save(post);
+                        } else {
+                            // 게시글이 없는 경우 Redis에서 해당 키 삭제
+                            System.out.println("Post not found: " + postId + ". Deleting Redis key: " + key);
+                            redisTemplate.delete(key);
+                        }
                     }
                 }
             }
