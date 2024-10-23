@@ -68,6 +68,7 @@ public class HospitalOperatingHoursService {
                 .collect(Collectors.toList());
     }
 
+    // 병원 어드민 리스트 조회
     public List<HospitalOperatingHoursResDto> adminOperatingHoursByHospitalId(String adminEmail) {
         Hospital hospital = hospitalRepository.findByAdminEmail(adminEmail)
                 .orElseThrow(() -> new EntityNotFoundException("해당 병원의 관리자가 아닙니다."));
@@ -96,6 +97,20 @@ public class HospitalOperatingHoursService {
             throw new BaseException(MISMATCHED_HOSPITAL);
         }
 
+        // 해당 병원의 모든 영업시간을 불러옴
+        List<HospitalOperatingHours> existingOperatingHours = hospitalOperatingHoursRepository.findAllByHospital(hospital);
+
+        // 기존 운영 시간의 요일을 Set으로 수집
+        Set<DayOfHoliday> existingDays = existingOperatingHours.stream()
+                .map(HospitalOperatingHours::getDayOfWeek)
+                .collect(Collectors.toSet());
+
+        // 요청된 요일이 기존 운영 시간에 존재하는지 확인
+        if (existingDays.contains(dto.getDayOfWeek()) && !operatingHours.getDayOfWeek().equals(dto.getDayOfWeek())) {
+            throw new IllegalArgumentException(dto.getDayOfWeek() + "에 대한 영업시간이 이미 존재합니다.");
+        }
+
+        // 운영 시간 업데이트
         operatingHours.updateOperatingHours(dto);
     }
 

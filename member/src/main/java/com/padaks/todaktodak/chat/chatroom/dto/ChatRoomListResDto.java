@@ -29,7 +29,6 @@ public class ChatRoomListResDto {
 
     private String senderProfileImgUrl; // 메시지 송신자 프로필 사진 url
 
-
     public static ChatRoomListResDto fromEntity(ChatRoom chatRoom,
                                                 ChatMessage chatMessage){
         return ChatRoomListResDto.builder()
