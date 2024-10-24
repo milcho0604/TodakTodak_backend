@@ -26,9 +26,8 @@ public class HospitalAdminSaveReqDto {
     @Builder.Default
     private boolean verified = true;
 
-    String temp = "변경해주세요";
     public static Member toEntity(HospitalAdminSaveReqDto dto,
-                                  String encodedPassword, Address address){
+                                  String encodedPassword, Address address, String bio){
         return Member.builder()
                 .name(dto.getAdminName())
                 .memberEmail(dto.getAdminEmail())
@@ -38,6 +37,7 @@ public class HospitalAdminSaveReqDto {
                 .role(Role.NonUser)
                 .isVerified(dto.verified)
                 .address(address)
+                .bio(bio)
                 .build();
     }
 }

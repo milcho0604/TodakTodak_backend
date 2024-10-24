@@ -107,8 +107,9 @@ public class MemberService {
     public Member registerHospitalAdmin(HospitalAdminSaveReqDto dto){
         validateRegistration(dto); // 회원가입 검증로직
         String temp = "정보를 변경해주세요";
+        String bio = "안녕하세요. " + dto.getAdminName() + "의사입니다.";
         Address address = new Address(temp, temp, temp);
-        Member hospitalAdmin = dto.toEntity(dto, passwordEncoder.encode(dto.getAdminPassword()), address);
+        Member hospitalAdmin = dto.toEntity(dto, passwordEncoder.encode(dto.getAdminPassword()), address, bio);
         Member unAcceptHospitalAdmin = memberRepository.save(hospitalAdmin);
 
         // 개발자 admin이 회원가입 승인전까지는 deletedAt에 시간 넣어서 아직 없는 회원으로 간주
