@@ -60,11 +60,11 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String targetUrl = null;
 
         if (member.isVerified() == true){
-            targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8081/loginSuccess")
+            targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8081/all/loginSuccess")
                     .queryParam("token", token)
                     .build().toUriString();
         } else {
-            targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8081/updateSuccess")
+            targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8081/all/updateSuccess")
                     .queryParam("token", token)
                     .build().toUriString();
         }
