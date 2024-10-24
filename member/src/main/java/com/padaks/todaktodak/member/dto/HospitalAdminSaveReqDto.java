@@ -1,5 +1,6 @@
 package com.padaks.todaktodak.member.dto;
 
+import com.padaks.todaktodak.member.domain.Address;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.domain.Role;
 import lombok.AllArgsConstructor;
@@ -25,8 +26,9 @@ public class HospitalAdminSaveReqDto {
     @Builder.Default
     private boolean verified = true;
 
+    String temp = "변경해주세요";
     public static Member toEntity(HospitalAdminSaveReqDto dto,
-                                  String encodedPassword){
+                                  String encodedPassword, Address address){
         return Member.builder()
                 .name(dto.getAdminName())
                 .memberEmail(dto.getAdminEmail())
@@ -35,6 +37,7 @@ public class HospitalAdminSaveReqDto {
                 .hospitalId(dto.getHospitalId())
                 .role(Role.NonUser)
                 .isVerified(dto.verified)
+                .address(address)
                 .build();
     }
 }

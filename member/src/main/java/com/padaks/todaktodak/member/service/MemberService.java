@@ -106,7 +106,9 @@ public class MemberService {
     // 병원 admin 회원가입
     public Member registerHospitalAdmin(HospitalAdminSaveReqDto dto){
         validateRegistration(dto); // 회원가입 검증로직
-        Member hospitalAdmin = dto.toEntity(dto, passwordEncoder.encode(dto.getAdminPassword()));
+        String temp = "정보를 변경해주세요";
+        Address address = new Address(temp, temp, temp);
+        Member hospitalAdmin = dto.toEntity(dto, passwordEncoder.encode(dto.getAdminPassword()), address);
         Member unAcceptHospitalAdmin = memberRepository.save(hospitalAdmin);
 
         // 개발자 admin이 회원가입 승인전까지는 deletedAt에 시간 넣어서 아직 없는 회원으로 간주
@@ -516,7 +518,11 @@ public class MemberService {
 
         validateRegistration(dto);
         Long hosId = adminMember.getHospitalId();
-        Member doctor = dto.toEntity(password, hosId);
+        // 주소, 전화번호,
+        String temp = "정보를 변경해주세요";
+        Address address = new Address(temp, temp, temp);
+        String bio = "안녕하세요." + dto.getName() + "의사입니다.";
+        Member doctor = dto.toEntity(password, hosId, address, temp, bio);
         return memberRepository.save(doctor);
     }
 
