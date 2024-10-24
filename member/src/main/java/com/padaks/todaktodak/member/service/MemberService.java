@@ -771,8 +771,4 @@ public class MemberService {
         List<Role> roles = Arrays.asList(Role.Member, Role.HospitalAdmin, Role.Doctor);
         return memberRepository.findMonthlyMemberCount(roles);
     }
-
-    public Long getWaitingMemberCount(){
-        return memberRepository.countByRoleAndIsVerified(Role.HospitalAdmin, false);
-    }
 }
