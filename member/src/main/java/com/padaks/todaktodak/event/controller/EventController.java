@@ -25,6 +25,7 @@ public class EventController {
     // 캘린더 이벤트 생성
     @PostMapping("/create")
     public ResponseEntity<?> createEvent(@RequestBody EventCreateReqDto dto) {
+        System.out.println("여기는" + dto);
         eventService.createEvent(dto);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
