@@ -192,5 +192,4 @@ public class HospitalController {
         return new ResponseEntity<>(count, HttpStatus.OK);
     }
 
-
 }

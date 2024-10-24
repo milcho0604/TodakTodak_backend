@@ -37,7 +37,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable() // CSRF 보호 비활성화
                 .cors().and() // CORS 활성화
                 .authorizeRequests()
-                .antMatchers("/**").permitAll() // 모든 요청을 허용
+                // 권한에 따른 접근 제어 설정
+                .antMatchers("/**").permitAll() // 공개 경로는 모두 접근 가능
+                .anyRequest().authenticated() // 그 외 요청은 인증 필요
                 .and()
                 .oauth2Login()
                 .userInfoEndpoint()
