@@ -184,5 +184,4 @@ public class HospitalController {
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원정보 조회성공", adminHospitalListDetailResDto), HttpStatus.OK);
     }
 
-
 }
