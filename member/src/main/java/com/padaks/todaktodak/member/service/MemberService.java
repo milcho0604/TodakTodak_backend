@@ -91,9 +91,6 @@ public class MemberService {
 //        fcmService.sendMessage(member1.getId(), "회원가입", saveReqDto.getMemberEmail()+"회원이 가입하였습니다", Type.REGISTER);
     }
 
-    private void sendMessage(){
-
-    }
 
     public Member createDoctor(DoctorSaveReqDto dto){
         validateRegistration(dto);
@@ -385,20 +382,13 @@ public class MemberService {
         }
     }
 
-    // member list 조회
-//    public Page<MemberListResDto> memberList(Pageable pageable){
-//        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-////
-////        System.out.println(email);
-////        Member member = memberRepository.findByMemberEmail(email)
-////                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
-////        if (!member.getRole().toString().equals("TodakAdmin")){
-////            throw new SecurityException("관리자만 접근이 가능합니다.");
-////        }
-//        Page<Member> members = memberRepository.findAll(pageable);
-//        return members.map(a -> a.listFromEntity());
-//    }
-
+    public boolean verifyCode(String email, String code) {
+        if (redisService.verifyCode(email, code)) {
+            return true;
+        } else {
+            throw new RuntimeException("인증 코드가 유효하지 않습니다.");
+        }
+    }
     // 멤버 전체 목록 조회 -> 멤버 필터
     public Page<MemberListResDto> memberList(boolean isVerified, boolean isDeleted, String roleString, Pageable pageable) {
         Role role = null;
