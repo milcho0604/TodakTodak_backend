@@ -5,6 +5,7 @@ import com.padaks.todaktodak.chat.chatmessage.dto.ChatMessageResDto;
 import com.padaks.todaktodak.chat.chatmessage.repository.ChatMessageRepository;
 import com.padaks.todaktodak.chat.chatroom.domain.ChatRoom;
 import com.padaks.todaktodak.chat.chatroom.dto.ChatRoomListResDto;
+import com.padaks.todaktodak.chat.chatroom.dto.CsMemberResDto;
 import com.padaks.todaktodak.chat.chatroom.repository.ChatRoomRepository;
 import com.padaks.todaktodak.chat.cs.repository.CsRepository;
 import com.padaks.todaktodak.common.exception.BaseException;
@@ -124,5 +125,14 @@ public class ChatService {
 
     }
 
+//      채팅방 id로 멤버 정보 조회 (todakAdmin)
+    public CsMemberResDto getMemberInfo(Long id){
+        ChatRoom chatRoom = chatRoomRepository.findByIdOrThrow(id);
+        Member member = chatRoom.getMember();
+
+        CsMemberResDto csMemberResDto = new CsMemberResDto(member.getId(), member.getName(), member.getRole(), member.getProfileImgUrl());
+
+        return csMemberResDto;
+    }
 
 }
