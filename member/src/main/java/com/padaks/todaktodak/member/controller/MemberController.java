@@ -258,8 +258,8 @@ public class MemberController {
     @PostMapping("/edit-doctor")
     public ResponseEntity<?> editDoctorInfo(@ModelAttribute DoctorUpdateReqdto dto) {
         try {
-            String email = SecurityContextHolder.getContext().getAuthentication().getName();
-            Member doctor = memberService.findByMemberEmail(email);
+//            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            Member doctor = memberService.findByMemberEmail(dto.getMemberEmail());
             memberService.updateDoctor(doctor, dto);
             CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "의사 정보를 수정하였습니다.", doctor);
             return new ResponseEntity<>(commonResDto, HttpStatus.OK);

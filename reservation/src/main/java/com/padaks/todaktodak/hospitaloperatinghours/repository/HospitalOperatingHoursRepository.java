@@ -16,6 +16,8 @@ public interface HospitalOperatingHoursRepository extends JpaRepository<Hospital
 
     // 병원id로 영업시간 리스트 조회
     List<HospitalOperatingHours> findByHospitalId(Long hospitalId);
+    List<HospitalOperatingHours> findByHospitalIdAndDeletedAtIsNull(Long hospitalId);
+
 
     // deleteAt이 null인 객체 찾음(삭제되지 않은 객체)
     Optional<HospitalOperatingHours> findByIdAndDeletedAtIsNull(Long id);
@@ -26,8 +28,10 @@ public interface HospitalOperatingHoursRepository extends JpaRepository<Hospital
                 .orElseThrow(() -> new BaseException(HOSPITAL_OPERATING_HOURS_NOT_FOUND));
     }
 
-    // 병원에 속한 모든 영업시간을 가져옴
     List<HospitalOperatingHours> findAllByHospital(Hospital hospital);
+
+    // 병원에 속한 모든 영업시간을 가져옴
+    List<HospitalOperatingHours> findAllByHospitalAndDeletedAtIsNull(Hospital hospital);
 
 
 

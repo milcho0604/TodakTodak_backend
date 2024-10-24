@@ -8,6 +8,8 @@ import com.padaks.todaktodak.chat.service.ChatService;
 import com.padaks.todaktodak.common.dto.CommonResDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,18 +46,17 @@ public class ChatController {
 
     // 해당 회원이 속한 채팅방 리스트 (회원입장 채팅방 리스트)
     @GetMapping("/chatroom/list/member")
-    private ResponseEntity<?> getMemberChatRoomList(){
-        List<ChatRoomListResDto> chatRoomList = chatService.getMemberChatRoomList();
+    private ResponseEntity<?> getMemberChatRoomList(Pageable pageable) {
+        Page<ChatRoomListResDto> chatRoomList = chatService.getMemberChatRoomList(pageable);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "회원 채팅방 리스트 조회 성공", chatRoomList), HttpStatus.OK);
     }
 
     // admin 채팅방 리스트 (admin입장 채팅방 리스트)
     @GetMapping("/chatroom/list/admin")
-    private ResponseEntity<?> getAdminChatRoomList(){
-        List<ChatRoomListResDto> chatRoomList = chatService.getAdminChatRoomList();
+    private ResponseEntity<?> getAdminChatRoomList(Pageable pageable) {
+        Page<ChatRoomListResDto> chatRoomList = chatService.getAdminChatRoomList(pageable);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "admin 채팅방 리스트 조회 성공", chatRoomList), HttpStatus.OK);
     }
-
 
     //    채팅방 id 로 멤버 정보 검색 (todakAdmin)
     @GetMapping("/member/info/{id}")
