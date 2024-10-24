@@ -551,9 +551,4 @@ public class MemberController {
 
         return ResponseEntity.ok(memberService.getMonthlyMemberCount());
     }
-
-    @GetMapping("/waiting/list")
-    public ResponseEntity<?> getWaitingMemberCount(){
-        return ResponseEntity.ok(memberService.getWaitingMemberCount());
-    }
 }
