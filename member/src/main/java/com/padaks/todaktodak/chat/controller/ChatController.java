@@ -3,6 +3,7 @@ package com.padaks.todaktodak.chat.controller;
 import com.padaks.todaktodak.chat.chatmessage.dto.ChatMessageResDto;
 import com.padaks.todaktodak.chat.chatroom.domain.ChatRoom;
 import com.padaks.todaktodak.chat.chatroom.dto.ChatRoomListResDto;
+import com.padaks.todaktodak.chat.chatroom.dto.ChatRoomMemberInfoResDto;
 import com.padaks.todaktodak.chat.service.ChatService;
 import com.padaks.todaktodak.common.dto.CommonResDto;
 import lombok.RequiredArgsConstructor;
@@ -57,5 +58,12 @@ public class ChatController {
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "admin 채팅방 리스트 조회 성공", chatRoomList), HttpStatus.OK);
     }
 
+    // 채팅방 참여자 회원 정보조회
+    @GetMapping("/member/info/chatroom/{chatRoomId}")
+    private ResponseEntity<?> getChatRoomMemberInfo(@PathVariable Long chatRoomId){
+        ChatRoomMemberInfoResDto chatRoomMemberInfoResDto
+                = chatService.getChatRoomMemberInfo(chatRoomId);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "채팅참여자 회원정보 조회 성공", chatRoomMemberInfoResDto), HttpStatus.OK);
+    }
 
 }
