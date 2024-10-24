@@ -67,6 +67,4 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
             "GROUP BY YEAR(m.createdAt), MONTH(m.createdAt), m.role " +
             "ORDER BY YEAR(m.createdAt), MONTH(m.createdAt), m.role ")
     List<MontlyMemberCountDto> findMonthlyMemberCount(@Param("roles") List<Role> roles);
-
-    Long countByRoleAndIsVerified(Role role, Boolean isVerified);
 }

@@ -342,4 +342,9 @@ public class HospitalService {
         // 조회된 Hospital 엔티티를 AdminHospitalListDetailResDto로 변환
         return AdminHospitalListDetailResDto.detailFromEntity(hospital);
     }
+    
+//    미승인 된 병원 개수 조회 로직
+    public Long getHospitalNoAcceptList(){
+        return hospitalRepository.countByIsAcceptFalse();
+    }
 }

@@ -52,7 +52,7 @@ public class DoctorOperatingHoursService {
         }
 
         // 의사의 모든 영업시간 불러옴
-        List<DoctorOperatingHours> existingOperatingHours = doctorOperatingHoursRepository.findAllByMember(doctor);
+        List<DoctorOperatingHours> existingOperatingHours = doctorOperatingHoursRepository.findAllByMemberAndDeletedAtIsNull(doctor);
 
         // 기존 의사 영업시간 요일 저장
         Set<DayOfHoliday> existingDays = existingOperatingHours.stream()
@@ -94,7 +94,7 @@ public class DoctorOperatingHoursService {
 
 
     public List<DoctorOperatingHoursSimpleResDto> getOperatingHoursByDoctorId(Long doctorId){
-        List<DoctorOperatingHours> operatingHoursList = doctorOperatingHoursRepository.findByMemberId(doctorId);
+        List<DoctorOperatingHours> operatingHoursList = doctorOperatingHoursRepository.findByMemberIdAndDeletedAtIsNull(doctorId);
         return operatingHoursList.stream()
                 .map(hours -> new DoctorOperatingHoursSimpleResDto(
                         hours.getId(),
