@@ -60,7 +60,7 @@ public class FcmService {
                 url = "http://localhost:8081/" + urlType;
             } else if (type.equals(Type.RESERVATION_NOTIFICATION) && member.getRole().equals(Role.HospitalAdmin)) {
                 // 수정 필요
-                urlType = "/";
+                urlType ="memebr/doctor/reservation";
                 url = "http://localhost:8081/" + urlType;
             } else if (type.equals(Type.RESERVATION_WAITING)){
                 // 수정 필요
@@ -71,7 +71,7 @@ public class FcmService {
             }
         } else {
             if (type.equals(Type.POST) || type.equals(Type.COMMENT)){
-                urlType = "post";
+                urlType = "community";
                 url = "http://localhost:8081/" + urlType + "/" + id;
             } else {
                 url = "http://localhost:8081/";
