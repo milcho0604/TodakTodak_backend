@@ -36,8 +36,13 @@ public class HospitalOperatingHoursController {
     // 병원 영업시간 리스트 조회
     @GetMapping("/detail/{hospitalId}")
     public ResponseEntity<Object> getOperatingHours(@PathVariable Long hospitalId){
-        List<HospitalOperatingHoursResDto> operatingHoursList = hospitalOperatingHoursService.getOperatingHoursByHospitalId(hospitalId);
-        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원영업시간 조회 성공", operatingHoursList),HttpStatus.OK);
+        try{
+            List<HospitalOperatingHoursResDto> operatingHoursList = hospitalOperatingHoursService.getOperatingHoursByHospitalId(hospitalId);
+            return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원영업시간 조회 성공", operatingHoursList),HttpStatus.OK);
+        }catch (BaseException e){
+            return new ResponseEntity<>(new CommonResDto(HttpStatus.BAD_REQUEST, e.getMessage(), null), HttpStatus.BAD_REQUEST);
+        }
+
     }
 
     // 병원 영업시간 리스트 조회
@@ -74,8 +79,12 @@ public class HospitalOperatingHoursController {
     // 병원 특정 영업시간 삭제
     @DeleteMapping("/delete/{operatingHoursId}")
     public ResponseEntity<Object> deleteOperatingHours(@PathVariable Long operatingHoursId){
-        hospitalOperatingHoursService.deleteOperatingHours(operatingHoursId);
-        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원영업시간 삭제 성공", operatingHoursId), HttpStatus.OK);
+        try{
+            hospitalOperatingHoursService.deleteOperatingHours(operatingHoursId);
+            return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원영업시간 삭제 성공", operatingHoursId), HttpStatus.OK);
+        }catch (BaseException e){
+            return new ResponseEntity<>(new CommonResDto(HttpStatus.BAD_REQUEST, e.getMessage(), null), HttpStatus.BAD_REQUEST);
+        }
     }
 
 }
