@@ -82,7 +82,7 @@ public class NotificationKafkaConsumer {
                     "\n자녀이름\t: " + child.getName();
 
             fcmService.sendMessage(dto.getAdminEmail(),
-                    "# " + dto.getReservationType()+"/" + dto.getMedicalItem() + " 예약 안내 #",
+                     dto.getReservationType()+"/" + dto.getMedicalItem() + " 예약 안내 ",
                     body,
                     Type.RESERVATION_NOTIFICATION, null);
             acknowledgment.acknowledge();
@@ -111,7 +111,7 @@ public class NotificationKafkaConsumer {
                     "\n 예약자\t\t: " + dto.getMemberName() +
                     "\n 자녀이름\t: " + child.getName();
             fcmService.sendMessage(dto.getAdminEmail(),
-                    "# " + dto.getReservationType()+"/" + dto.getMedicalItem() + " 예약 안내 #",
+                     dto.getReservationType()+"/" + dto.getMedicalItem() + " 예약 안내 ",
                     body,
                     Type.RESERVATION_NOTIFICATION, null);
             acknowledgment.acknowledge();
@@ -122,7 +122,6 @@ public class NotificationKafkaConsumer {
   
     @KafkaListener(topics = "reservation-before-notify", containerFactory = "reservationKafkaContainerFactory")
     public void reserveBeforeNotify(String message, Acknowledgment acknowledgment){
-//        ObjectMapper objectMapper = new ObjectMapper();
         if (message.startsWith("\"") && message.endsWith("\"")) {
             message = message.substring(1, message.length() -1).replace("\"", "\"");
             message = message.replace("\\", "");
@@ -137,7 +136,7 @@ public class NotificationKafkaConsumer {
                     "\n 예약시간\t: " + dto.getReservationTime();
 
             fcmService.sendMessage(dto.getMemberEmail() ,
-                    "# 금일 " + dto.getMessage() + " #",
+                    "금일 " + dto.getMessage(),
                     body,
                     Type.RESERVATION_NOTIFICATION, null);
             acknowledgment.acknowledge();

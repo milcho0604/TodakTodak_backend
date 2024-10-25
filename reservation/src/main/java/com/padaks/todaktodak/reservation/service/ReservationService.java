@@ -16,6 +16,7 @@ import com.padaks.todaktodak.reservation.realtime.RealTimeService;
 import com.padaks.todaktodak.reservation.realtime.WaitingTurnDto;
 import com.padaks.todaktodak.reservation.repository.ReservationHistoryRepository;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
+import com.padaks.todaktodak.untact.service.UntactService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -53,6 +54,7 @@ public class ReservationService {
     private final MemberFeignClient memberFeignClient;
     private final ObjectMapper objectMapper;
     private final RealTimeService realTimeService;
+    private final UntactService untactService;
 
     public ReservationService(ReservationRepository reservationRepository,
                               ReservationHistoryRepository reservationHistoryRepository,
@@ -62,7 +64,7 @@ public class ReservationService {
                               KafkaTemplate<String, Object> kafkaTemplate,
                               HospitalRepository hospitalRepository,
                               MemberFeign memberFeign,
-                              MemberFeignClient memberFeignClient, ObjectMapper objectMapper, RealTimeService realTimeService) {
+                              MemberFeignClient memberFeignClient, ObjectMapper objectMapper, RealTimeService realTimeService, UntactService untactService) {
         this.reservationRepository = reservationRepository;
         this.reservationHistoryRepository = reservationHistoryRepository;
         this.dtoMapper = dtoMapper;
@@ -74,6 +76,7 @@ public class ReservationService {
         this.memberFeignClient = memberFeignClient;
         this.objectMapper = objectMapper;
         this.realTimeService = realTimeService;
+        this.untactService = untactService;
     }
 
     // member 객체 리턴, 토큰 포함
@@ -157,7 +160,7 @@ public class ReservationService {
                 }
             }
 
-            reservationRepository.save(reservation);
+            Reservation savedReservation = reservationRepository.save(reservation);
             RedisDto redisDto = dtoMapper.toRedisDto(reservation);
             redisTemplate.opsForZSet().add(key, redisDto, sequence);
             WaitingTurnDto waitingTurnDto = dtoMapper.toWaitingTurnDto(reservation, doctorResDto);
@@ -167,6 +170,10 @@ public class ReservationService {
             String notificationMessage = objectMapper.writeValueAsString(messageData);
             kafkaTemplate.send("immediate-reservation-success-notify", notificationMessage);
             log.info("KafkaListener[handleReservation] : 예약 대기열 처리 완료");
+
+            if (reservation.isUntact()) {
+                untactService.processRoomSelection(String.valueOf(savedReservation.getId()));
+            }
             return new ReservationSaveResDto().fromEntity(reservation);
         } catch (JsonProcessingException e) {
             throw new BaseException(JSON_PARSING_ERROR);

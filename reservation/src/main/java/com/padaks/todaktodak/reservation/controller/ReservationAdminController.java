@@ -63,6 +63,14 @@ public class ReservationAdminController {
         return new ResponseEntity<>("수정 완료", HttpStatus.OK);
     }
 
+    @PostMapping("/untact/update")
+    public ResponseEntity<?> updateStatusUntactReservation(
+            @RequestBody UpdateStatusReservation updateStatusReservation){
+        reservationAdminService.updateStatusUntactReservation(updateStatusReservation);
+
+        return new ResponseEntity<>("수정 완료", HttpStatus.OK);
+    }
+
     @GetMapping("/doctor/list")
     public ResponseEntity<?> ListReservation(
             @RequestParam(required = false) String doctorEmail,

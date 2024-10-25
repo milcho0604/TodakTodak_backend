@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,6 +25,12 @@ public class ChatMessageReqDto {
     private String senderName; // 보낸 사람 이름
 
     private String memberEmail; // 보낸 사람 이메일
+
+    private Long senderId; // 보낸사람 id
+
+    private String senderProfileImgUrl; // 보낸사람 프로필 사진 url
+
+    private LocalDateTime createdAt; // 채팅 생성시각
 
     public static ChatMessage toEntity(ChatRoom chatRoom,
                                        Member sender,
@@ -41,6 +49,9 @@ public class ChatMessageReqDto {
                 .contents(dto.getContents())
                 .senderName(sender.getName()) // senderName 추가
                 .memberEmail(sender.getMemberEmail()) // memberEmail 추가
+                .senderId(sender.getId())
+                .senderProfileImgUrl(sender.getProfileImgUrl())
+                .createdAt(chatRoom.getRecentChatTime())
                 .build();
     }
 }

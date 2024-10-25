@@ -5,6 +5,7 @@ import com.padaks.todaktodak.common.exception.BaseException;
 
 import com.padaks.todaktodak.hospital.domain.Hospital;
 import com.padaks.todaktodak.hospital.repository.HospitalRepository;
+import com.padaks.todaktodak.medicalchart.service.MedicalChartService;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.domain.Status;
 import com.padaks.todaktodak.reservation.domain.ReserveType;
@@ -44,6 +45,7 @@ public class ReservationAdminService {
 
     private final RedisTemplate<String, Object> redisTemplate;
     private final RealTimeService realTimeService;
+    private final MedicalChartService medicalChartService;
 
     private final HospitalRepository hospitalRepository;
 
@@ -118,6 +120,29 @@ public class ReservationAdminService {
                 .orElseThrow(() -> new BaseException(RESERVATION_NOT_FOUND));
         reservation.updateStatus(updateStatusReservation.getStatus());
 
+        DoctorResDto doctorResDto = memberFeign.getDoctor(reservation.getDoctorEmail());
+
+//        Redis의 예약 찾기
+        String key = reservation.getHospital().getId() + ":"+ reservation.getDoctorEmail();
+        RedisDto redisDto = dtoMapper.toRedisDto(reservation);
+//        list 에서 해당 예약을 삭제
+        redisTemplate.opsForZSet().remove(key, redisDto);
+        realTimeService.delete(reservation.getHospital().getName(), doctorResDto.getId().toString(), redisDto.getId().toString());
+    }
+
+    //  비대면 진료 예약 상태 변경 메소드
+    public void updateStatusUntactReservation(UpdateStatusReservation updateStatusReservation){
+        Reservation reservation = reservationRepository.findById(updateStatusReservation.getId())
+                .orElseThrow(() -> new BaseException(RESERVATION_NOT_FOUND));
+        reservation.updateStatus(updateStatusReservation.getStatus());
+//         예약을 취소하면 만약 진료 내역 있으면 삭제
+        if (updateStatusReservation.getStatus().equals(Status.Cancelled)){
+            medicalChartService.deleteMedicalChart(reservation);
+        }
+//        진료완료 처리하면 진료 내역 상태도 진료 완료로 업데이트
+        else if (updateStatusReservation.getStatus().equals(Status.Completed)){
+            medicalChartService.completeMedicalChartByReservation(reservation);
+        }
         DoctorResDto doctorResDto = memberFeign.getDoctor(reservation.getDoctorEmail());
 
 //        Redis의 예약 찾기

@@ -23,7 +23,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByIdAndMemberEmail(Long id, String memberEmail);
 
     Page<Member> findAll(Pageable pageable);
-    Page<Member> findByRole(Role role, Pageable pageable);
+    Page<Member> findByRoleAndDeletedAtIsNull(Role role, Pageable pageable);
     Page<Member> findByRoleAndHospitalId(Role role, Long hospitalId, Pageable pageable);
     //병원별 삭제되지 않은 의사목록
     Page<Member> findByRoleAndHospitalIdAndDeletedAtIsNull(Role role, Long hospitalId, Pageable pageable);

@@ -443,7 +443,7 @@ public class MemberService {
     }
 
     public Page<DoctorListResDto> doctorList(Pageable pageable){
-        Page<Member> doctors = memberRepository.findByRole(Role.Doctor, pageable);
+        Page<Member> doctors = memberRepository.findByRoleAndDeletedAtIsNull(Role.Doctor, pageable);
         return doctors.map(doctor ->{
             List<DoctorOperatingHoursSimpleResDto> operatingHours = doctorOperatingHoursService.getOperatingHoursByDoctorId(doctor.getId());
             return doctor.doctorListFromEntity(operatingHours);

@@ -35,8 +35,11 @@ public interface HospitalRepository extends JpaRepository<Hospital, Long> {
 
     Optional<Hospital> findByName(String hospitalName);
 
-    Page<Hospital> findByIsAccept(Boolean isAccept, Pageable pageable);
+    // deletedAt이 null인 모든 항목 조회
+    Page<Hospital> findByDeletedAtIsNull(Pageable pageable);
 
+    // isAccept와 deletedAt이 null인 항목 조회
+    Page<Hospital> findByIsAcceptAndDeletedAtIsNull(Boolean isAccept, Pageable pageable);
     Page<Hospital> findByRepresentativeNameContainingOrNameContainingOrAdminEmailContaining(
             String representativeName, String name, String adminEmail, Pageable pageable);
 

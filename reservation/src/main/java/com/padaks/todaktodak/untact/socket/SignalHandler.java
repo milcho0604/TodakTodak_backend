@@ -87,24 +87,6 @@ public class SignalHandler extends TextWebSocketHandler implements MessageListen
                                     : sdp.toString().substring(0, 64));
                     // Redis로 메시지 publish
                     redisPublisher.publish(message);
-                    /** 멀티 전 코드
-                    Room rm = sessionIdToRoomMap.get(session.getId());
-                    if (rm != null) {
-                        Map<String, WebSocketSession> clients = roomService.getClients(rm);
-                        for(Map.Entry<String, WebSocketSession> client : clients.entrySet())  {
-                            // send messages to all clients except current user
-                            if (!client.getKey().equals(userName)) {
-                                // select the same type to resend signal
-                                sendMessage(client.getValue(),
-                                        new WebSocketMessage(
-                                                userName,
-                                                message.getType(),
-                                                data,
-                                                candidate,
-                                                sdp));
-                            }
-                        }
-                    }**/
                     break;
 
                 // 사용자가 화상채팅에 들어왔을 때
@@ -134,22 +116,6 @@ public class SignalHandler extends TextWebSocketHandler implements MessageListen
                         redisPublisher.publish(new WebSocketMessage(
                                 userName, MSG_TYPE_LEAVE, message.getData(), null, null
                         ));
-                        /**
-                        // 방에 있는 다른 사용자에게 해당 사용자가 나갔음을 알림
-                        roomService.getClients(room).forEach((clientName, clientSession) -> {
-                            if (!clientName.equals(userName)) {  // Don't send to the leaving client
-                                sendMessage(clientSession,
-                                    new WebSocketMessage(
-                                        userName,  // 나가는 사용자의 이름
-                                        MSG_TYPE_LEAVE,  // 메시지 타입 'leave'
-                                        null,  // 추가적인 데이터 없음
-                                        null,  // ICE 후보 없음
-                                        null   // SDP 없음
-
-                                ));
-                            }
-                        });
-                         **/
                     });
                     break;
 
