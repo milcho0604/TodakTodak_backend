@@ -305,16 +305,16 @@ public class HospitalService {
     public Page<AdminHospitalListDetailResDto> adminHospitalListResDtos(Boolean isAccept, Pageable pageable) {
 
         if (isAccept == null) {
-            return hospitalRepository.findAll(pageable)
+            return hospitalRepository.findByDeletedAtIsNull(pageable)
                     .map(AdminHospitalListDetailResDto::listFromEntity);
         }
 
         // isAccept 값에 따른 필터링
         if (isAccept) {
-            return hospitalRepository.findByIsAccept(true, pageable)
+            return hospitalRepository.findByIsAcceptAndDeletedAtIsNull(true, pageable)
                     .map(AdminHospitalListDetailResDto::listFromEntity);
         } else {
-            return hospitalRepository.findByIsAccept(false, pageable)
+            return hospitalRepository.findByIsAcceptAndDeletedAtIsNull(false, pageable)
                     .map(AdminHospitalListDetailResDto::listFromEntity);
         }
     }
