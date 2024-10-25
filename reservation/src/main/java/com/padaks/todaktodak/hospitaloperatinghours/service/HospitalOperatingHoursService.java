@@ -55,6 +55,8 @@ public class HospitalOperatingHoursService {
 
     // 특정병원의 모든 영업시간 리스트 조회
     public List<HospitalOperatingHoursResDto> getOperatingHoursByHospitalId(Long hospitalId) {
+        // hospital id 파라미터로 받아서 해당 id에 맞는 병원있는지 검증, 없으면 예외발생
+        Hospital hospital = hospitalRepository.findByIdOrThrow(hospitalId);
         List<HospitalOperatingHours> operatingHoursList = hospitalOperatingHoursRepository.findByHospitalId(hospitalId);
 
         return operatingHoursList.stream()
