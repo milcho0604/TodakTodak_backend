@@ -1,5 +1,6 @@
 package com.padaks.todaktodak.medicalchart.service;
 
+import com.padaks.todaktodak.common.domain.BaseTimeEntity;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.medicalchart.domain.MedicalChart;
 import com.padaks.todaktodak.medicalchart.dto.MedicalChartResDto;
@@ -12,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 import static com.padaks.todaktodak.common.exception.exceptionType.ReservationExceptionType.*;
 
@@ -47,7 +50,7 @@ public class MedicalChartService {
     public MedicalChartResDto getMedicalChartByReservationId(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new BaseException(RESERVATION_NOT_FOUND));
-        MedicalChart medicalChart = medicalChartRepository.findByReservation(reservation)
+        MedicalChart medicalChart = medicalChartRepository.findByReservationAndDeletedAtIsNull(reservation)
                 .orElseThrow(() -> new BaseException(MEDICALCHART_NOT_FOUND));
         return new MedicalChartResDto().fromEntity(medicalChart);
     }
@@ -59,10 +62,23 @@ public class MedicalChartService {
         return new MedicalChartResDto().fromEntity(medicalChart);
     }
 
+    public MedicalChartResDto completeMedicalChartByReservation(Reservation reservation) {
+        Optional<MedicalChart> medicalChart = medicalChartRepository.findByReservationAndDeletedAtIsNull(reservation);
+        if(medicalChart.isPresent()) {
+            medicalChart.get().complete();
+        }
+        return new MedicalChartResDto().fromEntity(medicalChart.orElse(null));
+    }
+
     public MedicalChartResDto payMedicalChart(Long medicalChartId) {
         MedicalChart medicalChart = medicalChartRepository.findById(medicalChartId)
                 .orElseThrow(() -> new BaseException(MEDICALCHART_NOT_FOUND));
         medicalChart.pay();
         return new MedicalChartResDto().fromEntity(medicalChart);
+    }
+
+    public void deleteMedicalChart(Reservation reservation) {
+        Optional<MedicalChart> medicalChart = medicalChartRepository.findByReservationAndDeletedAtIsNull(reservation);
+        medicalChart.ifPresent(BaseTimeEntity::updateDeleteAt);
     }
 }
