@@ -49,11 +49,11 @@ public class PaymentEventListener {
             PaymentFailDto paymentFailDto = objectMapper.readValue(parsedMessage, PaymentFailDto.class);
             System.out.println("Received Payment Fail DTO: " + paymentFailDto);
 
-            fcmService.sendMessage(paymentFailDto.getMemberEmail(), "결제에 실패하였습니다.",
+            fcmService.sendMessage(paymentFailDto.getMemberEmail(), " 결제에 실패하였습니다.",
                     "impUid: " + paymentFailDto.getImpUid() + "의 결제건이 결제에 실패했습니다. 관리자에게 문의해주세요.", Type.PAYMENT, null);
 
-            fcmService.sendMessage(paymentFailDto.getAdminEmail(), "결제에 실패하였습니다.",
-                    paymentFailDto.getMemberEmail() + "님의" + "impUid: " + paymentFailDto.getImpUid() + "의 결제건이 처리에 실패하였습니다.", Type.PAYMENT, null);
+            fcmService.sendMessage(paymentFailDto.getAdminEmail(), " 결제에 실패하였습니다.",
+                    paymentFailDto.getMemberEmail() + "님의" + " impUid: " + paymentFailDto.getImpUid() + "의 결제건이 처리에 실패하였습니다.", Type.PAYMENT, null);
 
             acknowledgment.acknowledge();
         } catch (Exception e) {
