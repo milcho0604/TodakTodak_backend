@@ -1,6 +1,7 @@
 package com.padaks.todaktodak.chat.chatroom.dto;
 
 import com.padaks.todaktodak.member.domain.Member;
+import com.padaks.todaktodak.member.domain.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,12 +17,15 @@ public class ChatRoomMemberInfoResDto {
 
     private String name; // 회원 이름
 
+    private String role; // 회원 권한 (한글명 String)
+
     private String profileImgUrl; // 회원 프로필 이미지
 
     public static ChatRoomMemberInfoResDto fromEntity(Member member){
         return builder()
                 .memberId(member.getId())
                 .name(member.getName())
+                .role(member.getRole().getString())
                 .profileImgUrl(member.getProfileImgUrl())
                 .build();
     }
