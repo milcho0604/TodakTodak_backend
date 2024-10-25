@@ -9,5 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface MedicalChartRepository extends JpaRepository<MedicalChart, Long> {
-    Optional<MedicalChart> findByReservation(Reservation reservation);
+    Optional<MedicalChart> findByReservationAndDeletedAtIsNull(Reservation reservation);
 }
