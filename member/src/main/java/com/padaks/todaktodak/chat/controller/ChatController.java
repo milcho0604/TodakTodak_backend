@@ -4,6 +4,7 @@ import com.padaks.todaktodak.chat.chatmessage.dto.ChatMessageResDto;
 import com.padaks.todaktodak.chat.chatroom.domain.ChatRoom;
 import com.padaks.todaktodak.chat.chatroom.dto.ChatRoomListResDto;
 import com.padaks.todaktodak.chat.chatroom.dto.ChatRoomMemberInfoResDto;
+import com.padaks.todaktodak.chat.chatroom.dto.CsMemberResDto;
 import com.padaks.todaktodak.chat.service.ChatService;
 import com.padaks.todaktodak.common.dto.CommonResDto;
 import lombok.RequiredArgsConstructor;
@@ -64,6 +65,14 @@ public class ChatController {
         ChatRoomMemberInfoResDto chatRoomMemberInfoResDto
                 = chatService.getChatRoomMemberInfo(chatRoomId);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "채팅참여자 회원정보 조회 성공", chatRoomMemberInfoResDto), HttpStatus.OK);
+    }
+
+
+    //    채팅방 id 로 멤버 정보 검색 (todakAdmin)
+    @GetMapping("/member/info/{id}")
+    public ResponseEntity<?> memberInfo(@PathVariable Long id){
+        CsMemberResDto dto = chatService.getMemberInfo(id);
+        return ResponseEntity.ok(dto);
     }
 
 }

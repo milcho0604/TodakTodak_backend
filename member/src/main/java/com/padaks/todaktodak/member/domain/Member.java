@@ -84,7 +84,7 @@ public class Member extends BaseTimeEntity {
     }
 
     public Member updateAddress(String temp) {
-        this.address = new Address(temp, temp, temp);
+        this.address = new Address(temp, "", "");
         return this;
     }
 

@@ -10,6 +10,9 @@ import com.padaks.todaktodak.hospitaloperatinghours.dto.HospitalOperatingHoursRe
 import com.padaks.todaktodak.hospitaloperatinghours.repository.HospitalOperatingHoursRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,13 +32,16 @@ public class HospitalOperatingHoursService {
     private final HospitalRepository hospitalRepository;
 
     // 특정 병원에 영업시간 추가
-    public void addOperatingHours(Long hospitalId,
-                                  List<HospitalOperatingHoursReqDto> operatingHoursDtos){
+    public void addOperatingHours(List<HospitalOperatingHoursReqDto> operatingHoursDtos){
 
-        Hospital hospital = hospitalRepository.findByIdOrThrow(hospitalId);
-
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String adminEmail = userDetails.getUsername();
+        // 병원이 존재하는지 확인
+        Hospital hospital = hospitalRepository.findByAdminEmail(adminEmail)
+                .orElseThrow(() -> new EntityNotFoundException("해당 병원의 관리자가 아닙니다."));
         // 해당 병원의 영업시간을 모두 불러옴
-        List<HospitalOperatingHours> existingOperatingHours = hospitalOperatingHoursRepository.findAllByHospital(hospital);
+        List<HospitalOperatingHours> existingOperatingHours = hospitalOperatingHoursRepository.findAllByHospitalAndDeletedAtIsNull(hospital);
 
         // 요일별로 영업시간이 존재하는지 미리 체크
         Set<DayOfHoliday> existingDays = existingOperatingHours.stream()
@@ -64,11 +70,12 @@ public class HospitalOperatingHoursService {
                 .collect(Collectors.toList());
     }
 
+    // 병원 어드민 리스트 조회
     public List<HospitalOperatingHoursResDto> adminOperatingHoursByHospitalId(String adminEmail) {
         Hospital hospital = hospitalRepository.findByAdminEmail(adminEmail)
                 .orElseThrow(() -> new EntityNotFoundException("해당 병원의 관리자가 아닙니다."));
 
-        List<HospitalOperatingHours> operatingHoursList = hospitalOperatingHoursRepository.findByHospitalId(hospital.getId());
+        List<HospitalOperatingHours> operatingHoursList = hospitalOperatingHoursRepository.findByHospitalIdAndDeletedAtIsNull(hospital.getId());
 
         return operatingHoursList.stream()
                 .map(HospitalOperatingHoursResDto::fromEntity)
@@ -76,21 +83,24 @@ public class HospitalOperatingHoursService {
     }
 
     // 특정병원 특정영업시간 수정
-    public void updateOperatingHours(Long hospitalId,
-                                     Long operatingHoursId,
+    public void updateOperatingHours(Long operatingHoursId,
                                      HospitalOperatingHoursReqDto dto){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String adminEmail = userDetails.getUsername();
         // 병원이 존재하는지 확인
-        Hospital hospital = hospitalRepository.findByIdOrThrow(hospitalId);
+        Hospital hospital = hospitalRepository.findByAdminEmail(adminEmail)
+                .orElseThrow(() -> new EntityNotFoundException("해당 병원의 관리자가 아닙니다."));
         // 수정할 영업시간 찾기
         HospitalOperatingHours operatingHours = hospitalOperatingHoursRepository.findByIdOrThrow(operatingHoursId);
 
         // 병원이 일치하는지 확인
-        if (!operatingHours.getHospital().getId().equals(hospitalId)) {
+        if (!operatingHours.getHospital().getId().equals(hospital.getId())) {
             throw new BaseException(MISMATCHED_HOSPITAL);
         }
 
         // 해당 병원의 모든 영업시간을 불러옴
-        List<HospitalOperatingHours> existingOperatingHours = hospitalOperatingHoursRepository.findAllByHospital(hospital);
+        List<HospitalOperatingHours> existingOperatingHours = hospitalOperatingHoursRepository.findAllByHospitalAndDeletedAtIsNull(hospital);
 
         // 기존 운영 시간의 요일을 Set으로 수집
         Set<DayOfHoliday> existingDays = existingOperatingHours.stream()

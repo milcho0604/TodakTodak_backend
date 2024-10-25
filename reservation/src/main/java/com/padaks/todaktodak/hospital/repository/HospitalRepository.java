@@ -42,4 +42,5 @@ public interface HospitalRepository extends JpaRepository<Hospital, Long> {
 
     Optional<Hospital> findByAdminEmail(String adminEmail);
 
+    Long countByIsAcceptFalse();
 }

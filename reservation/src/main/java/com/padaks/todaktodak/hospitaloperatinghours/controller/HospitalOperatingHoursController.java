@@ -23,12 +23,11 @@ public class HospitalOperatingHoursController {
 
     // 병원admin, 개발자admin만 가능
     // 병원 영업시간 등록
-    @PostMapping("/register/{hospitalId}")
-    public ResponseEntity<Object> addOperatingHours(@PathVariable Long hospitalId,
-                                                    @RequestBody List<HospitalOperatingHoursReqDto> operatingHoursDtos) {
-        try {
-            hospitalOperatingHoursService.addOperatingHours(hospitalId, operatingHoursDtos);
-            return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원영업시간 등록 성공", null), HttpStatus.OK);
+    @PostMapping("/register")
+    public ResponseEntity<Object> addOperatingHours(@RequestBody List<HospitalOperatingHoursReqDto> operatingHoursDtos) {
+        try{
+        hospitalOperatingHoursService.addOperatingHours(operatingHoursDtos);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원영업시간 등록 성공", null), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(new CommonResDto(HttpStatus.BAD_REQUEST, e.getMessage(), null), HttpStatus.BAD_REQUEST);
         }
@@ -64,13 +63,12 @@ public class HospitalOperatingHoursController {
     }
 
     // 병원 특정 영업시간 수정
-    @PostMapping("/update/{hospitalId}/{operatingHoursId}")
-    public ResponseEntity<Object> updateOperatingHours(@PathVariable Long hospitalId,
-                                                       @PathVariable Long operatingHoursId,
+    @PostMapping("/update/{operatingHoursId}")
+    public ResponseEntity<Object> updateOperatingHours(@PathVariable Long operatingHoursId,
                                                        @RequestBody HospitalOperatingHoursReqDto dto) {
-        try {
-            hospitalOperatingHoursService.updateOperatingHours(hospitalId, operatingHoursId, dto);
-            return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원영업시간 수정 성공", hospitalId), HttpStatus.OK);
+        try{
+        hospitalOperatingHoursService.updateOperatingHours(operatingHoursId, dto);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원영업시간 수정 성공", operatingHoursId), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(new CommonResDto(HttpStatus.BAD_REQUEST, e.getMessage(), null), HttpStatus.BAD_REQUEST);
         } catch (BaseException e) {

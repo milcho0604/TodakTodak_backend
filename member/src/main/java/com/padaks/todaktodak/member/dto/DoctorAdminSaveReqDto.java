@@ -1,5 +1,6 @@
 package com.padaks.todaktodak.member.dto;
 
+import com.padaks.todaktodak.member.domain.Address;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.domain.Role;
 import lombok.AllArgsConstructor;
@@ -25,13 +26,16 @@ public class DoctorAdminSaveReqDto {
     @Builder.Default
     private boolean verified = false;
 
-    public Member toEntity(String password, Long hospitalId) {
+    public Member toEntity(String password, Long hospitalId, Address address, String phone, String bio ) {
         return Member.builder()
                 .password(password)
                 .name(this.name)
                 .memberEmail(this.memberEmail)
                 .role(this.role)
                 .hospitalId(hospitalId)
+                .address(address)
+                .phoneNumber(phone)
+                .bio(bio)
                 .build();
     }
 }

@@ -258,8 +258,8 @@ public class MemberController {
     @PostMapping("/edit-doctor")
     public ResponseEntity<?> editDoctorInfo(@ModelAttribute DoctorUpdateReqdto dto) {
         try {
-            String email = SecurityContextHolder.getContext().getAuthentication().getName();
-            Member doctor = memberService.findByMemberEmail(email);
+//            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            Member doctor = memberService.findByMemberEmail(dto.getMemberEmail());
             memberService.updateDoctor(doctor, dto);
             CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "의사 정보를 수정하였습니다.", doctor);
             return new ResponseEntity<>(commonResDto, HttpStatus.OK);
@@ -321,6 +321,22 @@ public class MemberController {
     public ResponseEntity<?> verifyEmail(@RequestBody JavaEmailVerificationDto verificationDto) {
         try {
             boolean isVerified = memberService.verifyEmail(verificationDto.getMemberEmail(), verificationDto.getCode());
+            if (isVerified) {
+                return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "이메일 인증에 성공하였습니다.", isVerified));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new CommonResDto(HttpStatus.BAD_REQUEST, "이메일 인증에 실패했습니다.", null));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new CommonResDto(HttpStatus.BAD_REQUEST, "이메일 인증에 실패했습니다: " + e.getMessage(), null));
+        }
+    }
+    @PostMapping("/verify-code")
+    public ResponseEntity<?> verifyCode(@RequestBody JavaEmailVerificationDto verificationDto) {
+        try {
+            boolean isVerified = memberService.verifyCode(verificationDto.getMemberEmail(), verificationDto.getCode());
             if (isVerified) {
                 return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "이메일 인증에 성공하였습니다.", isVerified));
             } else {
@@ -534,10 +550,5 @@ public class MemberController {
     public ResponseEntity<?> getMemberCountByMonth() {
 
         return ResponseEntity.ok(memberService.getMonthlyMemberCount());
-    }
-
-    @GetMapping("/waiting/list")
-    public ResponseEntity<?> getWaitingMemberCount(){
-        return ResponseEntity.ok(memberService.getWaitingMemberCount());
     }
 }

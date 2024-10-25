@@ -91,9 +91,6 @@ public class MemberService {
 //        fcmService.sendMessage(member1.getId(), "회원가입", saveReqDto.getMemberEmail()+"회원이 가입하였습니다", Type.REGISTER);
     }
 
-    private void sendMessage(){
-
-    }
 
     public Member createDoctor(DoctorSaveReqDto dto){
         validateRegistration(dto);
@@ -106,7 +103,10 @@ public class MemberService {
     // 병원 admin 회원가입
     public Member registerHospitalAdmin(HospitalAdminSaveReqDto dto){
         validateRegistration(dto); // 회원가입 검증로직
-        Member hospitalAdmin = dto.toEntity(dto, passwordEncoder.encode(dto.getAdminPassword()));
+        String temp = "정보를 변경해주세요";
+        String bio = "안녕하세요. " + dto.getAdminName() + "의사입니다.";
+        Address address = new Address(temp, temp, temp);
+        Member hospitalAdmin = dto.toEntity(dto, passwordEncoder.encode(dto.getAdminPassword()), address, bio);
         Member unAcceptHospitalAdmin = memberRepository.save(hospitalAdmin);
 
         // 개발자 admin이 회원가입 승인전까지는 deletedAt에 시간 넣어서 아직 없는 회원으로 간주
@@ -382,20 +382,13 @@ public class MemberService {
         }
     }
 
-    // member list 조회
-//    public Page<MemberListResDto> memberList(Pageable pageable){
-//        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-////
-////        System.out.println(email);
-////        Member member = memberRepository.findByMemberEmail(email)
-////                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
-////        if (!member.getRole().toString().equals("TodakAdmin")){
-////            throw new SecurityException("관리자만 접근이 가능합니다.");
-////        }
-//        Page<Member> members = memberRepository.findAll(pageable);
-//        return members.map(a -> a.listFromEntity());
-//    }
-
+    public boolean verifyCode(String email, String code) {
+        if (redisService.verifyCode(email, code)) {
+            return true;
+        } else {
+            throw new RuntimeException("인증 코드가 유효하지 않습니다.");
+        }
+    }
     // 멤버 전체 목록 조회 -> 멤버 필터
     public Page<MemberListResDto> memberList(boolean isVerified, boolean isDeleted, String roleString, Pageable pageable) {
         Role role = null;
@@ -516,7 +509,11 @@ public class MemberService {
 
         validateRegistration(dto);
         Long hosId = adminMember.getHospitalId();
-        Member doctor = dto.toEntity(password, hosId);
+        // 주소, 전화번호,
+        String temp = "정보를 변경해주세요";
+        Address address = new Address(temp, temp, temp);
+        String bio = "안녕하세요." + dto.getName() + "의사입니다.";
+        Member doctor = dto.toEntity(password, hosId, address, temp, bio);
         return memberRepository.save(doctor);
     }
 
@@ -770,9 +767,5 @@ public class MemberService {
     public List<MontlyMemberCountDto> getMonthlyMemberCount() {
         List<Role> roles = Arrays.asList(Role.Member, Role.HospitalAdmin, Role.Doctor);
         return memberRepository.findMonthlyMemberCount(roles);
-    }
-
-    public Long getWaitingMemberCount(){
-        return memberRepository.countByRoleAndIsVerified(Role.HospitalAdmin, false);
     }
 }

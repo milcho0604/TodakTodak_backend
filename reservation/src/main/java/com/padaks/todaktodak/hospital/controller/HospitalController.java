@@ -184,5 +184,12 @@ public class HospitalController {
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원정보 조회성공", adminHospitalListDetailResDto), HttpStatus.OK);
     }
 
+//    미승인 병원 수량 조회
+    @GetMapping("/list/accept")
+    public ResponseEntity<?> getAcceptList(){
+        Long count = hospitalService.getHospitalNoAcceptList();
+
+        return new ResponseEntity<>(count, HttpStatus.OK);
+    }
 
 }

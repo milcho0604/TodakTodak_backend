@@ -22,7 +22,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()  // CSRF 보호 비활성화
                 .authorizeRequests()
                 .antMatchers("/**").permitAll()  // 모든 경로에 대해 인증 필요 없음
-                .anyRequest().authenticated()  // 나머지 경로는 인증 필요
+                .anyRequest().authenticated() // 그 외 요청은 인증 필요
                 .and()
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
     }
