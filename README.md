@@ -1,28 +1,103 @@
-
-# 팀명: 파닥즈
+# 🏥 기획서
+## 토닥토닥 : 실시간 소아과 진료 예약 및 비대면 진료 서비스
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/6e4d7206-54bf-4e23-bfbe-d9cc78e7c1d3" alt="logo" width="450">
+</div>
 
 ## 팀원
+<table>
+	<tr>
+    <td><img width="300" alt="슬기" src="https://github.com/wisdom0405.png"> </td>
+    <td><img width="300" alt="창현" src="https://github.com/milcho0604.png"></td>
+    <td><img width="300" alt="은지" src="https://github.com/qkdrmawll.png"></td>
+    <td><img width="300" alt="무리" src="https://github.com/Choi-Moori.png"></td>
+    <td><img width="300" alt="무리" src="https://github.com/haah21.png"></td>
+	</tr>
+		<tr>
+    <th><a href="https://github.com/wisdom0405"> 정슬기 </a></th>
+    <th><a href="https://github.com/milcho0604"> 김창현</a> </th>
+    <th><a href="https://github.com/qkdrmawll"> 방은지</a> </th>
+    <th><a href="https://github.com/Moori"> 최무리</a> </th>
+    <th><a href="https://github.com/haah21"> 이한아</a> </th>
+  </tr>
+  <th> BE, 팀장 </th>
+  <th> BE </th>
+  <th> BE </th>
+  <th> BE </th>
+  <th> BE </th>
+</table>
 
-<center>
-  
-| 팀장 | 팀원 | 팀원 | 팀원 | 팀원 |
-|:------:|:------:|:------:|:------:|:------:|
-| 정슬기 | 김창현 | 방슬기 | 이한아 | 최무리 |
 
+### 1. **문제 정의**
 
-</center>
+### 1.1 저출산과 소아청소년과 폐지의 악순환
 
-## 토닥토닥: 실시간 소아과 진료 예약 및 비대면 진료 서비스
+저출산과 고령화는 우리 사회의 심각한 문제로, 출생률 감소뿐만 아니라 아동 관련 서비스와 인프라의 축소로 이어지고 있습니다. 특히 2023년 3월 29일, 대한소아청소년과 의사회가 소아청소년과 폐지를 선언함에 따라, 소아과 진료를 필요로 하는 부모들이 겪는 어려움이 심화되었습니다.
 
+### 1.2 소아과 진료 ‘오픈런’ 현상으로 인한 부담 가중화
 
+최근 소아과 병원의 수가 급격히 줄어들면서, 소아과 진료를 받기가 점점 더 어려워지고 있습니다. 부모들은 생계를 유지하며 아침 일찍 병원 앞에 줄을 서는 '오픈런' 현상을 겪고 있으며, 이로 인해 많은 소아과 병원은 오전에만 진료를 집중적으로 처리하고 있습니다. 이는 의료진에게 짧은 시간 안에 많은 환자를 진료해야 하는 압박을 주며, 진료의 질 저하와 부모들의 부담을 가중시키고 있습니다. 또한 응급 상황에서도 적절한 의료 서비스를 받기 어려운 경우가 발생하고 있습니다.
 
-<br>
+### 2. **해결 방안: 실시간 진료 예약 및 비대면 진료 시스템 구축**
 
-## 💡프로젝트 목표
+### 2.1 시스템 개요
 
+실시간 진료 예약 시스템은 부모들이 소아과 진료 예약 및 대기 상황을 실시간으로 확인할 수 있도록 하여 불필요한 병원 방문을 줄이고, 진료 예약 수를 조절할 수 있게 합니다. 비대면 진료 시스템은 야간 시간이나 주말, 병원 방문이 어려운 상황에서 응급 상황에 대응하고 진료의 편의성을 증가시킬 수 있습니다.
 
-<br>
+### 2.2 주요 기능
 
+- **실시간 예약 확인**: 모바일 애플리케이션 및 웹사이트를 통해 부모가 실시간으로 예약 상황을 확인하고, 대기 인원 및 예상 대기 시간을 파악할 수 있습니다.
+- **비대면 진료**: 부모는 등록된 자녀의 진료를 비대면으로 진행할 수 있으며, 이를 위한 결제 및 상담을 온라인에서 처리할 수 있습니다.
+- **예약 조정**: 병원은 실시간으로 예약 수를 조절하고, 과밀 현상을 방지할 수 있습니다.
+- **알림 기능**: 예약 확인 및 대기 상황 변경 시 부모에게 알림을 전송하여, 병원 방문 전 적절한 조치를 취할 수 있도록 합니다.
+- **통계 및 분석**: 예약 데이터와 대기 시간을 분석하여 병원의 진료 효율성을 높이는 데 기여합니다.
+- 채팅 기능: 클라이언트(병원 직원, 부모 등)와 관리자가 실시간으로 소통할 수 있는 채팅 기능을 통합하여 문제 해결과 지원을 효율적으로 제공할 수 있도록 설계했습니다
+
+### 2.3 기대 효과
+
+- **부모의 부담 경감**: 실시간 예약 시스템과 비대면 진료를 통해 부모들은 병원 방문 전 예약 상황을 파악하고, 불필요한 대기 시간을 줄일 수 있습니다.
+- **진료의 질 향상**: 의료진은 예약된 환자 수를 기준으로 진료를 계획할 수 있어, 진료의 질을 높이고 과중한 업무 부담을 줄일 수 있습니다.
+- **응급 상황 대응 개선**: 비대면 진료 시스템을 통해 응급 상황에서도 적절한 대응이 가능해져 부모들의 불안감을 줄일 수 있습니다.
+- **사회적 문제 해결 기여**: 아동 보건과 복지 수준을 개선하고, 사회적 문제로 확대되는 현상을 해결하는 데 기여할 수 있습니다.
+
+### 3. **결론**
+실시간 진료 예약 및 비대면 진료 시스템의 구축은 저출산과 소아청소년과 폐지 문제로 인한 소아과 진료의 어려움을 해결하는 데 효과적인 방법입니다. 이 시스템을 통해 부모와 의료
+
+## 🥕요구사항정의서🥕
+[토닥토닥 요구사항정의 - 시트1.pdf](https://github.com/user-attachments/files/16960875/-.1.pdf)🐶
+[토닥토닥 요구사항정의 링크](https://docs.google.com/spreadsheets/d/1cADwkU7hRr3ORXeoPF6agGtAuPji-jDmKSRgDJrVxoQ/edit?usp=sharing)
+
+## 화면 설계서
+[화면설계서 Figma](https://www.figma.com/design/LygEmOzP9B5OG2LeJaovWu/%ED%8C%8C%EB%8B%A5-%ED%86%A0%EB%8B%A5?m=auto&t=D2AX8VoOhmvfXPpt-1)
+
+## WBS
+
+[WBS 보기](https://docs.google.com/spreadsheets/d/1KvGes7VoAUZ5n1yTgJPjqTy6yM1p0UnXIsdpnDRksQU/edit?usp=sharing)
+
+## ERD
+### 전체 ERD
+<img width="1115" alt="image" src="https://github.com/user-attachments/assets/e5ed1919-ef04-4536-ae35-34a265becc0a">
+
+<details>
+  <summary>Member-Service</summary>
+  <img width="1026" alt="image" src="https://github.com/user-attachments/assets/018d20a4-0364-4771-a4ac-ac49c4aec05e">
+</details>
+
+<details>
+  <summary>Reservation-Service</summary>
+  <img width="1031" alt="image" src="https://github.com/user-attachments/assets/8e8f4c82-0489-4d4a-b05c-7c26a4a8fcba">
+</details>
+
+<details>
+  <summary>Community-Service</summary>
+  <img width="1119" alt="image" src="https://github.com/user-attachments/assets/6f12faf1-974f-4170-9586-dbe2433bfb7b">
+</details>
+
+## API 명세서
+[API 명세서](https://docs.google.com/spreadsheets/d/14rjIsCbnp8qVg462pV7LJCtqG81OcQLQsT0kGIQd1yQ/edit?usp=sharing)
+
+## API 단위테스트
+[API 단위테스트](https://documenter.getpostman.com/view/38355837/2sAXxMgDu1)
 
 ## 주요 기능
 
@@ -38,14 +113,12 @@
 | **** |  |
 <br>
 
-## API 명세서
-[API 명세서]()
-
 ## 스택
 
 ### BACKEND
-![Java](https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white)
-![Spring](https://img.shields.io/badge/spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+<img src="https://img.shields.io/badge/Spring-green?style=for-the-badge&logo=Spring&logoColor=white"><img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=for-the-badge&logo=Spring Boot&logoColor=white"><img src="https://img.shields.io/badge/Springsecurity-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white">
+<img src="https://img.shields.io/badge/Spring Data JPA -13C100?style=for-the-badge&logo=Spring Boot&logoColor=white"><img src="https://img.shields.io/badge/websocket-010101?style=for-the-badge&logo=socketdotio&logoColor=white"><img src="https://img.shields.io/badge/redis-FF4438?style=for-the-badge&logo=redis&logoColor=white"><img src="https://img.shields.io/badge/apachekafka-231F20?style=for-the-badge&logo=apachekafka&logoColor=white"><img src="https://img.shields.io/badge/mariadb-003545?style=for-the-badge&logo=mariadb&logoColor=white"><img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white">
+
 
 
 ### FRONTEND
@@ -54,7 +127,9 @@
 ![HTML5](https://img.shields.io/badge/html5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![figma](https://img.shields.io/badge/figma-2F5EF5?style=for-the-badge)
-![vuetify](https://img.shields.io/badge/vuetify-1867C0?style=for-the-badge)
+<img src="https://img.shields.io/badge/Vuetify-1867C0?style=for-the-badge&logo=vuetify&logoColor=#1867C0">
+<img src="https://img.shields.io/badge/webrtc-333333?style=for-the-badge&logo=webrtc&logoColor=#1867C0">
+<img src="https://img.shields.io/badge/Geolocation-ED1C24?style=for-the-badge&logo=maplibre&logoColor=#1867C0">
 
 ###  DB
 ![mariadb](https://img.shields.io/badge/mariadb-003545?style=for-the-badge&logo=mariadb&logoColor=white)
@@ -68,40 +143,7 @@
 ![figma](https://img.shields.io/badge/figma-2F5EF5?style=for-the-badge)
 
 
-
 <br>
-
-## 프로젝트 개요
-
-
-<br>
-
-## WBS
-
-[WBS 보기]()
-
-## 프로젝트 요구사항 명세서
-
-[요구사항 명세서 보기](https://docs.google.com/spreadsheets/d/1cADwkU7hRr3ORXeoPF6agGtAuPji-jDmKSRgDJrVxoQ/edit?gid=0#gid=0)
-<br>
-
-## ER Diagram
-### 전체 ERD
-<img width="1115" alt="image" src="https://github.com/user-attachments/assets/e5ed1919-ef04-4536-ae35-34a265becc0a">
-
-### Member-Service
-<img width="1026" alt="image" src="https://github.com/user-attachments/assets/018d20a4-0364-4771-a4ac-ac49c4aec05e">
-
-### Reservation-Service
-<img width="1031" alt="image" src="https://github.com/user-attachments/assets/8e8f4c82-0489-4d4a-b05c-7c26a4a8fcba">
-
-### Community-Service
-<img width="1119" alt="image" src="https://github.com/user-attachments/assets/6f12faf1-974f-4170-9586-dbe2433bfb7b">
-
-
-## 화면 설계서
-[화면설계서 Figma](https://www.figma.com/design/LygEmOzP9B5OG2LeJaovWu/%ED%8C%8C%EB%8B%A5-%ED%86%A0%EB%8B%A5?m=auto&t=D2AX8VoOhmvfXPpt-1)
-
 
 ## 시스템 아키텍쳐
 ### 백엔드 아키텍쳐
