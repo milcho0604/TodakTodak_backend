@@ -89,7 +89,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/detail/views/**",
                         "/detail/**/likes"
                 ).permitAll()  // 모든 경로에 대해 인증 필요 없음
-                .anyRequest().authenticated() // 그 외 요청은 인증 필요
+                .anyRequest().authenticated()
                 .and()
                 .exceptionHandling()
                 .accessDeniedHandler((request, response, accessDeniedException) -> {

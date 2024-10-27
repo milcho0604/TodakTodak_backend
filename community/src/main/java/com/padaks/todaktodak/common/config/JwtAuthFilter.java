@@ -38,7 +38,6 @@ public class JwtAuthFilter extends GenericFilter {
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
         String bearerToken = httpServletRequest.getHeader("Authorization");
 
-        try {
             if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
                 String token = bearerToken.substring(7);
 //                System.out.println(token);
@@ -73,14 +72,5 @@ public class JwtAuthFilter extends GenericFilter {
 
             // 다음 필터로 이동
             chain.doFilter(request, response);
-        } catch (JwtException e) {
-            log.error("JWT 처리 중 오류: {}", e.getMessage());
-            httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-            httpServletResponse.getWriter().write("토큰 유효성 검증 실패: " + e.getMessage());
-        } catch (Exception e) {
-            log.error("JWT 처리 중 예기치 못한 오류: {}", e.getMessage());
-            httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            httpServletResponse.getWriter().write("서버 내부 오류");
-        }
     }
 }
