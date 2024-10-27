@@ -7,6 +7,7 @@ import com.padaks.todaktodak.chat.chatroom.dto.ChatRoomMemberInfoResDto;
 import com.padaks.todaktodak.chat.chatroom.dto.CsMemberResDto;
 import com.padaks.todaktodak.chat.service.ChatService;
 import com.padaks.todaktodak.common.dto.CommonResDto;
+import com.padaks.todaktodak.common.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @Slf4j
@@ -28,8 +30,12 @@ public class ChatController {
     // 채팅방 생성 (회원이 새로운 상담을 시작할 때)
     @PostMapping("/chatroom/create")
     public ResponseEntity<?> createChatRoom() {
-        ChatRoom chatRoom = chatService.createChatRoom();
-        return new ResponseEntity<>(new CommonResDto(HttpStatus.CREATED, "채팅방 생성 성공", chatRoom.getId()),HttpStatus.CREATED);
+        try{
+            ChatRoom chatRoom = chatService.createChatRoom();
+            return new ResponseEntity<>(new CommonResDto(HttpStatus.CREATED, "채팅방 생성 성공", chatRoom.getId()),HttpStatus.CREATED);
+        }catch (BaseException e) {
+            return new ResponseEntity<>(new CommonResDto(HttpStatus.BAD_REQUEST, e.getMessage(), null), HttpStatus.BAD_REQUEST);
+        }
     }
 
     // 채팅방의 모든 메시지 조회
@@ -57,17 +63,25 @@ public class ChatController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/chatroom/list/admin")
     private ResponseEntity<?> getAdminChatRoomList(Pageable pageable) {
-        Page<ChatRoomListResDto> chatRoomList = chatService.getAdminChatRoomList(pageable);
-        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "admin 채팅방 리스트 조회 성공", chatRoomList), HttpStatus.OK);
+        try{
+            Page<ChatRoomListResDto> chatRoomList = chatService.getAdminChatRoomList(pageable);
+            return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "admin 채팅방 리스트 조회 성공", chatRoomList), HttpStatus.OK);
+        } catch (BaseException e) {
+            return new ResponseEntity<>(new CommonResDto(HttpStatus.BAD_REQUEST, e.getMessage(), null), HttpStatus.BAD_REQUEST);
+        }
     }
 
     // 채팅방 참여자 회원 정보조회 (토닥 admin만 가능)
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/member/info/chatroom/{chatRoomId}")
     private ResponseEntity<?> getChatRoomMemberInfo(@PathVariable Long chatRoomId){
-        ChatRoomMemberInfoResDto chatRoomMemberInfoResDto
-                = chatService.getChatRoomMemberInfo(chatRoomId);
-        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "채팅참여자 회원정보 조회 성공", chatRoomMemberInfoResDto), HttpStatus.OK);
+        try{
+            ChatRoomMemberInfoResDto chatRoomMemberInfoResDto
+                    = chatService.getChatRoomMemberInfo(chatRoomId);
+            return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "채팅참여자 회원정보 조회 성공", chatRoomMemberInfoResDto), HttpStatus.OK);
+        }catch (BaseException e) {
+            return new ResponseEntity<>(new CommonResDto(HttpStatus.BAD_REQUEST, e.getMessage(), null), HttpStatus.BAD_REQUEST);
+        }
     }
 
 
