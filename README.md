@@ -103,16 +103,16 @@
 
 ## 주요 기능
 
-| 기능 | 설명 |
-|------|------|
-| **간편한 회원가입** | 카카오 로그인과 이메일 인증을 통한 간편한 회원가입으로, 사용자들은 빠르고 쉽게 토닥서비스를 이용할 수 있습니다. |
-| **** |  |
-| **** |  |
-| **** |  |
-| **** |  |
-| **** |  |
-| **** |  |
-| **** |  |
+| 기능                     | 설명                                                              |
+|------------------------|-----------------------------------------------------------------|
+| **간편한 회원가입**           | 카카오 로그인과 이메일 인증을 통한 간편한 회원가입으로, 사용자들은 빠르고 쉽게 토닥서비스를 이용할 수 있습니다. |
+| **손쉬운 예약**             | 스케쥴 예약과 당일 예약 기능을 통해 손쉽게 증상을 설명하고  병원에 예약을 할 수 있습니다.            |
+| **대기인원 확인**            | 진료 예약 시 병원별 총 대기 인원수, 의사 별 대기 인원 수를 확인할 수 있습니다.                 |
+| **편안한 비대면 진료**         | 병원에 직접 가지 않고도 화상채팅을 통해 편안히 비대면으로 진료를 받을 수 있습니다.                 |
+| **편리한 공유캘린더**          | 자녀의 예약 일정을 공유하며, 개인 일정까지 한 눈에 편리하게 관리 할 수 있습니다.                 |
+| **용이한 병원 관리**          | 복잡했던 병원 등록 및 병원 일정관리, 의료진 관리의 어려움을 줄이고  편의성을 높였습니다.             |
+| **실시간으로 소통이 가능한 CS문의** | 관리자와 실시간으로 소통할 수 있는 채팅 기능을 통해 빠르게 문제 해결과 지원을 제공합니다.             |
+| **fcm알림**  | 예약 확인 및 대기 상황 변경 안내 ,자녀 공유, 결제 알림 등 상황별 사용자에게 적절한 알림을 제공합니다.    |
 <br>
 
 ## 스택
@@ -120,7 +120,7 @@
 ### BACKEND
 <img src="https://img.shields.io/badge/Spring-green?style=for-the-badge&logo=Spring&logoColor=white"><img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=for-the-badge&logo=Spring Boot&logoColor=white"><img src="https://img.shields.io/badge/Springsecurity-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white">
 <img src="https://img.shields.io/badge/Spring Data JPA -13C100?style=for-the-badge&logo=Spring Boot&logoColor=white"><img src="https://img.shields.io/badge/websocket-010101?style=for-the-badge&logo=socketdotio&logoColor=white"><img src="https://img.shields.io/badge/redis-FF4438?style=for-the-badge&logo=redis&logoColor=white"><img src="https://img.shields.io/badge/apachekafka-231F20?style=for-the-badge&logo=apachekafka&logoColor=white"><img src="https://img.shields.io/badge/mariadb-003545?style=for-the-badge&logo=mariadb&logoColor=white"><img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white">
-
+![Firebase](https://img.shields.io/badge/firebase-%23039BE5.svg?style=for-the-badge&logo=firebase)
 
 
 ### FRONTEND
@@ -132,17 +132,18 @@
 <img src="https://img.shields.io/badge/Vuetify-1867C0?style=for-the-badge&logo=vuetify&logoColor=#1867C0">
 <img src="https://img.shields.io/badge/webrtc-333333?style=for-the-badge&logo=webrtc&logoColor=#1867C0">
 <img src="https://img.shields.io/badge/Geolocation-ED1C24?style=for-the-badge&logo=maplibre&logoColor=#1867C0">
+![Firebase](https://img.shields.io/badge/firebase-%23039BE5.svg?style=for-the-badge&logo=firebase)
 
 ###  DB
 ![mariadb](https://img.shields.io/badge/mariadb-003545?style=for-the-badge&logo=mariadb&logoColor=white)
-![redis](https://img.shields.io/badge/redis-FF4438?style=for-the-badge)
+![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white)
 ![amazons3](https://img.shields.io/badge/amazons3-569A31?style=for-the-badge)
-
+![Apache Kafka](https://img.shields.io/badge/Apache%20Kafka-000?style=for-the-badge&logo=apachekafka)
 ### TOOLS
 ![Notion](https://img.shields.io/badge/notion-181717?style=for-the-badge&logo=notion&logoColor=white)
 ![Git](https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white)
 ![GitHub](https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white)
-![figma](https://img.shields.io/badge/figma-2F5EF5?style=for-the-badge)
+![Figma](https://img.shields.io/badge/figma-%23F24E1E.svg?style=for-the-badge&logo=figma&logoColor=white)
 
 
 <br>
@@ -166,19 +167,19 @@
 </details>
 
 ### 일반 유저
-#### 👤 로그인 및 회원가입
+#### ✍️ 로그인 및 회원가입
 <details>
   <summary>카카오 소셜 회원가입</summary>
   <img src="https://github.com/user-attachments/assets/52615016-4306-49ac-bc32-a34848f50df8">
 </details>
 
-#### 👤 개인정보 수정
+#### ✏️ 개인정보 수정
 <details>
   <summary>개인정보 수정</summary>
   <img src="https://github.com/user-attachments/assets/d4dea919-bc8b-4700-8109-1464b894a851">
 </details>
 
-#### 👤 자녀 등록 및 수정 삭제
+#### 👶 자녀 등록 및 수정 삭제
 <details>
   <summary>자녀 정보 추가 : 유효한 주민번호 입력</summary>
   <img src="https://github.com/user-attachments/assets/f8299dc4-b66b-4db9-91fd-ac7b4af53f1b">
@@ -194,13 +195,22 @@
   <img src="https://github.com/user-attachments/assets/0852970d-4092-43a0-b725-4b3cd13eb828">
 </details>
 
-#### 👤 자녀 공유
+#### 👶 자녀 공유
 <details>
   <summary>자녀 공유</summary>
   <img src="https://github.com/user-attachments/assets/d3b4d2f2-852d-411c-8148-d4e6a0ddc8e0">
 </details>
 
-#### 👤 진료 예약
+### 📆공유 캘린더
+
+<details>
+  <summary>공유 캘린더 - 조회</summary>
+  <img src="https://github.com/user-attachments/assets/251c81a1-5d00-4825-b9ca-a9b1b316eb1b">
+</details>
+
+### 🏥 진료 예약
+
+#### -당일 예약-
 <details>
   <summary>오늘 예약 - 예방접종 예약</summary>
   <img src="https://github.com/user-attachments/assets/cafc6cc2-47d8-424c-bc93-9ab43dc8ad91">
@@ -211,6 +221,41 @@
   <img src="https://github.com/user-attachments/assets/dec7a7a6-e093-4e34-95b5-d1c9312907e3">
 </details>
 
+#### -스케쥴 예약-
+
+<details>
+  <summary>스케쥴 예약 - 일반진료 예약</summary>
+  <img src="https://github.com/user-attachments/assets/33dd93b1-e58d-4f60-a7fe-773f8beea38c">
+</details>
+
+<details>
+  <summary>스케쥴 예약 - 예방접종 예약</summary>
+  <img src="https://github.com/user-attachments/assets/7b67df23-8234-498a-9016-2bcd6c9543d6">
+</details>
+
+#### -비대면 진료-
+
+<details>
+  <summary>비대면 진료 - 접수</summary>
+  <img src="https://github.com/user-attachments/assets/fdfb3673-c06d-46b7-b80b-ba97f6a085ca">
+</details>
+
+<details>
+  <summary>비대면 진료 - 진료중</summary>
+  <img src="https://github.com/user-attachments/assets/bc05f762-67cb-477a-9573-326d0dbd4903">
+</details>
+
+<details>
+  <summary>비대면 진료 - 결제</summary>
+  <img src="https://github.com/user-attachments/assets/429068d5-d6b8-4b69-a643-248a8a8f05bd">
+</details>
+
+<details>
+  <summary>비대면 진료 - 리뷰</summary>
+  <img src="https://github.com/user-attachments/assets/00eefb24-15b9-4bc3-9bc8-ea4bab8e12cf">
+</details>
+
+<br>
 <details>
   <summary>예약 내역 조회</summary>
   <img src="https://github.com/user-attachments/assets/9fec6295-9bbc-429b-a112-962ed4659d3e">
@@ -222,20 +267,20 @@
   <img src="https://github.com/user-attachments/assets/52c25559-7205-48f3-a68f-b38974c0d9fe">
 </details>
 
-#### 👤 병원 검색
+#### 🔍 병원 검색
 <details>
   <summary>병원 주소 변경 후 검색</summary>
   <img src="https://github.com/user-attachments/assets/a817538a-7a05-49cf-b2b4-a3c161839bdb">
 </details>
 
 
-### 의사
+### 👨‍⚕️ 의사
 
-#### 👤 로그인
+#### 로그인
 
 <details>
   <summary>의사 최초로그인 이메일 인증</summary>
-  <img src="">
+  <img src="https://github.com/user-attachments/assets/8abfb21f-8f3a-4f64-9c64-60c23ee95384">
 </details>
 
 <details>
@@ -243,8 +288,9 @@
   <img src="https://github.com/user-attachments/assets/9ec6f87c-5ad2-4a32-b9a1-4c755e0ddcc8">
 </details>
 
-### 병원 관리자
+### 🧑‍💼 병원 관리자
 
+#### ✍️ 병원 등록 및 로그인
 <details>
   <summary>병원등록</summary>
   <img src="https://github.com/user-attachments/assets/3fabad8c-1e82-460b-9fd5-c57fb31929d7">
@@ -252,7 +298,7 @@
 
 <details>
   <summary>병원등록 후 결제</summary>
-  <img src="https://github.com/user-attachments/assets/92af2009-1c36-4dac-a400-8623fc7d588d">
+  <img src="https://github.com/user-attachments/assets/3eb06eb6-798a-4364-91fc-c44f737cb93f">
 </details>
 
 <details>
@@ -260,6 +306,7 @@
   <img src="https://github.com/user-attachments/assets/33aae595-4080-46ae-bd76-39e98bafb630">
 </details>
 
+#### 🕙 병원 영업시간 설정 및 정보 수정
 <details>
   <summary>병원 영업시간 등록</summary>
   <img src="https://github.com/user-attachments/assets/37d99500-58c9-4563-83d9-b73ab4198aa6)">
@@ -279,6 +326,8 @@
   <summary>병원정보 수정</summary>
   <img src="https://github.com/user-attachments/assets/56b59cb8-c844-4b6a-99ab-d9c611552511">
 </details>
+
+#### 👨‍⚕️ 의사 등록 및 정보 설정
 
 <details>
   <summary>의사등록</summary>
@@ -310,6 +359,8 @@
   <img src="https://github.com/user-attachments/assets/6e375089-cc3a-4af5-8b6b-d52ccc921a60">
 </details>
 
+#### 📣 예약 알림
+
 <details>
   <summary>오늘 예약 : 일반진료 예약 알림</summary>
   <img src="https://github.com/user-attachments/assets/92b18623-12bf-403c-a24e-d54901a79890">
@@ -321,7 +372,8 @@
 </details>
 
 
-### 파닥 관리자
+### 👩‍⚕️🧑‍⚕️👩‍⚕️👨‍⚕️👩‍⚕
+### ️파닥 관리자
 
 <details>
   <summary>관리자 로그인</summary>
