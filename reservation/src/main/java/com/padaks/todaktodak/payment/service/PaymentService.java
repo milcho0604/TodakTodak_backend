@@ -7,6 +7,7 @@ import com.padaks.todaktodak.hospital.domain.Hospital;
 import com.padaks.todaktodak.hospital.repository.HospitalRepository;
 import com.padaks.todaktodak.medicalchart.domain.MedicalChart;
 import com.padaks.todaktodak.medicalchart.repository.MedicalChartRepository;
+import com.padaks.todaktodak.medicalchart.service.MedicalChartService;
 import com.padaks.todaktodak.payment.domain.Pay;
 import com.padaks.todaktodak.payment.dto.PaymentMemberResDto;
 import com.padaks.todaktodak.payment.domain.PaymentMethod;
@@ -51,7 +52,8 @@ public class PaymentService {
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final ObjectMapper objectMapper;
     public static MedicalChart medicalChart;
-    public final HospitalRepository hospitalRepository;
+    private final HospitalRepository hospitalRepository;
+    private final MedicalChartService medicalChartService;
 
 
     // member 객체 리턴, 토큰 포함
@@ -70,11 +72,11 @@ public class PaymentService {
     }
 
     // 진료 내역 객체 리턴 -> medichart 생성시
-    public MedicalChart getMediChartId(Long id){
-        medicalChart = medicalChartRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 진료내역입니다."));
-        return null;
-    }
+//    public MedicalChart getMediChartId(Long id){
+//        medicalChart = medicalChartRepository.findById(id)
+//                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 진료내역입니다."));
+//        return null;
+//    }
 
 
     // 진료 내역 객체 리턴 -> 프론트에서 id 넘겨주는 방식
@@ -182,6 +184,8 @@ public class PaymentService {
             // Kafka로 메시지 전송
             kafkaTemplate.send("payment-success", message);
             log.info("결제 성공 메시지를 Kafka로 전송: {}", message);
+
+            medicalChartService.payMedicalChart(medicalChart.getId());
 
             // 성공적으로 결제된 PaymentReqDto 반환
             return PaymentReqDto.builder()
