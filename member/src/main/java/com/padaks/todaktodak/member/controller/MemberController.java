@@ -18,6 +18,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -80,6 +81,7 @@ public class MemberController {
     }
 
     @PostMapping("/doctor/register")
+    @PreAuthorize("hasAnyRole('HOSPITAL', 'ADMIN')")
     public ResponseEntity<?> registerDoctor(@ModelAttribute DoctorSaveReqDto doctorSaveReqDto) {
         Member member = memberService.createDoctor(doctorSaveReqDto);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "의사등록성공", member.getId()), HttpStatus.OK);
@@ -92,12 +94,14 @@ public class MemberController {
     }
 
     @PutMapping("/hospital-admin/accept")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> acceptHospitalAdmin(@RequestBody String email) {
         memberService.acceptHospitalAdmin(email);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원 admin 회원가입 승인완료", null), HttpStatus.OK);
     }
 
     @PostMapping("/doctor-admin/register")
+    @PreAuthorize("hasAnyRole('HOSPITAL', 'ADMIN')")
     public ResponseEntity<?> doctorAdmin(@RequestBody DoctorAdminSaveReqDto dto) {
         Member doctorAdminCreate = memberService.doctorAdminCreate(dto);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "해당 병원의 의사 등록 성공", doctorAdminCreate.getId()), HttpStatus.OK);
@@ -304,6 +308,7 @@ public class MemberController {
 
     //병원 관리자 의사 삭제
     @PostMapping("/delete-doctor")
+    @PreAuthorize("hasAnyRole('HOSPITAL', 'ADMIN')")
     public ResponseEntity<?> deleteDoctor(@ModelAttribute DoctorDeleteDto dto) {
         try {
             if (!"의사 삭제 후 동일 이메일로 등록할 수 없음을 동의합니다".equals(dto.getConfirmation())) {
@@ -367,6 +372,7 @@ public class MemberController {
     // member list
 //    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/list")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> memberList(
             @RequestParam(required = false) Boolean verified, // true/false
             @RequestParam(required = false) Boolean deleted,  // true: 탈퇴, false: 정상
@@ -380,6 +386,7 @@ public class MemberController {
 
     // 관리자 멤버 검색
     @GetMapping("/search")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> searchMembers(
             @RequestParam String query,
             Pageable pageable) {
@@ -561,6 +568,7 @@ public class MemberController {
     }
 
     @GetMapping("/growup")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getMemberCountByMonth() {
 
         return ResponseEntity.ok(memberService.getMonthlyMemberCount());
