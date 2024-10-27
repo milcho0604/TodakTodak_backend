@@ -57,6 +57,13 @@ public class ReservationController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
+    @GetMapping("/isValid/{id}")
+    public ResponseEntity<?> validReservation(Long id){
+        boolean result = reservationService.checkValidReservation(id);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
     @GetMapping("/list/child/{id}")
     public ResponseEntity<?> listChildReservation(@PathVariable Long id){
         List<?> dto = reservationService.checkChildListReservation(id);
