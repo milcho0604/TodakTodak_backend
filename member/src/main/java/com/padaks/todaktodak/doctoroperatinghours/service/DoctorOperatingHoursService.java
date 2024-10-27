@@ -67,7 +67,7 @@ public class DoctorOperatingHoursService {
         for (DoctorOperatingHoursReqDto hoursReqDto : dtos) {
             // 중복 저장 방지
             if (existingDays.contains(hoursReqDto.getDayOfWeek())) {
-                throw new IllegalArgumentException("근무시간 중복 저장 불가 : " + hoursReqDto.getDayOfWeek() + "요일에 영업시간이 이미 등록 되어 있습니다.");
+                throw new IllegalArgumentException("해당 요일에 영업시간이 이미 등록 되어 있습니다.");
             }
             // openTime과 closeTime 유효성 검사
             if (hoursReqDto.getOpenTime() != null && hoursReqDto.getCloseTime() != null && hoursReqDto.getOpenTime().isAfter(hoursReqDto.getCloseTime())) {
