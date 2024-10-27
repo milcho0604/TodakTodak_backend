@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,6 +20,12 @@ import java.util.stream.Collectors;
 public class ChildParentsRelationshipService {
     private final ChildParentsRelationshipRepository childParentsRelationshipRepository;
     public void createRelationship(Child child, Member member) {
+
+        Optional<ChildParentsRelationship> byChildAndMemberAndDeletedAtIsNull = childParentsRelationshipRepository.findByChildAndMemberAndDeletedAtIsNull(child, member);
+        if (byChildAndMemberAndDeletedAtIsNull.isPresent()) {
+            throw new IllegalArgumentException("이미 공유된 자녀입니다.");
+        }
+
         ChildParentsRelationship childParentsRelationship = ChildParentsRelationship.builder()
                 .child(child)
                 .member(member)
