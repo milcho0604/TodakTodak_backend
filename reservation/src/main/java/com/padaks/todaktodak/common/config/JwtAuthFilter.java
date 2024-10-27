@@ -60,7 +60,7 @@ public class JwtAuthFilter extends GenericFilter {
                 }
 
                 // 로그 추가
-                authorities.forEach(auth -> log.info("할당된 권한: {}", auth.getAuthority()));
+//                authorities.forEach(auth -> log.info("할당된 권한: {}", auth.getAuthority()));
 
                 if (authorities.isEmpty()) {
                     throw new AccessDeniedException("접근 권한이 없습니다.");

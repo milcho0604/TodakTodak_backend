@@ -39,6 +39,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors().and() // CORS 활성화
                 .authorizeRequests()
                 // 권한에 따른 접근 제어 설정
+//                .antMatchers("/**").permitAll()  // 인증 없이 접근 가능한 경로
+                .antMatchers("/ws/**").permitAll()
                 .antMatchers("/signal").permitAll()
                 .antMatchers("/", // MemberController
                         "/member/get/**",
@@ -114,7 +116,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/detail/views/**",
                         "/detail/**/likes"
                 ).permitAll()  // 인증 없이 접근 가능한 경로
-//                .antMatchers("/member/list").hasRole("ADMIN")  // ADMIN 권한이 있어야 접근 가능한 경로
                 .anyRequest().authenticated()  // 그 외의 경로는 인증 필요
                 .and()
                 .oauth2Login()

@@ -24,6 +24,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .csrf().disable()  // CSRF 보호 비활성화
                 .authorizeRequests()
+                .antMatchers("/ws/**").permitAll()
                 .antMatchers(// MemberController
                         "/member/get/**",
                         "/member/doctor/**",
