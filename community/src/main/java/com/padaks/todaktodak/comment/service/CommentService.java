@@ -65,11 +65,11 @@ public class CommentService {
         if (dto.getPostId() != null){
             Post post = postRepository.findById(dto.getPostId()).orElseThrow(()-> new EntityNotFoundException("존재하지 않는 post입니다."));
             //댓글 작성 제한 (post 작성자 / Role.Doctor 인 사용자)
-            if (!post.getMemberEmail().equals(member.getMemberEmail()) && !"Doctor".equals(member.getRole())){
+            if (!post.getMemberEmail().equals(member.getMemberEmail()) && !"DOCTOR".equals(member.getRole())){
                 throw  new IllegalArgumentException("댓글을 작성할 수 있는 권한이 없습니다.");
             }
             String name;
-            if (!member.getRole().equals("Doctor")){
+            if (!member.getRole().equals("DOCTOR")){
                 name = maskSecondCharacter(member.getName());
                 savedComment = dto.toEntity(post, null, member.getMemberEmail(), name, member.getProfileImgUrl());
             }else {
@@ -101,7 +101,7 @@ public class CommentService {
                 throw new IllegalArgumentException("대댓글에는 댓글이 허용되지 않습니다.");
             }
             String name;
-            if (!member.getRole().equals("Doctor")){
+            if (!member.getRole().equals("DOCTOR")){
                 name = maskSecondCharacter(member.getName());
                 savedComment = dto.toEntity(post, parentComment, member.getMemberEmail(), name, member.getProfileImgUrl());
             }else {

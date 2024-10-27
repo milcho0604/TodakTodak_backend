@@ -150,7 +150,7 @@ public class MemberService {
                 .orElseThrow(() -> new RuntimeException("잘못된 이메일/비밀번호 입니다."));
 
         // Role이 HospitalAdmin 또는 NonUser가 아닌 경우에만 예외를 던짐
-        if (!member.getRole().equals(Role.HospitalAdmin) && !member.getRole().equals(Role.NonUser)) {
+        if (!member.getRole().equals(Role.HOSPITAL) && !member.getRole().equals(Role.NONUSER)) {
             throw new SecurityException("대표 원장님만 로그인이 가능합니다.");
         }
 
@@ -443,7 +443,7 @@ public class MemberService {
     }
 
     public Page<DoctorListResDto> doctorList(Pageable pageable){
-        Page<Member> doctors = memberRepository.findByRoleAndDeletedAtIsNull(Role.Doctor, pageable);
+        Page<Member> doctors = memberRepository.findByRoleAndDeletedAtIsNull(Role.DOCTOR, pageable);
         return doctors.map(doctor ->{
             List<DoctorOperatingHoursSimpleResDto> operatingHours = doctorOperatingHoursService.getOperatingHoursByDoctorId(doctor.getId());
             return doctor.doctorListFromEntity(operatingHours);
@@ -451,7 +451,7 @@ public class MemberService {
     }
   
     public Page<DoctorListResDto> doctorListByHospital(Long hospitalId, Pageable pageable){
-        Page<Member> doctors = memberRepository.findByRoleAndHospitalId(Role.Doctor, hospitalId, pageable);
+        Page<Member> doctors = memberRepository.findByRoleAndHospitalId(Role.DOCTOR, hospitalId, pageable);
         return doctors.map(doctor ->{
             List<DoctorOperatingHoursSimpleResDto> operatingHours = doctorOperatingHoursService.getOperatingHoursByDoctorId(doctor.getId());
             return doctor.doctorListFromEntity(operatingHours);
@@ -462,8 +462,8 @@ public class MemberService {
     public Page<DoctorListResDto> doctorListByHospitalForAdmin(Pageable pageable){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Member member= memberRepository.findByMemberEmailOrThrow(email);
-        if (member.getRole().equals(Role.HospitalAdmin)){
-            Page<Member> doctors = memberRepository.findByRoleAndHospitalIdAndDeletedAtIsNull(Role.Doctor, member.getHospitalId(), pageable);
+        if (member.getRole().equals(Role.HOSPITAL)){
+            Page<Member> doctors = memberRepository.findByRoleAndHospitalIdAndDeletedAtIsNull(Role.DOCTOR, member.getHospitalId(), pageable);
             return doctors.map(doctor ->{
                 List<DoctorOperatingHoursSimpleResDto> operatingHours = doctorOperatingHoursService.getOperatingHoursByDoctorId(doctor.getId());
                 return doctor.doctorListFromEntity(operatingHours);
@@ -486,10 +486,10 @@ public class MemberService {
     public Object memberDetail(String email){
         Member member = memberRepository.findByMemberEmail(email)
                 .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
-        if(member.getRole().equals(Role.Doctor)){
+        if(member.getRole().equals(Role.DOCTOR)){
             return dtoMapper.toDoctorResDto(member);
         }
-        else if(member.getRole().equals(Role.Member)){
+        else if(member.getRole().equals(Role.MEMBER)){
             return dtoMapper.toMemberResDto(member);
         }
         else{
@@ -602,7 +602,7 @@ public class MemberService {
     @Scheduled(cron = "0 0,30 9-12,13-22 * * *")
     public void updateNoShowCount(){
         log.info("노쇼 카운트 스케줄 시작");
-        String token = jwtTokenprovider.createToken("todka@test.com", Role.TodakAdmin.name(), 0L);
+        String token = jwtTokenprovider.createToken("todka@test.com", Role.ADMIN.name(), 0L);
         List<String> mem = reservationFeignClient.getMember("Bearer " + token);
         for(String email : mem){
             Member member = memberRepository.findByMemberEmail(email)
@@ -757,7 +757,8 @@ public class MemberService {
                 .orElseThrow(() -> new IllegalArgumentException("멤버를 찾을 수 없습니다."));
 
         // 멤버 역할 변경 (결제 성공 후)
-        member.updateRole(Role.HospitalAdmin);
+        member.updateRole(Role.HOSPITAL);
+
         memberRepository.save(member);
 
         // 새로운 JWT 토큰 생성
@@ -765,7 +766,7 @@ public class MemberService {
     }
 
     public List<MontlyMemberCountDto> getMonthlyMemberCount() {
-        List<Role> roles = Arrays.asList(Role.Member, Role.HospitalAdmin, Role.Doctor);
+        List<Role> roles = Arrays.asList(Role.MEMBER, Role.HOSPITAL, Role.DOCTOR);
         return memberRepository.findMonthlyMemberCount(roles);
     }
 }

@@ -28,9 +28,8 @@ public class MemberSaveReqDto {
     @Builder.Default
     private boolean verified = true;
 
-
     @Builder.Default
-    private Role role = Role.Member;
+    private Role role = Role.MEMBER;
 
     public Member toEntity(String password) {
         return Member.builder()

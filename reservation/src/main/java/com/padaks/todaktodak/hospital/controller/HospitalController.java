@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,23 +30,22 @@ public class HospitalController {
     private final HospitalRepository hospitalRepository;
 
     // 병원생성 (병원 admin만 가능) 이후 주석해제 예정
-//    @PreAuthorize("hasRole('ROLE_HOSPTIALADMIN')")
     @PostMapping("/register")
     public ResponseEntity<Object> registerHospital(@ModelAttribute HospitalRegisterReqDto hospitalRegisterReqDto){
         Hospital hospital = hospitalService.registerHospital(hospitalRegisterReqDto);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.CREATED, "병원등록성공", hospital.getId()), HttpStatus.CREATED);
     }
 
-    // 병원 admin + 병원 등록 (미승인 상태)
-//    @PreAuthorize("hasRole('ROLE_HOSPTIALADMIN')")
+    // 병원 admin + 병원 등록 (미승인 상태) 병원admin만 가능
     @PostMapping("/hospital-admin/register")
     public ResponseEntity<Object> registerHospitalAndAdmin(@RequestBody HospitalAndAdminRegisterReqDto dto){
         HospitalAndAdminRegisterResDto hospitalAndAdminRegisterResDto
                 = hospitalService.registerHospitalAndAdmin(dto);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.CREATED, "병원, 병원 admin 등록 성공 (미승인)", hospitalAndAdminRegisterResDto), HttpStatus.CREATED);
     }
-    // 병원 admin + 병원 승인처리
+    // 병원 admin + 병원 승인처리 (토닥 admin만 가능)
     // 병원 : isAccept = true, 병원 admin : deletedAt = null
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/accept/{id}")
     public ResponseEntity<Object> acceptHospital(@PathVariable Long id){
         hospitalService.acceptHospital(id);
@@ -72,14 +72,16 @@ public class HospitalController {
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원정보 조회성공", hospitalDetail), HttpStatus.OK);
     }
 
-    // 병원정보 수정 (병원 admin, 개발자admin)
+    // 병원정보 수정 (병원 admin만 가능)
+    @PreAuthorize("hasRole('HOSPITAL')")
     @PostMapping("/update")
     public ResponseEntity<Object> updateHospital(@ModelAttribute HospitalUpdateReqDto hospitalUpdateReqDto){
         HospitalUpdateResDto hospitalUpdateResDto = hospitalService.updateHospital(hospitalUpdateReqDto);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원정보 수정성공", hospitalUpdateResDto), HttpStatus.OK);
     }
 
-    // 병원정보 수정 (병원 admin, 개발자admin)
+    // 병원삭제 (토닥 admin만 가능)
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object> deleteHospital(@PathVariable Long id){
         hospitalService.deleteHospital(id);
@@ -135,6 +137,7 @@ public class HospitalController {
          return hospitalService.getHospitalName(id);
     }
 
+    // 인기병원 리스트 (메인페이지)
     @GetMapping("/good/list")
     public ResponseEntity<Object> getFamousHospitalList(@RequestParam String dong,
                                           @RequestParam BigDecimal latitude,
@@ -143,8 +146,10 @@ public class HospitalController {
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원 리스트 조회성공", hospitalList), HttpStatus.OK);
     }
 
-    //    @PreAuthorize("hasRole('ADMIN')")
+
     // admin hospital list
+    // admin이 보는 병원리스트 (토닥 admin만 가능)
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/hospital/list")
     public ResponseEntity<?> adminHospitalList(
             @RequestParam(name = "accept", required = false) String isAccept, // true/false
@@ -165,7 +170,8 @@ public class HospitalController {
     }
 
 
-    // admin hospital list search
+    // admin hospital list search (토닥admin만 가능)
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("admin/hospital/search")
     public ResponseEntity<?> searchHospitals(
             @RequestParam(name = "query", required = false) String query,
@@ -178,13 +184,15 @@ public class HospitalController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/hospital/detail/{id}")
     public ResponseEntity<?> adminHospitalDetail(@PathVariable Long id){
         AdminHospitalListDetailResDto adminHospitalListDetailResDto = hospitalService.adminHospitalDetailResDto(id);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원정보 조회성공", adminHospitalListDetailResDto), HttpStatus.OK);
     }
 
-//    미승인 병원 수량 조회
+//    미승인 병원 수량 조회 (토닥admin만 가능)
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/list/accept")
     public ResponseEntity<?> getAcceptList(){
         Long count = hospitalService.getHospitalNoAcceptList();

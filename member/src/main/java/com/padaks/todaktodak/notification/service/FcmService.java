@@ -55,10 +55,10 @@ public class FcmService {
             } else if (type.equals(Type.CHILD)) {
                 urlType = "member/child";
                 url = "http://localhost:8081/" + urlType;
-            } else if (type.equals(Type.RESERVATION_NOTIFICATION) && member.getRole().equals(Role.Member)) {
+            } else if (type.equals(Type.RESERVATION_NOTIFICATION) && member.getRole().equals(Role.MEMBER)) {
                 urlType = "member/mypage/reservation";
                 url = "http://localhost:8081/" + urlType;
-            } else if (type.equals(Type.RESERVATION_NOTIFICATION) && member.getRole().equals(Role.HospitalAdmin)) {
+            } else if (type.equals(Type.RESERVATION_NOTIFICATION) && member.getRole().equals(Role.HOSPITAL)) {
                 // 수정 필요
                 urlType ="memebr/doctor/reservation";
                 url = "http://localhost:8081/" + urlType;

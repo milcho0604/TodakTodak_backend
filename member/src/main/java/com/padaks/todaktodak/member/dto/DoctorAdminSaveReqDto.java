@@ -21,7 +21,7 @@ public class DoctorAdminSaveReqDto {
     private String memberEmail;
 
     @Builder.Default
-    private Role role = Role.Doctor;
+    private Role role = Role.DOCTOR;
 
     @Builder.Default
     private boolean verified = false;

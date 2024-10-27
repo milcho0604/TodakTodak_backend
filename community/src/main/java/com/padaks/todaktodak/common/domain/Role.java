@@ -1,4 +1,4 @@
-package com.padaks.todaktodak.member.domain;
+package com.padaks.todaktodak.common.domain;
 
 
 import lombok.Getter;
@@ -12,7 +12,6 @@ public enum Role {
     DOCTOR("ROLE_DOCTOR", "의사"),
     NONUSER("ROLE_NONUSER", "미인증관리자"),
     MEMBER("ROLE_MEMBER", "회원");
-
     private final String key;
     private final String string;
 }

@@ -25,7 +25,6 @@ import static com.padaks.todaktodak.common.exception.exceptionType.ReservationEx
 public class MedicalChartService {
     private final MedicalChartRepository medicalChartRepository;
     private final ReservationRepository reservationRepository;
-    private final PaymentService paymentService;
 
     public MedicalChartResDto medicalChartCreate(MedicalChartSaveReqDto dto) {
         Reservation reservation = reservationRepository.findById(dto.getReservationId())
@@ -41,8 +40,6 @@ public class MedicalChartService {
         } else fee = Math.toIntExact(reservation.getHospital().getUntactFee());
         MedicalChart medicalChart = dto.toEntity(reservation, fee);
         MedicalChart saved = medicalChartRepository.save(medicalChart);
-
-        paymentService.getMediChartId(saved.getId());
 
         return new MedicalChartResDto().fromEntity(saved);
     }

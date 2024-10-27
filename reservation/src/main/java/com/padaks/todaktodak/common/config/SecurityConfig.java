@@ -3,6 +3,7 @@ package com.padaks.todaktodak.common.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -11,6 +12,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtAuthFilter jwtAuthFilter;
@@ -18,12 +20,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .cors()  // CORS 설정 적용
+                .cors()
                 .and()
-                .csrf().disable()  // CSRF 보호 비활성화
+                .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/**").permitAll()  // 모든 경로에 대해 인증 필요 없음
-                .anyRequest().authenticated() // 그 외 요청은 인증 필요
+                .antMatchers("/", "/login", "/auth/**").permitAll()  // 인증 없이 접근 가능한 경로
+                .anyRequest().authenticated()  // 그 외의 경로는 인증 필요
                 .and()
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
     }

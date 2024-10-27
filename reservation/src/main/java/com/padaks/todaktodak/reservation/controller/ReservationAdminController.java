@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -38,6 +39,7 @@ public class ReservationAdminController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('HOSPITAL')")
     @GetMapping("/list")
     public ResponseEntity<?> adminImmediateReservationList(
             @RequestParam(required = false) String hospitalName,
@@ -50,11 +52,13 @@ public class ReservationAdminController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/total/list")
     public ResponseEntity<?> totalReservationList(){
         return new ResponseEntity<>(reservationAdminService.totalReservationList(), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('HOSPITAL')")
     @PostMapping("/update")
     public ResponseEntity<?> updateStatusReservation(
             @RequestBody UpdateStatusReservation updateStatusReservation){
@@ -63,6 +67,7 @@ public class ReservationAdminController {
         return new ResponseEntity<>("수정 완료", HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('HOSPITAL','DOCTOR')")
     @PostMapping("/untact/update")
     public ResponseEntity<?> updateStatusUntactReservation(
             @RequestBody UpdateStatusReservation updateStatusReservation){
@@ -71,13 +76,14 @@ public class ReservationAdminController {
         return new ResponseEntity<>("수정 완료", HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('HOSPITAL', 'DOCTOR')")
     @GetMapping("/doctor/list")
     public ResponseEntity<?> ListReservation(
             @RequestParam(required = false) String doctorEmail,
             @RequestParam(required = false) Status status,
             @RequestParam(required = false) boolean untact,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
-        ){
+    ){
         List<CheckHospitalListReservationResDto> dto = reservationAdminService.getDoctorReservation(doctorEmail, status, untact, date);
 
         return new ResponseEntity<>(dto, HttpStatus.OK);
