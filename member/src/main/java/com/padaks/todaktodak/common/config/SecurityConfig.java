@@ -39,6 +39,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors().and() // CORS 활성화
                 .authorizeRequests()
                 // 권한에 따른 접근 제어 설정
+                .antMatchers("/ws/**").permitAll()
 //                .antMatchers("/**").permitAll()  // 인증 없이 접근 가능한 경로
                 .antMatchers("/", // MemberController
                         "/member/get/**",
