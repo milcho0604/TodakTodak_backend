@@ -24,7 +24,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/", "/login", "/auth/**").permitAll()  // 인증 없이 접근 가능한 경로
+                .antMatchers("/**").permitAll()  // 인증 없이 접근 가능한 경로
+
+//                .antMatchers("/", "/login", "/auth/**").permitAll()  // 인증 없이 접근 가능한 경로
                 .anyRequest().authenticated()  // 그 외의 경로는 인증 필요
                 .and()
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
