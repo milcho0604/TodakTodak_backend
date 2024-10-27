@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -52,14 +53,16 @@ public class ChatController {
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "회원 채팅방 리스트 조회 성공", chatRoomList), HttpStatus.OK);
     }
 
-    // admin 채팅방 리스트 (admin입장 채팅방 리스트)
+    // admin 채팅방 리스트 (admin입장 채팅방 리스트, 토닥admin만 가능)
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/chatroom/list/admin")
     private ResponseEntity<?> getAdminChatRoomList(Pageable pageable) {
         Page<ChatRoomListResDto> chatRoomList = chatService.getAdminChatRoomList(pageable);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "admin 채팅방 리스트 조회 성공", chatRoomList), HttpStatus.OK);
     }
 
-    // 채팅방 참여자 회원 정보조회
+    // 채팅방 참여자 회원 정보조회 (토닥 admin만 가능)
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/member/info/chatroom/{chatRoomId}")
     private ResponseEntity<?> getChatRoomMemberInfo(@PathVariable Long chatRoomId){
         ChatRoomMemberInfoResDto chatRoomMemberInfoResDto
