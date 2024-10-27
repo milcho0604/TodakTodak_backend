@@ -20,6 +20,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import org.springframework.security.access.AccessDeniedException;  // Spring Security의 AccessDeniedException을 import
+
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -63,12 +65,15 @@ public class JwtAuthFilter extends GenericFilter {
                 if (role != null) {
                     authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
                 }
-
+                if (authorities.isEmpty()) {
+                    httpServletResponse.setStatus(HttpStatus.FORBIDDEN.value());
+                    httpServletResponse.getWriter().write("접근 권한이 없습니다.");
+                    return;
+                }
                 // 사용자 정보를 기반으로 Authentication 객체 생성
                 UserDetails userDetails = new User(claims.getSubject(), "", authorities);
                 Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, token, authorities);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                System.out.println("권한" + authentication);
             }
 
             // 다음 필터로 이동
@@ -77,6 +82,10 @@ public class JwtAuthFilter extends GenericFilter {
             log.error("JWT 처리 중 오류: {}", e.getMessage());
             httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
             httpServletResponse.getWriter().write("토큰 유효성 검증 실패: " + e.getMessage());
+        } catch (AccessDeniedException e) {  // 추가된 권한 예외 처리
+            log.error("권한이 없어 접근이 거부되었습니다: {}", e.getMessage());
+            httpServletResponse.setStatus(HttpStatus.FORBIDDEN.value());
+            httpServletResponse.getWriter().write("접근 권한이 없습니다.");
         } catch (Exception e) {
             log.error("JWT 처리 중 예기치 못한 오류: {}", e.getMessage());
             httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());

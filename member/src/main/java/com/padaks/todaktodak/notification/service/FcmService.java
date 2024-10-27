@@ -54,6 +54,7 @@ public class FcmService {
                     urlType = "admin/payment/list";
                     url = "http://localhost:8081/" + urlType;
                 }else if (member.getRole().equals(Role.HOSPITAL)){
+                    urlType = "/memebr/doctor/reservation";
                     url = "http://localhost:8081/" + urlType;
                 } else if (member.getRole().equals(Role.MEMBER)) {
                     urlType = "member/mypage/reservation";
