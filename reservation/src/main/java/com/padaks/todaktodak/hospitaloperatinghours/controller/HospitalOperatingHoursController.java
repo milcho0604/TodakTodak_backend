@@ -8,6 +8,7 @@ import com.padaks.todaktodak.hospitaloperatinghours.service.HospitalOperatingHou
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,13 +22,13 @@ import java.util.List;
 public class HospitalOperatingHoursController {
     private final HospitalOperatingHoursService hospitalOperatingHoursService;
 
-    // 병원admin, 개발자admin만 가능
-    // 병원 영업시간 등록
+    // 병원 영업시간 등록 (병원admin만 가능)
+    @PreAuthorize("hasRole('HOSPITAL')")
     @PostMapping("/register")
     public ResponseEntity<Object> addOperatingHours(@RequestBody List<HospitalOperatingHoursReqDto> operatingHoursDtos) {
         try{
-        hospitalOperatingHoursService.addOperatingHours(operatingHoursDtos);
-        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원영업시간 등록 성공", null), HttpStatus.OK);
+            hospitalOperatingHoursService.addOperatingHours(operatingHoursDtos);
+            return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원영업시간 등록 성공", null), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(new CommonResDto(HttpStatus.BAD_REQUEST, e.getMessage(), null), HttpStatus.BAD_REQUEST);
         }
@@ -62,13 +63,14 @@ public class HospitalOperatingHoursController {
         return breakTimes;
     }
 
-    // 병원 특정 영업시간 수정
+    // 병원 특정 영업시간 수정 (병원 admin만 가능)
+    @PreAuthorize("hasRole('HOSPITAL')")
     @PostMapping("/update/{operatingHoursId}")
     public ResponseEntity<Object> updateOperatingHours(@PathVariable Long operatingHoursId,
                                                        @RequestBody HospitalOperatingHoursReqDto dto) {
         try{
-        hospitalOperatingHoursService.updateOperatingHours(operatingHoursId, dto);
-        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원영업시간 수정 성공", operatingHoursId), HttpStatus.OK);
+            hospitalOperatingHoursService.updateOperatingHours(operatingHoursId, dto);
+            return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원영업시간 수정 성공", operatingHoursId), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(new CommonResDto(HttpStatus.BAD_REQUEST, e.getMessage(), null), HttpStatus.BAD_REQUEST);
         } catch (BaseException e) {
@@ -76,7 +78,8 @@ public class HospitalOperatingHoursController {
         }
     }
 
-    // 병원 특정 영업시간 삭제
+    // 병원 특정 영업시간 삭제 (병원 admin만 가능)
+    @PreAuthorize("hasRole('HOSPITAL')")
     @DeleteMapping("/delete/{operatingHoursId}")
     public ResponseEntity<Object> deleteOperatingHours(@PathVariable Long operatingHoursId){
         try{
