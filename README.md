@@ -103,16 +103,16 @@
 
 ## 주요 기능
 
-| 기능 | 설명 |
-|------|------|
+| 기능          | 설명                                                              |
+|-------------|-----------------------------------------------------------------|
 | **간편한 회원가입** | 카카오 로그인과 이메일 인증을 통한 간편한 회원가입으로, 사용자들은 빠르고 쉽게 토닥서비스를 이용할 수 있습니다. |
-| **** |  |
-| **** |  |
-| **** |  |
-| **** |  |
-| **** |  |
-| **** |  |
-| **** |  |
+| **손쉬운 예약**  | 스케쥴 예약과 당일 예약 기능을 통해 손쉽게 증상을 설명하고  병원에 예약을 할 수 있습니다.            |
+| **대기인원 확인** | 병원별 총 대기 인원수, 의사 별 대기 인원 수를 확인할 수 있습니다.  |
+| **편안한 비대면 진료** | 병원에 직접 가지 않고도 화상채팅을 통해 편안히 비대면으로 진료를 받을 수 있습니다.                 |
+| ****        |                                                                 |
+| ****        |                                                                 |
+| ****        |                                                                 |
+| ****        |                                                                 |
 <br>
 
 ## 스택
@@ -120,7 +120,7 @@
 ### BACKEND
 <img src="https://img.shields.io/badge/Spring-green?style=for-the-badge&logo=Spring&logoColor=white"><img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=for-the-badge&logo=Spring Boot&logoColor=white"><img src="https://img.shields.io/badge/Springsecurity-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white">
 <img src="https://img.shields.io/badge/Spring Data JPA -13C100?style=for-the-badge&logo=Spring Boot&logoColor=white"><img src="https://img.shields.io/badge/websocket-010101?style=for-the-badge&logo=socketdotio&logoColor=white"><img src="https://img.shields.io/badge/redis-FF4438?style=for-the-badge&logo=redis&logoColor=white"><img src="https://img.shields.io/badge/apachekafka-231F20?style=for-the-badge&logo=apachekafka&logoColor=white"><img src="https://img.shields.io/badge/mariadb-003545?style=for-the-badge&logo=mariadb&logoColor=white"><img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white">
-
+![Firebase](https://img.shields.io/badge/firebase-%23039BE5.svg?style=for-the-badge&logo=firebase)
 
 
 ### FRONTEND
@@ -132,17 +132,18 @@
 <img src="https://img.shields.io/badge/Vuetify-1867C0?style=for-the-badge&logo=vuetify&logoColor=#1867C0">
 <img src="https://img.shields.io/badge/webrtc-333333?style=for-the-badge&logo=webrtc&logoColor=#1867C0">
 <img src="https://img.shields.io/badge/Geolocation-ED1C24?style=for-the-badge&logo=maplibre&logoColor=#1867C0">
+![Firebase](https://img.shields.io/badge/firebase-%23039BE5.svg?style=for-the-badge&logo=firebase)
 
 ###  DB
 ![mariadb](https://img.shields.io/badge/mariadb-003545?style=for-the-badge&logo=mariadb&logoColor=white)
-![redis](https://img.shields.io/badge/redis-FF4438?style=for-the-badge)
+![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white)
 ![amazons3](https://img.shields.io/badge/amazons3-569A31?style=for-the-badge)
-
+![Apache Kafka](https://img.shields.io/badge/Apache%20Kafka-000?style=for-the-badge&logo=apachekafka)
 ### TOOLS
 ![Notion](https://img.shields.io/badge/notion-181717?style=for-the-badge&logo=notion&logoColor=white)
 ![Git](https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white)
 ![GitHub](https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white)
-![figma](https://img.shields.io/badge/figma-2F5EF5?style=for-the-badge)
+![Figma](https://img.shields.io/badge/figma-%23F24E1E.svg?style=for-the-badge&logo=figma&logoColor=white)
 
 
 <br>
