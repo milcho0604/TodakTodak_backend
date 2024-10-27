@@ -80,9 +80,13 @@ public class NotificationKafkaConsumer {
                     "\n의사\t\t: " + dto.getDoctorName() +
                     "\n예약자\t\t: " + dto.getMemberName() +
                     "\n자녀이름\t: " + child.getName();
+            String title = "";
+            if(dto.getReservationType().equals("Scheduled")){
+                title = "스케줄예약";
+            }
 
             fcmService.sendMessage(dto.getAdminEmail(),
-                     dto.getReservationType()+"/" + dto.getMedicalItem() + " 예약 안내 ",
+                     title + "/" + dto.getMedicalItem() + " 예약 안내 ",
                     body,
                     Type.RESERVATION_NOTIFICATION, null);
             acknowledgment.acknowledge();
@@ -110,8 +114,14 @@ public class NotificationKafkaConsumer {
                     "\n 의사\t\t: " + dto.getDoctorName() +
                     "\n 예약자\t\t: " + dto.getMemberName() +
                     "\n 자녀이름\t: " + child.getName();
+
+            String title = "";
+            if(dto.getReservationType().equals("Immediate")){
+                title = "당일예약";
+            }
+
             fcmService.sendMessage(dto.getAdminEmail(),
-                     dto.getReservationType()+"/" + dto.getMedicalItem() + " 예약 안내 ",
+                    title+"/" + dto.getMedicalItem() + " 예약 안내 ",
                     body,
                     Type.RESERVATION_NOTIFICATION, null);
             acknowledgment.acknowledge();
