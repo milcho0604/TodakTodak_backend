@@ -60,7 +60,6 @@ public class ChatController {
     }
 
     // admin 채팅방 리스트 (admin입장 채팅방 리스트, 토닥admin만 가능)
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/chatroom/list/admin")
     private ResponseEntity<?> getAdminChatRoomList(Pageable pageable) {
         try{
