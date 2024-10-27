@@ -22,6 +22,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,6 +40,10 @@ public class DoctorOperatingHoursService {
         String memberEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         Member hospitalAdmin = memberRepository.findByMemberEmailOrThrow(memberEmail);
         List<HospitalOperatingHoursResDto> hospitalTime = reservationFeignClient.getHospitalTime(hospitalAdmin.getHospitalId()); //Feign으로 해당 병원의 영업시간 가져옴
+
+        for (HospitalOperatingHoursResDto hospitalOperatingHoursResDto : hospitalTime) {
+            System.out.println(hospitalOperatingHoursResDto.toString());
+        }
 
         // controller에서 요청한 id로 해당의사 찾아야함
         Member doctor = memberRepository.findById(doctorId).orElseThrow(() -> new EntityNotFoundException("의사를 찾을 수 없습니다. ID : " + doctorId));
@@ -69,21 +74,30 @@ public class DoctorOperatingHoursService {
                 throw new IllegalArgumentException("영업 시작 시간이 종료 시간보다 늦을 수 없습니다.");
             }
 
-            HospitalOperatingHoursResDto hospitalBreakTime = hospitalTime.stream()
+            Optional<HospitalOperatingHoursResDto> hospitalOperating = hospitalTime.stream()
                     .filter(time -> time.getDayOfWeek().equals(hoursReqDto.getDayOfWeek()))
-                    .findFirst()
-                    .orElse(null);
+                    .findFirst();
+
+            if (hospitalOperating.isEmpty() && !hoursReqDto.getUntact()) { // 비대면이 아니고 병원 운영시간이 없는 경우
+                throw new IllegalArgumentException("병원의 운영 시간이 설정되지 않은 요일입니다");
+            } else if (hospitalOperating.isPresent() && !hoursReqDto.getUntact()) {
+                // 병원 운영시간 내에 있는지 확인
+                if (hoursReqDto.getOpenTime().isBefore(hospitalOperating.get().getOpenTime()) || hoursReqDto.getCloseTime().isAfter(hospitalOperating.get().getCloseTime())) {
+                    throw new IllegalArgumentException("진료시간이 병원의 운영시간을 초과할 수 없습니다. 운영 시간: " +
+                            hospitalOperating.get().getOpenTime() + " - " + hospitalOperating.get().getCloseTime());
+                }
+            }
 
             DoctorOperatingHoursReqDto updatedHoursReqDto = hoursReqDto; // 새로운 변수
 
-            if (hospitalBreakTime != null) {
+            if (hospitalOperating.isPresent()) {
                 updatedHoursReqDto = DoctorOperatingHoursReqDto.builder()
                         .dayOfWeek(hoursReqDto.getDayOfWeek())
                         .openTime(hoursReqDto.getOpenTime())
                         .closeTime(hoursReqDto.getCloseTime())
                         .untact(hoursReqDto.getUntact())
-                        .breakStart(hospitalBreakTime.getBreakStart())
-                        .breakEnd(hospitalBreakTime.getBreakEnd())
+                        .breakStart(hospitalOperating.get().getBreakStart())
+                        .breakEnd(hospitalOperating.get().getBreakEnd())
                         .build();
             }
 
