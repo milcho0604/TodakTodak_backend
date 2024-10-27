@@ -37,7 +37,6 @@ public class HospitalController {
     }
 
     // 병원 admin + 병원 등록 (미승인 상태) 병원admin만 가능
-    @PreAuthorize("hasRole('HOSPITAL')")
     @PostMapping("/hospital-admin/register")
     public ResponseEntity<Object> registerHospitalAndAdmin(@RequestBody HospitalAndAdminRegisterReqDto dto){
         HospitalAndAdminRegisterResDto hospitalAndAdminRegisterResDto
