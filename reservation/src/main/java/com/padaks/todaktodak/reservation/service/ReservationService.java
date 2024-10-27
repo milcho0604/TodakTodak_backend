@@ -267,7 +267,7 @@ public class ReservationService {
         List<String> member = new ArrayList<>();
 
         for(Reservation res : reservation){
-            if(!res.getStatus().equals(Status.Completed)) {
+            if(!res.getStatus().equals(Status.Completed) && !res.getStatus().equals(Status.Noshow)) {
                 res.updateStatus(Status.Noshow);
                 member.add(res.getMemberEmail());
             }
@@ -358,8 +358,8 @@ public class ReservationService {
         LocalDate today = LocalDate.now();
         MemberFeignDto member = getMemberInfo();
 
-        Page<Reservation> reservationList =
-                reservationRepository.findByMemberEmailAndReservationDateBeforeOrStatusIsNot(member.getMemberEmail(), today, Status.Confirmed ,pageable);
+        List<Reservation> reservationList =
+                reservationRepository.findByMemberEmailAndReservationDateBeforeOrStatusIsNot(member.getMemberEmail(), today, Status.Confirmed);
         List<ReservationHistory> reservationHistoryList =
                 reservationHistoryRepository.findByMemberEmailAndReservationDateBefore(member.getMemberEmail(), today);
 

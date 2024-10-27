@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,11 +27,13 @@ public class MedicalChartController {
         MedicalChartResDto medicalChartResDto = medicalChartService.getMedicalChartByReservationId(reservationId);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK,"진료 내역 조회 성공", medicalChartResDto),HttpStatus.OK);
     }
+    @PreAuthorize("hasAnyRole('DOCTOR', 'HOSPITAL', 'ADMIN')")
     @PostMapping("/{medicalChartId}/complete")
     public ResponseEntity<CommonResDto> completeMedicalChart(@PathVariable Long medicalChartId) {
         MedicalChartResDto medicalChartResDto = medicalChartService.completeMedicalChart(medicalChartId);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK,"진료 완료 처리 성공", medicalChartResDto),HttpStatus.OK);
     }
+    @PreAuthorize("hasAnyRole('DOCTOR', 'HOSPITAL', 'ADMIN')")
     @PostMapping("/{medicalChartId}/pay")
     public ResponseEntity<CommonResDto> payMedicalChart(@PathVariable Long medicalChartId) {
         MedicalChartResDto medicalChartResDto = medicalChartService.payMedicalChart(medicalChartId);
