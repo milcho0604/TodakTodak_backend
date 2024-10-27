@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -70,6 +71,7 @@ public class PaymentController {
 
     // 결제 취소 처리
     @PostMapping("/cancel")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> cancelPayment(@RequestBody String impUid) {
         try {
             IamportResponse<Payment> cancelResponse = paymentService.cancelPayment(impUid);
@@ -81,6 +83,7 @@ public class PaymentController {
 
     // 결제 리스트 조회
     @GetMapping("/list")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> paymentList(Pageable pageable){
         Page<PaymentListResDto> paymentList = paymentService.paymentList(pageable);
         CommonResDto dto = new CommonResDto(HttpStatus.OK,"결제내역을 조회합니다..", paymentList);
@@ -88,6 +91,7 @@ public class PaymentController {
     }
 
     @GetMapping("/detail/list")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<PaymentListResDto>> paymentListSearch(
             @RequestParam(required = false) String query, // 검색어 (impUid나 memberEmail에 포함될 수 있음)
             @RequestParam(required = false) PaymentMethod paymentMethod, // 필터링용 결제 방식 (정기, 단건)
@@ -124,6 +128,7 @@ public class PaymentController {
     }
 
     @PostMapping("/subCancel")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> cancleSub(@RequestBody String impUid){
         try {
             IamportResponse<Payment> cancleResponse = paymentService.cancelSubscription(impUid);
@@ -160,6 +165,7 @@ public class PaymentController {
     }
 
     @GetMapping("/get/total")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getTotalAmount(){
         try{
             Long amount = paymentService.getTotalAmount();

@@ -57,7 +57,9 @@ public class JwtAuthFilter extends GenericFilter {
 
                 // 권한 설정 (Role 정보로 권한 부여)
                 List<GrantedAuthority> authorities = new ArrayList<>();
+                System.out.println(authorities);
                 String role = claims.get("role", String.class);
+                System.out.println("ROLEs"+role);
                 if (role != null) {
                     authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
                 }
@@ -66,6 +68,7 @@ public class JwtAuthFilter extends GenericFilter {
                 UserDetails userDetails = new User(claims.getSubject(), "", authorities);
                 Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, token, authorities);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                System.out.println("권한" + authentication);
             }
 
             // 다음 필터로 이동

@@ -149,9 +149,8 @@ public class NotificationKafkaConsumer {
     @KafkaListener(topics = "child-share", groupId = "child-group", containerFactory = "childKafkaListenerContainerFactory")
     public void listenPaymentSuccess(String message, Acknowledgment acknowledgment) throws JsonProcessingException {
         try {
-            System.out.println(message);
             ChildSuccessResDto childSuccessResDto = objectMapper.readValue(message, ChildSuccessResDto.class);
-            System.out.println("Received Child Success DTO: " + childSuccessResDto);
+//            System.out.println("Received Child Success DTO: " + childSuccessResDto);
 
             fcmService.sendMessage(childSuccessResDto.getMemberEmail(), childSuccessResDto.getChildName() + "자녀가 공유되었습니다.",
                     childSuccessResDto.getSharer()+ "님이 " + childSuccessResDto.getChildName()+"님을 공유했습니다.", Type.CHILD, null);

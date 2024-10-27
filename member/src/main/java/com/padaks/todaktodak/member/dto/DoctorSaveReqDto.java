@@ -29,7 +29,7 @@ public class DoctorSaveReqDto {
     private MultipartFile profileImage;
 
     @Builder.Default
-    private Role role = Role.Doctor;
+    private Role role = Role.DOCTOR;
 
     @Builder.Default
     private boolean verified = false;

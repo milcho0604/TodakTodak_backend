@@ -3,6 +3,7 @@ package com.padaks.todaktodak.common.config;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.repository.MemberRepository;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -35,6 +36,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String email = jwtTokenProvider.getEmailFromToken(token);
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+
             if (userDetails != null) {
                 Member member = memberRepository.findByMemberEmail(email)
                         .orElse(null);
@@ -45,14 +47,20 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     return;
                 }
 
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities());
+                // 권한 확인 로그 추가
+                for (GrantedAuthority authority : userDetails.getAuthorities()) {
+                    System.out.println("권한: " + authority.getAuthority());
+                }
+
+                // 권한과 함께 SecurityContext 설정
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails, token, userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
 
         filterChain.doFilter(request, response);
     }
-
 
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
