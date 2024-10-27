@@ -2,6 +2,7 @@ package com.padaks.todaktodak.child.controller;
 
 import com.padaks.todaktodak.child.dto.*;
 import com.padaks.todaktodak.child.service.ChildService;
+import com.padaks.todaktodak.common.dto.CommonErrorDto;
 import com.padaks.todaktodak.common.dto.CommonResDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,9 +47,14 @@ public class ChildController {
     }
 
     @PostMapping("/share")
-    public ResponseEntity<CommonResDto> shareChild(@RequestBody ChildShareReqDto dto){
-        childService.shareChild(dto);
-        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK,"자녀 공유 성공",null),HttpStatus.OK);
+    public ResponseEntity<?> shareChild(@RequestBody ChildShareReqDto dto){
+        try {
+            childService.shareChild(dto);
+            return new ResponseEntity<>(new CommonResDto(HttpStatus.OK,"자녀 공유 성공",null),HttpStatus.OK);
+        }catch (IllegalArgumentException e) {
+            CommonErrorDto commonErrorDto = new CommonErrorDto(HttpStatus.BAD_REQUEST, e.getMessage());
+            return new ResponseEntity<>(commonErrorDto, HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/detail/{id}")
