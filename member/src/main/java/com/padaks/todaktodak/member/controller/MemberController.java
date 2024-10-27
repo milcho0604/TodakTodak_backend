@@ -378,6 +378,7 @@ public class MemberController {
             @RequestParam(required = false) Boolean deleted,  // true: 탈퇴, false: 정상
             @RequestParam(required = false) String role,  // true: 탈퇴, false: 정상
             Pageable pageable) {
+        System.out.println("권한관리" + SecurityContextHolder.getContext().getAuthentication());
         Page<MemberListResDto> memberListResDtos = memberService.memberList(verified, deleted, role, pageable);
         CommonResDto dto = new CommonResDto(HttpStatus.OK, "회원목록을 조회합니다.", memberListResDtos);
         return new ResponseEntity<>(dto, HttpStatus.OK);

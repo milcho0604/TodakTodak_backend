@@ -44,7 +44,7 @@ public class DoctorOperatingHoursService {
         Member doctor = memberRepository.findById(doctorId).orElseThrow(() -> new EntityNotFoundException("의사를 찾을 수 없습니다. ID : " + doctorId));
 
         // hospitalAdmin의 병원에 소속된 의사의 영업시간만 등록 가능
-        if (!hospitalAdmin.getRole().equals(Role.HospitalAdmin)) {
+        if (!hospitalAdmin.getRole().equals(Role.HOSPITAL)) {
             throw new IllegalArgumentException("병원 admin만 근무시간을 등록 할 수 있습니다.");
         }
         if (!hospitalAdmin.getHospitalId().equals(doctor.getHospitalId())) {
@@ -115,7 +115,7 @@ public class DoctorOperatingHoursService {
         Member doctor = memberRepository.findById(hours.getMember().getId()).orElseThrow(()-> new EntityNotFoundException("의사를 찾을 수 없습니다. ID : " + hours.getMember().getId()));
 
         // hospitalAdmin의 병원에 소속된 의사의 영업시간만 등록 가능
-        if (!hospitalAdmin.getRole().equals(Role.HospitalAdmin)){
+        if (!hospitalAdmin.getRole().equals(Role.HOSPITAL)){
             throw new IllegalArgumentException("병원 admin만 근무시간을 수정 할 수 있습니다.");
         }
         if (!hospitalAdmin.getHospitalId().equals(doctor.getHospitalId())){
@@ -135,7 +135,7 @@ public class DoctorOperatingHoursService {
 
         DoctorOperatingHours hours =doctorOperatingHoursRepository.findById(operatingHoursId).orElseThrow(()-> new EntityNotFoundException("존재하지 않는 근무시간 입니다."));
 
-        if (!hospitalAdmin.getRole().equals(Role.HospitalAdmin)){
+        if (!hospitalAdmin.getRole().equals(Role.HOSPITAL)){
             throw new IllegalArgumentException("병원 admin만 근무시간을 삭제 할 수 있습니다.");
         }
         if (!hospitalAdmin.getHospitalId().equals(hours.getMember().getHospitalId())){
