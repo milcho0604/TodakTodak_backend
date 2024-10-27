@@ -86,6 +86,7 @@ public class ChatController {
 
 
     //    채팅방 id 로 멤버 정보 검색 (todakAdmin)
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/member/info/{id}")
     public ResponseEntity<?> memberInfo(@PathVariable Long id){
         CsMemberResDto dto = chatService.getMemberInfo(id);
