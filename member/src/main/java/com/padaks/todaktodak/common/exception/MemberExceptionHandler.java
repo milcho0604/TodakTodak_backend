@@ -24,4 +24,11 @@ public class MemberExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse("EntityNotFoundException",HttpStatus.BAD_REQUEST.value(),e.getMessage()));
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleBaseException(IllegalArgumentException e) {
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse("IllegalArgumentException",HttpStatus.BAD_REQUEST.value(),e.getMessage()));
+    }
 }
