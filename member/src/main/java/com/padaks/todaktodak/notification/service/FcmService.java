@@ -50,8 +50,15 @@ public class FcmService {
         String url = null;
         if (id == null){
             if (type.equals(Type.PAYMENT)){
-                urlType = "member/mypage/reservation";
-                url = "http://localhost:8081/" + urlType;
+                if (member.getRole().equals(Role.ADMIN)){
+                    urlType = "admin/payment/list";
+                    url = "http://localhost:8081/" + urlType;
+                }else if (member.getRole().equals(Role.HOSPITAL)){
+                    url = "http://localhost:8081/" + urlType;
+                } else if (member.getRole().equals(Role.MEMBER)) {
+                    urlType = "member/mypage/reservation";
+                    url = "http://localhost:8081/" + urlType;
+                }
             } else if (type.equals(Type.CHILD)) {
                 urlType = "member/child";
                 url = "http://localhost:8081/" + urlType;
