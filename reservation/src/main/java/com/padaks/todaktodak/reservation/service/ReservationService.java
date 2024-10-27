@@ -9,6 +9,7 @@ import com.padaks.todaktodak.common.feign.MemberFeignClient;
 import com.padaks.todaktodak.hospital.domain.Hospital;
 import com.padaks.todaktodak.hospital.repository.HospitalRepository;
 import com.padaks.todaktodak.reservation.domain.Reservation;
+import com.padaks.todaktodak.reservation.domain.ReserveType;
 import com.padaks.todaktodak.reservation.dto.*;
 import com.padaks.todaktodak.reservation.domain.ReservationHistory;
 import com.padaks.todaktodak.reservation.domain.Status;
@@ -236,6 +237,18 @@ public class ReservationService {
         }
 
         return dtos;
+    }
+
+    public boolean checkValidReservation(Long id){
+        MemberFeignDto memberFeignDto = getMemberInfo();
+
+        Hospital hospital = hospitalRepository.findById(id).orElseThrow(()-> new BaseException(HOSPITAL_NOT_FOUND));
+
+        ReserveType res = ReserveType.Immediate;
+
+        Reservation reservation = reservationRepository.findByReservationDateAndReservationTypeAndHospital(LocalDate.now(), res, hospital);
+
+        return reservation == null;
     }
 
 //    자녀 별 예약 리스트 출력

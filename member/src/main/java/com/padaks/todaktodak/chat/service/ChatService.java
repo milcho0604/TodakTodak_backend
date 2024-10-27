@@ -77,20 +77,39 @@ public class ChatService {
     }
 
     // 해당 회원이 속한 채팅방 리스트 (회원입장 채팅방 리스트)
+//    public Page<ChatRoomListResDto> getMemberChatRoomList(Pageable pageable) {
+//        String memberEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+//        System.out.println(memberEmail);
+//        Member member = memberRepository.findByMemberEmailOrThrow(memberEmail);
+//
+//        // 해당 회원이 속한 모든 채팅방을 recentChatTime 내림차순으로 페이징 처리하여 조회
+//        Page<ChatRoom> chatRoomPage = chatRoomRepository.findByMemberIdOrderByRecentChatTimeDesc(member.getId(), pageable);
+//
+//        // 각 채팅방의 마지막 메시지와 함께 DTO로 변환
+//        return chatRoomPage.map(chatRoom -> {
+//            ChatMessage lastMessage = chatMessageRepository.findFirstByChatRoomOrderByCreatedAtDesc(chatRoom).orElse(null);
+//            return ChatRoomListResDto.fromEntity(chatRoom, lastMessage);
+//        });
+//    }
     public Page<ChatRoomListResDto> getMemberChatRoomList(Pageable pageable) {
-        String memberEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        Member member = memberRepository.findByMemberEmailOrThrow(memberEmail);
+        log.info("Inside ChatService.getMemberChatRoomList with pageable: {}", pageable);
+        try {
+            String memberEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+            Member member = memberRepository.findByMemberEmailOrThrow(memberEmail);
+            log.info("Member found: {}", member);
 
-        // 해당 회원이 속한 모든 채팅방을 recentChatTime 내림차순으로 페이징 처리하여 조회
-        Page<ChatRoom> chatRoomPage = chatRoomRepository.findByMemberIdOrderByRecentChatTimeDesc(member.getId(), pageable);
+            Page<ChatRoom> chatRoomPage = chatRoomRepository.findByMemberIdOrderByRecentChatTimeDesc(member.getId(), pageable);
+            log.info("Retrieved chatRoomPage: {}", chatRoomPage);
 
-        // 각 채팅방의 마지막 메시지와 함께 DTO로 변환
-        return chatRoomPage.map(chatRoom -> {
-            ChatMessage lastMessage = chatMessageRepository.findFirstByChatRoomOrderByCreatedAtDesc(chatRoom).orElse(null);
-            return ChatRoomListResDto.fromEntity(chatRoom, lastMessage);
-        });
+            return chatRoomPage.map(chatRoom -> {
+                ChatMessage lastMessage = chatMessageRepository.findFirstByChatRoomOrderByCreatedAtDesc(chatRoom).orElse(null);
+                return ChatRoomListResDto.fromEntity(chatRoom, lastMessage);
+            });
+        } catch (Exception e) {
+            log.error("Error in ChatService.getMemberChatRoomList: {}", e.getMessage(), e);
+            throw e;
+        }
     }
-
 
 
     // 채팅방 리스트(admin입장 채팅방 리스트)
