@@ -39,7 +39,81 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors().and() // CORS 활성화
                 .authorizeRequests()
                 // 권한에 따른 접근 제어 설정
-                .antMatchers("/", "/member/login", "/auth/**", "/member/hospital/login").permitAll()  // 인증 없이 접근 가능한 경로
+//                .antMatchers("/**").permitAll()  // 인증 없이 접근 가능한 경로
+                .antMatchers("/", // MemberController
+                        "/member/get/**",
+                        "/member/doctor/**",
+                        "/member/create",
+                        "/member/login",
+                        "/member/hospital/login",
+                        "/member/verification/**",
+                        "/member/send-verification-code",
+                        "/verify/**",
+                        "/member/doctorList",
+                        "/member/doctorList/**",
+                        "/member/doctors",
+                        "/member/untact/**",
+                        "/member/find/**",
+                        "/member/reset/**",
+                        "/member/hospitalName",
+                        "/member/success",
+                        "/member/get/member",
+                        "/member/hospital-admin/register",
+                        "/member/hospital-admin/accept",
+                        "/member/getInfo/**",
+                        "/member/report/count/**",
+
+// DoctorController
+                        "/doctor/**",
+
+// ChildController
+                        "/child/detail/**",
+
+// NotificationController
+                        "/notification/create",
+
+// ReviewController
+                        "/review/list/**",
+                        "/review/detail/**",
+                        "/review/doctor/**",
+                        "/review/untact/**",
+                        "/review/reserve/**",
+
+// HospitalController
+                        "/hospital/get/hospitalName/**",
+                        "/hospital/get/hospital",
+                        "/hospital/get/info/*",
+                        "/hospital/sorted/list",
+                        "/hospital/good/list",
+                        "/hospital/hospital-admin/register",
+                        "/hospital/detail/*",
+                        "/hospital/list",
+
+// HospitalOperatingHoursController
+                        "/hospital-operating-hours/detail/*",
+                        "/hospital-operating-hours/getBreakTime/*",
+
+// MemberToReservationFeign
+                        "/reservation/hospital/list",
+                        "/review/doctor/detail/*",
+                        "/reservation/get/member",
+                        "/hospital-operating-hours/getBreakTime/*",
+
+// DoctorOperatingHoursController
+                        "/doctor-operating-hours/*",
+
+// CommentController
+                        "/comment/get/**",
+                        "/comment/list/**",
+                        "/comment/listBydoctorEmail",
+
+// PostController
+                        "/post/list",
+                        "/post/good/list",
+                        "/detail/**",
+                        "/detail/views/**",
+                        "/detail/**/likes"
+                ).permitAll()  // 인증 없이 접근 가능한 경로
 //                .antMatchers("/member/list").hasRole("ADMIN")  // ADMIN 권한이 있어야 접근 가능한 경로
                 .anyRequest().authenticated()  // 그 외의 경로는 인증 필요
                 .and()
