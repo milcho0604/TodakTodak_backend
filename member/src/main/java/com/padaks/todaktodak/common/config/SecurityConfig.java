@@ -54,6 +54,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/member/verify-code",
                         "/member/verify-email",
                         "/member/doctorList",
+                        "fcm/logout",
                         "/member/doctorList/**",
                         "/member/doctors",
                         "/member/untact/**",

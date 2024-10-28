@@ -140,6 +140,10 @@ public class MemberService {
         if (member.getDeletedAt() != null){
             throw new IllegalStateException("탈퇴한 회원입니다.");
         }
+        System.out.println("fcm토큰:" + loginDto.getFcmToken());
+
+        member.setFcmToken(loginDto.getFcmToken());
+        memberRepository.save(member);
 
         return jwtTokenprovider.createToken(member.getMemberEmail(), member.getRole().name(), member.getId());
     }
@@ -165,7 +169,10 @@ public class MemberService {
         if (member.getDeletedAt() != null){
             throw new IllegalStateException("탈퇴한 회원입니다.");
         }
+//        System.out.println("fcm토큰:" + loginDto.getFcmToken());
 
+        member.setFcmToken(loginDto.getFcmToken());
+        memberRepository.save(member);
         return jwtTokenprovider.createToken(member.getMemberEmail(), member.getRole().name(), member.getId());
     }
 
@@ -505,7 +512,7 @@ public class MemberService {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Member adminMember = findByMemberEmail(email);
         if (adminMember.getRole().equals("Member")){
-            throw new SecurityException("의사를 등록할 권한이 없습니다.");
+            throw new SecurityException("의사를 등록할 이 없습니다.");
         }
         HospitalFeignDto hospitalFeignDto = getHospital();
         String password = hospitalFeignDto.getPhoneNumber();
@@ -773,4 +780,5 @@ public class MemberService {
         List<Role> roles = Arrays.asList(Role.MEMBER, Role.HOSPITAL, Role.DOCTOR);
         return memberRepository.findMonthlyMemberCount(roles);
     }
+
 }

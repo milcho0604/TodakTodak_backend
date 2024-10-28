@@ -48,9 +48,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 }
 
                 // 권한 확인 로그 추가
-                for (GrantedAuthority authority : userDetails.getAuthorities()) {
-                    System.out.println("권한: " + authority.getAuthority());
-                }
+//                for (GrantedAuthority authority : userDetails.getAuthorities()) {
+//                    System.out.println("권한: " + authority.getAuthority());
+//                }
 
                 // 권한과 함께 SecurityContext 설정
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(

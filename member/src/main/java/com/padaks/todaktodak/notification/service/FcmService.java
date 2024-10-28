@@ -12,6 +12,7 @@ import com.padaks.todaktodak.notification.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,9 +42,9 @@ public class FcmService {
 
         String token = member.getFcmToken();
 
-        if (token == null || token.isEmpty()) {
-            throw new EntityNotFoundException("FCM token not found for memberId: " + memberEmail);
-        }
+//        if (token == null || token.isEmpty()) {
+//            throw new EntityNotFoundException("FCM token not found for memberId: " + memberEmail);
+//        }
 
         // 리다이렉트 url 셋팅
         String urlType = null;
@@ -112,7 +113,7 @@ public class FcmService {
                 .putData("notificationId", String.valueOf(fcmNotification.getId())) //이동할 url 추가
                 .setToken(token)
                 .build();
-
+        System.out.println(message.toString());
         try {
             // 비동기 처리 결과 기다리기
             String response = FirebaseMessaging.getInstance().sendAsync(message).get();
@@ -145,5 +146,17 @@ public class FcmService {
         notificationRepository.save(fcmNotification);
         System.out.println("read 검증:" + fcmNotification.isRead());
         return fcmNotification;
+    }
+
+    public void logout(String email) {
+        // 회원 조회
+        Member member = memberRepository.findByMemberEmail(email)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
+
+        // FCM 토큰 초기화
+        member.setFcmToken(null);
+        System.out.println("fcm 초기화 완료");
+        memberRepository.save(member);
+        System.out.println("fcm 저장 완료");
     }
 }
