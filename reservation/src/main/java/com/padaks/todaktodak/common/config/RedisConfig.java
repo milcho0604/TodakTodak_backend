@@ -110,4 +110,23 @@ public class RedisConfig {
     public MessageListenerAdapter listenerAdapter(SignalHandler redisSubscriber) {
         return new MessageListenerAdapter(redisSubscriber);
     }
+
+    @Bean
+    @Qualifier("roomConnectionFactory")
+    public RedisConnectionFactory roomConnectionFactory(){
+        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
+        configuration.setHostName(host);
+        configuration.setPort(port);
+        configuration.setDatabase(11);
+        return new LettuceConnectionFactory(configuration);
+    }
+    @Bean
+    @Qualifier("roomRedisTemplate")
+    public RedisTemplate<String, Object> roomRedisTemplate(@Qualifier("roomConnectionFactory") RedisConnectionFactory redisConnectionFactory){
+        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper()));
+        redisTemplate.setConnectionFactory(redisConnectionFactory);
+        return redisTemplate;
+    }
 }
