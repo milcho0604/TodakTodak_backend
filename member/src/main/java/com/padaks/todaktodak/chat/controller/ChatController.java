@@ -3,13 +3,16 @@ package com.padaks.todaktodak.chat.controller;
 import com.padaks.todaktodak.chat.chatmessage.dto.ChatMessageResDto;
 import com.padaks.todaktodak.chat.chatroom.domain.ChatRoom;
 import com.padaks.todaktodak.chat.chatroom.dto.ChatRoomListResDto;
+import com.padaks.todaktodak.chat.chatroom.dto.ChatRoomMemberInfoResDto;
 import com.padaks.todaktodak.chat.chatroom.dto.CsMemberResDto;
 import com.padaks.todaktodak.chat.service.ChatService;
 import com.padaks.todaktodak.common.dto.CommonResDto;
+import com.padaks.todaktodak.common.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -54,7 +57,7 @@ public class ChatController {
 
     // admin 채팅방 리스트 (admin입장 채팅방 리스트)
     @GetMapping("/chatroom/list/admin")
-    private ResponseEntity<?> getAdminChatRoomList(Pageable pageable) {
+    private ResponseEntity<?> getAdminChatRoomList(@PageableDefault(size = 7)Pageable pageable) {
         Page<ChatRoomListResDto> chatRoomList = chatService.getAdminChatRoomList(pageable);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "admin 채팅방 리스트 조회 성공", chatRoomList), HttpStatus.OK);
     }
@@ -64,5 +67,17 @@ public class ChatController {
     public ResponseEntity<?> memberInfo(@PathVariable Long id){
         CsMemberResDto dto = chatService.getMemberInfo(id);
         return ResponseEntity.ok(dto);
+    }
+
+    // 채팅방 참여자 회원 정보조회 (토닥 admin만 가능)
+    @GetMapping("/member/info/chatroom/{chatRoomId}")
+    private ResponseEntity<?> getChatRoomMemberInfo(@PathVariable Long chatRoomId){
+        try{
+            ChatRoomMemberInfoResDto chatRoomMemberInfoResDto
+                    = chatService.getChatRoomMemberInfo(chatRoomId);
+            return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "채팅참여자 회원정보 조회 성공", chatRoomMemberInfoResDto), HttpStatus.OK);
+        }catch (BaseException e) {
+            return new ResponseEntity<>(new CommonResDto(HttpStatus.BAD_REQUEST, e.getMessage(), null), HttpStatus.BAD_REQUEST);
+        }
     }
 }
