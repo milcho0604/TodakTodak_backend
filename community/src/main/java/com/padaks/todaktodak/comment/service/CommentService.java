@@ -148,6 +148,7 @@ public class CommentService {
                         .doctorEmail(comment.getDoctorEmail())
                         .name(maskSecondCharacter(memberFeignClient.getMemberName(comment.getDoctorEmail()).getName()))
                         .parentId(comment.getParent() != null ? comment.getParent().getId() : null)
+                        .profileImg(comment.getProfileImg())
                         .createdTimeAt(comment.getCreatedTimeAt())
                         .updatedTimeAt(comment.getUpdatedTimeAt())
                         .build())
