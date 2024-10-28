@@ -110,10 +110,7 @@ public class NotificationKafkaConsumer {
             Child child = childRepository.findById(Long.parseLong(dto.getChildId()))
                     .orElseThrow(() -> new BaseException(CHILD_NOT_FOUND));
 
-            String body = "예약일자\t: " + dto.getReservationDate() +
-                    "\n 의사\t\t: " + dto.getDoctorName() +
-                    "\n 예약자\t\t: " + dto.getMemberName() +
-                    "\n 자녀이름\t: " + child.getName();
+            String body = "예약일자\t: " + dto.getReservationDate() + " " + child.getName() + " 예약 되었습니다.";
 
             String title = "";
             if(dto.getReservationType().equals("Immediate")){
@@ -121,7 +118,7 @@ public class NotificationKafkaConsumer {
             }
 
             fcmService.sendMessage(dto.getAdminEmail(),
-                    title+"/" + dto.getMedicalItem() + " 예약 안내 ",
+                    title+" : " + dto.getMedicalItem() + " 예약 안내 ",
                     body,
                     Type.RESERVATION_NOTIFICATION, null);
             acknowledgment.acknowledge();
