@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -116,19 +117,19 @@ public class MemberController {
             return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "로그인 성공", token));
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(new CommonErrorDto(HttpStatus.FORBIDDEN, "이메일 인증이 필요합니다."));
+                    .body(new CommonErrorDto(HttpStatus.FORBIDDEN, "토닥 관계자만 로그인이 가능합니다. 필요합니다."));
         } catch (RuntimeException e) {
             e.printStackTrace();
             if (e.getMessage().contains("비활성화 상태")) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(new CommonErrorDto(HttpStatus.UNAUTHORIZED, e.getMessage()));
             }
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new CommonErrorDto(HttpStatus.UNAUTHORIZED, "잘못된 이메일/비밀번호입니다."));
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .body(new CommonErrorDto(HttpStatus.UNPROCESSABLE_ENTITY, "잘못된 이메일/비밀번호입니다."));
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new CommonErrorDto(HttpStatus.UNAUTHORIZED, "로그인 중 오류가 발생했습니다."));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CommonErrorDto(HttpStatus.INTERNAL_SERVER_ERROR, "로그인 중 오류가 발생했습니다."));
         }
     }
     @PostMapping("/hospital/login")
@@ -138,20 +139,28 @@ public class MemberController {
             System.out.println("Generated JWT Token: " + token);
             return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "로그인 성공", token));
         } catch (SecurityException e) {
+            // 관계자만 접근 가능한 경우 - 403 Forbidden
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(new CommonErrorDto(HttpStatus.FORBIDDEN, "인증되지 않았습니다."));
+                    .body(new CommonErrorDto(HttpStatus.FORBIDDEN, "관계자만 로그인이 가능합니다."));
+        } catch (AuthenticationException e) {
+            // 인증되지 않은 회원 - 401 Unauthorized
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new CommonErrorDto(HttpStatus.UNAUTHORIZED, "인증되지 않은 회원입니다."));
         } catch (RuntimeException e) {
             e.printStackTrace();
             if (e.getMessage().contains("비활성화 상태")) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(new CommonErrorDto(HttpStatus.UNAUTHORIZED, e.getMessage()));
+                // 계정이 비활성화된 경우 - 423 Locked
+                return ResponseEntity.status(HttpStatus.LOCKED)
+                        .body(new CommonErrorDto(HttpStatus.LOCKED, e.getMessage()));
             }
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new CommonErrorDto(HttpStatus.UNAUTHORIZED, "잘못된 이메일/비밀번호입니다."));
+            // 잘못된 이메일/비밀번호 - 422 Unprocessable Entity
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .body(new CommonErrorDto(HttpStatus.UNPROCESSABLE_ENTITY, "잘못된 이메일/비밀번호입니다."));
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new CommonErrorDto(HttpStatus.UNAUTHORIZED, "로그인 중 오류가 발생했습니다."));
+            // 기타 오류 - 500 Internal Server Error
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CommonErrorDto(HttpStatus.INTERNAL_SERVER_ERROR, "로그인 중 오류가 발생했습니다."));
         }
     }
 
