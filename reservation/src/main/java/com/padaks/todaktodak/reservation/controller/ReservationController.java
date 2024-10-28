@@ -57,9 +57,10 @@ public class ReservationController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
-    @GetMapping("/isValid/{id}")
-    public ResponseEntity<?> validReservation(Long id){
-        boolean result = reservationService.checkValidReservation(id);
+    @GetMapping("/isValid")
+    public ResponseEntity<?> validReservation(@RequestParam Long hospitalId,
+                                              @RequestParam Long childId){
+        boolean result = reservationService.checkValidReservation(hospitalId, childId);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
