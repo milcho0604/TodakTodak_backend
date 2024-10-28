@@ -67,5 +67,5 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<Reservation> findByHospitalAndReservationDateAndStatus(Hospital hospital, LocalDate localDate, Status status);
 
 
-    Reservation findByReservationDateAndReservationTypeAndHospital(LocalDate localDate, ReserveType res, Hospital hospital);
+        Reservation findByReservationDateAndReservationTypeAndHospitalAndChildId(LocalDate localDate, ReserveType res, Hospital hospital, Long childId);
 }
