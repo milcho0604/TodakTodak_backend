@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -48,7 +49,6 @@ public class MemberService {
     private final DtoMapper dtoMapper;
     private final S3ClientFileUpload s3ClientFileUpload;
     private final ReservationFeignClient reservationFeignClient;
-    private final FcmService fcmService;
     private final DoctorOperatingHoursService doctorOperatingHoursService;
     private final DoctorOperatingHoursRepository doctorOperatingHoursRepository;
 
@@ -129,8 +129,8 @@ public class MemberService {
         Member member = memberRepository.findByMemberEmail(loginDto.getMemberEmail())
                 .orElseThrow(() -> new RuntimeException("잘못된 이메일/비밀번호 입니다."));
 
-        if (member.isVerified() == false){
-            throw new SecurityException("이메일 인증이 필요합니다.");
+        if (!member.getRole().equals(Role.ADMIN)) {
+            throw new SecurityException("토닥 관계자만 로그인이 가능합니다.");
         }
 
         if (!passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {
@@ -150,8 +150,12 @@ public class MemberService {
                 .orElseThrow(() -> new RuntimeException("잘못된 이메일/비밀번호 입니다."));
 
         // Role이 HospitalAdmin 또는 NonUser가 아닌 경우에만 예외를 던짐
-        if (!member.getRole().equals(Role.HOSPITAL) && !member.getRole().equals(Role.NONUSER)) {
-            throw new SecurityException("대표 원장님만 로그인이 가능합니다.");
+        if (!member.getRole().equals(Role.HOSPITAL) && !member.getRole().equals(Role.DOCTOR) && !member.equals(Role.NONUSER)) {
+            throw new SecurityException("병원 관계자만 로그인이 가능합니다.");
+        }
+
+        if (!member.isVerified()) {
+            throw new AuthenticationException("이메일 인증이 필요합니다.") {};
         }
 
         if (!passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {
