@@ -75,7 +75,7 @@ public class NotificationKafkaConsumer {
             Child child = childRepository.findById(Long.parseLong(dto.getChildId()))
                             .orElseThrow(() -> new BaseException(CHILD_NOT_FOUND));
 
-            String body = "예약일자\t: " + dto.getReservationDate() + " " + child.getName() + " 예약 되었습니다.";
+            String body = dto.getReservationDate() + " " + child.getName() + " 예약 되었습니다.";
             String title = "";
             if(dto.getReservationType().equals("Scheduled")){
                 title = "스케줄예약";
@@ -106,7 +106,7 @@ public class NotificationKafkaConsumer {
             Child child = childRepository.findById(Long.parseLong(dto.getChildId()))
                     .orElseThrow(() -> new BaseException(CHILD_NOT_FOUND));
 
-            String body = "예약일자\t: " + dto.getReservationDate() + " " + child.getName() + " 예약 되었습니다.";
+            String body = dto.getReservationDate() + " " + child.getName() + " 예약 되었습니다.";
 
             String title = "";
             if(dto.getReservationType().equals("Immediate")){
