@@ -29,11 +29,9 @@ public class CsService {
     private final ChatRoomRepository chatRoomRepository;
 
     // 회원별 CS 조회
-    public List<CsResDto> getCsByMemberId(Long memberId) {
-        List<Cs> csList = csRepository.findByMemberIdAndDeletedAtIsNull(memberId);
-        return csList.stream()
-                .map(CsResDto::fromEntity)
-                .collect(Collectors.toList());
+    public Page<CsResDto> getCsByMemberId(Long memberId, Pageable pageable) {
+        Page<Cs> csPage = csRepository.findByMemberIdAndDeletedAtIsNull(memberId, pageable);
+        return csPage.map(CsResDto::fromEntity);
     }
 
     // CS 상담내역 생성

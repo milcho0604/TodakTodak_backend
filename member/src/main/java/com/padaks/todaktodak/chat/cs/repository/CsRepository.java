@@ -21,7 +21,7 @@ public interface CsRepository extends JpaRepository<Cs, Long> {
 
     // memberId로 CS 목록 조회 (deletedAt이 null인 경우만)
     @Query("SELECT cs FROM Cs cs JOIN cs.chatRoom cr WHERE cr.member.id = :memberId AND cs.deletedAt IS NULL")
-    List<Cs> findByMemberIdAndDeletedAtIsNull(@Param("memberId") Long memberId);
+    Page<Cs> findByMemberIdAndDeletedAtIsNull(@Param("memberId") Long memberId, Pageable pageable);
 
     // 채팅방 ID로 CS 목록 조회 (deletedAt이 null인 경우만)
     @Query("SELECT cs FROM Cs cs WHERE cs.chatRoom.id = :chatRoomId AND cs.deletedAt IS NULL")
