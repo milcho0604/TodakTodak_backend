@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: member
-          image: 058264257845.dkr.ecr.ap-northeast-2.amazonaws.com/todak-member:latest // 수정
+          image: 058264257845.dkr.ecr.ap-northeast-2.amazonaws.com/todak-member:latest # 수정
           ports:
             - containerPort: 8080
           resources:
@@ -121,8 +121,13 @@ spec:
                 secretKeyRef:
                   key: SES_SECRET
                   name: todak-secret
-            - name: KAFKA_BOOTSTRAP_SERVERS
+            - name: KAFKA_BOOTSTRAP
               valueFrom:
                 secretKeyRef:
-                  key: KAFKA_BOOTSTRAP_SERVERS
+                  key: KAFKA_BOOTSTRAP
                   name: todak-secret
+            - name: FIRE_BASE_SDK
+              valueFrom:
+                secretKeyRef:
+                  key: padak-todak-firebase-adminsdk-d2ths-d5d3744918.json
+                  name: firebase-adminsdk
