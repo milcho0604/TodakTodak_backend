@@ -77,6 +77,8 @@ dependencies {
 	//	스웨거 의존성 추가
 	implementation 'org.springdoc:springdoc-openapi-ui:1.6.15'
 
+	implementation 'com.amazonaws:aws-java-sdk-secretsmanager:1.12.300'
+
 }
 
 ext{
