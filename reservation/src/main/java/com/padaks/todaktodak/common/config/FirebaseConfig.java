@@ -6,15 +6,18 @@ import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
 import com.amazonaws.services.secretsmanager.model.GetSecretValueRequest;
 import com.amazonaws.services.secretsmanager.model.GetSecretValueResult;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.common.collect.Lists;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 
 import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
@@ -24,28 +27,27 @@ public class FirebaseConfig {
 
     @Value("${fcm.secret-file}")
     private String secretFileName;
-
+//    https://todak-1f8d0-default-rtdb.asia-southeast1.firebasedatabase.app
     @PostConstruct
     public void init() {
         if (FirebaseApp.getApps().isEmpty()) { // FirebaseApp이 초기화되지 않은 경우에만 초기화
             try {
-                String jsonString = getSecretFromAWS(secretFileName);
-                // Kubernetes의 Secret에서 파일을 가져옵니다.
-                InputStream serviceAccount = new ByteArrayInputStream(jsonString.getBytes(StandardCharsets.UTF_8));
-
-                log.info("나야 ~ json" + jsonString);
-                log.info("나야 ~ 서비스" + serviceAccount.toString());
-                if (serviceAccount == null) {
-                    throw new IllegalArgumentException("Firebase service account file not found in the specified path");
-                }
-
-                FirebaseOptions options = FirebaseOptions.builder()
-                        .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                        .setDatabaseUrl("https://todak-1f8d0-default-rtdb.asia-southeast1.firebasedatabase.app")
+                //firebase sdk 업데이트로 GoogleCredentials 생성하는 방법 변경 => createScoped 추가
+                GoogleCredentials credentials = GoogleCredentials
+                        .fromStream(new ClassPathResource(secretFileName).getInputStream())
+                        .createScoped(Lists.newArrayList("https://www.googleapis.com/auth/cloud-platform"));
+                FirebaseOptions options = new FirebaseOptions.Builder()
+                        .setCredentials(credentials)
+                        .setDatabaseUrl("https://todak-1f8d0-default-rtdb.asia-southeast1.firebasedatabase.app") // DatabaseURL 추가
                         .build();
-                FirebaseApp.initializeApp(options);
-            } catch (Exception e) {
+                // FirebaseApp 초기화 한 번만 이루어지도록 수정
+                if (FirebaseApp.getApps().isEmpty()){
+                    FirebaseApp.initializeApp(options);
+                }
+                System.out.println("FCM SETTING SUCCESS");
+            }catch (IOException e){
                 e.printStackTrace();
+                throw new RuntimeException("Failed to initialize FCM: " + e.getMessage());
             }
         }
     }
