@@ -103,6 +103,9 @@ iamport:
   api_key: ${IAM_API}
   api_secret: ${IAM_API_SECRET}
 
+fcm:
+  secret-file: ${FCM_SECRET}
+
 springdoc:
   enable-native-support: true
   api-docs:

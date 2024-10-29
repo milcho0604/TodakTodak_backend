@@ -23,7 +23,7 @@ public class HospitalOperatingHoursController {
     private final HospitalOperatingHoursService hospitalOperatingHoursService;
 
     // 병원 영업시간 등록 (병원admin만 가능)
-    @PreAuthorize("hasRole('HOSPITAL')")
+    @PreAuthorize("hasAnyRole('HOSPITAL', 'ADMIN')")
     @PostMapping("/register")
     public ResponseEntity<Object> addOperatingHours(@RequestBody List<HospitalOperatingHoursReqDto> operatingHoursDtos) {
         try{
@@ -47,6 +47,7 @@ public class HospitalOperatingHoursController {
     }
 
     // 병원 영업시간 리스트 조회
+    @PreAuthorize("hasAnyRole('HOSPITAL', 'ADMIN')")
     @GetMapping("/admin/detail")
     public ResponseEntity<Object> adminOperatingHours(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -64,7 +65,7 @@ public class HospitalOperatingHoursController {
     }
 
     // 병원 특정 영업시간 수정 (병원 admin만 가능)
-    @PreAuthorize("hasRole('HOSPITAL')")
+    @PreAuthorize("hasAnyRole('HOSPITAL', 'ADMIN')")
     @PostMapping("/update/{operatingHoursId}")
     public ResponseEntity<Object> updateOperatingHours(@PathVariable Long operatingHoursId,
                                                        @RequestBody HospitalOperatingHoursReqDto dto) {
@@ -79,7 +80,7 @@ public class HospitalOperatingHoursController {
     }
 
     // 병원 특정 영업시간 삭제 (병원 admin만 가능)
-    @PreAuthorize("hasRole('HOSPITAL')")
+    @PreAuthorize("hasAnyRole('HOSPITAL', 'ADMIN')")
     @DeleteMapping("/delete/{operatingHoursId}")
     public ResponseEntity<Object> deleteOperatingHours(@PathVariable Long operatingHoursId){
         try{

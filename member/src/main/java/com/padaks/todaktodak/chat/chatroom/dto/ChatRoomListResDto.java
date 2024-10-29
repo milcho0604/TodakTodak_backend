@@ -35,8 +35,8 @@ public class ChatRoomListResDto {
                 .chatRoomId(chatRoom.getId())
                 .ChatRoomCreatedAt(chatRoom.getCreatedAt())
                 .recentChatTime(chatRoom.getRecentChatTime())
-                .lastMessage(chatMessage != null ? chatMessage.getContents() : null)
-                .senderName(chatMessage != null ? chatMessage.getSender().getName() : null)
+                .lastMessage(chatMessage != null ? chatMessage.getContents() : "채팅방이 생성되었습니다")
+                .senderName(chatMessage != null ? chatMessage.getSender().getName() : chatRoom.getMember().getName())
                 .senderProfileImgUrl(chatMessage != null ? chatMessage.getSender().getProfileImgUrl() : null)
                 .build();
     }
