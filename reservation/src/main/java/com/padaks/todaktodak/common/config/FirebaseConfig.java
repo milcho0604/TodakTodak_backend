@@ -20,7 +20,12 @@ public class FirebaseConfig {
     public void init() {
         if (FirebaseApp.getApps().isEmpty()) { // FirebaseApp이 초기화되지 않은 경우에만 초기화
             try {
-                FileInputStream serviceAccount = new FileInputStream(secretFileName);
+                // Kubernetes의 Secret에서 파일을 가져옵니다.
+                InputStream serviceAccount = getClass().getResourceAsStream("/" + secretFileName);
+
+                if (serviceAccount == null) {
+                    throw new IllegalArgumentException("Firebase service account file not found in the specified path");
+                }
 
                 FirebaseOptions options = FirebaseOptions.builder()
                         .setCredentials(GoogleCredentials.fromStream(serviceAccount))
