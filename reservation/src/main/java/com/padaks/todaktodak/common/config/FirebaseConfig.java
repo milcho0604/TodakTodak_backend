@@ -8,6 +8,7 @@ import com.amazonaws.services.secretsmanager.model.GetSecretValueResult;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,6 +16,7 @@ import javax.annotation.PostConstruct;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
+@Slf4j
 @Configuration
 public class FirebaseConfig {
 
@@ -46,10 +48,13 @@ public class FirebaseConfig {
     }
 
     private String getSecretFromAWS(String secretFileName){
-
+        log.info(secretFileName);
         AWSSecretsManager client = AWSSecretsManagerClientBuilder.standard().build();
+        log.info(client.toString());
         GetSecretValueRequest getSecretValueRequest = new GetSecretValueRequest().withSecretId(secretFileName);
+        log.info(getSecretValueRequest.getSecretId());
         GetSecretValueResult getSecretValueResult = client.getSecretValue(getSecretValueRequest);
+        log.info(getSecretValueResult.getSecretString());
 
         return getSecretValueResult.getSecretString();
     }
