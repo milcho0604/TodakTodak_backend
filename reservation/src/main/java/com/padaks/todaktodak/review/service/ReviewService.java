@@ -5,6 +5,7 @@ import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.common.feign.MemberFeignClient;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
+import com.padaks.todaktodak.reservation.service.MemberFeign;
 import com.padaks.todaktodak.review.domain.Review;
 import com.padaks.todaktodak.review.dto.*;
 import com.padaks.todaktodak.review.repository.ReviewRepository;
@@ -26,11 +27,12 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final ReservationRepository reservationRepository;
-    private final MemberFeignClient memberFeignClient;
+//    private final MemberFeignClient memberFeignClient;
+    private final MemberFeign memberFeign;
 
     // member 객체 리턴, 토큰 포함
     public MemberFeignDto getMemberInfo() {
-        MemberFeignDto member = memberFeignClient.getMemberEmail();  // Feign Client에 토큰 추가
+        MemberFeignDto member = memberFeign.getMemberEmail();  // Feign Client에 토큰 추가
         return member;
     }
 
@@ -124,7 +126,7 @@ public class ReviewService {
 
     // 나의 리뷰 리스트
     public Page<ReviewMyListResDto> reviewMyListResDtos(Pageable pageable){
-        MemberFeignDto memberFeignDto = memberFeignClient.getMemberEmail();
+        MemberFeignDto memberFeignDto = memberFeign.getMemberEmail();
         String memberEmail = memberFeignDto.getMemberEmail();
         Page<Review> reviews = reviewRepository.findByMemberEmailAndDeletedAtIsNull(memberEmail, pageable);
         return reviews.map(review -> review.myListFromEntity());
