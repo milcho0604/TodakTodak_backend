@@ -8,6 +8,7 @@ import com.padaks.todaktodak.doctoroperatinghours.service.DoctorOperatingHoursSe
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 //import javax.ws.rs.Path;
@@ -19,6 +20,7 @@ import java.util.List;
 public class DoctorOperatingHoursController {
     private final DoctorOperatingHoursService doctorOperatingHoursService;
 
+    @PreAuthorize("hasAnyRole('HOSPITAL', 'ADMIN')")
     @PostMapping("/register/{doctorId}")
     public ResponseEntity<?> addOperatingHours(@PathVariable Long doctorId, @RequestBody List<DoctorOperatingHoursReqDto> dto){
         try {
@@ -39,6 +41,7 @@ public class DoctorOperatingHoursController {
         return new ResponseEntity<>(commonResDto, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('HOSPITAL', 'ADMIN')")
     @PostMapping("/update/{operatingHoursId}")
     public ResponseEntity<?> updateOperatingHours(@PathVariable Long operatingHoursId, @RequestBody DoctorOperatingHoursReqDto dto){
         try{
@@ -53,6 +56,7 @@ public class DoctorOperatingHoursController {
 
     }
 
+    @PreAuthorize("hasAnyRole('HOSPITAL', 'ADMIN')")
     @PostMapping("/delete/{operatingHoursId}")
     public ResponseEntity<?> deleteOperatingHours(@PathVariable Long operatingHoursId){
         try{
