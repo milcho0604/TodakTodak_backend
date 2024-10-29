@@ -26,9 +26,9 @@ public class CsController {
 
     // 회원 별 CS리스트 조회
     @GetMapping("/list/member/{memberId}")
-    public ResponseEntity<?> getCsByMemberId(@PathVariable Long memberId){
-        List<CsResDto> csList = csService.getCsByMemberId(memberId);
-        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "회원 별 CS 내역 조회", csList), HttpStatus.OK);
+    public ResponseEntity<?> getCsByMemberId(@PathVariable Long memberId, Pageable pageable) {
+        Page<CsResDto> csPage = csService.getCsByMemberId(memberId, pageable);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "회원 별 CS 내역 조회", csPage), HttpStatus.OK);
     }
 
     // CS 생성
