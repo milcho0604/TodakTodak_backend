@@ -1,128 +1,39 @@
-#server:
-#  port: 8080
-#spring:
-#  security:
-#    oauth2:
-#      client:
-#        registration:
-#          kakao:
-#            client-id: todak
-#            client-secret: todak
-#            scope: account_email, profile_nickname
-#            redirect-uri: "http://localhost:8080/member-service/login/oauth2/code/kakao"
-#            client-name: Kakao
-#            client-authentication-method: client_secret_post
-#            authorization-grant-type: authorization_code
-#
-#        provider:
-#          kakao:
-#            authorization-uri: https://kauth.kakao.com/oauth/authorize
-#            token-uri: https://kauth.kakao.com/oauth/token
-#            user-info-uri: https://kapi.kakao.com/v2/user/me
-#            user-name-attribute: id
-#  mvc:
-#    pathmatch:
-#      matching-strategy: ant_path_matcher
-#
-#  datasource:
-#      driver-class-name: org.mariadb.jdbc.Driver
-#      url: todak
-#      username: todak
-#      password: todak
-#      tomcat:
-#        max-active: 5
-#  jpa:
-#    database: mysql
-#    database-platform: org.hibernate.dialect.MariaDBDialect
-#    generate-ddl: true
-#    hibernate:
-#      ddl-auto: update
-#    show-sql: true
-#
-#  servlet:
-#    multipart:
-#      maxFileSize: 5120MB # 최대 5GB
-#      maxRequestSize: 5120MB # 최대 5GB
-#    # websocket을 위한 settings
-#  main:
-#    allow-bean-definition-overriding: true
-#
-#  # Email settings
-#  mail:
-#    host: smtp.gmail.com
-#    port: 587
-#    username: todak
-#    password: todak
-#    properties:
-#      mail:
-#        transport:
-#          protocol: smtp
-#        smtp:
-#          auth: true
-#          starttls:
-#            enable: true
-#        debug: true
-#
-#  redis:
-#    host: todak
-#    port: todak
-#    #password: 1234
-#  kafka:
-#    bootstrap-servers: localhost:9092
-#    consumer:
-#      #      groupid는 consumer 그룹을 식별하는 id 이다. 동일한 그룹ID를 가진 컨슈머들은 메시지를 분담해서 consume.
-#      group-id: payment-group
-#      #      가장 처음으로 사용가능한 메시지부터 읽기 시작.
-#      auto-offset-reset: earliest
-#      enable-auto-commit: false
-#  application:
-#    name: reservation-service
-#
-#jwt:
-#  secret: secret_key
-#  secretKeyRT: secret_key_RT
-#  expirationRT: 86400000
-#  expiration: 86400000  # 1 day in milliseconds
-#
-## aws s3 설정
-#cloud:
-#  aws:
-#    credentials:
-#      access-key : todak
-#      secret-key : todak
-#    region:
-#      static: ap-northeast-2
-#    s3:
-#      bucket: todak-file
-#eureka:
-#  client:
-#    serviceUrl:
-#      #      eureka의 member-service(서비스)로서 등록됨을 지정하겠다.
-#      defaultZone: http://eureka:8761/eureka/
-#
-#iamport:
-#  api_key: todak
-#  api_secret: todak
-
-
 server:
   port: 0
 aws:
   ses:
-    access-key:
-    secret-key:
+    access-key: ${SES_ACCESS}
+    secret-key: ${SES_SECRET}
     region: ap-northeast-2
 spring:
   security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: ${KAKAO_CLIENT_ID}
+            client-secret: ${KAKAO_CLIENT_SECRET}
+            scope: account_email, profile_nickname
+            redirect-uri: "http://localhost:8080/login/oauth2/code/kakao"
+            client-name: Kakao
+            client-authentication-method: client_secret_post
+            authorization-grant-type: authorization_code
+
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
 
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: todak
-    username: todak
-    password: todak
+    url: jdbc:mariadb://${DB_HOST}:3306/todaktodak
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   jpa:
     database: mysql
@@ -138,34 +49,47 @@ spring:
       maxRequestSize: 5120MB # 최대 5GB
   main:
     allow-bean-definition-overriding: true
-  redis:
-    host: localhost
-    port: 6379
-  kafka:
-    bootstrap-servers: localhost:9092
-    consumer:
-      #      groupid는 consumer 그룹을 식별하는 id 이다. 동일한 그룹ID를 가진 컨슈머들은 메시지를 분담해서 consume.
-      group-id: payment-group
-      #      가장 처음으로 사용가능한 메시지부터 읽기 시작.
-      auto-offset-reset: earliest
-      enable-auto-commit: false
 
-      #password: 1234
+    # Email settings
+  mail:
+    host: ${MAIL_HOST}
+    port: 587
+    username: ${MAIL_USER}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        transport:
+          protocol: smtp
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+        debug: true
+
+  redis:
+    host: ${REDIS_HOST}
+    port: 6379
+    #password: 1234
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP}
+    consumer:
+        #      가장 처음으로 사용가능한 메시지부터 읽기 시작.
+      auto-offset-reset: earliest
   application:
     name: reservation-service
 
 jwt:
-  secret: todak
-  secretKeyRT: todak
-  expirationRT: todak
-  expiration: todak  # 1 day in milliseconds
+  secret: ${JWT_SECRET}
+  secretKeyRT: ${JWT_SECRET_RT}
+  expirationRT: 86400000
+  expiration: 86400000  # 1 day in milliseconds
 
 # aws s3 설정
 cloud:
   aws:
     credentials:
-      access-key : todak
-      secret-key : todak
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
     region:
       static: ap-northeast-2
     s3:
@@ -173,9 +97,19 @@ cloud:
 eureka:
   client:
     serviceUrl:
+      #      eureka의 member-service(서비스)로서 등록됨을 지정하겠다.
       defaultZone: http://localhost:8761/eureka/
 iamport:
-  api_key: todak
-  api_secret: todak
+  api_key: ${IAM_API}
+  api_secret: ${IAM_API_SECRET}
 
-
+springdoc:
+  enable-native-support: true
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    config-url: /reservation-service/v3/api-docs/swagger-config
+    urls:
+      - url: /reservation-service/v3/api-docs
+        name: reservation-service
