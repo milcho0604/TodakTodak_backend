@@ -4,7 +4,7 @@ metadata:
   name: reservation-deployment
   namespace: todak
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: reservation
