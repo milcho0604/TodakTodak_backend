@@ -28,7 +28,8 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-
+  main:
+    allow-bean-definition-overriding: true
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: jdbc:mariadb://${DB_HOST}:3306/todaktodak
@@ -47,8 +48,6 @@ spring:
     multipart:
       maxFileSize: 5120MB # 최대 5GB
       maxRequestSize: 5120MB # 최대 5GB
-  main:
-    allow-bean-definition-overriding: true
 
     # Email settings
   mail:
@@ -105,6 +104,8 @@ iamport:
 
 fcm:
   secret-file: ${FCM_SECRET}
+
+
 
 springdoc:
   enable-native-support: true
