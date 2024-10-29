@@ -17,6 +17,7 @@ import com.padaks.todaktodak.payment.domain.PaymentStatus;
 import com.padaks.todaktodak.payment.repository.PaymentRepository;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
+import com.padaks.todaktodak.reservation.service.MemberFeign;
 import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.request.AgainPaymentData;
 import com.siot.IamportRestClient.request.CancelData;
@@ -54,17 +55,18 @@ public class PaymentService {
     public static MedicalChart medicalChart;
     private final HospitalRepository hospitalRepository;
     private final MedicalChartService medicalChartService;
+    private final MemberFeign memberFeign;
 
 
     // member 객체 리턴, 토큰 포함
     public MemberFeignDto getMemberInfo() {
-        MemberFeignDto member = memberFeignClient.getMemberEmail();  // Feign Client에 토큰 추가
+        MemberFeignDto member = memberFeign.getMemberEmail();  // Feign Client에 토큰 추가
         return member;
     }
 
     // 정기 결제에 필요한 정보 리턴 Res
     public PaymentMemberResDto paymentMemberResDto(){
-        MemberFeignDto member = memberFeignClient.getMemberEmail();
+        MemberFeignDto member = memberFeign.getMemberEmail();
         log.info("Fetched Member Data: " + member);
         Hospital hospital = hospitalRepository.findById(member.getHospitalId())
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 대표 병원입니다."));
