@@ -46,7 +46,7 @@ jobs:
       - name: eks kubectl apply
         run: |
           kubectl apply -f ./member/k8s/member_depl.yml
-          kubectl rollout restart deployment member-deployment -n milcho
+          kubectl rollout restart deployment member-deployment -n todak
 
 # reservation
       - name: build and push docker reservation images to ecr
@@ -62,7 +62,7 @@ jobs:
       - name: eks kubectl apply
         run: |
           kubectl apply -f ./reservation_depl/k8s/reservation_depl.yml
-          kubectl rollout restart deployment reservation-deployment -n milcho
+          kubectl rollout restart deployment reservation-deployment -n todak
 
 # community
       - name: build and push docker community images to ecr
@@ -78,5 +78,5 @@ jobs:
       - name: eks kubectl apply
         run: |
           kubectl apply -f ./community/k8s/community_depl.yml
-          kubectl rollout restart deployment community-deployment -n milcho
+          kubectl rollout restart deployment community-deployment -n todak
           

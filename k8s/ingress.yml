@@ -16,7 +16,7 @@ spec:
         - "server.todak.site"
       secretName: todak-com-tls
   rules:
-    - host: server.milcho0604.store
+    - host: server.todak.store
       http: 
         paths:
           # - path: /product-service/(.*) msa에서는 필요
