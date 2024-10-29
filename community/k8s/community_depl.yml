@@ -66,4 +66,14 @@ spec:
                 secretKeyRef:
                   key: KAFKA_BOOTSTRAP
                   name: todak-secret
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: JWT_SECRET
+                  name: todak-secret
+            - name: JWT_SECRET_RT
+              valueFrom:
+                secretKeyRef:
+                  key: JWT_SECRET_RT
+                  name: todak-secret
 
