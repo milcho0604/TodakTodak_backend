@@ -14,6 +14,6 @@ import lombok.NoArgsConstructor;
 public class MemberLoginDto {
     private String memberEmail;
     private String password;
-    private String fcmToken;
+//    private String fcmToken;
     private boolean verified;
 }

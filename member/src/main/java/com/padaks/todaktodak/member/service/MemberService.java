@@ -140,10 +140,10 @@ public class MemberService {
         if (member.getDeletedAt() != null){
             throw new IllegalStateException("탈퇴한 회원입니다.");
         }
-        System.out.println("fcm토큰:" + loginDto.getFcmToken());
+//        System.out.println("fcm토큰:" + loginDto.getFcmToken());
 
-        member.setFcmToken(loginDto.getFcmToken());
-        memberRepository.save(member);
+//        member.setFcmToken(loginDto.getFcmToken());
+//        memberRepository.save(member);
 
         return jwtTokenprovider.createToken(member.getMemberEmail(), member.getRole().name(), member.getId());
     }
@@ -171,8 +171,8 @@ public class MemberService {
         }
 //        System.out.println("fcm토큰:" + loginDto.getFcmToken());
 
-        member.setFcmToken(loginDto.getFcmToken());
-        memberRepository.save(member);
+//        member.setFcmToken(loginDto.getFcmToken());
+//        memberRepository.save(member);
         return jwtTokenprovider.createToken(member.getMemberEmail(), member.getRole().name(), member.getId());
     }
 
