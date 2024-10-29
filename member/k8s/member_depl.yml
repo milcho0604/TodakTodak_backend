@@ -121,8 +121,8 @@ spec:
                 secretKeyRef:
                   key: SES_SECRET
                   name: todak-secret
-            - name: KAFKA_BOOTSTRAP_SERVERS
+            - name: KAFKA_BOOTSTRAP
               valueFrom:
                 secretKeyRef:
-                  key: KAFKA_BOOTSTRAP_SERVERS
+                  key: KAFKA_BOOTSTRAP
                   name: todak-secret
