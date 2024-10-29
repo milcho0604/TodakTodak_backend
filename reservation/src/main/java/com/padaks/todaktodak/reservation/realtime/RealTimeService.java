@@ -34,7 +34,7 @@ public class RealTimeService {
     private void initializeFirebase() {
         try {
             if (FirebaseApp.getApps().isEmpty()) {
-                FileInputStream serviceAccount = new FileInputStream("path/to/todak-1f8d0-firebase-adminsdk-tbqa8-b7c41789c9.json");
+                FileInputStream serviceAccount = new FileInputStream("todak-1f8d0-firebase-adminsdk-tbqa8-b7c41789c9.json");
 
                 FirebaseOptions options = FirebaseOptions.builder()
                         .setCredentials(GoogleCredentials.fromStream(serviceAccount))
