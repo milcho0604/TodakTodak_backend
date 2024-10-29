@@ -22,11 +22,11 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with: 
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_ACCESS_SECRET }} 
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }} 
           aws-region: ap-northeast-2
 
       - name: update cluster information
-        run: aws eks update-kubeconfig --name teenkiri --region ap-northeast-2
+        run: aws eks update-kubeconfig --name todak-cluster --region ap-northeast-2
       
       - name: login ECR
         id: login-ecr
