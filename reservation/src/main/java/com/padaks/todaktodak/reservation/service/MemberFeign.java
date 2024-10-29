@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "member-service", configuration = FeignConfig.class)
+@FeignClient(name = "member-service", url = "http://member-service", configuration = FeignConfig.class)
 public interface MemberFeign {
 
     @PostMapping(value = "/notification/create")
