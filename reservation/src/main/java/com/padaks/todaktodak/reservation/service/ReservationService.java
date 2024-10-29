@@ -239,14 +239,15 @@ public class ReservationService {
         return dtos;
     }
 
-    public boolean checkValidReservation(Long id){
+    public boolean checkValidReservation(Long hospitalId, Long childId){
         MemberFeignDto memberFeignDto = getMemberInfo();
 
-        Hospital hospital = hospitalRepository.findById(id).orElseThrow(()-> new BaseException(HOSPITAL_NOT_FOUND));
+        Hospital hospital = hospitalRepository.findById(hospitalId).orElseThrow(()-> new BaseException(HOSPITAL_NOT_FOUND));
+        ChildResDto childResDto = memberFeign.getMyChild(childId);
 
         ReserveType res = ReserveType.Immediate;
 
-        Reservation reservation = reservationRepository.findByReservationDateAndReservationTypeAndHospital(LocalDate.now(), res, hospital);
+        Reservation reservation = reservationRepository.findByReservationDateAndReservationTypeAndHospitalAndChildId(LocalDate.now(), res, hospital, childResDto.getId());
 
         return reservation == null;
     }
