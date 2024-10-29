@@ -200,4 +200,12 @@ public class Member extends BaseTimeEntity {
         this.role = role;
     }
 
+    public String getFcmToken() {
+        return fcmToken;
+    }
+
+    public void setFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
+    }
+
 }
