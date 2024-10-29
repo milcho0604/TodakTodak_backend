@@ -36,7 +36,7 @@ public class HospitalController {
         return new ResponseEntity<>(new CommonResDto(HttpStatus.CREATED, "병원등록성공", hospital.getId()), HttpStatus.CREATED);
     }
 
-    // 병원 admin + 병원 등록 (미승인 상태) 병원admin만 가능
+    // 병원 admin + 병원 등록 (미승인 상태)
     @PostMapping("/hospital-admin/register")
     public ResponseEntity<Object> registerHospitalAndAdmin(@RequestBody HospitalAndAdminRegisterReqDto dto){
         HospitalAndAdminRegisterResDto hospitalAndAdminRegisterResDto
@@ -62,6 +62,7 @@ public class HospitalController {
     }
 
     // 병원 어드민 detail 조회
+    @PreAuthorize("hasAnyRole('HOSPITAL', 'ADMIN')")
     @GetMapping("/admin/detail")
     public ResponseEntity<Object> hospitalAdminDetail() {
         // 인증된 authentication 객체에서 해당 member의 email을 추출해서 인가된 사용자만이 접근할 수 있도록
@@ -72,8 +73,8 @@ public class HospitalController {
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원정보 조회성공", hospitalDetail), HttpStatus.OK);
     }
 
-    // 병원정보 수정 (병원 admin만 가능)
-    @PreAuthorize("hasRole('HOSPITAL')")
+    // 병원정보 수정 (병원 admin, 토닥admin만 가능)
+    @PreAuthorize("hasAnyRole('HOSPITAL', 'ADMIN')")
     @PostMapping("/update")
     public ResponseEntity<Object> updateHospital(@ModelAttribute HospitalUpdateReqDto hospitalUpdateReqDto){
         HospitalUpdateResDto hospitalUpdateResDto = hospitalService.updateHospital(hospitalUpdateReqDto);
