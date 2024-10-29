@@ -11,6 +11,7 @@ import com.padaks.todaktodak.common.dto.CommonResDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +27,8 @@ public class CsController {
 
     // 회원 별 CS리스트 조회
     @GetMapping("/list/member/{memberId}")
-    public ResponseEntity<?> getCsByMemberId(@PathVariable Long memberId, Pageable pageable) {
+    public ResponseEntity<?> getCsByMemberId(@PathVariable Long memberId,
+                                             @PageableDefault(size = 5) Pageable pageable) {
         Page<CsResDto> csPage = csService.getCsByMemberId(memberId, pageable);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "회원 별 CS 내역 조회", csPage), HttpStatus.OK);
     }

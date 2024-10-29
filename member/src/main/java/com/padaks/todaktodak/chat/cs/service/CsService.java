@@ -30,7 +30,7 @@ public class CsService {
 
     // 회원별 CS 조회
     public Page<CsResDto> getCsByMemberId(Long memberId, Pageable pageable) {
-        Page<Cs> csPage = csRepository.findByMemberIdAndDeletedAtIsNull(memberId, Pageable pageable);
+        Page<Cs> csPage = csRepository.findByMemberIdAndDeletedAtIsNull(memberId, pageable);
         return csPage.map(CsResDto::fromEntity);
     }
 
