@@ -2,6 +2,7 @@ package com.padaks.todaktodak.reservation.realtime;
 
 import com.google.firebase.database.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
@@ -11,6 +12,7 @@ import java.util.Map;
 
 @Service
 @Slf4j
+@Lazy
 public class RealTimeService {
 
     private final FirebaseDatabase database= FirebaseDatabase.getInstance();
