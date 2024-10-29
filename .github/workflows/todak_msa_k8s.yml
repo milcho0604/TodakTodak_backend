@@ -22,11 +22,11 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with: 
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_ACCESS_SECRET }} 
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }} 
           aws-region: ap-northeast-2
 
       - name: update cluster information
-        run: aws eks update-kubeconfig --name todak --region ap-northeast-2
+        run: aws eks update-kubeconfig --name todak-cluster --region ap-northeast-2
       
       - name: login ECR
         id: login-ecr
@@ -35,7 +35,7 @@ jobs:
 # member
       - name: build and push docker member images to ecr
         env:
-          REGISTRY: 058264257845.dkr.ecr.ap-northeast-2.amazonaws.com/todak-member
+          REGISTRY: 058264257845.dkr.ecr.ap-northeast-2.amazonaws.com
           REPOSITORY: todak-member
           # dockerfile이 현재 위치가 아니기 때문에 폴더경로 적어서 명시
         run: | 
@@ -51,7 +51,7 @@ jobs:
 # reservation
       - name: build and push docker reservation images to ecr
         env:
-          REGISTRY: 058264257845.dkr.ecr.ap-northeast-2.amazonaws.com/todak-reservation
+          REGISTRY: 058264257845.dkr.ecr.ap-northeast-2.amazonaws.com
           REPOSITORY: todak-reservation
           # dockerfile이 현재 위치가 아니기 때문에 폴더경로 적어서 명시
         run: | 
@@ -67,7 +67,7 @@ jobs:
 # community
       - name: build and push docker community images to ecr
         env:
-          REGISTRY: 058264257845.dkr.ecr.ap-northeast-2.amazonaws.com/todak-community
+          REGISTRY: 058264257845.dkr.ecr.ap-northeast-2.amazonaws.com
           REPOSITORY: todak-community
           # dockerfile이 현재 위치가 아니기 때문에 폴더경로 적어서 명시
         run: | 
