@@ -2,8 +2,6 @@ package com.padaks.todaktodak.reservation.realtime;
 
 import com.google.firebase.database.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
@@ -13,14 +11,12 @@ import java.util.Map;
 
 @Service
 @Slf4j
-@DependsOn("firebaseConfig")
 public class RealTimeService {
 
     private final FirebaseDatabase database= FirebaseDatabase.getInstance();
     private final DatabaseReference databaseReference= database.getReference("todakpadak");
 
-
-//    test API 에 사용
+    //    test API 에 사용
     public void updateWaitingLine(List<WaitingTurnDto> turnList){
         for(WaitingTurnDto waitingTurnDto : turnList){
             update(waitingTurnDto);
@@ -31,8 +27,8 @@ public class RealTimeService {
     public void update(WaitingTurnDto waitingTurnDto) {
         System.out.println(waitingTurnDto.toString());
         DatabaseReference doctorRef = databaseReference
-                    .child(waitingTurnDto.getHospitalName())
-                    .child(waitingTurnDto.getDoctorId());
+                .child(waitingTurnDto.getHospitalName())
+                .child(waitingTurnDto.getDoctorId());
 
         doctorRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -62,7 +58,7 @@ public class RealTimeService {
         });
     }
 
-//  실시간 DB에서 삭제하는 로직
+    //  실시간 DB에서 삭제하는 로직
     public void delete(String hospitalName, String doctorId, String id){
         DatabaseReference doctorRef = databaseReference.child(hospitalName).child(doctorId);
 
