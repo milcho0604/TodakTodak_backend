@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 // eureka에 등록된 name
-@FeignClient(name="member-service", url = "http://member-service", configuration = FeignConfig.class)
+@FeignClient(name="member-service", configuration = FeignConfig.class)
 public interface MemberFeign {
     @PostMapping(value = "/member/hospital-admin/register")
     CommonResDto registerHospitalAdmin(@RequestBody HospitalAdminSaveReqDto dto);
