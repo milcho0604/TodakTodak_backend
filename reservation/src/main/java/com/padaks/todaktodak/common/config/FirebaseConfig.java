@@ -27,6 +27,8 @@ public class FirebaseConfig {
     public void init() {
         if (FirebaseApp.getApps().isEmpty()) { // FirebaseApp이 초기화되지 않은 경우에만 초기화
             try {
+                ClassLoader classLoader = getClass().getClassLoader();
+//                InputStream serviceAccount = classLoader.getResourceAsStream("todak-1f8d0-firebase-adminsdk-tbqa8-b7c41789c9.json");
 
                 String jsonString = getSecretFromAWS(secretFileName);
                 // Kubernetes의 Secret에서 파일을 가져옵니다.
