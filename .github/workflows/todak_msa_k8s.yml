@@ -61,7 +61,7 @@ jobs:
       
       - name: eks kubectl apply
         run: |
-          kubectl apply -f ./reservation_depl/k8s/reservation_depl.yml
+          kubectl apply -f ./reservation/k8s/reservation_depl.yml
           kubectl rollout restart deployment reservation-deployment -n todak
 
 # community
