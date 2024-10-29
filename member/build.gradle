@@ -101,6 +101,7 @@ dependencies {
 	implementation 'org.springdoc:springdoc-openapi-ui:1.6.15'
 
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'com.amazonaws:aws-java-sdk-secretsmanager:1.12.300'
 }
 
 ext {
