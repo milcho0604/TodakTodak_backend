@@ -104,7 +104,8 @@ iamport:
 
 fcm:
   secret-file: ${FIRE_BASE_SDK}
-
+# fcm:
+  # secret-file: "/firebase-credentials/todak-1f8d0-firebase-adminsdk-tbqa8-b7c41789c9.json"
 
 springdoc:
   enable-native-support: true
