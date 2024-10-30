@@ -16,6 +16,7 @@ import com.padaks.todaktodak.reservation.realtime.WaitingTurnDto;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -37,6 +38,7 @@ import static com.padaks.todaktodak.common.exception.exceptionType.ReservationEx
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
+@DependsOn("realTimeService")
 public class ReservationAdminService {
 
     private final ReservationRepository reservationRepository;

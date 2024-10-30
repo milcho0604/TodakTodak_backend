@@ -19,6 +19,7 @@ import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import com.padaks.todaktodak.untact.service.UntactService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -41,6 +42,7 @@ import static com.padaks.todaktodak.common.exception.exceptionType.ReservationEx
 @Service
 @Slf4j
 @Transactional
+@DependsOn("realTimeService")
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
