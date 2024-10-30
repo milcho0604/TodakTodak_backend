@@ -103,7 +103,7 @@ iamport:
   api_secret: ${IAM_API_SECRET}
 
 fcm:
-  secret-file: ${FCM_SECRET}
+  secret-file: ${FIRE_BASE_SDK}
 
 
 springdoc:

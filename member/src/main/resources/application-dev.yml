@@ -111,7 +111,7 @@ aws:
 encryption:
   secret-key: ${ENCRYPTION_SECRET}
 fcm:
-  secret-file: ${FCM_SECRET}
+  secret-file: ${FIRE_BASE_SDK}
 google:
   api:
     key: ${GOOGlE_API_KEY}
