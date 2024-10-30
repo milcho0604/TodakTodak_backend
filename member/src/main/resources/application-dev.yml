@@ -111,7 +111,8 @@ aws:
 encryption:
   secret-key: ${ENCRYPTION_SECRET}
 fcm:
-  secret-file: ${FIRE_BASE_SDK}
+  secret-file: todak-1f8d0-firebase-adminsdk-tbqa8-b7c41789c9.json
+  secret-file-content: ${FIRE_BASE_SDK}
 google:
   api:
     key: ${GOOGlE_API_KEY}
