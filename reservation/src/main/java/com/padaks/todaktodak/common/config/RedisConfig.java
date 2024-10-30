@@ -107,7 +107,7 @@ public class RedisConfig {
     }
 
     @Bean
-    public MessageListenerAdapter listenerAdapter(SignalHandler redisSubscriber) {
+    public MessageListenerAdapter listenerAdapter(@Qualifier("untactConnectionFactory") SignalHandler redisSubscriber) {
         return new MessageListenerAdapter(redisSubscriber);
     }
 
