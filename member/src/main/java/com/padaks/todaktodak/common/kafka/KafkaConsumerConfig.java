@@ -59,7 +59,7 @@ public class KafkaConsumerConfig {
     @Bean
     public ConsumerFactory<String, Object> payKafkaConsumerFactory() {
         Map<String, Object> props = new HashMap<>();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServer);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "payment-group");
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffset);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
@@ -85,7 +85,7 @@ public class KafkaConsumerConfig {
     @Bean(name = "reservationKafkaConsumerFactory")
     public ConsumerFactory<String, Object> reservationKafkaConsumerFactory() {
         Map<String, Object> props = new HashMap<>();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092"); // localhost:9092
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServer); // localhost:9092
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "scheduled-reserve-group"); // chat-group
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffset); // earliest
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
@@ -108,7 +108,7 @@ public class KafkaConsumerConfig {
     @Bean
     public ConsumerFactory<String, Object> childKafkaConsumerFactory() {
         Map<String, Object> props = new HashMap<>();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServer);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "child-group");
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffset);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);

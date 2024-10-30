@@ -21,12 +21,14 @@ public class KafkaConsumerConfig {
 
     @Value("${spring.kafka.consumer.auto-offset-reset:earliest}")
     private String autoOffset;
+    @Value("${spring.kafka.bootstrap-servers}")
+    private String bootStrapServer;
 
 
     @Bean
     public ConsumerFactory<String, Object> consumerFactory() {
         Map<String, Object> props = new HashMap<>();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServer);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "payment-group");
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffset);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
