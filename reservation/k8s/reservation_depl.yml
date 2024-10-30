@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: todak
-          image: 058264257845.dkr.ecr.ap-northeast-2.amazonaws.com/todak-reservation:latest # 수정 필요
+          image: 058264257845.dkr.ecr.ap-northeast-2.amazonaws.com/todak-reservation:latest
           ports:
             - containerPort: 8080
           resources:

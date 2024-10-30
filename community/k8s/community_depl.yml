@@ -15,16 +15,16 @@ spec:
     spec:
       containers:
         - name: todak
-          image: 058264257845.dkr.ecr.ap-northeast-2.amazonaws.com/todak-community:latest # 수정 필요
+          image: 058264257845.dkr.ecr.ap-northeast-2.amazonaws.com/todak-community:latest
           ports:
             - containerPort: 8080
           resources:
             limits:
               cpu: "1"
-              memory: "500Mi"
+              memory: "250Mi"
             requests:
               cpu: "0.5"
-              memory: "500Mi"
+              memory: "250Mi"
           env:
             - name: REDIS_HOST
               valueFrom:
