@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.padaks.todaktodak.common.dto.DtoMapper;
 import com.padaks.todaktodak.common.dto.MemberFeignDto;
 import com.padaks.todaktodak.common.exception.BaseException;
-import com.padaks.todaktodak.common.feign.MemberFeignClient;
 import com.padaks.todaktodak.hospital.domain.Hospital;
 import com.padaks.todaktodak.hospital.repository.HospitalRepository;
 import com.padaks.todaktodak.reservation.domain.Reservation;
@@ -52,7 +51,7 @@ public class ReservationService {
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final HospitalRepository hospitalRepository;
     private final MemberFeign memberFeign;
-    private final MemberFeignClient memberFeignClient;
+//    private final MemberFeignClient memberFeignClient;
     private final ObjectMapper objectMapper;
     private final RealTimeService realTimeService;
     private final UntactService untactService;
@@ -65,7 +64,8 @@ public class ReservationService {
                               KafkaTemplate<String, Object> kafkaTemplate,
                               HospitalRepository hospitalRepository,
                               MemberFeign memberFeign,
-                              MemberFeignClient memberFeignClient, ObjectMapper objectMapper, RealTimeService realTimeService, UntactService untactService) {
+//                              MemberFeignClient memberFeignClient,
+                              ObjectMapper objectMapper, RealTimeService realTimeService, UntactService untactService) {
         this.reservationRepository = reservationRepository;
         this.reservationHistoryRepository = reservationHistoryRepository;
         this.dtoMapper = dtoMapper;
@@ -74,7 +74,7 @@ public class ReservationService {
         this.kafkaTemplate = kafkaTemplate;
         this.hospitalRepository = hospitalRepository;
         this.memberFeign = memberFeign;
-        this.memberFeignClient = memberFeignClient;
+//        this.memberFeignClient = memberFeignClient;
         this.objectMapper = objectMapper;
         this.realTimeService = realTimeService;
         this.untactService = untactService;

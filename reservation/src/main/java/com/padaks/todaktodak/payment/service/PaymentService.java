@@ -2,7 +2,6 @@ package com.padaks.todaktodak.payment.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.padaks.todaktodak.common.dto.MemberFeignDto;
-import com.padaks.todaktodak.common.feign.MemberFeignClient;
 import com.padaks.todaktodak.hospital.domain.Hospital;
 import com.padaks.todaktodak.hospital.repository.HospitalRepository;
 import com.padaks.todaktodak.medicalchart.domain.MedicalChart;
@@ -45,7 +44,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PaymentService {
 
-    private final MemberFeignClient memberFeignClient;
+//    private final MemberFeignClient memberFeignClient;
     private final IamportClient iamportClient;
     private final PaymentRepository paymentRepository;
     private final MedicalChartRepository medicalChartRepository;
