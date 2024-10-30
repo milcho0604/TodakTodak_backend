@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 //k8s배포시에는 url = "http://member-service" 추가
-@FeignClient(name = "reservation-service",  configuration = FeignConfig.class)
+@FeignClient(name = "reservation-service", url = "http://reservation-service",  configuration = FeignConfig.class)
 public interface ReservationFeignClient {
 
     @GetMapping("/hospital/get/hospital")
