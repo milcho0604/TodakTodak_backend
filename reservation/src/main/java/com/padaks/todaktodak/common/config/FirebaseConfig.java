@@ -27,7 +27,7 @@ public class FirebaseConfig {
 
     @Value("${fcm.secret-file}")
     private String secretFileName;
-//    https://todak-1f8d0-default-rtdb.asia-southeast1.firebasedatabase.app
+    //    https://todak-1f8d0-default-rtdb.asia-southeast1.firebasedatabase.app
     @PostConstruct
     public void init() {
         if (FirebaseApp.getApps().isEmpty()) { // FirebaseApp이 초기화되지 않은 경우에만 초기화
