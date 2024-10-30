@@ -6,7 +6,6 @@ import com.padaks.todaktodak.common.dto.HospitalNameFeignDto;
 import com.padaks.todaktodak.common.dto.MemberFeignDto;
 import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.common.exception.exceptionType.HospitalExceptionType;
-import com.padaks.todaktodak.common.feign.MemberFeignClient;
 import com.padaks.todaktodak.hospital.adminDto.AdminHospitalListDetailResDto;
 import com.padaks.todaktodak.hospital.domain.Hospital;
 import com.padaks.todaktodak.hospital.dto.*;
