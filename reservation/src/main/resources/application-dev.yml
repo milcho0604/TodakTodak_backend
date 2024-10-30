@@ -64,7 +64,6 @@ spring:
           starttls:
             enable: true
         debug: true
-
   redis:
     host: ${REDIS_HOST}
     port: 6379
