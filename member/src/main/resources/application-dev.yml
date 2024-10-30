@@ -78,6 +78,18 @@ spring:
         group-id: chat-group
         auto-offset-reset: earliest
         enable-auto-commit: false
+#  kafka:
+#    bootstrap-servers: ${KAFKA_BOOTSTRAP}
+#    consumer:
+#      group-id: payment-group  # consumer 그룹을 식별하는 ID입니다. 동일한 그룹 ID를 가진 컨슈머들은 메시지를 분담해서 consume합니다.
+#      auto-offset-reset: earliest  # 가장 처음으로 사용 가능한 메시지부터 읽기 시작합니다.
+#      enable-auto-commit: false
+#
+#    chat:
+#      consumer:
+#        group-id: chat-group
+#        auto-offset-reset: earliest
+#        enable-auto-commit: false
 
   application:
     name: member-service

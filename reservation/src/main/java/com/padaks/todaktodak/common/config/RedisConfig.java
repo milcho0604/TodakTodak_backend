@@ -22,7 +22,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration
 public class RedisConfig {
 
-    @Value("localhost")
+    @Value("${spring.redis.host}")
     public String host;
 
     @Value("6379")

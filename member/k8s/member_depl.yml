@@ -20,11 +20,11 @@ spec:
             - containerPort: 8080
           resources:
             limits:
-              cpu: "2"           # 현재보다 CPU를 높여 설정
-              memory: "1Gi"      # 메모리를 1Gi로 상향 조정
+              cpu: "0.5"           # 현재보다 CPU를 높여 설정
+              memory: "500Mi"      # 메모리를 1Gi로 상향 조정
             requests:
-              cpu: "1"
-              memory: "750Mi"
+              cpu: "0.5"
+              memory: "500Mi"
           env:
             - name: REDIS_HOST
               valueFrom:

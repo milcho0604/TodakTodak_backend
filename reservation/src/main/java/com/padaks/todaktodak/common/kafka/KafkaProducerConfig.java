@@ -45,6 +45,12 @@ public class KafkaProducerConfig {
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         configProps.put(JsonSerializer.ADD_TYPE_INFO_HEADERS, false);  // Optional for more compact headers
+        configProps.put("request.timeout.ms", "30000");
+        configProps.put("session.timeout.ms", "30000");
+        configProps.put("connections.max.idle.ms", "60000");
+        configProps.put("reconnect.backoff.ms", "1000");
+        configProps.put("reconnect.backoff.max.ms", "10000");
+
         return new DefaultKafkaProducerFactory<>(configProps);
     }
 

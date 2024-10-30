@@ -33,6 +33,12 @@ public class ChatKafkaProducerConfig {
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServer);
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        config.put("request.timeout.ms", "30000");
+        config.put("session.timeout.ms", "30000");
+        config.put("connections.max.idle.ms", "60000");
+        config.put("reconnect.backoff.ms", "1000");
+        config.put("reconnect.backoff.max.ms", "10000");
+
         return new DefaultKafkaProducerFactory<>(config);
     }
 
