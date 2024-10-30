@@ -53,7 +53,10 @@ public class FirebaseConfig {
                         .fromStream(serviceAccountStream)
                         .createScoped(Lists.newArrayList("https://www.googleapis.com/auth/cloud-platform"));
 
-                FirebaseOptions options = new FirebaseOptions.Builder().setCredentials(credentials).build();
+                FirebaseOptions options = new FirebaseOptions.Builder()
+                        .setCredentials(credentials)
+                        .setDatabaseUrl("https://todak-1f8d0-default-rtdb.asia-southeast1.firebasedatabase.app") // DatabaseURL 추가
+                        .build();
 
                 // FirebaseApp 초기화가 한 번만 이루어지도록 설정
                 if (FirebaseApp.getApps().isEmpty()) {
