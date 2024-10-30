@@ -28,7 +28,7 @@ public class FirebaseConfig {
     @Value("${fcm.secret-file}")
     private String secretFileName;
 
-    @Value("${fcm.secret-file-content:}")
+    @Value("${fcm.secret-file-content}")
     private String fcmSecretJson;
     //    https://todak-1f8d0-default-rtdb.asia-southeast1.firebasedatabase.app
     @PostConstruct
