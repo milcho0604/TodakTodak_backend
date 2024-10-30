@@ -106,7 +106,6 @@ fcm:
   secret-file: ${FCM_SECRET}
 
 
-
 springdoc:
   enable-native-support: true
   api-docs:
