@@ -86,9 +86,18 @@ spec:
                 secretKeyRef:
                   key: KAFKA_BOOTSTRAP
                   name: todak-secret
-            - name: FIRE_BASE_SDK
-              valueFrom:
-                secretKeyRef:
-                  key: todak-1f8d0-firebase-adminsdk-tbqa8-b7c41789c9.json
-                  name: firebase-adminsdk
-
+            # - name: FIRE_BASE_SDK
+            #   valueFrom:
+            #     secretKeyRef:
+            #       key: todak-1f8d0-firebase-adminsdk-tbqa8-b7c41789c9.json
+            #       name: firebase-adminsdk
+            - name: FIREBASE_CONFIG_PATH
+              value: "/firebase-credentials/todak-1f8d0-firebase-adminsdk-tbqa8-b7c41789c9.json"
+          volumeMounts:
+            - name: firebase-credentials
+              mountPath: "/firebase-credentials"
+              readOnly: true
+      volumes:
+        - name: firebase-credentials
+          secret:
+            secretName: firebase-adminsdk
