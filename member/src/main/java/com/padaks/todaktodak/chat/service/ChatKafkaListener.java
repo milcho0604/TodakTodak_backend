@@ -22,7 +22,7 @@ public class ChatKafkaListener { // Kafka
     private final FcmService fcmService;
     private final ChatRoomRepository chatRoomRepository;
 
-    @KafkaListener(topics = "ChatTopic", groupId = "chat-group", containerFactory = "chatKafkaListenerContainerFactory")
+    @KafkaListener(topics = "chat-topic", groupId = "chat-group", containerFactory = "chatKafkaListenerContainerFactory")
 //    @KafkaListener(groupId = "chat-group", containerFactory = "chatKafkaListenerContainerFactory")
     public void listenChatMessages(@Payload ChatMessageReqDto chatMessageReqDto) {
         log.info("Received message: {}", chatMessageReqDto);

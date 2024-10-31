@@ -43,7 +43,7 @@ public class WebSocketController {
 
         // Kafka 토픽에 메시지를 전송
         chatMessageReqDto.setMemberEmail(memberEmail); // 보낸 사람 설정
-        chatKafkaTemplate.send("ChatTopic", chatMessageReqDto); // 카프카에 메시지 전송
+        chatKafkaTemplate.send("chat-topic", chatMessageReqDto); // 카프카에 메시지 전송
 
     }
 
