@@ -10,6 +10,7 @@ metadata:
     nginx.ingress.kubernetes.io/session-cookie-name: "todak-session"  # 세션 쿠키 이름
     nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"  # 쿠키 해시 알고리즘
     kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$1 # 첫번째 prefix제거후 endpoint 전달
     cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: nginx  # 여기에 ingressClassName을 추가

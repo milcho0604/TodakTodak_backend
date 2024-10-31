@@ -10,7 +10,8 @@ spring:
             client-id: ${KAKAO_CLIENT_ID}
             client-secret: ${KAKAO_CLIENT_SECRET}
             scope: account_email, profile_nickname
-            redirect-uri: "http://localhost:8080/member-service/login/oauth2/code/kakao"
+#            redirect-uri: "http://localhost:8080/member-service/login/oauth2/code/kakao" 로컬, 아래는 배포
+            redirect-uri: "https://server.todak.site/member-service/login/oauth2/code/kakao"
             client-name: Kakao
             client-authentication-method: client_secret_post
             authorization-grant-type: authorization_code
