@@ -200,14 +200,16 @@ public class HospitalService {
                                                     BigDecimal longitude,
                                                     String sort,
                                                     Boolean isOperating) {
+        System.out.println("1");
 
         List<Hospital> hospitalList = hospitalRepository.findByDongAndDeletedAtIsNullAndIsAcceptIsTrue(dong);
+        System.out.println("2");
         List<HospitalListResDto> dtoList = new ArrayList<>();
         String distance = null;
         Long standby = null; // TODO : 실시간 대기자 수 이후 redis 붙일예정
         Double averageRating = null;
         Long reviewCount = null;
-
+        System.out.println("3");
         for (Hospital hospital : hospitalList) {
             // 병원과 사용자 간의 직선 거리 계산
             distance = distanceCalculator.calculateDistance(hospital.getLatitude(), hospital.getLongitude(), latitude, longitude);
@@ -219,7 +221,7 @@ public class HospitalService {
             HospitalListResDto dto = HospitalListResDto.fromEntity(hospital, standby, distance, averageRating, reviewCount);
             dtoList.add(dto);
         }
-
+        
         System.out.println("정렬조건 (트림 후): " + sort.trim());
         System.out.println("line203 정렬전: " + dtoList);
 
