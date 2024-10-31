@@ -12,8 +12,8 @@ spring:
     database-platform: org.hibernate.dialect.MariaDBDialect
     generate-ddl: true
     hibernate:
-      ddl-auto: create
-    show_sql: true
+      ddl-auto: update
+    show_sql: false
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+9

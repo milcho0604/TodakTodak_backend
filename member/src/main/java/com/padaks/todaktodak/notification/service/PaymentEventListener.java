@@ -27,6 +27,7 @@ public class PaymentEventListener {
 //            parsedMessage = parsedMessage.substring(1, parsedMessage.length() - 1);  // 양쪽의 큰 따옴표 제거
 
 //            PaymentSuccessDto paymentSuccessDto = objectMapper.readValue(parsedMessage, PaymentSuccessDto.class);
+            System.out.println("milcho1234 " + message);
             PaymentSuccessDto paymentSuccessDto = objectMapper.readValue(message, PaymentSuccessDto.class);
 
             System.out.println("Received Payment Success DTO: " + paymentSuccessDto);
