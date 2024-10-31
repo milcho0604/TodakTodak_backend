@@ -22,7 +22,7 @@ public class ChatKafkaListener { // Kafka
     private final FcmService fcmService;
     private final ChatRoomRepository chatRoomRepository;
 
-    @KafkaListener(topics = "chat-topic", groupId = "chat-group", containerFactory = "chatKafkaListenerContainerFactory")
+    @KafkaListener(topics = "chat-topic", containerFactory = "chatKafkaListenerContainerFactory")
     public void listenChatMessages(@Payload ChatMessageReqDto chatMessageReqDto) {
         log.info("Kafka received message: {}", chatMessageReqDto); // 수신된 메시지 로그
 
