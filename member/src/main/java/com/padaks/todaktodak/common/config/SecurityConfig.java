@@ -41,7 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 권한에 따른 접근 제어 설정
                 .antMatchers("/ws/**").permitAll()
 //                .antMatchers("/**").permitAll()  // 인증 없이 접근 가능한 경로
-                .antMatchers("/ws/**").permitAll()
+                .antMatchers("/wss/**").permitAll()
                 .antMatchers("/signal").permitAll()
                 .antMatchers("/", // MemberController
                         "/member/get/**",
