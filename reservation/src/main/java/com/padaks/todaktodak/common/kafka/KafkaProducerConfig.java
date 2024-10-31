@@ -1,4 +1,4 @@
-package com.padaks.todaktodak.common.kafka;//package com.padaks.todaktodak.common.kafka;
+package com.padaks.todaktodak.common.kafka;
 //
 //import org.apache.kafka.clients.admin.AdminClientConfig;
 //import org.apache.kafka.clients.admin.NewTopic;

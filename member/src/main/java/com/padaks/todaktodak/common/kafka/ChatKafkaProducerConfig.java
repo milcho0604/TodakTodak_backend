@@ -33,7 +33,7 @@ public class ChatKafkaProducerConfig {
 //        return new NewTopic("ChatTopic", 10 , (short) 1);
 //    }
     // numPartitions : 토픽이 가질 파티션 수, replicationFactor : 토픽의 복제 인자
-
+//    groupId = "chat-group",
     @Bean(name = "chatKafkaProducerFactory")
     public ProducerFactory<String, Object> chatKafkaProducerFactory(){
         Map<String, Object> config = new HashMap<>();
