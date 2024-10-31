@@ -134,6 +134,8 @@ public class HospitalController {
         System.out.println("떵떵떵 " + dong);
         String decodedDong = URLDecoder.decode(dong, StandardCharsets.UTF_8);
         System.out.println("동동동동 " + decodedDong);
+        System.out.println("경도 " + latitude);
+        System.out.println("위도 " + longitude);
         List<HospitalListResDto> hospitalList = hospitalService.getSortedHospitalList(decodedDong, latitude, longitude, sort, isOperating);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원 리스트 조회성공", hospitalList), HttpStatus.OK);
     }
