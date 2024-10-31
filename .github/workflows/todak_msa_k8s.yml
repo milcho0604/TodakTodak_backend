@@ -34,8 +34,12 @@ jobs:
 
       - name: eks kubectl delete
         run: |
+          kubectl delete -f ./community/k8s/community_depl.yml
           kubectl delete -f ./member/k8s/member_depl.yml
           kubectl delete -f ./reservation/k8s/reservation_depl.yml
+          kubectl delete -f ./member/k8s/member_service.yml
+          kubectl delete -f ./reservation/k8s/reservation_service.yml
+          kubectl delete -f ./community/k8s/community_service.yml
 
 # member
       - name: build and push docker member images to ecr
@@ -51,6 +55,7 @@ jobs:
       - name: eks kubectl apply
         run: |
           kubectl apply -f ./member/k8s/member_depl.yml
+          kubectl apply -f ./member/k8s/member_service.yml
           kubectl rollout restart deployment member-deployment -n todak
 
 # reservation
@@ -67,6 +72,7 @@ jobs:
       - name: eks kubectl apply
         run: |
           kubectl apply -f ./reservation/k8s/reservation_depl.yml
+          kubectl apply -f ./reservation/k8s/reservation_service.yml
           kubectl rollout restart deployment reservation-deployment -n todak
 
 # community
@@ -83,5 +89,6 @@ jobs:
       - name: eks kubectl apply
         run: |
           kubectl apply -f ./community/k8s/community_depl.yml
+          kubectl apply -f ./community/k8s/community_service.yml
           kubectl rollout restart deployment community-deployment -n todak
           
