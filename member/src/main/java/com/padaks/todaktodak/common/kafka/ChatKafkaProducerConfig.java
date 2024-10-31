@@ -22,16 +22,16 @@ import java.util.Map;
 public class ChatKafkaProducerConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootStrapServer;
-    @Bean
-    public KafkaAdmin kafkaAdmin() {
-        Map<String, Object> configs = new HashMap<>();
-        configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServer);
-        return new KafkaAdmin(configs);
-    }
-    @Bean(name = "ChatTopic")
-    public NewTopic paymentSuccess(){
-        return new NewTopic("ChatTopic", 10 , (short) 1);
-    }
+//    @Bean
+//    public KafkaAdmin kafkaAdmin() {
+//        Map<String, Object> configs = new HashMap<>();
+//        configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServer);
+//        return new KafkaAdmin(configs);
+//    }
+//    @Bean(name = "ChatTopic")
+//    public NewTopic paymentSuccess(){
+//        return new NewTopic("ChatTopic", 10 , (short) 1);
+//    }
     // numPartitions : 토픽이 가질 파티션 수, replicationFactor : 토픽의 복제 인자
 
     @Bean(name = "chatKafkaProducerFactory")
@@ -45,6 +45,7 @@ public class ChatKafkaProducerConfig {
         config.put("connections.max.idle.ms", "60000");
         config.put("reconnect.backoff.ms", "2000");
         config.put("reconnect.backoff.max.ms", "20000");
+
 
 
         return new DefaultKafkaProducerFactory<>(config);

@@ -20,6 +20,7 @@ public class PaymentEventListener {
     private final FcmService fcmService;
 
     @KafkaListener(topics = "payment-success", groupId = "payment-group", containerFactory = "payKafkaListenerContainerFactory")
+//    @KafkaListener(groupId = "payment-group", containerFactory = "payKafkaListenerContainerFactory")
     public void listenPaymentSuccess(String message, Acknowledgment acknowledgment) throws JsonProcessingException {
         try {
             String parsedMessage = message.replaceAll("\\\\", "");  // 백슬래시 제거
@@ -41,6 +42,7 @@ public class PaymentEventListener {
     }
 
     @KafkaListener(topics = "payment-fail", groupId = "payment-group", containerFactory = "payKafkaListenerContainerFactory")
+//    @KafkaListener(groupId = "payment-group", containerFactory = "payKafkaListenerContainerFactory")
     public void listenPaymentFail(String message, Acknowledgment acknowledgment) throws JsonProcessingException {
         try {
             String parsedMessage = message.replaceAll("\\\\", "");  // 백슬래시 제거
@@ -62,6 +64,7 @@ public class PaymentEventListener {
     }
 
     @KafkaListener(topics = "payment-cancel", groupId = "payment-group", containerFactory = "payKafkaListenerContainerFactory")
+//@KafkaListener(groupId = "payment-group", containerFactory = "payKafkaListenerContainerFactory")
     public void listenPaymentCancel(String message, Acknowledgment acknowledgment) throws JsonProcessingException {
         try {
             String parsedMessage = message.replaceAll("\\\\", "");  // 백슬래시 제거
@@ -83,6 +86,7 @@ public class PaymentEventListener {
     }
 
     @KafkaListener(topics = "payment-cancel-fail", groupId = "payment-group", containerFactory = "payKafkaListenerContainerFactory")
+//    @KafkaListener(groupId = "payment-group", containerFactory = "payKafkaListenerContainerFactory")
     public void listenPaymentCancelFail(String message, Acknowledgment acknowledgment) throws JsonProcessingException {
         try {
             String parsedMessage = message.replaceAll("\\\\", "");  // 백슬래시 제거
