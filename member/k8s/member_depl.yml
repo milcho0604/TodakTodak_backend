@@ -126,6 +126,10 @@ spec:
                 secretKeyRef:
                   key: KAFKA_BOOTSTRAP
                   name: todak-secret
+            - name: KAFKA_GROUP_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name  # 각 pod의 UID를 기반으로 고유 ID 생성
             - name: FIRE_BASE_SDK
               valueFrom:
                 secretKeyRef:

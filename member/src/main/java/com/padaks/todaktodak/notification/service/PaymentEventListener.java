@@ -19,7 +19,7 @@ public class PaymentEventListener {
     private final ObjectMapper objectMapper;
     private final FcmService fcmService;
 
-    @KafkaListener(topics = "payment-success", groupId = "payment-group", containerFactory = "payKafkaListenerContainerFactory")
+    @KafkaListener(topics = "payment-success", containerFactory = "payKafkaListenerContainerFactory")
 //    @KafkaListener(groupId = "payment-group", containerFactory = "payKafkaListenerContainerFactory")
     public void listenPaymentSuccess(String message, Acknowledgment acknowledgment) throws JsonProcessingException {
         try {
@@ -44,7 +44,7 @@ public class PaymentEventListener {
         }
     }
 
-    @KafkaListener(topics = "payment-fail", groupId = "payment-group", containerFactory = "payKafkaListenerContainerFactory")
+    @KafkaListener(topics = "payment-fail", containerFactory = "payKafkaListenerContainerFactory")
 //    @KafkaListener(groupId = "payment-group", containerFactory = "payKafkaListenerContainerFactory")
     public void listenPaymentFail(String message, Acknowledgment acknowledgment) throws JsonProcessingException {
         try {
@@ -67,7 +67,7 @@ public class PaymentEventListener {
         }
     }
 
-    @KafkaListener(topics = "payment-cancel", groupId = "payment-group", containerFactory = "payKafkaListenerContainerFactory")
+    @KafkaListener(topics = "payment-cancel", containerFactory = "payKafkaListenerContainerFactory")
 //@KafkaListener(groupId = "payment-group", containerFactory = "payKafkaListenerContainerFactory")
     public void listenPaymentCancel(String message, Acknowledgment acknowledgment) throws JsonProcessingException {
         try {
@@ -89,7 +89,7 @@ public class PaymentEventListener {
         }
     }
 
-    @KafkaListener(topics = "payment-cancel-fail", groupId = "payment-group", containerFactory = "payKafkaListenerContainerFactory")
+    @KafkaListener(topics = "payment-cancel-fail", containerFactory = "payKafkaListenerContainerFactory")
 //    @KafkaListener(groupId = "payment-group", containerFactory = "payKafkaListenerContainerFactory")
     public void listenPaymentCancelFail(String message, Acknowledgment acknowledgment) throws JsonProcessingException {
         try {

@@ -53,37 +53,37 @@ public class FcmService {
             if (type.equals(Type.PAYMENT)){
                 if (member.getRole().equals(Role.ADMIN)){
                     urlType = "admin/payment/list";
-                    url = "http://localhost:8081/" + urlType;
+                    url = "https://www.todak.site/" + urlType;
                 }else if (member.getRole().equals(Role.HOSPITAL)){
                     urlType = "/memebr/doctor/reservation";
-                    url = "http://localhost:8081/" + urlType;
+                    url = "https://www.todak.site/" + urlType;
                 } else if (member.getRole().equals(Role.MEMBER)) {
                     urlType = "member/mypage/reservation";
-                    url = "http://localhost:8081/" + urlType;
+                    url = "https://www.todak.site/" + urlType;
                 }
             } else if (type.equals(Type.CHILD)) {
                 urlType = "member/child";
-                url = "http://localhost:8081/" + urlType;
+                url = "https://www.todak.site/" + urlType;
             } else if (type.equals(Type.RESERVATION_NOTIFICATION) && member.getRole().equals(Role.MEMBER)) {
                 urlType = "member/mypage/reservation";
-                url = "http://localhost:8081/" + urlType;
+                url = "https://www.todak.site/" + urlType;
             } else if (type.equals(Type.RESERVATION_NOTIFICATION) && member.getRole().equals(Role.HOSPITAL)) {
                 // 수정 필요
                 urlType ="memebr/doctor/reservation";
-                url = "http://localhost:8081/" + urlType;
+                url = "https://www.todak.site/" + urlType;
             } else if (type.equals(Type.RESERVATION_WAITING)){
                 // 수정 필요
                 urlType = "member/mypage/reservation";
-                url = "http://localhost:8081/" + urlType;
+                url = "https://www.todak.site/" + urlType;
             } else {
-                url = "http://localhost:8081/";
+                url = "https://www.todak.site/";
             }
         } else {
             if (type.equals(Type.POST) || type.equals(Type.COMMENT)){
                 urlType = "community";
-                url = "http://localhost:8081/" + urlType + "/" + id;
+                url = "https://www.todak.site/" + urlType + "/" + id;
             } else {
-                url = "http://localhost:8081/";
+                url = "https://www.todak.site/";
             }
         }
 
