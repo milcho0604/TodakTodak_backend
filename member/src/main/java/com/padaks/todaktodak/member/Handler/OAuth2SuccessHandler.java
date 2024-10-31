@@ -59,16 +59,27 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         // 리다이렉트 URL 설정 (아래 먼저는 로컬호스트 환경에서, 두번째는 프론트 환경에서)
         String targetUrl = null;
 
+        // local 환경에서 targetUrl
+//        if (member.isVerified() == true){
+//            targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8081/all/loginSuccess")
+//                    .queryParam("token", token)
+//                    .build().toUriString();
+//        } else {
+//            targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8081/all/updateSuccess")
+//                    .queryParam("token", token)
+//                    .build().toUriString();
+//        }
+
+        // 배포 환경에서 targetUrl
         if (member.isVerified() == true){
-            targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8081/all/loginSuccess")
+            targetUrl = UriComponentsBuilder.fromUriString("https://www.todak.site/all/loginSuccess")
                     .queryParam("token", token)
                     .build().toUriString();
         } else {
-            targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8081/all/updateSuccess")
+            targetUrl = UriComponentsBuilder.fromUriString("https://www.todak.site/all/updateSuccess")
                     .queryParam("token", token)
                     .build().toUriString();
         }
-
 
 
 //        String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8082/loginSuccess")
