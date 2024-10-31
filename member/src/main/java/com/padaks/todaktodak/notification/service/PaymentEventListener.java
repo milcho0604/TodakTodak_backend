@@ -23,10 +23,12 @@ public class PaymentEventListener {
 //    @KafkaListener(groupId = "payment-group", containerFactory = "payKafkaListenerContainerFactory")
     public void listenPaymentSuccess(String message, Acknowledgment acknowledgment) throws JsonProcessingException {
         try {
-            String parsedMessage = message.replaceAll("\\\\", "");  // 백슬래시 제거
-            parsedMessage = parsedMessage.substring(1, parsedMessage.length() - 1);  // 양쪽의 큰 따옴표 제거
+//            String parsedMessage = message.replaceAll("\\\\", "");  // 백슬래시 제거
+//            parsedMessage = parsedMessage.substring(1, parsedMessage.length() - 1);  // 양쪽의 큰 따옴표 제거
 
-            PaymentSuccessDto paymentSuccessDto = objectMapper.readValue(parsedMessage, PaymentSuccessDto.class);
+//            PaymentSuccessDto paymentSuccessDto = objectMapper.readValue(parsedMessage, PaymentSuccessDto.class);
+            PaymentSuccessDto paymentSuccessDto = objectMapper.readValue(message, PaymentSuccessDto.class);
+
             System.out.println("Received Payment Success DTO: " + paymentSuccessDto);
 
             fcmService.sendMessage(paymentSuccessDto.getMemberEmail(), paymentSuccessDto.getName() + " 결제 알림",
@@ -45,10 +47,11 @@ public class PaymentEventListener {
 //    @KafkaListener(groupId = "payment-group", containerFactory = "payKafkaListenerContainerFactory")
     public void listenPaymentFail(String message, Acknowledgment acknowledgment) throws JsonProcessingException {
         try {
-            String parsedMessage = message.replaceAll("\\\\", "");  // 백슬래시 제거
-            parsedMessage = parsedMessage.substring(1, parsedMessage.length() - 1);  // 양쪽의 큰 따옴표 제거
+//            String parsedMessage = message.replaceAll("\\\\", "");  // 백슬래시 제거
+//            parsedMessage = parsedMessage.substring(1, parsedMessage.length() - 1);  // 양쪽의 큰 따옴표 제거
 
-            PaymentFailDto paymentFailDto = objectMapper.readValue(parsedMessage, PaymentFailDto.class);
+//            PaymentFailDto paymentFailDto = objectMapper.readValue(parsedMessage, PaymentFailDto.class);
+            PaymentFailDto paymentFailDto = objectMapper.readValue(message, PaymentFailDto.class);
             System.out.println("Received Payment Fail DTO: " + paymentFailDto);
 
             fcmService.sendMessage(paymentFailDto.getMemberEmail(), " 결제에 실패하였습니다.",

@@ -159,7 +159,7 @@ public class NotificationKafkaConsumer {
 
             acknowledgment.acknowledge();
         } catch (Exception e) {
-            System.err.println("Error processing payment success message: " + e.getMessage());
+            System.err.println("Error processing child success message: " + e.getMessage());
         }
     }
 
