@@ -28,8 +28,7 @@ public class NotificationKafkaConsumer {
     private final ChildRepository childRepository;
     private final ObjectMapper objectMapper;
 
-    @KafkaListener(topics = "community-success", containerFactory = "kafkaListenerContainerFactory")
-//    @KafkaListener(groupId = "group_id", containerFactory = "kafkaListenerContainerFactory")
+    @KafkaListener(topics = "community-success", groupId = "group_id", containerFactory = "kafkaListenerContainerFactory")
     public void consumerNotification(String message, Acknowledgment acknowledgment){
 //        if (message.startsWith("\"") && message.endsWith("\"")) {
 //            message = message.substring(1, message.length() -1).replace("\"", "\"");
@@ -57,7 +56,6 @@ public class NotificationKafkaConsumer {
     }
 
     @KafkaListener(topics = "scheduled-reservation-success-notify", containerFactory = "reservationKafkaContainerFactory")
-//    @KafkaListener(containerFactory = "reservationKafkaContainerFactory")
     public void scheduledNotification(String message, Acknowledgment acknowledgment){
 //        if (message.startsWith("\"") && message.endsWith("\"")) {
 //            message = message.substring(1, message.length() -1).replace("\"", "\"");
@@ -88,7 +86,6 @@ public class NotificationKafkaConsumer {
     }
 
     @KafkaListener(topics = "immediate-reservation-success-notify", containerFactory = "reservationKafkaContainerFactory")
-//    @KafkaListener(containerFactory = "reservationKafkaContainerFactory")
     public void immediateNotification(String message, Acknowledgment acknowledgment){
 
 //        if (message.startsWith("\"") && message.endsWith("\"")) {
@@ -121,7 +118,6 @@ public class NotificationKafkaConsumer {
     }
   
     @KafkaListener(topics = "reservation-before-notify", containerFactory = "reservationKafkaContainerFactory")
-//    @KafkaListener(containerFactory = "reservationKafkaContainerFactory")
     public void reserveBeforeNotify(String message, Acknowledgment acknowledgment){
 //        if (message.startsWith("\"") && message.endsWith("\"")) {
 //            message = message.substring(1, message.length() -1).replace("\"", "\"");
@@ -147,8 +143,7 @@ public class NotificationKafkaConsumer {
     }
 
     // 자녀 공유 알림
-    @KafkaListener(topics = "child-share", containerFactory = "childKafkaListenerContainerFactory")
-//    @KafkaListener(groupId = "child-group", containerFactory = "childKafkaListenerContainerFactory")
+    @KafkaListener(topics = "child-share", groupId = "child-group", containerFactory = "childKafkaListenerContainerFactory")
     public void listenPaymentSuccess(String message, Acknowledgment acknowledgment) throws JsonProcessingException {
         try {
             ChildSuccessResDto childSuccessResDto = objectMapper.readValue(message, ChildSuccessResDto.class);

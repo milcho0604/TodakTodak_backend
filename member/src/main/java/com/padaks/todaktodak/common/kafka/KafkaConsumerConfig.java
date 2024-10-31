@@ -22,8 +22,8 @@ public class KafkaConsumerConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootStrapServer;
 
-    @Value("${spring.kafka.chat.consumer.group-id}")
-    private String groupId; // chat-group
+    @Value("${spring.kafka.consumer.group-id}")
+    private String groupId;
 
     @Value("${spring.kafka.consumer.auto-offset-reset:earliest}")
     private String autoOffset; // earliest
@@ -60,7 +60,7 @@ public class KafkaConsumerConfig {
     public ConsumerFactory<String, Object> payKafkaConsumerFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServer);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "payment-group");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffset);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
@@ -86,7 +86,7 @@ public class KafkaConsumerConfig {
     public ConsumerFactory<String, Object> reservationKafkaConsumerFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServer); // localhost:9092
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "scheduled-reserve-group"); // chat-group
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId); // chat-group
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffset); // earliest
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
@@ -109,7 +109,7 @@ public class KafkaConsumerConfig {
     public ConsumerFactory<String, Object> childKafkaConsumerFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServer);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "child-group");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffset);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class); // JSON Deserializer로 수정

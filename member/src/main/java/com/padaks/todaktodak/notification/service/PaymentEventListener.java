@@ -20,14 +20,11 @@ public class PaymentEventListener {
     private final FcmService fcmService;
 
     @KafkaListener(topics = "payment-success", containerFactory = "payKafkaListenerContainerFactory")
-//    @KafkaListener(groupId = "payment-group", containerFactory = "payKafkaListenerContainerFactory")
     public void listenPaymentSuccess(String message, Acknowledgment acknowledgment) throws JsonProcessingException {
         try {
 //            String parsedMessage = message.replaceAll("\\\\", "");  // 백슬래시 제거
 //            parsedMessage = parsedMessage.substring(1, parsedMessage.length() - 1);  // 양쪽의 큰 따옴표 제거
 
-//            PaymentSuccessDto paymentSuccessDto = objectMapper.readValue(parsedMessage, PaymentSuccessDto.class);
-//            System.out.println("milcho1234 " + message);
             PaymentSuccessDto paymentSuccessDto = objectMapper.readValue(message, PaymentSuccessDto.class);
 
             System.out.println("Received Payment Success DTO: " + paymentSuccessDto);
@@ -45,7 +42,6 @@ public class PaymentEventListener {
     }
 
     @KafkaListener(topics = "payment-fail", containerFactory = "payKafkaListenerContainerFactory")
-//    @KafkaListener(groupId = "payment-group", containerFactory = "payKafkaListenerContainerFactory")
     public void listenPaymentFail(String message, Acknowledgment acknowledgment) throws JsonProcessingException {
         try {
 //            String parsedMessage = message.replaceAll("\\\\", "");  // 백슬래시 제거
@@ -68,7 +64,6 @@ public class PaymentEventListener {
     }
 
     @KafkaListener(topics = "payment-cancel", containerFactory = "payKafkaListenerContainerFactory")
-//@KafkaListener(groupId = "payment-group", containerFactory = "payKafkaListenerContainerFactory")
     public void listenPaymentCancel(String message, Acknowledgment acknowledgment) throws JsonProcessingException {
         try {
 //            String parsedMessage = message.replaceAll("\\\\", "");  // 백슬래시 제거
@@ -90,12 +85,8 @@ public class PaymentEventListener {
     }
 
     @KafkaListener(topics = "payment-cancel-fail", containerFactory = "payKafkaListenerContainerFactory")
-//    @KafkaListener(groupId = "payment-group", containerFactory = "payKafkaListenerContainerFactory")
     public void listenPaymentCancelFail(String message, Acknowledgment acknowledgment) throws JsonProcessingException {
         try {
-//            String parsedMessage = message.replaceAll("\\\\", "");  // 백슬래시 제거
-//            parsedMessage = parsedMessage.substring(1, parsedMessage.length() - 1);  // 양쪽의 큰 따옴표 제거
-
             PaymentCancelFailDto paymentCancelFailDto = objectMapper.readValue(message, PaymentCancelFailDto.class);
             System.out.println("Received Payment Cancel Fail DTO: " + paymentCancelFailDto);
 
