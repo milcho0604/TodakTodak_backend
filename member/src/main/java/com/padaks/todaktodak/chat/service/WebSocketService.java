@@ -41,6 +41,11 @@ public class WebSocketService {
 
         ChatMessageReqDto messageDto = ChatMessageReqDto.fromEntity(dto, chatRoom, sender);
         log.info("messageDto : {}", messageDto);
-        messagingTemplate.convertAndSend("/sub/" + chatRoomId, messageDto);
+        // 수신한 메시지 로그
+        log.info("WebSocketService: Preparing to send message to WebSocket. ChatRoom ID: {}, MemberEmail: {}", chatRoomId, memberEmail);
+
+        // 메시지 처리 후 실제 전송 전에 로그
+        messagingTemplate.convertAndSend("/sub/" + chatRoomId, dto);
+        log.info("WebSocketService: Message sent to WebSocket: {}", dto);
     }
 }

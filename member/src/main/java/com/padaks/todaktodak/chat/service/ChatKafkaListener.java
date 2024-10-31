@@ -23,9 +23,8 @@ public class ChatKafkaListener { // Kafka
     private final ChatRoomRepository chatRoomRepository;
 
     @KafkaListener(topics = "chat-topic", containerFactory = "chatKafkaListenerContainerFactory")
-//    @KafkaListener(groupId = "chat-group", containerFactory = "chatKafkaListenerContainerFactory")
     public void listenChatMessages(@Payload ChatMessageReqDto chatMessageReqDto) {
-        log.info("Received message: {}", chatMessageReqDto);
+        log.info("Kafka received message: {}", chatMessageReqDto); // 수신된 메시지 로그
 
         // Kafka로 수신한 메시지를 WebSocket을 통해 전달
         Long chatRoomId = chatMessageReqDto.getChatRoomId();
