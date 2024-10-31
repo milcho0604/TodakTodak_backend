@@ -69,6 +69,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/member/getInfo/**",
                         "/member/report/count/**",
                         "/health",
+                        "/health/**",
+
                         "/member/health",
 
 // DoctorController
