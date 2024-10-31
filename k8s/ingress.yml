@@ -21,10 +21,31 @@ spec:
     - host: server.todak.site
       http:
         paths:
-          - path: /
+          - path: /member-service/(.*)
             pathType: Prefix
             backend:
               service:
-                name: todak-service
-                port:
+                name: member-service
+                port: 
                   number: 80
+          - path: /reservation-service/(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: reservation-service
+                port: 
+                  number: 80
+          - path: /community-service/(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: community-service
+                port: 
+                  number: 80
+          # - path: /
+          #   pathType: Prefix
+          #   backend:
+          #     service:
+          #       name: member-service  # 기본 서비스로 지정
+          #       port:
+          #         number: 80
