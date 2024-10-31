@@ -20,6 +20,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
@@ -94,7 +96,8 @@ public class HospitalController {
     public ResponseEntity<Object> getList(@RequestParam String dong,
                                           @RequestParam BigDecimal latitude,
                                           @RequestParam BigDecimal longitude){
-        List<HospitalListResDto> hospitalList = hospitalService.getHospitalList(dong, latitude, longitude);
+        String decodedDong = URLDecoder.decode(dong, StandardCharsets.UTF_8);
+        List<HospitalListResDto> hospitalList = hospitalService.getHospitalList(decodedDong, latitude, longitude);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "병원 리스트 조회성공", hospitalList), HttpStatus.OK);
     }
 

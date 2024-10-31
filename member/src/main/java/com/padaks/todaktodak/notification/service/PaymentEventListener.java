@@ -27,7 +27,7 @@ public class PaymentEventListener {
 //            parsedMessage = parsedMessage.substring(1, parsedMessage.length() - 1);  // 양쪽의 큰 따옴표 제거
 
 //            PaymentSuccessDto paymentSuccessDto = objectMapper.readValue(parsedMessage, PaymentSuccessDto.class);
-            System.out.println("milcho1234 " + message);
+//            System.out.println("milcho1234 " + message);
             PaymentSuccessDto paymentSuccessDto = objectMapper.readValue(message, PaymentSuccessDto.class);
 
             System.out.println("Received Payment Success DTO: " + paymentSuccessDto);
@@ -71,10 +71,10 @@ public class PaymentEventListener {
 //@KafkaListener(groupId = "payment-group", containerFactory = "payKafkaListenerContainerFactory")
     public void listenPaymentCancel(String message, Acknowledgment acknowledgment) throws JsonProcessingException {
         try {
-            String parsedMessage = message.replaceAll("\\\\", "");  // 백슬래시 제거
-            parsedMessage = parsedMessage.substring(1, parsedMessage.length() - 1);  // 양쪽의 큰 따옴표 제거
+//            String parsedMessage = message.replaceAll("\\\\", "");  // 백슬래시 제거
+//            parsedMessage = parsedMessage.substring(1, parsedMessage.length() - 1);  // 양쪽의 큰 따옴표 제거
 
-            PaymentCancelDto paymentCancelDto = objectMapper.readValue(parsedMessage, PaymentCancelDto.class);
+            PaymentCancelDto paymentCancelDto = objectMapper.readValue(message, PaymentCancelDto.class);
             System.out.println("Received Payment Cancel DTO: " + paymentCancelDto);
 
             fcmService.sendMessage(paymentCancelDto.getMemberEmail(), paymentCancelDto.getName() + "의 결제 취소가 완료되었습니다.",
@@ -93,10 +93,10 @@ public class PaymentEventListener {
 //    @KafkaListener(groupId = "payment-group", containerFactory = "payKafkaListenerContainerFactory")
     public void listenPaymentCancelFail(String message, Acknowledgment acknowledgment) throws JsonProcessingException {
         try {
-            String parsedMessage = message.replaceAll("\\\\", "");  // 백슬래시 제거
-            parsedMessage = parsedMessage.substring(1, parsedMessage.length() - 1);  // 양쪽의 큰 따옴표 제거
+//            String parsedMessage = message.replaceAll("\\\\", "");  // 백슬래시 제거
+//            parsedMessage = parsedMessage.substring(1, parsedMessage.length() - 1);  // 양쪽의 큰 따옴표 제거
 
-            PaymentCancelFailDto paymentCancelFailDto = objectMapper.readValue(parsedMessage, PaymentCancelFailDto.class);
+            PaymentCancelFailDto paymentCancelFailDto = objectMapper.readValue(message, PaymentCancelFailDto.class);
             System.out.println("Received Payment Cancel Fail DTO: " + paymentCancelFailDto);
 
             fcmService.sendMessage(paymentCancelFailDto.getMemberEmail(), "impUid: " + paymentCancelFailDto.getImpUid() + "의 결제 취소에 실패했습니다.",

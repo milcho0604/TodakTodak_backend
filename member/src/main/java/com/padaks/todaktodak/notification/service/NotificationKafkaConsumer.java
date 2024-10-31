@@ -31,10 +31,10 @@ public class NotificationKafkaConsumer {
     @KafkaListener(topics = "community-success", groupId = "group_id", containerFactory = "kafkaListenerContainerFactory")
 //    @KafkaListener(groupId = "group_id", containerFactory = "kafkaListenerContainerFactory")
     public void consumerNotification(String message, Acknowledgment acknowledgment){
-        if (message.startsWith("\"") && message.endsWith("\"")) {
-            message = message.substring(1, message.length() -1).replace("\"", "\"");
-            message = message.replace("\\", "");
-        }
+//        if (message.startsWith("\"") && message.endsWith("\"")) {
+//            message = message.substring(1, message.length() -1).replace("\"", "\"");
+//            message = message.replace("\\", "");
+//        }
         try {
             CommentSuccessDto dto = objectMapper.readValue(message, CommentSuccessDto.class);
 
@@ -59,10 +59,10 @@ public class NotificationKafkaConsumer {
     @KafkaListener(topics = "scheduled-reservation-success-notify", containerFactory = "reservationKafkaContainerFactory")
 //    @KafkaListener(containerFactory = "reservationKafkaContainerFactory")
     public void scheduledNotification(String message, Acknowledgment acknowledgment){
-        if (message.startsWith("\"") && message.endsWith("\"")) {
-            message = message.substring(1, message.length() -1).replace("\"", "\"");
-            message = message.replace("\\", "");
-        }
+//        if (message.startsWith("\"") && message.endsWith("\"")) {
+//            message = message.substring(1, message.length() -1).replace("\"", "\"");
+//            message = message.replace("\\", "");
+//        }
 
         try {
             ReservationSuccessResDto dto =
@@ -91,10 +91,10 @@ public class NotificationKafkaConsumer {
 //    @KafkaListener(containerFactory = "reservationKafkaContainerFactory")
     public void immediateNotification(String message, Acknowledgment acknowledgment){
 
-        if (message.startsWith("\"") && message.endsWith("\"")) {
-            message = message.substring(1, message.length() -1).replace("\"", "\"");
-            message = message.replace("\\", "");
-        }
+//        if (message.startsWith("\"") && message.endsWith("\"")) {
+//            message = message.substring(1, message.length() -1).replace("\"", "\"");
+//            message = message.replace("\\", "");
+//        }
 
         try {
             ReservationSuccessResDto dto =
@@ -123,10 +123,10 @@ public class NotificationKafkaConsumer {
     @KafkaListener(topics = "reservation-before-notify", containerFactory = "reservationKafkaContainerFactory")
 //    @KafkaListener(containerFactory = "reservationKafkaContainerFactory")
     public void reserveBeforeNotify(String message, Acknowledgment acknowledgment){
-        if (message.startsWith("\"") && message.endsWith("\"")) {
-            message = message.substring(1, message.length() -1).replace("\"", "\"");
-            message = message.replace("\\", "");
-        }
+//        if (message.startsWith("\"") && message.endsWith("\"")) {
+//            message = message.substring(1, message.length() -1).replace("\"", "\"");
+//            message = message.replace("\\", "");
+//        }
 
         try {
             ReserveBeforeNotifyResDto dto =
