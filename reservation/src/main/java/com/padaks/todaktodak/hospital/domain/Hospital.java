@@ -46,10 +46,10 @@ public class Hospital extends BaseTimeEntity {
 
     private String keywords; // 병원 keywords
 
-    @Column(precision = 9, scale = 6) // 최대 9자리, 소수점 이하 6자리
+//    @Column(precision = 9, scale = 6) // 최대 9자리, 소수점 이하 6자리
     private BigDecimal latitude; // 위도
 
-    @Column(precision = 9, scale = 6)
+//    @Column(precision = 9, scale = 6)
     private BigDecimal longitude; // 경도
 
     @Column(nullable = false, unique = true)
