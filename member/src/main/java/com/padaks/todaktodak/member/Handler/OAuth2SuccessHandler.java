@@ -85,14 +85,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 //        HttpSession session = request.getSession();
 //        session.setAttribute("user", memberEmail); // 사용자 정보를 세션에 저장
 
-//        String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8082/loginSuccess")
-//        String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8081/loginSuccess")
-//        String targetUrl = UriComponentsBuilder.fromUriString("https://www.teenkiri.site/loginSuccess")
-//                .queryParam("token", token)
-//                .build().toUriString();
-
-//        System.out.println(token);
-
         // 리다이렉트 수행
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
