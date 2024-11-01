@@ -46,7 +46,7 @@ spring:
     database-platform: org.hibernate.dialect.MariaDBDialect
     generate-ddl: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: false
 
   servlet:
@@ -80,7 +80,7 @@ spring:
       group-id: "${KAFKA_GROUP_ID:group-${random.value}}"
       #      가장 처음으로 사용가능한 메시지부터 읽기 시작.
       auto-offset-reset: earliest
-      enable-auto-commit: create
+      enable-auto-commit: false
   application:
     name: reservation-service
 
