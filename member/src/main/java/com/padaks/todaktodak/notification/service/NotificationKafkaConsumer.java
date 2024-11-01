@@ -22,18 +22,12 @@ import static com.padaks.todaktodak.common.exception.exceptionType.MemberExcepti
 @RequiredArgsConstructor
 @Slf4j
 public class NotificationKafkaConsumer {
-    private final RedisTemplate<String, Object> redisTemplate;
-    private final MemberRepository memberRepository;
     private final FcmService fcmService;
     private final ChildRepository childRepository;
     private final ObjectMapper objectMapper;
 
-    @KafkaListener(topics = "community-success", containerFactory = "kafkaListenerContainerFactory")
+    @KafkaListener(topics = "community-success", containerFactory = "communityKafkaListenerContainerFactory")
     public void consumerNotification(String message, Acknowledgment acknowledgment){
-//        if (message.startsWith("\"") && message.endsWith("\"")) {
-//            message = message.substring(1, message.length() -1).replace("\"", "\"");
-//            message = message.replace("\\", "");
-//        }
         try {
             CommentSuccessDto dto = objectMapper.readValue(message, CommentSuccessDto.class);
 
