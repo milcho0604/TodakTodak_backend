@@ -3,12 +3,17 @@ package com.padaks.todaktodak.chat.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.padaks.todaktodak.chat.chatmessage.dto.ChatMessageReqDto;
 import com.padaks.todaktodak.common.config.JwtTokenProvider;
+import com.padaks.todaktodak.member.domain.Member;
+import com.padaks.todaktodak.member.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
 
 @Slf4j
 @RestController
@@ -17,14 +22,16 @@ public class WebSocketController {
 //    private final WebSocketService webSocketService;
     private final JwtTokenProvider jwtTokenProvider;
     private final KafkaTemplate<String, Object> chatKafkaTemplate;
+    private final MemberRepository memberRepository;
 
     public WebSocketController(
 //                                WebSocketService webSocketService,
-                               JwtTokenProvider jwtTokenProvider,
-                               @Qualifier("chatKafkaTemplate") KafkaTemplate<String, Object> chatKafkaTemplate) {
+            JwtTokenProvider jwtTokenProvider,
+            @Qualifier("chatKafkaTemplate") KafkaTemplate<String, Object> chatKafkaTemplate, MemberRepository memberRepository) {
 //        this.webSocketService = webSocketService;
         this.jwtTokenProvider = jwtTokenProvider;
         this.chatKafkaTemplate = chatKafkaTemplate;
+        this.memberRepository = memberRepository;
     }
 
     // 웹소켓 메시지를 특정 경로로 매핑한다.
@@ -33,6 +40,8 @@ public class WebSocketController {
                             @DestinationVariable(value = "chatRoomId") Long chatRoomId) throws JsonProcessingException {
         log.info("ChatMessageReqDto : {}", chatMessageReqDto);
         String memberEmail = jwtTokenProvider.getEmailFromToken(chatMessageReqDto.getToken());
+        Member member = memberRepository.findByMemberEmail(memberEmail)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않은 회원입니다."));
 
 //        webSocketService.sendMessage(chatRoomId, memberEmail, chatMessageReqDto); // stomp붙일때만
 
@@ -43,6 +52,14 @@ public class WebSocketController {
 
         // Kafka 토픽에 메시지를 전송
         chatMessageReqDto.setMemberEmail(memberEmail); // 보낸 사람 설정
+        chatMessageReqDto.setSenderName(member.getName());
+        chatMessageReqDto.setSenderProfileImgUrl(member.getProfileImgUrl());
+        chatMessageReqDto.setCreatedAt(LocalDateTime.now());
+        chatMessageReqDto.setSenderId(member.getId());
+        // stomp 핸들러로 조립을 해주고 보낸디 -> 토큰 까서 webSocket
+        // stomp 핸들러 ? token 직접 보내 ? 안 쓰면 이슈 배포환경이라 https
+//        조립을 해서 보낸다. 이렇게 해도 시간까지 반쪽짜리
+//        토큰을 못 읽는다.
         chatKafkaTemplate.send("chat-topic", chatMessageReqDto); // 카프카에 메시지 전송
 
     }

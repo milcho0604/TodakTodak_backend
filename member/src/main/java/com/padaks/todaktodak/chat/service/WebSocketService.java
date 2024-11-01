@@ -13,6 +13,7 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -26,7 +27,7 @@ public class WebSocketService {
     private final MemberRepository memberRepository;
     private final SimpMessageSendingOperations messagingTemplate;
 
-    public void sendMessage(Long chatRoomId, String memberEmail, ChatMessageReqDto dto){
+    public void sendMessage(Long chatRoomId, ChatMessageReqDto dto){
         // chat room 찾기
         ChatRoom chatRoom = chatRoomRepository.findByIdOrThrow(dto.getChatRoomId());
 
@@ -34,15 +35,17 @@ public class WebSocketService {
         chatRoom.updateRecentChatTime(LocalDateTime.now());
 
         // 보낸 사람 찾기
-        Member sender = memberRepository.findByMemberEmailOrThrow(memberEmail);
-
+        Member sender = memberRepository.findByMemberEmail(dto.getMemberEmail())
+                .orElseThrow(()-> new EntityNotFoundException("존재하지 않는 관리자입니다."));
+//        Member member = memberRepository.findByMemberEmail(memberEmail)
+//                .orElseThrow(()-> new EntityNotFoundException("존재하지 않는 관리자입니다."));
         ChatMessage chatMessage = ChatMessageReqDto.toEntity(chatRoom, sender, dto.getContents());
         chatMessageRepository.save(chatMessage); // 메시지 저장
 
         ChatMessageReqDto messageDto = ChatMessageReqDto.fromEntity(dto, chatRoom, sender);
         log.info("messageDto : {}", messageDto);
         // 수신한 메시지 로그
-        log.info("WebSocketService: Preparing to send message to WebSocket. ChatRoom ID: {}, MemberEmail: {}", chatRoomId, memberEmail);
+        log.info("WebSocketService: Preparing to send message to WebSocket. ChatRoom ID: {}, MemberEmail: {}", chatRoomId, dto.getMemberEmail());
 
         // 메시지 처리 후 실제 전송 전에 로그
         messagingTemplate.convertAndSend("/sub/" + chatRoomId, dto);

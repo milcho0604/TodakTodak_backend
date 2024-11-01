@@ -22,9 +22,10 @@ public class ChatMessageReqDto {
 
     private String contents; // 메시지 내용
 
-    private String senderName; // 보낸 사람 이름
-
     private String memberEmail; // 보낸 사람 이메일
+
+//    ------------------------------------------------------
+    private String senderName; // 보낸 사람 이름
 
     private Long senderId; // 보낸사람 id
 

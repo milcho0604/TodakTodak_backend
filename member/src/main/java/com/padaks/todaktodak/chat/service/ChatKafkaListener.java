@@ -3,6 +3,7 @@ package com.padaks.todaktodak.chat.service;
 import com.padaks.todaktodak.chat.chatmessage.dto.ChatMessageReqDto;
 import com.padaks.todaktodak.chat.chatroom.domain.ChatRoom;
 import com.padaks.todaktodak.chat.chatroom.repository.ChatRoomRepository;
+import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.repository.MemberRepository;
 import com.padaks.todaktodak.notification.service.FcmService;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
+
+import javax.persistence.EntityNotFoundException;
 
 @Slf4j
 @Service
@@ -28,10 +31,11 @@ public class ChatKafkaListener { // Kafka
 
         // Kafka로 수신한 메시지를 WebSocket을 통해 전달
         Long chatRoomId = chatMessageReqDto.getChatRoomId();
-        String memberEmail = chatMessageReqDto.getMemberEmail(); // token을 통해 email을 얻는 로직 필요
+//        String memberEmail = chatMessageReqDto.getMemberEmail(); // token을 통해 email을 얻는 로직 필요
 
         // WebSocket을 통해 메시지를 채팅방에 전달
-        webSocketService.sendMessage(chatRoomId, memberEmail, chatMessageReqDto);
+        // 이 시점?
+        webSocketService.sendMessage(chatRoomId, chatMessageReqDto);
 
         String adminEmail = "todak@test.com";
         ChatRoom chatRoom = chatRoomRepository.findByIdOrThrow(chatRoomId);
