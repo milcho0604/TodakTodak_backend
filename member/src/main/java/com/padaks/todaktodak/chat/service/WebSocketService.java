@@ -41,10 +41,10 @@ public class WebSocketService {
 //                .orElseThrow(()-> new EntityNotFoundException("존재하지 않는 관리자입니다."));
 //        ChatMessage chatMessage = ChatMessageReqDto.toEntity(chatRoom, sender, dto.getContents());
 //        chatMessageRepository.save(chatMessage); // 메시지 저장
-
+//
 //        ChatMessageReqDto messageDto = ChatMessageReqDto.fromEntity(dto, chatRoom, sender);
 //        log.info("messageDto : {}", messageDto);
-        // 수신한 메시지 로그
+////         수신한 메시지 로그
 //        log.info("WebSocketService: Preparing to send message to WebSocket. ChatRoom ID: {}, MemberEmail: {}", chatRoomId, dto.getMemberEmail());
 
         // 메시지 처리 후 실제 전송 전에 로그
