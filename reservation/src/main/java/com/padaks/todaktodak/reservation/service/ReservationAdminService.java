@@ -16,6 +16,7 @@ import com.padaks.todaktodak.reservation.realtime.WaitingTurnDto;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -117,6 +118,7 @@ public class ReservationAdminService {
     }
 
 //    예약 상태 변경 메소드
+    @CacheEvict(value = "yesterdayReservations", allEntries = true)
     public void statusReservation(UpdateStatusReservation updateStatusReservation){
         Reservation reservation = reservationRepository.findById(updateStatusReservation.getId())
                 .orElseThrow(() -> new BaseException(RESERVATION_NOT_FOUND));
