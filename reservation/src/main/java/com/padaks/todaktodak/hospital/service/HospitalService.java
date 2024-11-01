@@ -11,6 +11,7 @@ import com.padaks.todaktodak.hospital.adminDto.AdminHospitalListDetailResDto;
 import com.padaks.todaktodak.hospital.domain.Hospital;
 import com.padaks.todaktodak.hospital.dto.*;
 import com.padaks.todaktodak.hospital.repository.HospitalRepository;
+import com.padaks.todaktodak.reservation.service.MemberFeign;
 import com.padaks.todaktodak.review.repository.ReviewRepository;
 import com.padaks.todaktodak.common.util.DistanceCalculator;
 import com.padaks.todaktodak.common.util.S3ClientFileUpload;
@@ -44,11 +45,12 @@ public class HospitalService {
     private final S3ClientFileUpload s3ClientFileUpload;
     private final DistanceCalculator distanceCalculator;
     private final MemberFeign memberFeign;
-    private final MemberFeignClient memberFeignClient;
+//    private final MemberFeign memberFeign
+//    private final MemberFeignClient memberFeignClient;
     private final ReviewRepository reviewRepository;
 
     public MemberFeignDto getMemberInfo() {
-        MemberFeignDto member = memberFeignClient.getMemberEmail();  // Feign Client에 토큰 추가
+        MemberFeignDto member = memberFeign.getMemberEmail();  // Feign Client에 토큰 추가
         return member;
     }
 

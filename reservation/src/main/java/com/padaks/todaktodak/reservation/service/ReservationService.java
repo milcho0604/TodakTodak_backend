@@ -82,7 +82,7 @@ public class ReservationService {
 
     // member 객체 리턴, 토큰 포함
     public MemberFeignDto getMemberInfo() {
-        MemberFeignDto member = memberFeignClient.getMemberEmail();  // Feign Client에 토큰 추가
+        MemberFeignDto member = memberFeign.getMemberEmail();  // Feign Client에 토큰 추가
         return member;
     }
 
