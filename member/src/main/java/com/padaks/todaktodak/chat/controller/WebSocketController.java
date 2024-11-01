@@ -64,6 +64,7 @@ public class WebSocketController {
         chatMessageReqDto.setSenderProfileImgUrl(member.getProfileImgUrl());
         chatMessageReqDto.setCreatedAt(LocalDateTime.now());
         chatMessageReqDto.setSenderId(member.getId());
+        chatMessageReqDto.setChatRoomId(chatRoomId);
         // stomp 핸들러로 조립을 해주고 보낸디 -> 토큰 까서 webSocket
         // stomp 핸들러 ? token 직접 보내 ? 안 쓰면 이슈 배포환경이라 https
 //        조립을 해서 보낸다. 이렇게 해도 시간까지 반쪽짜리
