@@ -27,7 +27,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.cache.annotation.Cacheable;
 import javax.persistence.EntityNotFoundException;
 import javax.print.Doc;
 import java.time.LocalDate;
@@ -370,7 +370,9 @@ public class ReservationService {
         return comesReservationResDtos;
     }
 
-    public List<?> yesterdayListReservation(Pageable pageable){
+    // 어제 예약 목록 조회 캐시 적용
+    @Cacheable(value = "yesterdayReservations", key = "#pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort.toString()")
+    public List<?> yesterdayListReservation(Pageable pageable) {
         LocalDate today = LocalDate.now();
         MemberFeignDto member = getMemberInfo();
 
@@ -381,7 +383,7 @@ public class ReservationService {
 
         List<ComesReservationResDto> comesReservationResDtos = new ArrayList<>();
 
-        for(Reservation res : reservationList){
+        for (Reservation res : reservationList) {
             ChildResDto childResDto = memberFeign.getMyChild(res.getChildId());
             DoctorResDto doctorResDto = memberFeign.getDoctor(res.getDoctorEmail());
             ComesReservationResDto dto = dtoMapper.toTodayReservationResDto(res, childResDto, doctorResDto.getId());
@@ -389,7 +391,7 @@ public class ReservationService {
             comesReservationResDtos.add(dto);
         }
 
-        for(ReservationHistory res : reservationHistoryList){
+        for (ReservationHistory res : reservationHistoryList) {
             ChildResDto childResDto = memberFeign.getMyChild(res.getChildId());
             Hospital hospital = hospitalRepository.findById(res.getHospitalId())
                     .orElseThrow(() -> new BaseException(HOSPITAL_NOT_FOUND));

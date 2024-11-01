@@ -46,7 +46,7 @@ spring:
     database-platform: org.hibernate.dialect.MariaDBDialect
     generate-ddl: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: false
 
   servlet:
@@ -69,6 +69,8 @@ spring:
           starttls:
             enable: true
         debug: true
+  cache:
+    type: redis
   redis:
     host: ${REDIS_HOST}
     port: 6379
