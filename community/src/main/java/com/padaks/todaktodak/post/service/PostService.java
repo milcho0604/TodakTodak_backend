@@ -46,11 +46,6 @@ public class PostService {
         return member;
     }
 
-    public MemberInfoDto getMemberName(String memberEmail){
-        MemberInfoDto dto = memberPostFeignClient.getMemberByEmail(memberEmail);
-        return  dto;
-    }
-
     public void create(PostsaveDto dto){
 
         MultipartFile postImage = dto.getPostImage(); //게시글 사진
@@ -68,7 +63,7 @@ public class PostService {
 
 
         String name;
-        if (!member.getRole().equals("Doctor")){
+        if (!member.getRole().equals("DOCTOR")){
             name = maskSecondCharacter(member.getName());
         }else {
             name = member.getName() + " 의사";
