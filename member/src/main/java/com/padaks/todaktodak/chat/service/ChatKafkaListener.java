@@ -1,5 +1,6 @@
 package com.padaks.todaktodak.chat.service;
 
+import com.padaks.todaktodak.chat.chatmessage.domain.ChatMessage;
 import com.padaks.todaktodak.chat.chatmessage.dto.ChatMessageReqDto;
 import com.padaks.todaktodak.chat.chatroom.domain.ChatRoom;
 import com.padaks.todaktodak.chat.chatroom.repository.ChatRoomRepository;
@@ -32,7 +33,6 @@ public class ChatKafkaListener { // Kafka
         // Kafka로 수신한 메시지를 WebSocket을 통해 전달
         Long chatRoomId = chatMessageReqDto.getChatRoomId();
 //        String memberEmail = chatMessageReqDto.getMemberEmail(); // token을 통해 email을 얻는 로직 필요
-
         // WebSocket을 통해 메시지를 채팅방에 전달
         // 이 시점?
         webSocketService.sendMessage(chatRoomId, chatMessageReqDto);

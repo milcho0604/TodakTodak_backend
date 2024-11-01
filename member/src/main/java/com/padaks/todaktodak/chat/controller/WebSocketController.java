@@ -1,7 +1,11 @@
 package com.padaks.todaktodak.chat.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.padaks.todaktodak.chat.chatmessage.domain.ChatMessage;
 import com.padaks.todaktodak.chat.chatmessage.dto.ChatMessageReqDto;
+import com.padaks.todaktodak.chat.chatmessage.repository.ChatMessageRepository;
+import com.padaks.todaktodak.chat.chatroom.domain.ChatRoom;
+import com.padaks.todaktodak.chat.chatroom.repository.ChatRoomRepository;
 import com.padaks.todaktodak.common.config.JwtTokenProvider;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.repository.MemberRepository;
@@ -23,15 +27,19 @@ public class WebSocketController {
     private final JwtTokenProvider jwtTokenProvider;
     private final KafkaTemplate<String, Object> chatKafkaTemplate;
     private final MemberRepository memberRepository;
+    private final ChatMessageRepository chatMessageRepository;
+    private final ChatRoomRepository chatRoomRepository;
 
     public WebSocketController(
 //                                WebSocketService webSocketService,
             JwtTokenProvider jwtTokenProvider,
-            @Qualifier("chatKafkaTemplate") KafkaTemplate<String, Object> chatKafkaTemplate, MemberRepository memberRepository) {
+            @Qualifier("chatKafkaTemplate") KafkaTemplate<String, Object> chatKafkaTemplate, MemberRepository memberRepository, ChatMessageRepository chatMessageRepository, ChatRoomRepository chatRoomRepository) {
 //        this.webSocketService = webSocketService;
         this.jwtTokenProvider = jwtTokenProvider;
         this.chatKafkaTemplate = chatKafkaTemplate;
         this.memberRepository = memberRepository;
+        this.chatMessageRepository = chatMessageRepository;
+        this.chatRoomRepository = chatRoomRepository;
     }
 
     // 웹소켓 메시지를 특정 경로로 매핑한다.
@@ -60,6 +68,14 @@ public class WebSocketController {
         // stomp 핸들러 ? token 직접 보내 ? 안 쓰면 이슈 배포환경이라 https
 //        조립을 해서 보낸다. 이렇게 해도 시간까지 반쪽짜리
 //        토큰을 못 읽는다.
+//        Member sender = memberRepository.findByMemberEmail(memberEmail)
+        ChatRoom chatRoom = chatRoomRepository.findByIdOrThrow(chatMessageReqDto.getChatRoomId());
+        ChatMessage chatMessage = ChatMessageReqDto.toEntity(chatRoom, member, chatMessageReqDto.getContents());
+        ChatMessageReqDto messageDto = ChatMessageReqDto.fromEntity(chatMessageReqDto, chatRoom, member);
+        log.info("messageDto : {}", messageDto);
+        chatMessageRepository.save(chatMessage); // 메시지 저장
+
+        log.info("WebSocketService: Preparing to send message to WebSocket. ChatRoom ID: {}, MemberEmail: {}", chatRoomId, chatMessageReqDto.getMemberEmail());
         chatKafkaTemplate.send("chat-topic", chatMessageReqDto); // 카프카에 메시지 전송
 
     }
