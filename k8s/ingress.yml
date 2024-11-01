@@ -10,10 +10,13 @@ metadata:
     nginx.ingress.kubernetes.io/session-cookie-name: "todak-session"  # 세션 쿠키 이름
     nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"  # 쿠키 해시 알고리즘
     # nginx.ingress.kubernetes.io/session-cookie-hash: "ip-hash"  # 클라이언트 IP 기반 스티키니스 유지
+    nginx.ingress.kubernetes.io/session-cookie-path: "/"
     nginx.ingress.kubernetes.io/affinity-mode: "persistent"
     nginx.ingress.kubernetes.io/session-cookie-max-age: "3600"
     # nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     # nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/enable-access-log: "true"
+    nginx.ingress.kubernetes.io/access-log-format: '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" "$cookie_todak-session"'  
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/rewrite-target: /$1 # 첫번째 prefix제거후 endpoint 전달
     cert-manager.io/cluster-issuer: letsencrypt-prod

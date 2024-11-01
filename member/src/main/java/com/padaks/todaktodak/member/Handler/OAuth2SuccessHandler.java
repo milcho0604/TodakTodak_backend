@@ -14,6 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Map;
 
@@ -80,7 +81,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                     .queryParam("token", token)
                     .build().toUriString();
         }
-
+        // 세션에 사용자 정보 저장
+//        HttpSession session = request.getSession();
+//        session.setAttribute("user", memberEmail); // 사용자 정보를 세션에 저장
 
 //        String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8082/loginSuccess")
 //        String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8081/loginSuccess")

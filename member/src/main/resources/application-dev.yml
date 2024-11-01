@@ -2,6 +2,8 @@
 server:
   port: 8080
 spring:
+  session:
+    name: todak-session
   security:
     oauth2:
       client:

@@ -241,7 +241,7 @@ public class PaymentService {
         }
 
         BigDecimal amount = paymentResponse.getResponse().getAmount();
-        if (amount.compareTo(BigDecimal.valueOf(1000000)) != 0) {
+        if (amount.compareTo(BigDecimal.valueOf(149000)) != 0) {
             throw new Exception("결제 금액 불일치");
         }
 
@@ -252,7 +252,7 @@ public class PaymentService {
             }
 
             // 결제 금액 및 기타 검증 로직 (여기서는 금액 100원으로 고정)
-            if (paymentResponse.getResponse().getAmount().intValue() != 1000000) {
+            if (paymentResponse.getResponse().getAmount().intValue() != 149000) {
                 throw new Exception("결제 금액 불일치");
             }
             String customerUid = "customer_" + member.getMemberEmail();

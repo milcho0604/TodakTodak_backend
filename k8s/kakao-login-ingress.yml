@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kakao-login-ingress
+  namespace: todak
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    kubernetes.io/ingress.class: nginx
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: server.todak.site
+      http:
+        paths:
+          - path: /oauth2/authorization/kakao
+            pathType: Prefix
+            backend:
+              service:
+                name: member-service
+                port:
+                  number: 80
+          - path: /login/oauth2/code/kakao
+            pathType: Prefix
+            backend:
+              service:
+                name: member-service
+                port:
+                  number: 80
