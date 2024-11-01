@@ -266,7 +266,7 @@ public class PaymentService {
                     .memberEmail(member.getMemberEmail())
                     .impUid(actualImpUid)
                     .customerUid(customerUid)
-                    .amount(BigDecimal.valueOf(1000000))
+                    .amount(BigDecimal.valueOf(149000))
                     .buyerName(member.getName())
                     .name(name)
                     .buyerTel(member.getPhoneNumber())
