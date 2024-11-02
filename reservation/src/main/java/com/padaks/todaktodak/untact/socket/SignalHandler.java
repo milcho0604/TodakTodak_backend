@@ -148,17 +148,48 @@ public class SignalHandler extends TextWebSocketHandler implements MessageListen
 
             // JSON 메시지를 WebSocketMessage 객체로 역직렬화
             WebSocketMessage webSocketMessage = objectMapper.readValue(jsonMessage, WebSocketMessage.class);
-            Room room = roomService.findRoomById(webSocketMessage.getData()).orElseThrow(()->new RuntimeException("방을 찾을 수 없음"));
-            if (room != null) {
-                Map<String, WebSocketSession> clients = roomService.getClients(room);
-                for (Map.Entry<String, WebSocketSession> client : clients.entrySet()) {
-                    if (!client.getKey().equals(webSocketMessage.getFrom())) {  // Don't send to the leaving client
-                        sendMessage(client.getValue(), webSocketMessage);
-                    }
-                }
+            switch (webSocketMessage.getType()) {
+                case "ROOM_CREATED":
+                    handleRoomCreated(webSocketMessage);
+                    break;
+                case "ROOM_DELETED":
+                    handleRoomDeleted(webSocketMessage);
+                    break;
+                default:
+                    handleChatMessage(webSocketMessage);
+                    break;
             }
         } catch (Exception e) {
             logger.error("An error occurred while processing the message: {}", e.getMessage());
+        }
+    }
+
+    private void handleRoomDeleted(WebSocketMessage webSocketMessage) {
+        Optional<Room> optionalRoom = roomService.findRoomById(webSocketMessage.getData());
+        if (optionalRoom.isPresent()) {
+            roomService.removeRoom(webSocketMessage.getData());
+        }
+    }
+
+    private void handleRoomCreated(WebSocketMessage webSocketMessage) {
+        Optional<Room> optionalRoom = roomService.findRoomById(webSocketMessage.getData());
+        if (optionalRoom.isEmpty()) {
+            roomService.addRoom(new Room(webSocketMessage.getData()));
+        }
+    }
+
+    // 채팅 메시지 처리
+    private void handleChatMessage(WebSocketMessage webSocketMessage) {
+        Room room = roomService.findRoomById(webSocketMessage.getData())
+                .orElseThrow(() -> new RuntimeException("방을 찾을 수 없음"));
+
+        if (room != null) {
+            Map<String, WebSocketSession> clients = roomService.getClients(room);
+            for (Map.Entry<String, WebSocketSession> client : clients.entrySet()) {
+                if (!client.getKey().equals(webSocketMessage.getFrom())) {  // Don't send to the leaving client
+                    sendMessage(client.getValue(), webSocketMessage);
+                }
+            }
         }
     }
 }
