@@ -39,7 +39,6 @@ public class CommentService {
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final ObjectMapper objectMapper;
     private final MemberFeignClient memberFeignClient;
-    private final HospitalFeignClient hospitalFeignClient;
 
     //member 객체 리턴
     public MemberFeignDto getMemberInfo() {
@@ -141,7 +140,8 @@ public class CommentService {
                         .id(comment.getId())
                         .content(comment.getContent())
                         .doctorEmail(comment.getDoctorEmail())
-                        .name(maskSecondCharacter(memberFeignClient.getMemberName(comment.getDoctorEmail()).getName()))
+//                        .name(maskSecondCharacter(memberFeignClient.getMemberName(comment.getDoctorEmail()).getName()))
+                        .name(comment.getName())
                         .parentId(comment.getParent() != null ? comment.getParent().getId() : null)
                         .profileImg(comment.getProfileImg())
                         .createdTimeAt(comment.getCreatedTimeAt())
