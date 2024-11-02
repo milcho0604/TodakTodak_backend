@@ -140,7 +140,6 @@ public class CommentService {
                         .id(comment.getId())
                         .content(comment.getContent())
                         .doctorEmail(comment.getDoctorEmail())
-//                        .name(maskSecondCharacter(memberFeignClient.getMemberName(comment.getDoctorEmail()).getName()))
                         .name(comment.getName())
                         .parentId(comment.getParent() != null ? comment.getParent().getId() : null)
                         .profileImg(comment.getProfileImg())
