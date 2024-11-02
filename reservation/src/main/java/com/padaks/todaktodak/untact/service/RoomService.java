@@ -5,8 +5,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.padaks.todaktodak.untact.domain.Room;
+import com.padaks.todaktodak.untact.domain.WebSocketMessage;
 import com.padaks.todaktodak.untact.util.Parser;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -18,12 +21,15 @@ import java.util.*;
 
 @Slf4j
 @Service
-public class RoomService {    
+public class RoomService {
+    private static final Logger log = LoggerFactory.getLogger(RoomService.class);
     private final Parser parser;
     // repository substitution since this is a very simple realization
     private final Set<Room> rooms = new TreeSet<>(Comparator.comparing(Room::getId));
     @Qualifier("roomRedisTemplate")
     private final RedisTemplate<String, Object> roomRedisTemplate;
+    @Autowired
+    private RedisPublisher redisPublisher;
     private final ObjectMapper objectMapper;
 
     private static final String ROOM_KEY_PREFIX = "room:";
@@ -77,6 +83,10 @@ public class RoomService {
     // 방을 제거하면서 Redis에서도 삭제
     public void removeRoom(String roomId) {
         rooms.removeIf(room -> room.getId().equals(roomId));
+        WebSocketMessage message = new WebSocketMessage();
+        message.setType("ROOM_DELETED");
+        message.setData(roomId);
+        redisPublisher.publish(message);
         roomRedisTemplate.delete(ROOM_KEY_PREFIX + roomId);
     }
     // 방 ID를 이용하여 Room 객체 찾기
