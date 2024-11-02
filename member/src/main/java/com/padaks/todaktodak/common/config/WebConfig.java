@@ -14,7 +14,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:8081", "http://localhost:8080",
+                .allowedOrigins("http://localhost:8081", "http://localhost:8080", "http://localhost:3000",
                         "https://www.todak.site", "https://server.todak.site") // 여러 도메인 허용
 //                .allowedOrigins("*") // 여러 도메인 허용
 
@@ -30,6 +30,7 @@ public class WebConfig implements WebMvcConfigurer {
         config.setAllowCredentials(true);
         config.addAllowedOrigin("http://localhost:8081");
         config.addAllowedOrigin("http://localhost:8080");
+        config.addAllowedOrigin("http://localhost:3000");
         config.addAllowedOrigin("https://www.todak.site");
         config.addAllowedOrigin("https://server.todak.site");
         config.addAllowedHeader("*");
