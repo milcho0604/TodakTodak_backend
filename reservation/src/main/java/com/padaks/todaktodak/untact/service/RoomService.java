@@ -38,6 +38,7 @@ public class RoomService {
     // 서버 시작 시 Redis에서 방 목록을 불러와 rooms Set을 초기화
     @PostConstruct
     public void loadRoomsFromRedis() {
+        log.info("방 정보 초기화");
         Set<String> roomKeys = roomRedisTemplate.keys(ROOM_KEY_PREFIX + "*");
         if (roomKeys != null) {
             for (String key : roomKeys) {
@@ -47,7 +48,7 @@ public class RoomService {
                         // roomData를 JsonNode로 변환하여 id 필드 추출
                         JsonNode roomNode = objectMapper.readTree(roomData.toString());
                         String id = roomNode.get("id").asText();
-
+                        log.info(id);
                         // 추출한 id로 Room 객체 생성하여 RoomService에 추가
                         rooms.add(new Room(id));
                     } catch (JsonProcessingException e) {
