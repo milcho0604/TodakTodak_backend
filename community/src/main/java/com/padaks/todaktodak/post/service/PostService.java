@@ -246,5 +246,15 @@ public class PostService {
         }
         return postListDtoList;
     }
+
+    public boolean likedByMember(Long postId) {
+        MemberFeignDto member = getMemberInfo();
+        String memberEmail = member.getMemberEmail();
+
+        String key = "post:likes:" + postId;
+        String userKey = "post:likes:users:" + postId;
+
+        return redisTemplate.opsForSet().isMember(userKey, memberEmail);
+    }
 }
 

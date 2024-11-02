@@ -162,4 +162,11 @@ public class PostController {
         }
     }
 
+    // 좋아요 상태 확인 API
+    @GetMapping("/posts/likes/status/{postId}")
+    public ResponseEntity<Boolean> checkLikeStatus(@PathVariable Long postId) {
+        boolean liked = postService.likedByMember(postId);
+        return ResponseEntity.ok(liked);
+    }
+
 }
