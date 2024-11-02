@@ -114,7 +114,7 @@ public class PaymentController {
         }
     }
 
-//    @Scheduled(cron = "0 0/1 * * * ?")  // 매 2분마다 실행 (테스트용)
+//    @Scheduled(cron = "0 0/1 * * * ?")  // 매 1분마다 실행 (테스트용)
     @Scheduled(cron = "0 0 * * * ?")  // 매 1시간마다 실행
     public void processMonthlySubscriptions() {
         log.info("정기 결제 스케줄러 시작");  // 스케줄러가 실행되었는지 확인

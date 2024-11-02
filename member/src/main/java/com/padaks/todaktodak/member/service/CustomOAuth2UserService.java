@@ -29,6 +29,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 
+        System.out.println("오기 시작했다.");
         OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
@@ -40,6 +41,8 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         // OAuth2UserSevice를 통해 가져온 OAuth2User의 attribute를 저장
         OAuthAttributes attributes = OAuthAttributes.of(registrationId,
                 userNameAttributeName, oAuth2User.getAttributes());
+        System.out.println("멤버라는 것은 " + attributes);
+        System.out.println("멤버라는 것은 " + attributes.getMemberEmail());
 
         Member member = null;
         member = saveOrUpdate(attributes);

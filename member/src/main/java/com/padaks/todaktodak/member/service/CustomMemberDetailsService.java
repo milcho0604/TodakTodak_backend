@@ -22,8 +22,11 @@ public class CustomMemberDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String memberEmail) throws UsernameNotFoundException {
+        System.out.println("로드라는 것은 " + memberEmail);
+
         Member member = memberRepository.findByMemberEmail(memberEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + memberEmail));
+        System.out.println("멤버 로드라는 것은 " + member.getMemberEmail());
 
         List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(member.getRole().getKey()));
 // loadUserByUsername 메서드에 로깅 추가

@@ -79,6 +79,8 @@ dependencies {
 
 	implementation 'com.amazonaws:aws-java-sdk-secretsmanager:1.12.300'
 
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
+
 }
 
 ext{

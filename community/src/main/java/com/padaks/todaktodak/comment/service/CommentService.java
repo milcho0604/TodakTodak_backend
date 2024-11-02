@@ -47,11 +47,6 @@ public class CommentService {
         return member;
     }
 
-    public MemberInfoDto getMemberName(String memberEmail){
-        MemberInfoDto dto = memberFeignClient.getMemberByEmail(memberEmail);
-        return  dto;
-    }
-
 //    댓글 작성 메소드
     public Comment createComment(CommentSaveDto dto){
         MemberFeignDto member = getMemberInfo(); //현재 로그인한 사용자 정보

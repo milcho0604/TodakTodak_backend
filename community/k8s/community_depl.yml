@@ -76,18 +76,18 @@ spec:
                 secretKeyRef:
                   key: JWT_SECRET_RT
                   name: todak-secret
-          # 무중단 배포를 위한 컨테이너 health check
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: 8080
-          #   # 컨테이너 시작 후 지연시간 설정
-            initialDelaySeconds: 10
-          #   # 확인반복주기
-            periodSeconds: 10
-          #   # 요청 타임아웃 설정
-            timeoutSeconds: 1
-          #   # 성공 인식 횟수 설정
-            successThreshold: 1
-          #   # 연속 실패 횟수 : 연속적으로 5번을 실패하면 건강하지 않은 상태로 판단하여 기존 서버 종료시키지 않음
-            failureThreshold: 5
+          # # 무중단 배포를 위한 컨테이너 health check
+          # readinessProbe:
+          #   httpGet:
+          #     path: /health
+          #     port: 8080
+          # #   # 컨테이너 시작 후 지연시간 설정
+          #   initialDelaySeconds: 10
+          # #   # 확인반복주기
+          #   periodSeconds: 10
+          # #   # 요청 타임아웃 설정
+          #   timeoutSeconds: 1
+          # #   # 성공 인식 횟수 설정
+          #   successThreshold: 1
+          # #   # 연속 실패 횟수 : 연속적으로 5번을 실패하면 건강하지 않은 상태로 판단하여 기존 서버 종료시키지 않음
+          #   failureThreshold: 5

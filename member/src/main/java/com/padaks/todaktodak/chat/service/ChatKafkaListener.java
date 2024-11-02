@@ -1,5 +1,6 @@
 package com.padaks.todaktodak.chat.service;
 
+import com.padaks.todaktodak.chat.chatmessage.domain.ChatMessage;
 import com.padaks.todaktodak.chat.chatmessage.dto.ChatMessageReqDto;
 import com.padaks.todaktodak.chat.chatroom.domain.ChatRoom;
 import com.padaks.todaktodak.chat.chatroom.repository.ChatRoomRepository;
@@ -30,16 +31,15 @@ public class ChatKafkaListener { // Kafka
         log.info("Kafka received message: {}", chatMessageReqDto); // 수신된 메시지 로그
 
         // Kafka로 수신한 메시지를 WebSocket을 통해 전달
-        Long chatRoomId = chatMessageReqDto.getChatRoomId();
+//        Long chatRoomId = chatMessageReqDto.getChatRoomId();
 //        String memberEmail = chatMessageReqDto.getMemberEmail(); // token을 통해 email을 얻는 로직 필요
-
         // WebSocket을 통해 메시지를 채팅방에 전달
         // 이 시점?
-        webSocketService.sendMessage(chatRoomId, chatMessageReqDto);
+        webSocketService.sendMessage(chatMessageReqDto.getChatRoomId(), chatMessageReqDto);
 
-        String adminEmail = "todak@test.com";
-        ChatRoom chatRoom = chatRoomRepository.findByIdOrThrow(chatRoomId);
-        String userEmail = chatRoom.getMember().getMemberEmail();
+//        String adminEmail = "todak@test.com";
+//        ChatRoom chatRoom = chatRoomRepository.findByIdOrThrow(chatMessageReqDto.getChatRoomId());
+//        String userEmail = chatRoom.getMember().getMemberEmail();
 
 //        if (!memberEmail.equals(adminEmail)){
 //            fcmService.sendMessage(adminEmail, chatRoom.getMember().getName()+"님께서 문의 채팅에 내용을 남겼습니다.", chatMessageReqDto.getContents(), Type.CHAT, null);

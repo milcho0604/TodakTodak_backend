@@ -61,15 +61,15 @@ public class RedisConfig {
     }
 
     // ses 메일
-    @Bean
-    public CacheManager cacheManager() {
-        RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig()
-                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
-                .entryTtl(Duration.ofMinutes(2))
-                .disableCachingNullValues();
-        return RedisCacheManager.builder(lettuceConnectionFactory())
-                .cacheDefaults(configuration)
-                .build();
-    }
+//    @Bean
+//    public CacheManager cacheManager() {
+//        RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig()
+//                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
+//                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
+//                .entryTtl(Duration.ofMinutes(2))
+//                .disableCachingNullValues();
+//        return RedisCacheManager.builder(lettuceConnectionFactory())
+//                .cacheDefaults(configuration)
+//                .build();
+//    }
 }

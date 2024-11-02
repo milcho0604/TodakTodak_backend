@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @RequiredArgsConstructor
@@ -114,20 +115,37 @@ public class FcmService {
                 .setToken(token)
                 .build();
         System.out.println(message.toString());
-        try {
-            // 비동기 처리 결과 기다리기
-            String response = FirebaseMessaging.getInstance().sendAsync(message).get();
-            System.out.println("Successfully send message: " + response);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); // 스레드 상태 복원
-            e.printStackTrace();
-            throw new RuntimeException("Thread was interrupted during FCM message sending: " + e.getMessage(), e);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-            throw new RuntimeException("FCM 메시지 전송 중 오류 발생: " + e.getCause().getMessage(), e.getCause());
-        } catch (Exception e) {
-            throw new RuntimeException("Unexpected error during FCM message sending: " + e.getMessage(), e);
-        }
+//        try {
+//            // 비동기 처리 결과 기다리기
+//            String response = FirebaseMessaging.getInstance().sendAsync(message).get();
+//            System.out.println("Successfully send message: " + response);
+//        } catch (InterruptedException e) {
+//            Thread.currentThread().interrupt(); // 스레드 상태 복원
+//            e.printStackTrace();
+//            throw new RuntimeException("Thread was interrupted during FCM message sending: " + e.getMessage(), e);
+//        } catch (ExecutionException e) {
+//            e.printStackTrace();
+//            throw new RuntimeException("FCM 메시지 전송 중 오류 발생: " + e.getCause().getMessage(), e.getCause());
+//        } catch (Exception e) {
+//            throw new RuntimeException("Unexpected error during FCM message sending: " + e.getMessage(), e);
+//        }
+
+        // 비동기 처리로 FCM 메시지 전송
+        CompletableFuture.runAsync(() -> {
+            try {
+                // 비동기 처리 결과 기다리기
+                String response = FirebaseMessaging.getInstance().sendAsync(message).get();
+                System.out.println("Successfully sent message: " + response);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                System.err.println("Thread was interrupted during FCM message sending: " + e.getMessage());
+            } catch (ExecutionException e) {
+                System.err.println("FCM 메시지 전송 중 오류 발생: " + e.getCause().getMessage());
+                // 추가적인 로깅 및 오류 처리
+            } catch (Exception e) {
+                System.err.println("Unexpected error during FCM message sending: " + e.getMessage());
+            }
+        });
     }
 
     public Page<NotificationResDto> myNotis(Pageable pageable) {

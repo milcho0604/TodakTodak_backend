@@ -69,6 +69,8 @@ spring:
           starttls:
             enable: true
         debug: true
+  cache:
+    type: redis
   redis:
     host: ${REDIS_HOST}
     port: 6379
