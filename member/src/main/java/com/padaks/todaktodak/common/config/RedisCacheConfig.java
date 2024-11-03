@@ -30,7 +30,8 @@ public class RedisCacheConfig {
     @Value("${spring.redis.port}")
     private int port;
     @Bean
-    public LettuceConnectionFactory cacheLettuceConnectionFactory() {
+    @Qualifier("cacheLettuceConnectionFactory")
+    public RedisConnectionFactory cacheLettuceConnectionFactory() {
         LettuceClientConfiguration lettuceClientConfiguration = LettuceClientConfiguration.builder()
                 .shutdownTimeout(Duration.ZERO)
                 .build();
@@ -38,6 +39,7 @@ public class RedisCacheConfig {
         redisStandaloneConfiguration.setDatabase(11); // 원하는 데이터베이스 인덱스 설정 (11번)
         return new LettuceConnectionFactory(redisStandaloneConfiguration, lettuceClientConfiguration);
     }
+
 
     @Bean(name = "redisObjectMapper")
     public ObjectMapper objectMapper() {
@@ -47,6 +49,7 @@ public class RedisCacheConfig {
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         return mapper;
     }
+
 
     @Bean
     public RedisCacheManager cacheManager(@Qualifier("cacheLettuceConnectionFactory") RedisConnectionFactory connectionFactory, @Qualifier("redisObjectMapper") ObjectMapper objectMapper) {

@@ -31,7 +31,7 @@ public class RedisConfig {
 
     // java 메일
     @Bean
-    public RedisTemplate<String, Object> javaRedisTemplate(@Qualifier("lettuceConnectionFactory") RedisConnectionFactory redisConnectionFactory) {
+    public RedisTemplate<String, Object> javaRedisTemplate(@Qualifier("smtpConnectionFactory") RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
         template.setKeySerializer(new StringRedisSerializer());
@@ -42,7 +42,8 @@ public class RedisConfig {
 
     // ses 메일
     @Bean
-    public LettuceConnectionFactory lettuceConnectionFactory() {
+    @Qualifier("smtpConnectionFactory")
+    public RedisConnectionFactory smtpConnectionFactory() {
         LettuceClientConfiguration lettuceClientConfiguration = LettuceClientConfiguration.builder()
                 .shutdownTimeout(Duration.ZERO)
                 .build();
@@ -52,15 +53,15 @@ public class RedisConfig {
     }
 
     // ses 메일
-    @Bean
-    public RedisTemplate<Object, Object> redisTemplate() {
-        RedisTemplate<Object, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(lettuceConnectionFactory());
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setHashKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new StringRedisSerializer());
-        return template;
-    }
+//    @Bean
+//    public RedisTemplate<Object, Object> redisTemplate() {
+//        RedisTemplate<Object, Object> template = new RedisTemplate<>();
+//        template.setConnectionFactory(lettuceConnectionFactory());
+//        template.setKeySerializer(new StringRedisSerializer());
+//        template.setHashKeySerializer(new StringRedisSerializer());
+//        template.setValueSerializer(new StringRedisSerializer());
+//        return template;
+//    }
 
     // ses 메일
 //    @Bean

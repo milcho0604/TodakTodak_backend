@@ -31,7 +31,8 @@ public class RedisCacheConfig {
     @Value("${spring.redis.port}")
     private int port;
     @Bean
-    public LettuceConnectionFactory cacheLettuceConnectionFactory() {
+    @Qualifier("cacheLettuceConnectionFactory")
+    public RedisConnectionFactory cacheLettuceConnectionFactory() {
         LettuceClientConfiguration lettuceClientConfiguration = LettuceClientConfiguration.builder()
                 .shutdownTimeout(Duration.ZERO)
                 .build();
