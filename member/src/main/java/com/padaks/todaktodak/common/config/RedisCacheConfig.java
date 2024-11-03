@@ -24,7 +24,6 @@ import java.time.Duration;
 @Configuration
 @EnableCaching
 public class RedisCacheConfig {
-
     @Value("${spring.redis.host}")
     private String host;
 
@@ -60,3 +59,4 @@ public class RedisCacheConfig {
                 .build();
     }
 }
+

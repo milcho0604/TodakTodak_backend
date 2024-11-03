@@ -10,12 +10,14 @@ import com.padaks.todaktodak.hospital.adminDto.AdminHospitalListDetailResDto;
 import com.padaks.todaktodak.hospital.domain.Hospital;
 import com.padaks.todaktodak.hospital.dto.*;
 import com.padaks.todaktodak.hospital.repository.HospitalRepository;
-import com.padaks.todaktodak.reservation.service.MemberFeign;
+import com.padaks.todaktodak.common.feign.MemberFeign;
 import com.padaks.todaktodak.review.repository.ReviewRepository;
 import com.padaks.todaktodak.common.util.DistanceCalculator;
 import com.padaks.todaktodak.common.util.S3ClientFileUpload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -27,7 +29,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -44,8 +45,6 @@ public class HospitalService {
     private final S3ClientFileUpload s3ClientFileUpload;
     private final DistanceCalculator distanceCalculator;
     private final MemberFeign memberFeign;
-//    private final MemberFeign memberFeign
-//    private final MemberFeignClient memberFeignClient;
     private final ReviewRepository reviewRepository;
 
     public MemberFeignDto getMemberInfo() {
@@ -99,6 +98,7 @@ public class HospitalService {
     }
 
     // 병원 승인
+    @CacheEvict(value = "hospitalList", allEntries = true)
     public void acceptHospital(Long id){
         Hospital hospital = hospitalRepository.findByIdDeletedAtIsNullOrThrow(id);
         hospital.acceptHospital(); // isAccept = true (승인처리)
@@ -171,6 +171,7 @@ public class HospitalService {
 
     // 병원 리스트 조회 ('~~동' 주소기준)
     // TODO - 정렬조건 : 거리가까운 순, 별점순, 리뷰 순
+    @Cacheable(value = "hospitalList", key = "#dong + '-' + #latitude + '-' + #longitude + '-hospital'")
     public List<HospitalListResDto> getHospitalList(String dong,
                                                     BigDecimal latitude,
                                                     BigDecimal longitude){
@@ -286,6 +287,7 @@ public class HospitalService {
 
     // 병원 리스트 조회 ('~~동' 주소기준) // 인기순 size=8
     // TODO - 정렬조건 : 거리가까운 순, 대기자 적은 순
+    @Cacheable(value = "famousHospitalList", key = "#dong + '-' + #latitude + '-' + #longitude + '-famous'")
     public List<HospitalListResDto> getFamousHospitalList(String dong,
                                                     BigDecimal latitude,
                                                     BigDecimal longitude){
