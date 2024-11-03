@@ -30,6 +30,18 @@ public class RedisConfig {
     private int port;
 
     // java 메일
+    // Database 2를 사용하는 smtpConnectionFactory
+    @Bean
+    @Qualifier("smtpConnectionFactory")
+    public RedisConnectionFactory smtpConnectionFactory() {
+        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
+        configuration.setHostName(host);
+        configuration.setPort(port);
+        configuration.setDatabase(2); // 데이터베이스 2
+        return new LettuceConnectionFactory(configuration);
+    }
+
+    // smtpConnectionFactory를 사용하는 기본 RedisTemplate
     @Bean
     public RedisTemplate<String, Object> redisTemplate(@Qualifier("smtpConnectionFactory") RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
@@ -38,29 +50,6 @@ public class RedisConfig {
         template.setValueSerializer(new StringRedisSerializer());
         return template;
     }
-
-
-    // ses 메일
-    @Bean
-    @Qualifier("smtpConnectionFactory")
-    public RedisConnectionFactory smtpConnectionFactory() {
-        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
-        configuration.setHostName(host);
-        configuration.setPort(port);
-        configuration.setDatabase(2);
-        return new LettuceConnectionFactory(configuration);
-    }
-
-//     ses 메일
-    @Bean
-    public RedisTemplate<String, Object> javaRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
-        RedisTemplate<String, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(redisConnectionFactory);
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new StringRedisSerializer());
-        return template;
-    }
-
     // ses 메일
 //    @Bean
 //    public CacheManager cacheManager() {
