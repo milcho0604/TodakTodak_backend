@@ -94,10 +94,10 @@ jobs:
       - name: eks kubectl apply
         run: |
           # Blue 환경 배포
-          kubectl apply -f ./community/k8s/community_depl_blue.yml
+          kubectl apply -f ./community/k8s/community_blue_depl.yml
 
           # Green 환경 배포
-          kubectl apply -f ./community/k8s/community_depl_green.yml
+          kubectl apply -f ./community/k8s/community_green_depl.yml
           
           kubectl rollout restart deployment todak-blue-deployment -n todak
           kubectl rollout restart deployment todak-green-deployment -n todak
