@@ -32,12 +32,11 @@ public class RedisCacheConfig {
     @Bean
     @Qualifier("cacheLettuceConnectionFactory")
     public RedisConnectionFactory cacheLettuceConnectionFactory() {
-        LettuceClientConfiguration lettuceClientConfiguration = LettuceClientConfiguration.builder()
-                .shutdownTimeout(Duration.ZERO)
-                .build();
-        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(host, port);
-        redisStandaloneConfiguration.setDatabase(11); // 원하는 데이터베이스 인덱스 설정 (11번)
-        return new LettuceConnectionFactory(redisStandaloneConfiguration, lettuceClientConfiguration);
+        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
+        configuration.setHostName(host);
+        configuration.setPort(port);
+        configuration.setDatabase(11);
+        return new LettuceConnectionFactory(configuration);
     }
 
 
