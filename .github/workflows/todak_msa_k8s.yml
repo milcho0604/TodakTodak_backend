@@ -81,13 +81,26 @@ jobs:
           REPOSITORY: todak-community
           # dockerfile이 현재 위치가 아니기 때문에 폴더경로 적어서 명시
         run: | 
-          docker build -t $REGISTRY/$REPOSITORY:latest \
-          -f ./community/Dockerfile  ./community
-          docker push $REGISTRY/$REPOSITORY:latest
+          # Blue 이미지 빌드 및 푸시
+          docker build -t $REGISTRY/$REPOSITORY:blue \
+          -f ./community/Dockerfile ./community
+          docker push $REGISTRY/$REPOSITORY:blue
+
+          # Green 이미지 빌드 및 푸시 (예: 개발 후 새로운 버전이 green으로 배포)
+          docker build -t $REGISTRY/$REPOSITORY:green \
+          -f ./community/Dockerfile ./community
+          docker push $REGISTRY/$REPOSITORY:green
       
       - name: eks kubectl apply
         run: |
-          kubectl apply -f ./community/k8s/community_depl.yml
-          kubectl apply -f ./community/k8s/community_service.yml
-          kubectl rollout restart deployment community-deployment -n todak
+          # Blue 환경 배포
+          kubectl apply -f ./community/k8s/community_depl_blue.yml
+          kubectl apply -f ./community/k8s/community_service_blue.yml
+
+          # Green 환경 배포
+          kubectl apply -f ./community/k8s/community_depl_green.yml
+          kubectl apply -f ./community/k8s/community_service_green.yml
+
+          # 롤아웃 재시작
+          kubectl patch service community-service -n todak -p '{"spec": {"selector": {"app": "community", "version": "green"}}}'  # green으로 변경
           
