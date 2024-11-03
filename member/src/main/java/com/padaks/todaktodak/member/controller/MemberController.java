@@ -8,7 +8,7 @@ import com.padaks.todaktodak.member.dto.DoctorInfoDto;
 import com.padaks.todaktodak.member.domain.Address;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.dto.*;
-import com.padaks.todaktodak.member.service.MemberAuthService;
+//import com.padaks.todaktodak.member.service.MemberAuthService;
 import com.padaks.todaktodak.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +39,7 @@ import java.util.Map;
 public class MemberController {
 
     private final MemberService memberService;
-    private final MemberAuthService memberAuthService;
+//    private final MemberAuthService memberAuthService;
 
     @GetMapping("/get/member")
     public MemberPayDto getMember() {
@@ -165,38 +165,38 @@ public class MemberController {
     }
 
     // 이메일 인증 코드 발송
-    @PostMapping("/verification/email/send")
-    public ResponseEntity<?> sendVerificationEmail(@RequestBody SignUpVerificationSendEmailDtoRequest requestDto) {
-        try {
-            EmailVerificationDtoResponse response = memberAuthService.sendSignUpVerificationEmail(requestDto);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new CommonErrorDto(HttpStatus.BAD_REQUEST, "이메일 인증 번호 발송에 실패했습니다: " + e.getMessage()));
-        }
-    }
+//    @PostMapping("/verification/email/send")
+//    public ResponseEntity<?> sendVerificationEmail(@RequestBody SignUpVerificationSendEmailDtoRequest requestDto) {
+//        try {
+//            EmailVerificationDtoResponse response = memberAuthService.sendSignUpVerificationEmail(requestDto);
+//            return ResponseEntity.ok(response);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                    .body(new CommonErrorDto(HttpStatus.BAD_REQUEST, "이메일 인증 번호 발송에 실패했습니다: " + e.getMessage()));
+//        }
+//    }
 
     // 이메일 인증 확인 로직
-    @PostMapping("/verification/email/check")
-    public ResponseEntity<?> checkVerificationEmail(@RequestBody EmailVerificationDto requestDto) {
-        try {
-            EmailVerificationDto emailVerificationDto = memberAuthService.checkSignUpVerificationEmail(
-                    requestDto.getVerificationToken(), requestDto.getVerificationNumber());
-            // 인증 성공 응답
-            return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "이메일 인증이 성공적으로 완료되었습니다.", emailVerificationDto));
-        } catch (IllegalArgumentException e) {
-            // 인증 실패 응답
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new CommonErrorDto(HttpStatus.BAD_REQUEST, "이메일 인증에 실패했습니다: " + e.getMessage()));
-        } catch (Exception e) {
-            // 기타 오류 응답
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new CommonErrorDto(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 인증 처리 중 오류가 발생했습니다."));
-        }
-    }
+//    @PostMapping("/verification/email/check")
+//    public ResponseEntity<?> checkVerificationEmail(@RequestBody EmailVerificationDto requestDto) {
+//        try {
+//            EmailVerificationDto emailVerificationDto = memberAuthService.checkSignUpVerificationEmail(
+//                    requestDto.getVerificationToken(), requestDto.getVerificationNumber());
+//            // 인증 성공 응답
+//            return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "이메일 인증이 성공적으로 완료되었습니다.", emailVerificationDto));
+//        } catch (IllegalArgumentException e) {
+//            // 인증 실패 응답
+//            e.printStackTrace();
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                    .body(new CommonErrorDto(HttpStatus.BAD_REQUEST, "이메일 인증에 실패했습니다: " + e.getMessage()));
+//        } catch (Exception e) {
+//            // 기타 오류 응답
+//            e.printStackTrace();
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body(new CommonErrorDto(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 인증 처리 중 오류가 발생했습니다."));
+//        }
+//    }
 
     @GetMapping("/edit-info")
     public ResponseEntity<?> getEditUserInfo(@AuthenticationPrincipal UserDetails userDetails) {
