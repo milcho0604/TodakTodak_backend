@@ -34,7 +34,7 @@ jobs:
 
       - name: eks kubectl delete
         run: |
-          kubectl delete -f ./community/k8s/community_depl.yml --ignore-not-found
+#          kubectl delete -f ./community/k8s/community_depl.yml --ignore-not-found
           kubectl delete -f ./member/k8s/member_depl.yml --ignore-not-found
           kubectl delete -f ./reservation/k8s/reservation_depl.yml --ignore-not-found
 
