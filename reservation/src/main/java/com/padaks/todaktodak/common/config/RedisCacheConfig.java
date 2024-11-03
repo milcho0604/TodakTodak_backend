@@ -39,7 +39,7 @@ public class RedisCacheConfig {
         redisStandaloneConfiguration.setDatabase(11); // 원하는 데이터베이스 인덱스 설정 (11번)
         return new LettuceConnectionFactory(redisStandaloneConfiguration, lettuceClientConfiguration);
     }
-    @Bean
+    @Bean(name = "redisObjectMapper")
     public ObjectMapper objectMapper() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
