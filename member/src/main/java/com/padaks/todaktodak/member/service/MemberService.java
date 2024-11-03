@@ -18,6 +18,7 @@ import com.padaks.todaktodak.common.util.S3ClientFileUpload;
 import com.padaks.todaktodak.notification.service.FcmService;
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -662,6 +663,7 @@ public class MemberService {
         return members.stream().map(MemberDetailResDto::fromEntity).collect(Collectors.toList());
     }
 
+    @Cacheable(value = "untactDoctorList", key = "#today + '-' + #search + '-' + #sortBy")
     public List<DoctorUntactListDto> untactDoctorList(DayOfHoliday today, String search, String sortBy) {
 
         DayOfHoliday dayOfWeek = today;

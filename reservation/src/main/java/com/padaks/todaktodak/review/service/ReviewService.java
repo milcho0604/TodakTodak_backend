@@ -1,10 +1,9 @@
 package com.padaks.todaktodak.review.service;
 
 import com.padaks.todaktodak.common.dto.MemberFeignDto;
-import com.padaks.todaktodak.common.exception.BaseException;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
-import com.padaks.todaktodak.reservation.service.MemberFeign;
+import com.padaks.todaktodak.common.feign.MemberFeign;
 import com.padaks.todaktodak.review.domain.Review;
 import com.padaks.todaktodak.review.dto.*;
 import com.padaks.todaktodak.review.repository.ReviewRepository;
