@@ -29,7 +29,7 @@ spec:
               memory: "500Mi"
           env:
             - name: SPRING_PROFILES_ACTIVE
-              value: "blue"
+              value: blue
             - name: REDIS_HOST
               valueFrom:
                 secretKeyRef:
