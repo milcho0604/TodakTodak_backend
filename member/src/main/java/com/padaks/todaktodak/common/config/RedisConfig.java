@@ -31,7 +31,7 @@ public class RedisConfig {
 
     // java 메일
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+    public RedisTemplate<String, Object> redisTemplate(@Qualifier("smtpConnectionFactory") RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
         template.setKeySerializer(new StringRedisSerializer());
