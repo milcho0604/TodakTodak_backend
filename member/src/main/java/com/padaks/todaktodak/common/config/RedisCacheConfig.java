@@ -49,7 +49,7 @@ public class RedisCacheConfig {
     }
 
     @Bean
-    public RedisCacheManager cacheManager(@Qualifier("cacheLettuceConnectionFactory") RedisConnectionFactory connectionFactory, ObjectMapper objectMapper) {
+    public RedisCacheManager cacheManager(@Qualifier("cacheLettuceConnectionFactory") RedisConnectionFactory connectionFactory, @Qualifier("redisObjectMapper") ObjectMapper objectMapper) {
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofHours(1))
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
