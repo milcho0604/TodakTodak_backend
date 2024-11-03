@@ -7,11 +7,11 @@
 ## 팀원
 <table>
 	<tr>
-    <td><img width="300" alt="슬기" src="https://github.com/wisdom0405.png"> </td>
-    <td><img width="300" alt="창현" src="https://github.com/milcho0604.png"></td>
-    <td><img width="300" alt="은지" src="https://github.com/qkdrmawll.png"></td>
-    <td><img width="300" alt="무리" src="https://github.com/Choi-Moori.png"></td>
-    <td><img width="300" alt="무리" src="https://github.com/haah21.png"></td>
+    <td><img width="300" alt="슬기" src="https://github.com/user-attachments/assets/702af69e-2fa5-40f3-9dcf-7a23366965dd"> </td>
+    <td><img width="300" alt="창현" src="https://github.com/user-attachments/assets/846f19b6-aafc-4203-a3f0-0dfd1f8bafed"></td>
+    <td><img width="300" alt="은지" src="https://github.com/user-attachments/assets/8b0d5d98-ba77-484c-95de-1caddb9b3a08"></td>
+    <td><img width="300" alt="무리" src="https://github.com/user-attachments/assets/2dac50f5-3e32-441f-a180-6a88c9b1bca9"></td>
+    <td><img width="300" alt="한아" src="https://github.com/user-attachments/assets/5d11aecf-c142-4de8-b700-5afa4d634314"></td>
 	</tr>
 		<tr>
     <th><a href="https://github.com/wisdom0405"> 정슬기 </a></th>
@@ -20,11 +20,11 @@
     <th><a href="https://github.com/Moori"> 최무리</a> </th>
     <th><a href="https://github.com/haah21"> 이한아</a> </th>
   </tr>
-  <th> BE, 팀장 </th>
-  <th> BE </th>
-  <th> BE </th>
-  <th> BE </th>
-  <th> BE </th>
+  <th> 팀장,BE,FE </th>
+  <th> BE,FE </th>
+  <th> BE,FE </th>
+  <th> BE,FE </th>
+  <th> BE,FE </th>
 </table>
 
 
