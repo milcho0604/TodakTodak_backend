@@ -1,17 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: community-deployment
+  name: community-blue-deployment
   namespace: todak
 spec:
   replicas: 2
   selector:
     matchLabels:
       app: community
+      version: blue
   template:
     metadata:
       labels:
         app: community
+        version: blue
     spec:
       containers:
         - name: todak
@@ -26,6 +28,8 @@ spec:
               cpu: "0.5"
               memory: "500Mi"
           env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "blue"
             - name: REDIS_HOST
               valueFrom:
                 secretKeyRef:

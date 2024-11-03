@@ -1,3 +1,60 @@
+server:
+  port:8080
+
 spring:
   profiles:
-    active: dev
+    active: blue
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://${DB_HOST}:3306/todaktodak
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MariaDBDialect
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    show_sql: false
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+9
+  redis:
+    host: ${REDIS_HOST}
+    port: 6379
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP}
+    consumer:
+      #      groupid는 consumer 그룹을 식별하는 id 이다. 동일한 그룹ID를 가진 컨슈머들은 메시지를 분담해서 consume.
+      group-id: "${KAFKA_GROUP_ID:group-${random.value}}"
+      #      가장 처음으로 사용가능한 메시지부터 읽기 시작.
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+  application:
+    name: community-service
+jwt:
+  secret: ${JWT_SECRET}
+  secretKeyRT: ${JWT_SECRET_RT}
+  expirationRT: 86400000
+  expiration: 86400000  # 1 day in milliseconds
+
+cloud:
+  aws:
+    credentials:
+      access-key : ${AWS_ACCESS_KEY}
+      secret-key : ${AWS_SECRET_KEY}
+    region:
+      static: ap-northeast-2
+    s3:
+      bucket: todak-file
+
+springdoc:
+  enable-native-support: true
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    config-url: /community-service/v3/api-docs/swagger-config
+    urls:
+      - url: /community-service/v3/api-docs
+        name: community-service

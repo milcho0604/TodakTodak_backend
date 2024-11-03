@@ -15,5 +15,5 @@ import org.springframework.web.bind.annotation.PostMapping;
 public interface HospitalFeignClient {
     @GetMapping("/hospital/get/hospitalName/{id}")
         // member-service에 구현된 경로
-    HospitalNameFeignDto getHospitalName(@PathVariable Long id);
+    HospitalNameFeignDto getHospitalName(@PathVariable String Email);
 }

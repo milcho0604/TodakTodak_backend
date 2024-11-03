@@ -23,10 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +36,7 @@ public class CommentService {
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final ObjectMapper objectMapper;
     private final MemberFeignClient memberFeignClient;
+    private final HospitalFeignClient hospitalFeignClient;
 
     //member 객체 리턴
     public MemberFeignDto getMemberInfo() {
@@ -134,19 +132,29 @@ public class CommentService {
     public List<CommentDetailDto> getCommentByPostId(Long postId){
         List<Comment> comments = commentRepository.findByPostId(postId);
 
-        return comments.stream()
-                .filter(comment -> comment.getDeletedTimeAt() == null)
-                .map(comment -> CommentDetailDto.builder()
+        List<CommentDetailDto> commentDetails = new ArrayList<>();
+        for (Comment comment : comments) {
+            String hospitalName = "";
+            if(comment.getName().contains("원장")){
+                hospitalName = hospitalFeignClient.getHospitalName(comment.getDoctorEmail()).getHospitalName();
+            }
+            if (comment.getDeletedTimeAt() == null) {
+                CommentDetailDto commentDetail = CommentDetailDto.builder()
                         .id(comment.getId())
                         .content(comment.getContent())
                         .doctorEmail(comment.getDoctorEmail())
                         .name(comment.getName())
+                        .hospitalName(hospitalName)
                         .parentId(comment.getParent() != null ? comment.getParent().getId() : null)
                         .profileImg(comment.getProfileImg())
                         .createdTimeAt(comment.getCreatedTimeAt())
                         .updatedTimeAt(comment.getUpdatedTimeAt())
-                        .build())
-                .collect(Collectors.toList());
+                        .build();
+
+                commentDetails.add(commentDetail);
+            }
+        }
+        return commentDetails;
     }
 
     public Page<CommentDetailDto> CommentListByDoctorId(String doctorEmail, Pageable pageable){

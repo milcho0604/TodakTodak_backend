@@ -18,6 +18,7 @@ public class CommentDetailDto {
     private String doctorEmail;
     private String content;
     private String profileImg;
+    private String hospitalName;
     private LocalDateTime createdTimeAt;
     private LocalDateTime updatedTimeAt;
     private Long PostId;
