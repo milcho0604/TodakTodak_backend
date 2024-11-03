@@ -32,11 +32,11 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-#      - name: eks kubectl delete
-#        run: |
-#          kubectl delete -f ./community/k8s/community_depl.yml --ignore-not-found
-#          kubectl delete -f ./member/k8s/member_depl.yml --ignore-not-found
-#          kubectl delete -f ./reservation/k8s/reservation_depl.yml --ignore-not-found
+      - name: eks kubectl delete
+        run: |
+          kubectl delete -f ./community/k8s/community_depl.yml --ignore-not-found
+          kubectl delete -f ./member/k8s/member_depl.yml --ignore-not-found
+          kubectl delete -f ./reservation/k8s/reservation_depl.yml --ignore-not-found
 
 
 
@@ -81,27 +81,12 @@ jobs:
           REPOSITORY: todak-community
           # dockerfile이 현재 위치가 아니기 때문에 폴더경로 적어서 명시
         run: | 
-          # Blue 이미지 빌드 및 푸시
-          docker build -t $REGISTRY/$REPOSITORY:blue \
-          -f ./community/Dockerfile ./community
-          docker push $REGISTRY/$REPOSITORY:blue
-
-          # Green 이미지 빌드 및 푸시 (예: 개발 후 새로운 버전이 green으로 배포)
-          docker build -t $REGISTRY/$REPOSITORY:green \
-          -f ./community/Dockerfile ./community
-          docker push $REGISTRY/$REPOSITORY:green
+          docker build -t $REGISTRY/$REPOSITORY:latest \
+          -f ./community/Dockerfile  ./community
+          docker push $REGISTRY/$REPOSITORY:latest
       
       - name: eks kubectl apply
         run: |
-          # Blue 환경 배포
-          kubectl apply -f ./community/k8s/community_blue_depl.yml
-
-          # Green 환경 배포
-          kubectl apply -f ./community/k8s/community_green_depl.yml
-          
-          kubectl rollout restart deployment todak-blue-deployment -n todak
-          kubectl rollout restart deployment todak-green-deployment -n todak
-
-          # 롤아웃 재시작
-          kubectl patch service community-service -n todak -p '{"spec": {"selector": {"app": "community", "version": "green"}}}'  # green으로 변경
-          
+          kubectl apply -f ./reservation/k8s/community.yml
+          kubectl apply -f ./reservation/k8s/community.yml
+          kubectl rollout restart deployment community-deployment -n todak
