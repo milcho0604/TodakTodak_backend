@@ -130,4 +130,28 @@ public class KafkaConsumerConfig {
         return factory;
     }
 
+    @Bean
+    public ConsumerFactory<String, Object> communityafkaConsumerFactory() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServer);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffset);
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class); // JSON Deserializer로 수정
+        props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
+        props.put(JsonDeserializer.REMOVE_TYPE_INFO_HEADERS, false);
+
+        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), new JsonDeserializer<>(Object.class));
+    }
+
+    @Bean(name = "communityKafkaListenerContainerFactory")
+    public ConcurrentKafkaListenerContainerFactory<String, Object> communityKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(communityafkaConsumerFactory());
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
+
+        System.out.println("communityKafkaListenerContainerFactory Bean has been created!");
+
+        return factory;
+    }
 }

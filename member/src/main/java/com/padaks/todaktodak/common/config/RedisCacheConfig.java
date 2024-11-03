@@ -30,16 +30,19 @@ public class RedisCacheConfig {
 
     @Value("${spring.redis.port}")
     private int port;
+
+    // Database 11을 사용하는 cacheLettuceConnectionFactory
     @Bean
     @Qualifier("cacheLettuceConnectionFactory")
     public RedisConnectionFactory cacheLettuceConnectionFactory() {
-        LettuceClientConfiguration lettuceClientConfiguration = LettuceClientConfiguration.builder()
-                .shutdownTimeout(Duration.ZERO)
-                .build();
-        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(host, port);
-        redisStandaloneConfiguration.setDatabase(11); // 원하는 데이터베이스 인덱스 설정 (11번)
-        return new LettuceConnectionFactory(redisStandaloneConfiguration, lettuceClientConfiguration);
+        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
+        configuration.setHostName(host);
+        configuration.setPort(port);
+        configuration.setDatabase(11); // 데이터베이스 11
+        return new LettuceConnectionFactory(configuration);
     }
+
+    // RedisCacheManager를 위한 ObjectMapper
     @Bean(name = "redisObjectMapper")
     public ObjectMapper objectMapper() {
         ObjectMapper mapper = new ObjectMapper();
@@ -49,8 +52,10 @@ public class RedisCacheConfig {
         return mapper;
     }
 
+    // 캐싱용 RedisCacheManager
     @Bean
-    public RedisCacheManager cacheManager(@Qualifier("cacheLettuceConnectionFactory") RedisConnectionFactory connectionFactory, @Qualifier("redisObjectMapper") ObjectMapper objectMapper) {
+    public RedisCacheManager cacheManager(@Qualifier("cacheLettuceConnectionFactory") RedisConnectionFactory connectionFactory,
+                                          @Qualifier("redisObjectMapper") ObjectMapper objectMapper) {
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofHours(1))
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
@@ -60,5 +65,4 @@ public class RedisCacheConfig {
                 .cacheDefaults(config)
                 .build();
     }
-
 }

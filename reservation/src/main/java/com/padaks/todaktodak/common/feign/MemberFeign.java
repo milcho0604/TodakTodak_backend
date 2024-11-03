@@ -1,4 +1,4 @@
-package com.padaks.todaktodak.reservation.service;
+package com.padaks.todaktodak.common.feign;
 
 import com.padaks.todaktodak.common.config.FeignConfig;
 import com.padaks.todaktodak.common.dto.CommonResDto;

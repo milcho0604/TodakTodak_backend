@@ -16,7 +16,7 @@ import com.padaks.todaktodak.payment.domain.PaymentStatus;
 import com.padaks.todaktodak.payment.repository.PaymentRepository;
 import com.padaks.todaktodak.reservation.domain.Reservation;
 import com.padaks.todaktodak.reservation.repository.ReservationRepository;
-import com.padaks.todaktodak.reservation.service.MemberFeign;
+import com.padaks.todaktodak.common.feign.MemberFeign;
 import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.request.AgainPaymentData;
 import com.siot.IamportRestClient.request.CancelData;

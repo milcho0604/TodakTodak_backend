@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.padaks.todaktodak.common.dto.DtoMapper;
 import com.padaks.todaktodak.common.dto.MemberFeignDto;
 import com.padaks.todaktodak.common.exception.BaseException;
+import com.padaks.todaktodak.common.feign.MemberFeign;
 import com.padaks.todaktodak.hospital.domain.Hospital;
 import com.padaks.todaktodak.hospital.repository.HospitalRepository;
 import com.padaks.todaktodak.reservation.domain.Reservation;
@@ -29,12 +30,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.cache.annotation.Cacheable;
 import javax.persistence.EntityNotFoundException;
-import javax.print.Doc;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import static com.padaks.todaktodak.common.exception.exceptionType.GlobalExceptionType.JSON_PARSING_ERROR;
 import static com.padaks.todaktodak.common.exception.exceptionType.HospitalExceptionType.*;
@@ -53,7 +52,6 @@ public class ReservationService {
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final HospitalRepository hospitalRepository;
     private final MemberFeign memberFeign;
-//    private final MemberFeignClient memberFeignClient;
     private final ObjectMapper objectMapper;
     private final RealTimeService realTimeService;
     private final UntactService untactService;
@@ -76,7 +74,6 @@ public class ReservationService {
         this.kafkaTemplate = kafkaTemplate;
         this.hospitalRepository = hospitalRepository;
         this.memberFeign = memberFeign;
-//        this.memberFeignClient = memberFeignClient;
         this.objectMapper = objectMapper;
         this.realTimeService = realTimeService;
         this.untactService = untactService;

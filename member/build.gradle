@@ -67,12 +67,12 @@ dependencies {
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
 
 	// AWS SDK for Java - SES 모듈
-	implementation 'com.amazonaws:aws-java-sdk-ses:1.12.512'
-	implementation platform('com.amazonaws:aws-java-sdk-bom:1.12.512')
+//	implementation 'com.amazonaws:aws-java-sdk-ses:1.12.512'
+//	implementation platform('com.amazonaws:aws-java-sdk-bom:1.12.512')
 
 	// ses 알림 수신
-	implementation 'com.amazonaws:aws-java-sdk-ses'
-	implementation 'org.apache.commons:commons-lang3:3.12.0'
+//	implementation 'com.amazonaws:aws-java-sdk-ses'
+//	implementation 'org.apache.commons:commons-lang3:3.12.0'
 
 	// oauth 인증
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
