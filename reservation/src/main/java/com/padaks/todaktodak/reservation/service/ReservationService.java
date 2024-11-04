@@ -20,6 +20,7 @@ import com.padaks.todaktodak.reservation.repository.ReservationRepository;
 import com.padaks.todaktodak.untact.service.UntactService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -86,6 +87,7 @@ public class ReservationService {
     }
 
 //    진료 스케줄 예약 기능
+    @CacheEvict(value = "yesterdayReservations", allEntries = true)
     public void scheduleReservation(ReservationSaveReqDto dto){
         log.info("ReservationService[scheduleReservation] : 스케줄 예약 요청 처리 시작");
 
@@ -135,6 +137,7 @@ public class ReservationService {
     }
 
 //    당일 예약 기능
+    @CacheEvict(value = "yesterdayReservations", allEntries = true)
     public ReservationSaveResDto immediateReservation(ReservationSaveReqDto dto){
         log.info("ReservationService[immediateReservation] : 예약 요청 처리 시작");
 
@@ -181,6 +184,7 @@ public class ReservationService {
     }
 
 //    예약 취소 기능
+    @CacheEvict(value = "yesterdayReservations", allEntries = true)
     public void cancelledReservation(Long id){
         log.info("ReservationService[cancelledReservation] : 시작");
 //        예약의 id 로 찾고 만약 예약이 없을경우 RESERVATION_NOT_FOUND 예외를 발생 -> BaseException 에 정의
@@ -386,6 +390,7 @@ public class ReservationService {
             DoctorResDto doctorResDto = memberFeign.getDoctor(res.getDoctorEmail());
             ComesReservationResDto dto = dtoMapper.toTodayReservationResDto(res, childResDto, doctorResDto.getId());
             dtoMapper.setReservationTime(dto, res);
+            System.out.println(dto.toString());
             comesReservationResDtos.add(dto);
         }
 
@@ -394,6 +399,7 @@ public class ReservationService {
             Hospital hospital = hospitalRepository.findById(res.getHospitalId())
                     .orElseThrow(() -> new BaseException(HOSPITAL_NOT_FOUND));
             ComesReservationResDto dto = dtoMapper.toTodayReservationResDto(res, childResDto, hospital.getName());
+            System.out.println(dto.toString());
             comesReservationResDtos.add(dto);
         }
 
