@@ -31,4 +31,4 @@ WORKDIR /app
 COPY --from=stage1 /app/community/build/libs/*.jar app.jar
 
 # 컨테이너 실행 시 JAR 파일 실행
-ENTRYPOINT ["java -jar app.jar --spring.profiles.active=${SPRING_PROFILES_ACTIVE}"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
