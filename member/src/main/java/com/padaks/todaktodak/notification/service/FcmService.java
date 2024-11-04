@@ -60,6 +60,8 @@ public class FcmService {
                 } else if (member.getRole().equals(Role.NONUSER)) {
                     urlType = "hospital/admin/detail";
                     url = "https://www.todak.site/" + urlType;
+                } else {
+                    url = "https://www.todak.site/";
                 }
             } else if (type.equals(Type.CHILD)) {
                 urlType = "member/child";
