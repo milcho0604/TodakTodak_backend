@@ -52,7 +52,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 //    오늘 이후의 예약 중 status 가 아직 예약중인 상태인 예약리스트
     List<Reservation> findByMemberEmailAndReservationDateGreaterThanEqualAndStatus(String memberEmail, LocalDate localDate, Status status);
 
-    List<Reservation> findByMemberNameAndReservationDateBeforeAndStatusIsNot(String name, LocalDate localDate, Status status);
+    List<Reservation> findByMemberEmailAndReservationDateBeforeAndStatusIsNot(String memberEmail, LocalDate localDate, Status status);
 
     List<Reservation> findByChildId(Long id);
 
