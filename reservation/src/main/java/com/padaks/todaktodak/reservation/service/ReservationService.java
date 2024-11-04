@@ -368,7 +368,7 @@ public class ReservationService {
     }
 
     // 어제 예약 목록 조회 캐시 적용
-    @Cacheable(value = "yesterdayReservations", key = "#pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort.toString()")
+//    @Cacheable(value = "yesterdayReservations", key = "#pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort.toString()")
     public List<?> yesterdayListReservation(Pageable pageable) {
         LocalDate today = LocalDate.now();
         MemberFeignDto member = getMemberInfo();
