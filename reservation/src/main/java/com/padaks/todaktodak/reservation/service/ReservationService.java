@@ -382,7 +382,8 @@ public class ReservationService {
                 reservationRepository.findByMemberEmailAndReservationDateBeforeAndStatusIsNot(member.getMemberEmail(), today, Status.Confirmed);
         List<ReservationHistory> reservationHistoryList =
                 reservationHistoryRepository.findByMemberEmailAndReservationDateBefore(member.getMemberEmail(), today);
-
+        System.out.println("reserve"+reservationList.size());
+        System.out.println("reserve history"+reservationHistoryList.size());
         List<ComesReservationResDto> comesReservationResDtos = new ArrayList<>();
 
         for (Reservation res : reservationList) {
