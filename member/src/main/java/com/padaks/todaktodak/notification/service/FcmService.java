@@ -88,7 +88,13 @@ public class FcmService {
             }
         }
         // 중복 알림 체크
-        boolean notificationExists = notificationRepository.existsByMemberAndTypeAndRefId(member, type, id);
+        boolean notificationExists;
+        if (id == null) {
+            notificationExists = notificationRepository.existsByMemberAndType(member, type);
+        } else {
+            notificationExists = notificationRepository.existsByMemberAndTypeAndRefId(member, type, id);
+        }
+
         if (notificationExists) {
             System.out.println("Duplicate notification detected for member: " + memberEmail + ", type: " + type + ", refId: " + id);
             return;
