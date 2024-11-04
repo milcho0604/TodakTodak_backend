@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-alertmanager
+  namespace: monitoring
+  labels:
+    app: prometheus
+    component: alertmanager
+spec:
+  ports:
+    - name: web
+      port: 80
+      targetPort: 9093
+  selector:
+    app: prometheus
+    component: alertmanager
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: prometheus-alertmanager
+  namespace: monitoring
+  labels:
+    app: prometheus
+    component: alertmanager
+spec:
+  serviceName: prometheus-alertmanager
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+      component: alertmanager
+  template:
+    metadata:
+      labels:
+        app: prometheus
+        component: alertmanager
+    spec:
+      containers:
+      - name: alertmanager
+        image: prom/alertmanager:v0.22.2
+        args:
+          - "--config.file=/etc/alertmanager/config.yml"
+          - "--storage.path=/alertmanager"
+        ports:
+        - containerPort: 9093
+          name: web
+        volumeMounts:
+          - name: config-volume
+            mountPath: /etc/alertmanager
+          - name: storage-volume
+            mountPath: /alertmanager
+      volumes:
+        - name: config-volume
+          configMap:
+            name: prometheus-alertmanager
+  volumeClaimTemplates:
+  - metadata:
+      name: storage-volume
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: gp2
+      resources:
+        requests:
+          storage: 2Gi
