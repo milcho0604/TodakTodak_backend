@@ -87,18 +87,18 @@ public class FcmService {
                 url = "https://www.todak.site/";
             }
         }
-        // 중복 알림 체크
-        boolean notificationExists;
-        if (id == null) {
-            notificationExists = notificationRepository.existsByMemberAndType(member, type);
-        } else {
-            notificationExists = notificationRepository.existsByMemberAndTypeAndRefId(member, type, id);
-        }
-
-        if (notificationExists) {
-            System.out.println("Duplicate notification detected for member: " + memberEmail + ", type: " + type + ", refId: " + id);
-            return;
-        }
+//        // 중복 알림 체크
+//        boolean notificationExists;
+//        if (id == null) {
+//            notificationExists = notificationRepository.existsByMemberAndType(member, type);
+//        } else {
+//            notificationExists = notificationRepository.existsByMemberAndTypeAndRefId(member, type, id);
+//        }
+//
+//        if (notificationExists) {
+//            System.out.println("Duplicate notification detected for member: " + memberEmail + ", type: " + type + ", refId: " + id);
+//            return;
+//        }
         // 조립
         FcmNotification fcmNotification = FcmNotification.builder()
                 .member(member)
