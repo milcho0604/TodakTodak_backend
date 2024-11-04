@@ -52,10 +52,13 @@ public class FcmService {
                     urlType = "admin/payment/list";
                     url = "https://www.todak.site/" + urlType;
                 }else if (member.getRole().equals(Role.HOSPITAL)){
-                    urlType = "/memebr/doctor/reservation";
+                    urlType = "memebr/doctor/reservation";
                     url = "https://www.todak.site/" + urlType;
                 } else if (member.getRole().equals(Role.MEMBER)) {
                     urlType = "member/mypage/reservation";
+                    url = "https://www.todak.site/" + urlType;
+                } else if (member.getRole().equals(Role.NONUSER)) {
+                    urlType = "hospital/admin/detail";
                     url = "https://www.todak.site/" + urlType;
                 }
             } else if (type.equals(Type.CHILD)) {
