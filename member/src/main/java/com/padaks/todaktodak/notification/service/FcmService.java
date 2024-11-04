@@ -43,10 +43,6 @@ public class FcmService {
 
         String token = member.getFcmToken();
 
-//        if (token == null || token.isEmpty()) {
-//            throw new EntityNotFoundException("FCM token not found for memberId: " + memberEmail);
-//        }
-
         // 리다이렉트 url 셋팅
         String urlType = null;
         String url = null;
@@ -87,18 +83,7 @@ public class FcmService {
                 url = "https://www.todak.site/";
             }
         }
-//        // 중복 알림 체크
-//        boolean notificationExists;
-//        if (id == null) {
-//            notificationExists = notificationRepository.existsByMemberAndType(member, type);
-//        } else {
-//            notificationExists = notificationRepository.existsByMemberAndTypeAndRefId(member, type, id);
-//        }
-//
-//        if (notificationExists) {
-//            System.out.println("Duplicate notification detected for member: " + memberEmail + ", type: " + type + ", refId: " + id);
-//            return;
-//        }
+
         // 조립
         FcmNotification fcmNotification = FcmNotification.builder()
                 .member(member)
@@ -110,6 +95,12 @@ public class FcmService {
                 .recipient(memberEmail)
                 .url(url)
                 .build();
+        // FCM 토큰이 없을 경우 알림만 DB에 저장하고 종료
+        if (token == null || token.isEmpty()) {
+            System.out.println("FCM token not found for memberId: " + memberEmail);
+            notificationRepository.save(fcmNotification);
+            return;
+        }
 
         // db에 FcmNotification 저장
         notificationRepository.save(fcmNotification);
