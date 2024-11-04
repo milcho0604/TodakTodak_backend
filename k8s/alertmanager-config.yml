@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-alertmanager
+  namespace: monitoring
+  labels:
+    app: prometheus
+    component: alertmanager
+data:
+  config.yml: |
+    route:
+      group_by: ['alertname']
+      receiver: 'default'
+      group_wait: 10s
+      group_interval: 10m
+      repeat_interval: 3h
+    receivers:
+      - name: 'default'
+        email_configs:
+          - to: 'uiop0818@naver.com'            # 알림 받을 이메일 주소
+            from: 'milcho0604@gmail.com'         # 알림 발송 이메일
+            smarthost: '${MAIL_HOST}:587'        # SMTP 서버 주소
+            auth_username: '${MAIL_USER}'        # SMTP 사용자명
+            auth_password: '${MAIL_PASSWORD}'    # SMTP 비밀번호
+            send_resolved: true                  # 알림이 해결되었을 때 이메일 발송 여부
