@@ -374,7 +374,7 @@ public class ReservationService {
         MemberFeignDto member = getMemberInfo();
 
         List<Reservation> reservationList =
-                reservationRepository.findByMemberEmailAndReservationDateBeforeOrStatusIsNot(member.getMemberEmail(), today, Status.Confirmed);
+                reservationRepository.findByMemberEmailAndReservationDateBeforeAndStatusIsNot(member.getMemberEmail(), today, Status.Confirmed);
         List<ReservationHistory> reservationHistoryList =
                 reservationHistoryRepository.findByMemberEmailAndReservationDateBefore(member.getMemberEmail(), today);
 
