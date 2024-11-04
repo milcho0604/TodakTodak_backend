@@ -87,7 +87,12 @@ public class FcmService {
                 url = "https://www.todak.site/";
             }
         }
-
+        // 중복 알림 체크
+        boolean notificationExists = notificationRepository.existsByMemberAndTypeAndRefId(member, type, id);
+        if (notificationExists) {
+            System.out.println("Duplicate notification detected for member: " + memberEmail + ", type: " + type + ", refId: " + id);
+            return;
+        }
         // 조립
         FcmNotification fcmNotification = FcmNotification.builder()
                 .member(member)
@@ -105,30 +110,18 @@ public class FcmService {
 
         Message message = Message.builder()
                 .setWebpushConfig(WebpushConfig.builder()
-                        .setNotification(WebpushNotification.builder()
-                                .setTitle(title)
-                                .setBody(body)
-                                .build())
+                        .putHeader("Urgency", "high") // 우선순위를 HIGH로 설정
                         .build())
-                .putData("url", url) //이동할 url 추가
-                .putData("notificationId", String.valueOf(fcmNotification.getId())) //이동할 url 추가
+                .putData("title", title) // 알림 제목을 data에 추가
+                .putData("body", body) // 알림 내용을 data에 추가
+                .putData("url", url) // 이동할 URL 추가
+                .putData("notificationId", String.valueOf(fcmNotification.getId())) // 알림 ID 추가
                 .setToken(token)
                 .build();
+
+
+
         System.out.println(message.toString());
-//        try {
-//            // 비동기 처리 결과 기다리기
-//            String response = FirebaseMessaging.getInstance().sendAsync(message).get();
-//            System.out.println("Successfully send message: " + response);
-//        } catch (InterruptedException e) {
-//            Thread.currentThread().interrupt(); // 스레드 상태 복원
-//            e.printStackTrace();
-//            throw new RuntimeException("Thread was interrupted during FCM message sending: " + e.getMessage(), e);
-//        } catch (ExecutionException e) {
-//            e.printStackTrace();
-//            throw new RuntimeException("FCM 메시지 전송 중 오류 발생: " + e.getCause().getMessage(), e.getCause());
-//        } catch (Exception e) {
-//            throw new RuntimeException("Unexpected error during FCM message sending: " + e.getMessage(), e);
-//        }
 
         // 비동기 처리로 FCM 메시지 전송
         CompletableFuture.runAsync(() -> {
