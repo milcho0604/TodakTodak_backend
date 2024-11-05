@@ -9,7 +9,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,24 +42,12 @@ public class RealTimeService {
                 .child(waitingTurnDto.getDoctorId());
 
         String key = "queue:" + waitingTurnDto.getHospitalName() + ":" + waitingTurnDto.getDoctorId();
-
-        // 현재 대기 순서를 가져옵니다.
-        Long currentQueueSize = (long) redisTemplate.opsForValue().get(key);
-        long myTurn = (currentQueueSize != null) ? currentQueueSize + 1 : 1;
+        long myTurn = redisTemplate.opsForValue().increment(key);
 
         Map<String, Object> updates = new HashMap<>();
         updates.put("id", waitingTurnDto.getReservationId());
         updates.put("turn", myTurn);
 
-        doctorRef.child(waitingTurnDto.getReservationId()).updateChildren(updates, (error, ref) -> {
-            if (error != null) {
-                System.out.println("Failed to update data: " + error.getMessage());
-                // 충돌 처리: 다른 요청이 업데이트를 이미 한 경우 처리 로직
-            } else {
-                System.out.println("User data updated successfully");
-                redisTemplate.opsForValue().increment(key); // Redis에 대기 순서 증가
-            }
-        });
     }
 
     //  실시간 DB에서 삭제하는 로직
