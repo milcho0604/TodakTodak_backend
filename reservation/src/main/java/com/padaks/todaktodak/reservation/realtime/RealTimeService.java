@@ -41,7 +41,7 @@ public class RealTimeService {
                 .child(waitingTurnDto.getHospitalName())
                 .child(waitingTurnDto.getDoctorId());
 
-        String key = "queue:" + waitingTurnDto.getHospitalName() + ":" + waitingTurnDto.getDoctorId();
+        String key = "queue:" + waitingTurnDto.getDoctorId();
         long myTurn = redisTemplate.opsForValue().increment(key);
 
         Map<String, Object> updates = new HashMap<>();
