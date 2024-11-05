@@ -147,7 +147,7 @@
 </details>
 <details>
   <summary> Prometheus, Grafana를 이용한 모니터링 서비스</summary>
-  <img src=""> 
+  <img src="https://github.com/user-attachments/assets/12e1504f-eb22-4de5-9892-4935e392a065"> 
 </details>
 
 ## 스택
