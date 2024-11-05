@@ -166,14 +166,8 @@ public class ReservationService {
             Reservation savedReservation = reservationRepository.save(reservation);
             RedisDto redisDto = dtoMapper.toRedisDto(reservation);
             redisTemplate.opsForZSet().add(key, redisDto, sequence);
-            WaitingTurnDto waitingTurnDto = dtoMapper.toWaitingTurnDto(reservation, doctorResDto);
-
-            Map<String, Object> realTimeData = new HashMap<>();
-            realTimeData.put("hospitalName", waitingTurnDto.getHospitalName());
-            realTimeData.put("reservationId", waitingTurnDto.getReservationId());
-            realTimeData.put("doctorId", waitingTurnDto.getDoctorId());
-            String kafkaMessage = objectMapper.writeValueAsString(realTimeData);
-            kafkaTemplate.send("immediate-realtime", kafkaMessage);
+            WaitingTurnDto waitingTurnDto = dtoMapper.toWaitingTurnDto(reservation, doctorResDto, key);
+            realTimeService.update(waitingTurnDto, redisDto);
 
             Map<String, Object> messageData = createMessageData(reservation, getMemberInfo().getName());
             String notificationMessage = objectMapper.writeValueAsString(messageData);

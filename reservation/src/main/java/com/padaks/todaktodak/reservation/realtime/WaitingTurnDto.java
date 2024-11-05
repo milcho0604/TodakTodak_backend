@@ -10,4 +10,5 @@ public class WaitingTurnDto {
     private String hospitalName;
     private String doctorId;
     private String reservationId;
+    private String key;
 }
