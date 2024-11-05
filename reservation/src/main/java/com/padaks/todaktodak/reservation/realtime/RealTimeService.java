@@ -2,8 +2,10 @@ package com.padaks.todaktodak.reservation.realtime;
 
 import com.google.firebase.database.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
@@ -18,6 +20,11 @@ public class RealTimeService {
 
     private final FirebaseDatabase database= FirebaseDatabase.getInstance();
     private final DatabaseReference databaseReference= database.getReference("todakpadak");
+    private final RedisTemplate<String, Object> redisTemplate;
+
+    public RealTimeService(@Qualifier("3") RedisTemplate<String, Object> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
 
 
     //    test API 에 사용
@@ -34,27 +41,19 @@ public class RealTimeService {
                 .child(waitingTurnDto.getHospitalName())
                 .child(waitingTurnDto.getDoctorId());
 
-        doctorRef.runTransaction(new Transaction.Handler() {
-            @Override
-            public Transaction.Result doTransaction(MutableData mutableData) {
-                long queueSize = mutableData.getChildrenCount();
-                long myTurn = queueSize + 1;
+        String key = "queue:" + waitingTurnDto.getHospitalName() + ":" + waitingTurnDto.getDoctorId();
+        Long myTurnLong = redisTemplate.opsForValue().increment(key);
+        long myTurn = (myTurnLong != null) ? myTurnLong : 1;
 
-                Map<String, Object> updates = new HashMap<>();
-                updates.put("id", waitingTurnDto.getReservationId());
-                updates.put("turn", myTurn);
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("id", waitingTurnDto.getReservationId());
+        updates.put("turn", myTurn);
 
-                mutableData.child(waitingTurnDto.getReservationId()).setValue(updates);
-                return Transaction.success(mutableData);
-            }
-
-            @Override
-            public void onComplete(DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
-                if (committed) {
-                    System.out.println("User data updated successfully");
-                } else {
-                    System.out.println("Failed to update data: " + (databaseError != null ? databaseError.getMessage() : "unknown error"));
-                }
+        doctorRef.child(waitingTurnDto.getReservationId()).updateChildren(updates, (error, ref) -> {
+            if (error != null) {
+                System.out.println("Failed to update data: " + error.getMessage());
+            } else {
+                System.out.println("User data updated successfully");
             }
         });
     }
