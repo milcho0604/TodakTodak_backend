@@ -1,6 +1,7 @@
 package com.padaks.todaktodak.reservation.realtime;
 
 import com.google.firebase.database.*;
+import com.padaks.todaktodak.reservation.dto.RedisDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.DependsOn;
@@ -22,7 +23,7 @@ public class RealTimeService {
     private final DatabaseReference databaseReference= database.getReference("todakpadak");
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public RealTimeService(@Qualifier("3") RedisTemplate<String, Object> redisTemplate) {
+    public RealTimeService(@Qualifier("1") RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
@@ -35,18 +36,20 @@ public class RealTimeService {
     }
 
     //  데이터 중 특정 필드만 업데이트하는 메서드
-    public void update(WaitingTurnDto waitingTurnDto) {
+    public void update(WaitingTurnDto waitingTurnDto, RedisDto redisDto) {
         System.out.println(waitingTurnDto.toString());
         DatabaseReference doctorRef = databaseReference
                 .child(waitingTurnDto.getHospitalName())
                 .child(waitingTurnDto.getDoctorId());
 
-        String key = "queue: " + waitingTurnDto.getDoctorId();
-        long myTurn = redisTemplate.opsForValue().increment(key);
+        String key = waitingTurnDto.getKey();
 
+        Long myTurn = redisTemplate.opsForZSet().rank(key, redisDto);
+
+        System.out.println("내 순서 " + myTurn);
         Map<String, Object> updates = new HashMap<>();
         updates.put("id", waitingTurnDto.getReservationId());
-        updates.put("turn", myTurn);
+        updates.put("myTurn", myTurn);
 
         doctorRef.child(waitingTurnDto.getReservationId()).updateChildren(updates, (error, ref) -> {
             if (error != null) {
