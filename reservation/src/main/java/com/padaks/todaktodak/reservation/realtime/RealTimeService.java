@@ -29,11 +29,11 @@ public class RealTimeService {
 
 
     //    test API 에 사용
-    public void updateWaitingLine(List<WaitingTurnDto> turnList){
-        for(WaitingTurnDto waitingTurnDto : turnList){
-            update(waitingTurnDto);
-        }
-    }
+//    public void updateWaitingLine(List<WaitingTurnDto> turnList){
+//        for(WaitingTurnDto waitingTurnDto : turnList){
+//            update(waitingTurnDto);
+//        }
+//    }
 
     //  데이터 중 특정 필드만 업데이트하는 메서드
     public void update(WaitingTurnDto waitingTurnDto, RedisDto redisDto) {
