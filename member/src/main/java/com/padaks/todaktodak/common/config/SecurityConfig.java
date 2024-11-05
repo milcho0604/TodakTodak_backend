@@ -70,6 +70,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/member/report/count/**",
                         "/health",
                         "/health/**",
+                        "/member//test/login",
 
                         "/member/health",
 
