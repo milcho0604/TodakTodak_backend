@@ -34,30 +34,27 @@ public class RealTimeService {
                 .child(waitingTurnDto.getHospitalName())
                 .child(waitingTurnDto.getDoctorId());
 
-        doctorRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        doctorRef.runTransaction(new Transaction.Handler() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                long queueSize = dataSnapshot.getChildrenCount();
-
-                long myTurn = queueSize+1;
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                long queueSize = mutableData.getChildrenCount();
+                long myTurn = queueSize + 1;
 
                 Map<String, Object> updates = new HashMap<>();
                 updates.put("id", waitingTurnDto.getReservationId());
-                updates.put("turn", myTurn);  // 순서 업데이트
+                updates.put("turn", myTurn);
 
-                // Firebase에서 데이터 업데이트
-                doctorRef.child(waitingTurnDto.getReservationId()).updateChildren(updates, (error, ref) -> {
-                    if (error != null) {
-                        System.out.println("Failed to update data: " + error.getMessage());
-                    } else {
-                        System.out.println("User data updated successfully");
-                    }
-                });
+                mutableData.child(waitingTurnDto.getReservationId()).setValue(updates);
+                return Transaction.success(mutableData);
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("Failed to read queue size: " + databaseError.getMessage());
+            public void onComplete(DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
+                if (committed) {
+                    System.out.println("User data updated successfully");
+                } else {
+                    System.out.println("Failed to update data: " + (databaseError != null ? databaseError.getMessage() : "unknown error"));
+                }
             }
         });
     }
