@@ -79,19 +79,27 @@ public class MemberService {
 
         Member member = saveReqDto.toEntity(passwordEncoder.encode(saveReqDto.getPassword()));
         memberRepository.save(member);
-
-        // 알림을 보내는 사람? -> 댓글을 단 사람 댓글을 작성한 사람의 email과 게시글 주인의 email || id
-        // 커뮤니티에서 알림을 보내기 위해 필요한 내용은?
-        // FCM 보내는 로직
-        // 회원가입시 관리자에게 알림 전송
-        String memberEmail = "todak@test.com";
-        Member member1 = memberRepository.findByMemberEmail(memberEmail)
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 관리자"));
-        //fcm message 전송 (수신받을 멤버 id, "메세지 title", 메세지"body")
-//        fcmService.sendTestMessage(member1.getId(), "회원가입", "테스트 알림");
-//        fcmService.sendMessage(member1.getId(), "회원가입", saveReqDto.getMemberEmail()+"회원이 가입하였습니다", Type.REGISTER);
     }
 
+    // 로그인
+    public String testLogin(MemberLoginDto loginDto) {
+        Member member = memberRepository.findByMemberEmail(loginDto.getMemberEmail())
+                .orElseThrow(() -> new RuntimeException("잘못된 이메일/비밀번호 입니다."));
+
+        if (!passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {
+            throw new RuntimeException("잘못된 이메일/비밀번호 입니다.");
+        }
+
+        if (member.getDeletedAt() != null){
+            throw new IllegalStateException("탈퇴한 회원입니다.");
+        }
+        System.out.println("fcm토큰:" + loginDto.getFcmToken());
+
+        member.setFcmToken(loginDto.getFcmToken());
+        memberRepository.save(member);
+
+        return jwtTokenprovider.createToken(member.getMemberEmail(), member.getRole().name(), member.getId());
+    }
 
     public Member createDoctor(DoctorSaveReqDto dto){
         validateRegistration(dto);
