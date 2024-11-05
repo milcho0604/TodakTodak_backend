@@ -79,21 +79,22 @@
 
 ## ERD
 ### 전체 ERD
-<img width="1115" alt="image" src="https://github.com/user-attachments/assets/e5ed1919-ef04-4536-ae35-34a265becc0a">
+<img width="1152" alt="image" src="https://github.com/user-attachments/assets/f388118d-3462-4ab9-b568-b79753410e4e">
 
 <details>
   <summary>Member-Service</summary>
-  <img width="1026" alt="image" src="https://github.com/user-attachments/assets/018d20a4-0364-4771-a4ac-ac49c4aec05e">
+  <img width="740" alt="image" src="https://github.com/user-attachments/assets/8dd04b61-3329-41cf-9c4a-dc0bbf84a149">
 </details>
 
 <details>
   <summary>Reservation-Service</summary>
-  <img width="1031" alt="image" src="https://github.com/user-attachments/assets/8e8f4c82-0489-4d4a-b05c-7c26a4a8fcba">
+  <img width="1042" alt="image" src="https://github.com/user-attachments/assets/9972b791-bb1b-4214-bc8e-da9f4c9f6fdc">
 </details>
 
 <details>
   <summary>Community-Service</summary>
-  <img width="1119" alt="image" src="https://github.com/user-attachments/assets/6f12faf1-974f-4170-9586-dbe2433bfb7b">
+  <img width="517" alt="image" src="https://github.com/user-attachments/assets/acc36b91-0a3c-48c5-8cdf-851efd0ecdc5">
+
 </details>
 
 ## API 명세서
@@ -108,7 +109,7 @@
 |------------------------|-----------------------------------------------------------------|
 | **카카오 소셜로그인**           | 카카오 로그인과 이메일 인증을 통한 간편한 회원가입으로, 사용자들은 빠르고 쉽게 토닥서비스를 이용할 수 있습니다. |
 | **스케쥴 예약**  | 스케쥴 예약 기능을 통해 손쉽게 증상을 설명하고 사용자가 원하는 요일과 시간을 선택하여 병원 예약을 할 수 있습니다. |
-| **오늘 예약**  | 병원 별 총 대기 인원수, 의사 별 대기 인원 수를 확인하여 원격으로 줄서기가 가능합니다.
+| **바로 대기**  | 병원 별 총 대기 인원수, 의사 별 대기 인원 수를 확인하여 원격으로 줄서기가 가능합니다.
 | **대기인원 확인**            | 진료 예약 시 병원별 총 대기 인원수, 의사 별 대기 인원 수를 확인할 수 있습니다.                 |
 | **비대면 진료**         | WebRTC를 사용하여 병원에 직접 가지 않고도 비대면으로 진료를 받을 수 있습니다.                 |
 |**사용자 위치기반 병원목록 조회**|geolocation을 사용하여 사용자의 위치기반 주변 병원들의 목록을 조회할 수 있습니다.|
@@ -609,7 +610,7 @@
 
 
 <details>
-  <summary>오늘 예약 접수</summary>
+  <summary>바로 대기 접수</summary>
   <img src="https://github.com/user-attachments/assets/3e8a2990-7501-4e47-bdb8-f40757a70fa0">
 </details>
 
@@ -619,7 +620,7 @@
 </details>
 
 <details>
-  <summary>오늘 예약 취소</summary>
+  <summary>바로 대기 취소</summary>
   <img src="https://github.com/user-attachments/assets/015c2d4e-274a-427b-ad4a-539b02412a83">
 </details>
 
