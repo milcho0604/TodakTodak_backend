@@ -30,5 +30,20 @@ spec:
   commonName: server.todak.site
   dnsNames:
     - server.todak.site
-    
-    
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: monitoring-tls
+  namespace: monitoring
+spec:
+  secretName: monitoring-tls
+  duration: 2160h # 90일
+  renewBefore: 360h # 15일 전에 갱신
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName: prometheus.todak.site
+  dnsNames:
+    - prometheus.todak.site
+    - grafana.todak.site

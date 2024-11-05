@@ -1,0 +1,10 @@
+# alerting:
+#   alertmanagers:
+#     - static_configs:
+#         - targets:
+#             - prometheus-alertmanager.monitoring.svc:80  # Alertmanager의 올바른 서비스 이름과 포트
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - prometheus-alertmanager.monitoring.svc:9093

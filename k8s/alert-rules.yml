@@ -1,0 +1,62 @@
+groups:
+  - name: alert_rules
+    rules:
+      # 1. CPU 사용량이 80% 이상일 때
+      - alert: HighCPULoad
+        expr: avg(rate(container_cpu_usage_seconds_total[5m])) > 0.8
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High CPU Load Detected"
+          description: "The average CPU load is above 80% for the past 5 minutes."
+
+      # 2. 파드가 Pending 상태일 때
+      - alert: PodPending
+        expr: kube_pod_status_phase{phase="Pending"} > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Pod Pending State Detected"
+          description: "One or more pods have been in Pending state for more than 5 minutes."
+
+      # 3. 파드가 Terminating 상태일 때
+      - alert: PodTerminating
+        expr: kube_pod_status_phase{phase="Terminating"} > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Pod Terminating State Detected"
+          description: "One or more pods have been in Terminating state for more than 5 minutes."
+
+      # 4. 메모리 사용량이 90% 이상일 때
+      - alert: HighMemoryUsage
+        expr: avg(container_memory_usage_bytes / container_spec_memory_limit_bytes) > 0.9
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High Memory Usage Detected"
+          description: "The memory usage is above 90% for the past 5 minutes."
+
+      # 5. 파드 Ready 상태가 아닐 때 (Not Ready)
+      - alert: PodNotReady
+        expr: kube_pod_container_status_ready{condition="false"} > 0
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Pod Not Ready Detected"
+          description: "One or more pods have not been in Ready state for more than 10 minutes."
+
+      # 6. 파드 Ready 상태일 때
+      - alert: PodReady
+        expr: kube_pod_container_status_ready{condition="true"} > 0
+        for: 1m
+        labels:
+          severity: info
+        annotations:
+          summary: "Pod is Ready"
+          description: "A pod has transitioned to the Ready state."
