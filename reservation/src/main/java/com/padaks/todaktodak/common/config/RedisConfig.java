@@ -150,7 +150,7 @@ public class RedisConfig {
     public RedisTemplate<String, Object> realTimeRedisTemplate(@Qualifier("3") RedisConnectionFactory redisConnectionFactory){
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper()));
+        redisTemplate.setValueSerializer(new StringRedisSerializer());
         redisTemplate.setConnectionFactory(redisConnectionFactory);
         return redisTemplate;
     }
