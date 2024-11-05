@@ -144,6 +144,10 @@
   <summary> FCM을 사용한 웹 푸시 알림</summary>
   <img src="">
 </details>
+<details>
+  <summary> Prometheus, Grafana를 이용한 모니터링 서비스</summary>
+  <img src=""> 
+</details>
 
 ## 스택
 
@@ -175,11 +179,35 @@
 ![Git](https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white)
 ![GitHub](https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white)
 ![Figma](https://img.shields.io/badge/figma-%23F24E1E.svg?style=for-the-badge&logo=figma&logoColor=white)
+### DevOps
+![kubernetes](https://img.shields.io/badge/kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)
+![amazoneks](https://img.shields.io/badge/amazoneks-FF9900?style=for-the-badge&logo=amazoneks&logoColor=white)
+![amazonec2](https://img.shields.io/badge/amazonec2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white)
+![docker](https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![amazonelasticache](https://img.shields.io/badge/amazonelasticache-FF4F00?style=for-the-badge&logo=amazonaws&logoColor=white)
+![apachekafka](https://img.shields.io/badge/apachekafka-231F20?style=for-the-badge&logo=apachekafka&logoColor=white)
+![amazonrds](https://img.shields.io/badge/amazonrds-527FFF?style=for-the-badge&logo=amazonrds&logoColor=white)
+![amazons3](https://img.shields.io/badge/amazons3-569A31?style=for-the-badge&logo=amazons3&logoColor=white)
+![amazonroute53](https://img.shields.io/badge/amazonroute53-FF9900?style=for-the-badge&logo=amazonroute53&logoColor=white)
+![prometheus](https://img.shields.io/badge/prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white)
+![grafana](https://img.shields.io/badge/grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white)
+![githubactions](https://img.shields.io/badge/githubactions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)
 
 <br>
 
 ## 시스템 아키텍쳐
 <img width="500" alt="배포아키텍쳐" src="https://github.com/user-attachments/assets/2b101298-2cfb-48d2-9ad7-d49dc416834b">
+
+### 아키텍쳐 선택이유
+|  | **Kubernetes** | docker compose |
+|:------:|:------:|:------:|
+| 아키텍처 | 다중호스트 | 단일호스트|
+|확상성|Scale-Out|Scale-Up 
+|로드밸런싱|자동설정(세션 설정 가능)|직접설정
+|HA|장애 감지 및 자동 복구| 장애 발생 시 서비스 다운
+|설정편의성|내부 서비스 디스커버리 자동 설정 | 서비스의 IP 주소나 도메인을 직접 지정|
+
+<br><br>
 
 ## 프로젝트 시연
 <details>
