@@ -49,7 +49,7 @@ public class RealTimeService {
         System.out.println("내 순서 " + myTurn);
         Map<String, Object> updates = new HashMap<>();
         updates.put("id", waitingTurnDto.getReservationId());
-        updates.put("myTurn", myTurn);
+        updates.put("turn", myTurn);
 
         doctorRef.child(waitingTurnDto.getReservationId()).updateChildren(updates, (error, ref) -> {
             if (error != null) {
