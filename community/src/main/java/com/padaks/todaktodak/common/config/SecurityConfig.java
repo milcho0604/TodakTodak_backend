@@ -85,6 +85,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/comment/list/**",
                         "/comment/listBydoctorEmail",
 // PostController
+                        "/health",
+                        "/health/**",
+                        "/post/health",
                         "/post/list",
                         "/post/good/list",
                         "/detail/**",

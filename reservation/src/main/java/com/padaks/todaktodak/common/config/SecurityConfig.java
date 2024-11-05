@@ -43,7 +43,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/review/doctor/detail/*", "/reservation/get/member",
                         "/hospital-operating-hours/getBreakTime/*", "/doctor-operating-hours/*",
                         "/comment/get/**", "/comment/list/**", "/comment/listBydoctorEmail",
-                        "/post/list", "/post/good/list", "/detail/**", "/detail/views/**", "/detail/**/likes"
+                        "/post/list", "/post/good/list", "/detail/**", "/detail/views/**", "/detail/**/likes",
+                        "/health",
+                        "/health/**",
+                        "/reservation/health"
                 ).permitAll()
                 .anyRequest().authenticated()
                 .and()
