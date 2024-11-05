@@ -96,7 +96,7 @@ public class NotificationEventListener {
 
             String title = "";
             if(dto.getReservationType().equals("Immediate")){
-                title = "당일예약";
+                title = "바로대기";
             }
 
             fcmService.sendMessage(dto.getAdminEmail(),
