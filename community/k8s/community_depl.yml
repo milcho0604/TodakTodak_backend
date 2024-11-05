@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: community-blue-deployment
+  name: community-deployment
   namespace: todak
 spec:
   replicas: 2
