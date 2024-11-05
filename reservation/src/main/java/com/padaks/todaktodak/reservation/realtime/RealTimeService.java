@@ -41,13 +41,22 @@ public class RealTimeService {
                 .child(waitingTurnDto.getHospitalName())
                 .child(waitingTurnDto.getDoctorId());
 
-        String key = "queue:" + waitingTurnDto.getHospitalName() + ":" + waitingTurnDto.getDoctorId();
+        String key = "queue: " + waitingTurnDto.getDoctorId();
         long myTurn = redisTemplate.opsForValue().increment(key);
 
         Map<String, Object> updates = new HashMap<>();
         updates.put("id", waitingTurnDto.getReservationId());
         updates.put("turn", myTurn);
 
+        doctorRef.child(waitingTurnDto.getReservationId()).updateChildren(updates, (error, ref) -> {
+            if (error != null) {
+                System.out.println("Failed to update data: " + error.getMessage());
+                // 충돌 처리: 다른 요청이 업데이트를 이미 한 경우 처리 로직
+            } else {
+                System.out.println("User data updated successfully");
+                redisTemplate.opsForValue().increment(key); // Redis에 대기 순서 증가
+            }
+        });
     }
 
     //  실시간 DB에서 삭제하는 로직
