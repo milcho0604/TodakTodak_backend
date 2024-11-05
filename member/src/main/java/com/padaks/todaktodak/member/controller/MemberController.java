@@ -8,18 +8,15 @@ import com.padaks.todaktodak.member.dto.DoctorInfoDto;
 import com.padaks.todaktodak.member.domain.Address;
 import com.padaks.todaktodak.member.domain.Member;
 import com.padaks.todaktodak.member.dto.*;
-//import com.padaks.todaktodak.member.service.MemberAuthService;
 import com.padaks.todaktodak.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +35,6 @@ import java.util.Map;
 public class MemberController {
 
     private final MemberService memberService;
-//    private final MemberAuthService memberAuthService;
 
     @GetMapping("/get/member")
     public MemberPayDto getMember() {
@@ -78,6 +73,31 @@ public class MemberController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new CommonResDto(HttpStatus.BAD_REQUEST, "회원가입에 실패했습니다: " + e.getMessage(), null));
+        }
+    }
+
+    // 심사위원 로그인을 위한 임시
+    @PostMapping("/test/login")
+    public ResponseEntity<?> testLogin(@RequestBody MemberLoginDto loginDto) {
+        try {
+            String token = memberService.testLogin(loginDto);
+            System.out.println("Generated JWT Token: " + token);
+            return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "로그인 성공", token));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new CommonErrorDto(HttpStatus.FORBIDDEN, "토닥 회원만 로그인이 가능합니다. 필요합니다."));
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            if (e.getMessage().contains("비활성화 상태")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new CommonErrorDto(HttpStatus.UNAUTHORIZED, e.getMessage()));
+            }
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .body(new CommonErrorDto(HttpStatus.UNPROCESSABLE_ENTITY, "잘못된 이메일/비밀번호입니다."));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CommonErrorDto(HttpStatus.INTERNAL_SERVER_ERROR, "로그인 중 오류가 발생했습니다."));
         }
     }
 
