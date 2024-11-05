@@ -9,6 +9,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +43,8 @@ public class RealTimeService {
                 .child(waitingTurnDto.getDoctorId());
 
         String key = "queue:" + waitingTurnDto.getHospitalName() + ":" + waitingTurnDto.getDoctorId();
-        Long myTurnLong = redisTemplate.opsForValue().increment(key);
+        byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
+        Long myTurnLong = redisTemplate.opsForValue().increment(new String(keyBytes, StandardCharsets.UTF_8));
         long myTurn = (myTurnLong != null) ? myTurnLong : 1;
 
         Map<String, Object> updates = new HashMap<>();
