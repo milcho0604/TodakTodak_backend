@@ -43,9 +43,10 @@ public class RealTimeService {
                 .child(waitingTurnDto.getDoctorId());
 
         String key = "queue:" + waitingTurnDto.getHospitalName() + ":" + waitingTurnDto.getDoctorId();
-        byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
-        Long myTurnLong = redisTemplate.opsForValue().increment(new String(keyBytes, StandardCharsets.UTF_8));
-        long myTurn = (myTurnLong != null) ? myTurnLong : 1;
+
+        // 현재 대기 순서를 가져옵니다.
+        Long currentQueueSize = (long) redisTemplate.opsForValue().get(key);
+        long myTurn = (currentQueueSize != null) ? currentQueueSize + 1 : 1;
 
         Map<String, Object> updates = new HashMap<>();
         updates.put("id", waitingTurnDto.getReservationId());
@@ -54,8 +55,10 @@ public class RealTimeService {
         doctorRef.child(waitingTurnDto.getReservationId()).updateChildren(updates, (error, ref) -> {
             if (error != null) {
                 System.out.println("Failed to update data: " + error.getMessage());
+                // 충돌 처리: 다른 요청이 업데이트를 이미 한 경우 처리 로직
             } else {
                 System.out.println("User data updated successfully");
+                redisTemplate.opsForValue().increment(key); // Redis에 대기 순서 증가
             }
         });
     }
