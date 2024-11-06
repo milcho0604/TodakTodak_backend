@@ -76,7 +76,7 @@ public class ChildService {
         }
         String imageUrl = null;
         if (image == null || image.isEmpty()) {
-            imageUrl = "https://todak-file.s3.amazonaws.com/0611a5e6-b5e4-4cd7-81c3-ce7d64ef58b7_스크린샷 2024-10-08 오후 2.08.28.png";
+            imageUrl = "https://todak-file.s3.amazonaws.com/7796c563-1b8b-4d8e-8f81-bfe2be91f04f_9EC5D87F-965C-48C9-BE3A-D36FE28448D8.jpg";
         } else {
             imageUrl = s3ClientFileUpload.upload(image);
         }
