@@ -55,7 +55,7 @@ public class PaymentController {
 
     // 단건 결제 요청 처리
     @PostMapping("/single")
-    public ResponseEntity<?> processPayment(@RequestBody String impUid) {
+    public ResponseEntity<?> procesxsPayment(@RequestBody String impUid) {
         try {
             System.out.println("Received impUid: " + impUid);
             PaymentReqDto paymentDto = paymentService.processSinglePayment(impUid);
