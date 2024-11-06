@@ -2,6 +2,7 @@ package com.padaks.todaktodak.payment.controller;
 
 import com.padaks.todaktodak.common.dto.CommonResDto;
 import com.padaks.todaktodak.common.dto.MemberFeignDto;
+import com.padaks.todaktodak.medicalchart.domain.MedicalChart;
 import com.padaks.todaktodak.payment.domain.PaymentMethod;
 import com.padaks.todaktodak.payment.dto.PaymentMemberResDto;
 import com.padaks.todaktodak.payment.dto.PaymentListResDto;
@@ -157,7 +158,12 @@ public class PaymentController {
     @GetMapping("/get/reservation/{id}")
     public ResponseEntity<?> getReservationId(@PathVariable Long id){
         try {
-            int fee = paymentService.medicalChart(id).getFee();
+            MedicalChart medicalChart = paymentService.medicalChart(id);
+            System.out.println("메디컬");
+            System.out.println(medicalChart);
+            int fee = medicalChart.getFee();
+            System.out.println(fee);
+//            int fee = paymentService.medicalChart(id).getFee();
             return ResponseEntity.ok(fee);
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
