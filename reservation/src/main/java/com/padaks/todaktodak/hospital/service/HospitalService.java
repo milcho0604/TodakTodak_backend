@@ -171,7 +171,6 @@ public class HospitalService {
 
     // 병원 리스트 조회 ('~~동' 주소기준)
     // TODO - 정렬조건 : 거리가까운 순, 별점순, 리뷰 순
-    @Cacheable(value = "hospitalList", key = "#dong + '-' + #latitude + '-' + #longitude + '-hospital'")
     public List<HospitalListResDto> getHospitalList(String dong,
                                                     BigDecimal latitude,
                                                     BigDecimal longitude){
@@ -211,6 +210,7 @@ public class HospitalService {
     }
 
     // 정렬리스트 테스트
+    @Cacheable(value = "hospitalList", key = "#dong + '-' + #latitude + '-' + #longitude + '-hospital'")
     public List<HospitalListResDto> getSortedHospitalList(String dong,
                                                     BigDecimal latitude,
                                                     BigDecimal longitude,
