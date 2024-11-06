@@ -51,7 +51,6 @@ public class PaymentService {
     private final ReservationRepository reservationRepository;
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final ObjectMapper objectMapper;
-    public static MedicalChart medicalChart;
     private final HospitalRepository hospitalRepository;
     private final MedicalChartService medicalChartService;
     private final MemberFeign memberFeign;
@@ -84,15 +83,15 @@ public class PaymentService {
     public MedicalChart medicalChart(Long id){
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 예약내역입니다."));
-        medicalChart = medicalChartRepository.findById(reservation.getMedicalChart().getId())
+        MedicalChart medicalChart = medicalChartRepository.findById(reservation.getMedicalChart().getId())
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 진료내역입니다."));
         return medicalChart;
     }
 
 
     // 단건 결제 처리
-    public PaymentReqDto processSinglePayment(String impUid) throws Exception {
-        return processPayment(impUid, PaymentMethod.SINGLE);
+    public PaymentReqDto processSinglePayment(String impUid, Long id) throws Exception {
+        return processPayment(impUid, PaymentMethod.SINGLE, id);
     }
 
     // 정기 결제 처리
@@ -113,9 +112,9 @@ public class PaymentService {
     }
 
     // 단건 결제 로직 구현
-    public PaymentReqDto processPayment(String impUid, PaymentMethod paymentMethod) throws Exception {
+    public PaymentReqDto processPayment(String impUid, PaymentMethod paymentMethod, Long id) throws Exception {
         MemberFeignDto member = getMemberInfo();  // 현재 로그인한 사용자 정보
-
+        MedicalChart medicalChart = medicalChart(id);
         int fee = medicalChart.getFee();
 
         String adminEmail = medicalChart.getReservation().getHospital().getAdminEmail();

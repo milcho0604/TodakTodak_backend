@@ -55,10 +55,10 @@ public class PaymentController {
 
     // 단건 결제 요청 처리
     @PostMapping("/single")
-    public ResponseEntity<?> procesxsPayment(@RequestBody String impUid) {
+    public ResponseEntity<?> processPayment(@RequestBody String impUid, @PathVariable Long id) {
         try {
             System.out.println("Received impUid: " + impUid);
-            PaymentReqDto paymentDto = paymentService.processSinglePayment(impUid);
+            PaymentReqDto paymentDto = paymentService.processSinglePayment(impUid, id);
             return ResponseEntity.ok(new CommonResDto(HttpStatus.OK, "결제 성공", paymentDto.getImpUid()));
 //            return ResponseEntity.ok(paymentDto);
         } catch (Exception e) {
@@ -139,20 +139,20 @@ public class PaymentController {
         }
     }
 
-    @GetMapping("/get/fee")
-    public ResponseEntity<?> getMedicalChartFee(){
-        try {
-            String email = SecurityContextHolder.getContext().getAuthentication().getName();
-            int fee = 0;
-            if(email.equals(paymentService.medicalChart.getReservation().getMemberEmail())){
-                fee = paymentService.medicalChart.getFee();
-            }
-            System.out.println(fee);
-            return ResponseEntity.ok(fee);
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
-    }
+//    @GetMapping("/get/fee")
+//    public ResponseEntity<?> getMedicalChartFee(){
+//        try {
+//            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+//            int fee = 0;
+//            if(email.equals(paymentService.medicalChart.getReservation().getMemberEmail())){
+//                fee = paymentService.medicalChart.getFee();
+//            }
+//            System.out.println(fee);
+//            return ResponseEntity.ok(fee);
+//        }catch (Exception e){
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+//        }
+//    }
 
     @GetMapping("/get/reservation/{id}")
     public ResponseEntity<?> getReservationId(@PathVariable Long id){
