@@ -141,8 +141,16 @@ public class PaymentService {
             }
 
             // 결제 금액 및 기타 검증 로직
-            if (paymentResponse.getResponse().getAmount().intValue() != fee) {
-                throw new Exception("결제 금액 불일치");
+//            if (paymentResponse.getResponse().getAmount().intValue() != fee) {
+//                throw new Exception("결제 금액 불일치" + paymentResponse.getMessage());
+//            }
+
+            // 결제 정보가 존재하는지 확인
+            if (paymentResponse.getResponse() == null) {
+                throw new Exception("결제 요청 실패: " + paymentResponse.getMessage());
+            }
+            if (paymentResponse.getResponse().getAmount().compareTo(BigDecimal.valueOf(fee)) != 0) {
+                throw new Exception("결제 금액 불일치: 시스템의 fee=" + fee + ", Iamport의 amount=" + amount);
             }
             String customerUid = "customer_" + member.getMemberEmail();
             Pay pay = null;
