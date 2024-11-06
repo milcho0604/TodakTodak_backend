@@ -55,7 +55,7 @@ public class PaymentController {
     }
 
     // 단건 결제 요청 처리
-    @PostMapping("/single")
+    @PostMapping("/single/{id}")
     public ResponseEntity<?> processPayment(@RequestBody String impUid, @PathVariable Long id) {
         try {
             System.out.println("Received impUid: " + impUid);
