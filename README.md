@@ -21,7 +21,7 @@
     <th><a href="https://github.com/haah21"> 이한아</a> </th>
   </tr>
   <th> 팀장,BE,FE </th>
-  <th> BE,FE, DEV </th>
+  <th> BE,FE,DEV </th>
   <th> BE,FE </th>
   <th> BE,FE </th>
   <th> BE,FE </th>
