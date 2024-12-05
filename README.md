@@ -31,7 +31,7 @@
 <div align="center">
   <img src="https://github.com/user-attachments/assets/6e4d7206-54bf-4e23-bfbe-d9cc78e7c1d3" alt="logo" width="450">
 
-  [📢 토닥토닥 발표자료 링크](https://www.canva.com/design/DAGXEt8Oriw/fW-zoKJRLj5M8zRyS7DVTQ/edit?utm_content=DAGXEt8Oriw&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
+  [📢 토닥토닥 발표자료 링크](https://www.canva.com/design/DAGXEt8Oriw/6r-Cdw0_Y24TlN3NlnEERg/view?utm_content=DAGXEt8Oriw&utm_campaign=designshare&utm_medium=link&utm_source=editor)
 </div>
 
 
